@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.rooms > * .css-i4bv87-MuiSvgIcon-root {
+  color: #5a5a5a !important;
+}
+
+fieldset.MuiOutlinedInput-notchedOutline {
+  border-color: transparent;
+}
+
+.Mui-focused fieldset.MuiOutlinedInput-notchedOutline {
+  border-color: transparent;
+}
+.rooms > * .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
+  color: transparent !important;
+}

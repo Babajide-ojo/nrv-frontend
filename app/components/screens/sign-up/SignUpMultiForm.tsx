@@ -1,6 +1,6 @@
-import Button from "@/components/shared/buttons/Button";
-import CheckBox from "@/components/shared/input-fields/CheckBox";
-import InputField from "@/components/shared/input-fields/InputFields";
+import Button from "@/app/components/shared/buttons/Button";
+import CheckBox from "@/app/components/shared/input-fields/CheckBox";
+import InputField from "@/app/components/shared/input-fields/InputFields";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaApple } from "react-icons/fa6";

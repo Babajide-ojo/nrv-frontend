@@ -1,7 +1,7 @@
 "use client";
 import Button from "../buttons/Button";
 import NavLink from "./NavLink";
-import Logo from "../../../public/images/nrv-logo.png";
+import Logo from "../../../../public/images/nrv-logo.png";
 import Image from "next/image";
 import { Bs0Circle } from "react-icons/bs";
 const navItems = [

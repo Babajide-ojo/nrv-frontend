@@ -1,6 +1,6 @@
 "use client"
 import React, { forwardRef, ButtonHTMLAttributes, useState, ReactElement } from 'react';
-import { cls } from '../../../helpers/utils';
+import { cls } from '../../../../helpers/utils';
 import { IconType } from 'react-icons';
 import { BsDownload } from 'react-icons/bs';
 

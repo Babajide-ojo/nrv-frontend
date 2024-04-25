@@ -2,7 +2,7 @@ import GroupPeople from "../../../public/images/group-people.png";
 import Image from "next/image";
 import { FaStar, FaRegStar } from "react-icons/fa6";
 import Button from '../../shared/buttons/Button';
-import HoverableCard from "@/components/shared/cards/HoverableCard";
+import HoverableCard from "@/app/components/shared/cards/HoverableCard";
 import { CardData } from "@/helpers/data";
 
 

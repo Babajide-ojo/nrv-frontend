@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { forwardRef, AnchorHTMLAttributes } from "react";
 import Link, { LinkProps } from "next/link";
-import { cls } from "../../../helpers/utils";
+import { cls } from "../../../../helpers/utils";
 
 interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;

@@ -1,5 +1,5 @@
 import HomePageLayout from "@/components/layout/HomePageLayout";
-import Home from "@/components/screens/home/Home";
+import Home from "./../components/screens/home/Home";
 
 export default function Index() {
   return (

@@ -1,11 +1,11 @@
+import HeroSection from "../hero-section/HeroSection";
 
 const Home = () => {
-return(
+  return (
     <div>
-        NAIJA RENT VERIFY
+      <HeroSection />
     </div>
-)
-}
+  );
+};
 
-export default Home
-  
+export default Home;

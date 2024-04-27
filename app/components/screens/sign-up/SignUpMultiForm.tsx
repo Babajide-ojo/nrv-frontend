@@ -6,49 +6,116 @@ import React, { useState } from "react";
 import { FaApple } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { IoPersonCircleSharp } from "react-icons/io5";
-import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { createUser } from "../../../../redux/slices/userSlice";
+import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
+
 
 interface FormData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  nin: string;
   password: string;
+  phoneNumber: string;
+  homeAddress: string;
+  accountType: string;
 }
 
 const SignUpMultiForm: React.FC = () => {
+  const dispatch = useDispatch();
+  const { loading, error, data } = useSelector((state: any) => state.user);
   const [formData, setFormData] = useState<FormData>({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
+    nin: "",
     password: "",
+    phoneNumber: "",
+    homeAddress: "",
+    accountType: "",
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const validateForm = () => {
+    let errors: { [key: string]: string } = {};
+
+    if (!formData.firstName.trim()) {
+      errors.firstName = "First Name is required";
+    }
+    if (!formData.lastName.trim()) {
+      errors.lastName = "Last Name is required";
+    }
+    if (!formData.nin.trim()) {
+      errors.nin = "Nin is required";
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Invalid email address";
+    }
+    if (!formData.password.trim()) {
+      errors.password = "Password is required";
+    }
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumber = "Phone Number is required";
+    }
+    if (!formData.homeAddress.trim()) {
+      errors.homeAddress = "Home Address is required";
+    }
+    if (!formData.accountType.trim()) {
+      errors.accountType = "Account Type is required";
+    }
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const handleItemClick = (index: number) => {
-    setActiveIndex(index === activeIndex ? null : index);
-  };
-
   const [currentStep, setCurrentStep] = useState(1);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  const handlePrevious = () => {
-    setCurrentStep((prevStep) => prevStep - 1);
+  const handleItemClick = (index: number) => {
+    setActiveIndex(index === activeIndex ? null : index);
   };
 
-  const handleSubmit = () => {
-    // Handle form submission here
-    console.log(formData);
+  const handleAccountType = (text: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      accountType: text,
+    }));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    await dispatch(createUser(formData) as any)
+      .unwrap()
+      .then(() => {
+        setCurrentStep(3)
+      })
+      .catch((error: any) => {
+        alert(error);
+      });
   };
 
   return (
@@ -66,7 +133,10 @@ const SignUpMultiForm: React.FC = () => {
               className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
                 activeIndex === 0 ? "bg-gray-100" : ""
               }`}
-              onClick={() => handleItemClick(0)}
+              onClick={() => {
+                handleItemClick(0);
+                handleAccountType("landlord");
+              }}
             >
               <div className="w-1/5 mx-auto flex items-center justify-center">
                 <IoPersonCircleSharp color="#153969" size={40} />
@@ -91,7 +161,10 @@ const SignUpMultiForm: React.FC = () => {
               className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
                 activeIndex === 1 ? "bg-gray-100" : ""
               }`}
-              onClick={() => handleItemClick(1)}
+              onClick={() => {
+                handleItemClick(1);
+                handleAccountType("tenant");
+              }}
             >
               <div className="w-1/5 mx-auto flex items-center justify-center">
                 <IoPersonCircleSharp color="#153969" size={40} />
@@ -182,6 +255,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter First Name"
                 inputType="text"
                 name="firstName"
+                onChange={handleInputChange}
+                error={errors.firstName}
               />
             </div>
             <div className="w-1/2">
@@ -190,6 +265,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter Last Name"
                 inputType="text"
                 name="lastName"
+                onChange={handleInputChange}
+                error={errors.lastName}
               />
             </div>
           </div>
@@ -200,6 +277,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter Email Address"
                 inputType="text"
                 name="email"
+                onChange={handleInputChange}
+                error={errors.email}
               />
             </div>
             <div className="w-1/2">
@@ -208,6 +287,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter NIN"
                 inputType="text"
                 name="nin"
+                onChange={handleInputChange}
+                error={errors.nin}
               />
             </div>
           </div>
@@ -217,6 +298,8 @@ const SignUpMultiForm: React.FC = () => {
               placeholder="Enter Home Address"
               inputType="text"
               name="homeAddress"
+              onChange={handleInputChange}
+              error={errors.homeAddress}
             />
           </div>
           <div className="w-full mt-4 flex gap-3">
@@ -226,6 +309,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter Phone Number"
                 inputType="text"
                 name="phoneNumber"
+                onChange={handleInputChange}
+                error={errors.phoneNumber}
               />
             </div>
             <div className="w-1/2">
@@ -234,6 +319,8 @@ const SignUpMultiForm: React.FC = () => {
                 placeholder="Enter Password"
                 inputType="password"
                 name="password"
+                onChange={handleInputChange}
+                error={errors.password}
               />
             </div>
           </div>
@@ -285,6 +372,7 @@ const SignUpMultiForm: React.FC = () => {
           </div>
           <div className="mt-4">
             <Button
+              onClick={handleSubmit as any}
               size="large"
               className="block w-full"
               variant="bluebg"
@@ -297,12 +385,7 @@ const SignUpMultiForm: React.FC = () => {
       )}
       {currentStep === 3 && (
         <div>
-          <h2>Step 3: Confirmation</h2>
-          <p>Name: {formData.name}</p>
-          <p>Email: {formData.email}</p>
-          <p>Password: *********</p>
-          <button onClick={handlePrevious}>Previous</button>
-          <button onClick={handleSubmit}>Submit</button>
+          <SignUppVerifyAccountScreen />
         </div>
       )}
     </div>

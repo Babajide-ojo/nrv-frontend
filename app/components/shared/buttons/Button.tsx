@@ -5,7 +5,7 @@ import { IconType } from 'react-icons';
 import { BsDownload } from 'react-icons/bs';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg';
+  variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey';
   size?: 'small' | 'normal' | 'large';
   pill?: boolean;
   icon?: IconType | ReactElement; // Allowing IconType or JSX elements
@@ -28,7 +28,8 @@ const classes = {
     light: 'rounded rounded-full bg-white text-nrvDarkBlue',
     lightPrimary : 'rounded rounded-full text-white border border-white bg-nrvDarkBlue',
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-md border border-nrvLightGrey',
-    bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-md'
+    bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-md',
+    lightGrey: 'rounded rounded-md text-nrvLightGrey bg-nrvLightGreyBg'
   }
 };
 

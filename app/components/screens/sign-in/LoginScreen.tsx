@@ -1,16 +1,80 @@
 "use client";
 
+import { useState } from "react";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { FaApple } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
-import { carouselData } from "@/helpers/data";
 import Carousel from "./Carousel";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "@/redux/slices/userSlice";
+import {useRouter} from "next/navigation";
 
-const LoginScreen = () => {
+
+interface FormData {
+  email: string;
+  password: string;
+}
+
+const LoginScreen: React.FC = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const { loading, error, data } = useSelector((state: any) => state.user);
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const validateForm = () => {
+    let errors: { [key: string]: string } = {};
+
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = "Invalid email address";
+    }
+    if (!formData.password.trim()) {
+      errors.password = "Password is required";
+    }
+
+    setErrors(errors);
+
+    return Object.keys(errors).length === 0;
+  };
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    await dispatch(loginUser(formData) as any)
+      .unwrap()
+      .then((data: any) => {
+        localStorage.setItem("nrv-user", JSON.stringify(data)) as any;
+        const userAccountType =
+        data?.user?.accountType || "";
+
+      if (userAccountType === "landlord") {
+        router.push("/dashboard/landlord");
+      } else if (userAccountType === "tenant") {
+        router.push("/dashboard/tenant");
+      }
+      })
+      .catch((error: any) => {
+        alert(error);
+      });
+  };
+
   return (
     <div className="flex justify-center  h-screen">
       <Carousel />
@@ -28,71 +92,34 @@ const LoginScreen = () => {
               sign in as tenant
             </Link>
           </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              {" "}
-              <div className="flex gap-1">
-                <FaApple color="black" size={22} /> Sign in with Apple
-              </div>
-            </Button>
+          <div className="mt-6">
+            <InputField
+              label="Email Address"
+              placeholder="Enter your email address"
+              inputType="email"
+              name="email"
+              onChange={handleInputChange}
+              error={errors.email}
+            />
           </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              <div className="flex gap-1">
-                <FcGoogle size={22} /> Sign in with Google
-              </div>
-            </Button>
+          <div className="mt-4">
+            <InputField
+              label="Password"
+              placeholder="Enter your password"
+              inputType="password"
+              name="password"
+              onChange={handleInputChange}
+              error={errors.password}
+            />
           </div>
-          <div className="flex items-center w-full mt-6">
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            <div className="w-2/12 text-center text-nrvLightGrey">OR</div>
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-          </div>
-          <div className="w-full mt-6">
-            <div className="mt-2">
-              <InputField
-                label="Email Address"
-                placeholder="Enter your email address"
-                inputType="email"
-                // onChange={handleEmailChange}
-                name="email"
-              />
-            </div>
-            <div className="mt-4">
-              <InputField
-                label="Password"
-                placeholder="Enter your password"
-                inputType="password"
-                // onChange={handlePasswordChange}
-                name="password"
-              />
-            </div>
-          </div>
-          <div className="w-full flex justify-between mt-6">
-            <div className="text-sm text-nrvLightGrey">Remember Me</div>
-            <Link
-              href="#"
-              className="text-sm underline font-light text-[#153969]"
-            >
-              Forgot password
-            </Link>
-          </div>
-          <div className="mt-20 pt-10">
+
+          <div className="mt-10">
             <Button
               size="large"
               className="block w-full"
               variant="bluebg"
               showIcon={false}
+              onClick={handleSubmit}
             >
               Continue
             </Button>

@@ -10,6 +10,7 @@ interface InputFieldProps {
   value?: string | number;
   name?: string;
   disabled?: boolean;
+  error?: string; 
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -21,6 +22,7 @@ const InputField: React.FC<InputFieldProps> = ({
   value,
   name,
   disabled,
+  error, 
 }) => {
   return (
     <div className="">
@@ -44,6 +46,7 @@ const InputField: React.FC<InputFieldProps> = ({
           disabled={disabled}
         />
       </div>
+      {error && <div className="text-red-500 text-sm mt-1">{error}</div>} 
     </div>
   );
 };

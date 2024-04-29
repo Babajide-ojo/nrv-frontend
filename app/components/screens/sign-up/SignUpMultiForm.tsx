@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 
-
 interface FormData {
   firstName: string;
   lastName: string;
@@ -37,6 +36,8 @@ const SignUpMultiForm: React.FC = () => {
     accountType: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
@@ -75,7 +76,6 @@ const SignUpMultiForm: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
 
-
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
@@ -108,14 +108,15 @@ const SignUpMultiForm: React.FC = () => {
     if (!validateForm()) {
       return;
     }
-    await dispatch(createUser(formData) as any)
-      .unwrap()
-      .then(() => {
-        setCurrentStep(3)
-      })
-      .catch((error: any) => {
-        alert(error);
-      });
+    setIsLoading(true); // Set loading state to true when starting the request
+    try {
+      await dispatch(createUser(formData) as any).unwrap();
+      setCurrentStep(3);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false); // Set loading state back to false after request completes
+    }
   };
 
   return (
@@ -372,13 +373,15 @@ const SignUpMultiForm: React.FC = () => {
           </div>
           <div className="mt-4">
             <Button
-              onClick={handleSubmit as any}
+              onClick={handleSubmit}
               size="large"
               className="block w-full"
               variant="bluebg"
               showIcon={false}
+              disabled={isLoading} // Disable button while loading
             >
-              Continue
+              {isLoading ? "Loading..." : "Continue"}{" "}
+              {/* Show loading text if loading */}
             </Button>
           </div>
         </div>

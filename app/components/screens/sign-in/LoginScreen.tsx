@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState } from "react";
 import Button from "@/app/components/shared/buttons/Button";
@@ -7,8 +7,7 @@ import Link from "next/link";
 import Carousel from "./Carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/redux/slices/userSlice";
-import {useRouter} from "next/navigation";
-
+import { useRouter } from "next/navigation";
 
 interface FormData {
   email: string;
@@ -24,6 +23,8 @@ const LoginScreen: React.FC = () => {
     password: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
@@ -40,6 +41,7 @@ const LoginScreen: React.FC = () => {
 
     return Object.keys(errors).length === 0;
   };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -57,22 +59,22 @@ const LoginScreen: React.FC = () => {
     if (!validateForm()) {
       return;
     }
-    await dispatch(loginUser(formData) as any)
-      .unwrap()
-      .then((data: any) => {
-        localStorage.setItem("nrv-user", JSON.stringify(data)) as any;
-        const userAccountType =
-        data?.user?.accountType || "";
+    setIsLoading(true); // Set loading state to true when starting the request
+    try {
+      const userData = await dispatch(loginUser(formData) as any).unwrap();
+      localStorage.setItem("nrv-user", JSON.stringify(userData));
+      const userAccountType = userData?.user?.accountType || "";
 
       if (userAccountType === "landlord") {
         router.push("/dashboard/landlord");
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }
-      })
-      .catch((error: any) => {
-        alert(error);
-      });
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false); // Set loading state back to false after request completes
+    }
   };
 
   return (
@@ -118,10 +120,11 @@ const LoginScreen: React.FC = () => {
               size="large"
               className="block w-full"
               variant="bluebg"
-              showIcon={false}
+              showIcon={!isLoading} // Show icon only if not loading
               onClick={handleSubmit}
+              disabled={isLoading} // Disable button while loading
             >
-              Continue
+              {isLoading ? "Loading..." : "Continue"} {/* Show loading text if loading */}
             </Button>
           </div>
           <div className="w-full justify-center flex gap-3 mt-4">

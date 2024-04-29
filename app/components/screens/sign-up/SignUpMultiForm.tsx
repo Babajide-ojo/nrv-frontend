@@ -12,6 +12,8 @@ import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface FormData {
   firstName: string;
@@ -115,8 +117,8 @@ const SignUpMultiForm: React.FC = () => {
     try {
       await dispatch(createUser(formData) as any).unwrap();
       setCurrentStep(3);
-    } catch (error) {
-      alert(error);
+    } catch (error: any) {
+      toast.error(error);
     } finally {
       setIsLoading(false); // Set loading state back to false after request completes
     }
@@ -124,6 +126,7 @@ const SignUpMultiForm: React.FC = () => {
 
   return (
     <div className="container">
+      <ToastContainer />
       {currentStep === 1 && (
         <div>
           <div className="max-w-md h-screen">

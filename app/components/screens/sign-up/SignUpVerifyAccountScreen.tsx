@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignUpVerifyAccount: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,7 +22,7 @@ const SignUpVerifyAccount: React.FC = () => {
   ]);
   const [showWarning, setShowWarning] = useState<boolean>(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
 
   useEffect(() => {
     inputRefs.current[inputNum - 1]?.focus();
@@ -34,7 +36,7 @@ const SignUpVerifyAccount: React.FC = () => {
       email: user?.data?.email,
       confirmationCode: formattedCode,
     };
-
+    setIsLoading(true);
     await dispatch(verifyAccount(payload) as any)
       .unwrap()
       .then(() => {
@@ -49,10 +51,12 @@ const SignUpVerifyAccount: React.FC = () => {
         } else if (userAccountType === "tenant") {
           router.push("/dashboard/tenant");
         }
+        setIsLoading(false); 
       })
       .catch((error: any) => {
-        alert(error);
+        toast.error(error);
       });
+      setIsLoading(false); 
   };
 
 
@@ -131,9 +135,9 @@ const SignUpVerifyAccount: React.FC = () => {
             className="block w-full"
             variant="lightGrey"
             showIcon={false}
-            disabled={!isVerifyCodeFilled || loading} 
+            disabled={!isVerifyCodeFilled || isLoading} 
           >
-            {loading ? "Loading..." : "Confirm"}
+            {isLoading ? "Loading..." : "Confirm"}
           </Button>
         </div>
       </div>

@@ -8,6 +8,8 @@ import Carousel from "./Carousel";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { FaApple } from "react-icons/fa6";
 
 interface FormData {
   email: string;
@@ -80,7 +82,7 @@ const LoginScreen: React.FC = () => {
   return (
     <div className="flex justify-center  h-screen">
       <Carousel />
-      <div className="w-full sm:w-1/2 p-16 justify-center">
+      <div className="w-full sm:w-1/2 p-8 justify-center h-screen">
         <div className="max-w-md">
           <div className="text-3xl text-nrvGreyBlack font-semibold">
             Welcome Back, Samuel 🤗,
@@ -94,7 +96,39 @@ const LoginScreen: React.FC = () => {
               sign in as tenant
             </Link>
           </div>
-          <div className="mt-6">
+          <div className="pt-4">
+            <Button
+              className="w-full block"
+              size="large"
+              variant="whitebg"
+              showIcon={false}
+            >
+              <div className="flex gap-1">
+                <FaApple color="black" size={22} /> Sign in with Apple
+              </div>
+            </Button>
+          </div>
+          <div className="pt-4">
+            <Button
+              className="w-full block"
+              size="large"
+              variant="whitebg"
+              showIcon={false}
+            >
+              {" "}
+              <div className="flex gap-1">
+                <FcGoogle size={22} /> Sign in with Google
+              </div>
+            </Button>
+          </div>
+          <div className="flex items-center w-full mt-6">
+            <div className="w-5/12 border-b border-nrvLightGrey"></div>
+            <div className="w-2/12 text-center text-nrvLightGrey text-sm">
+              OR
+            </div>
+            <div className="w-5/12 border-b border-nrvLightGrey"></div>
+          </div>
+          <div className="mt-2">
             <InputField
               label="Email Address"
               placeholder="Enter your email address"
@@ -115,7 +149,7 @@ const LoginScreen: React.FC = () => {
             />
           </div>
 
-          <div className="mt-10">
+          <div className="mt-48">
             <Button
               size="large"
               className="block w-full"

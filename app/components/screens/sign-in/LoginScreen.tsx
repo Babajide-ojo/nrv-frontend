@@ -10,6 +10,8 @@ import { loginUser } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormData {
   email: string;
@@ -72,8 +74,8 @@ const LoginScreen: React.FC = () => {
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }
-    } catch (error) {
-      alert(error);
+    } catch (error:any) {
+      toast.error(error);
     } finally {
       setIsLoading(false); // Set loading state back to false after request completes
     }
@@ -86,6 +88,7 @@ const LoginScreen: React.FC = () => {
         minHeight: "95vh",
       }}
     >
+            <ToastContainer />
       <Carousel />
       <div className="w-full sm:w-1/2 p-8 justify-center h-screen"      style={{
         minHeight: "95vh",

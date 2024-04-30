@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import Button from "@/app/components/shared/buttons/Button";
@@ -80,10 +80,19 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center  h-screen">
+    <div
+      className="flex justify-center h-screen"
+      style={{
+        minHeight: "95vh",
+      }}
+    >
       <Carousel />
-      <div className="w-full sm:w-1/2 p-8 justify-center h-screen">
-        <div className="max-w-md">
+      <div className="w-full sm:w-1/2 p-8 justify-center h-screen"      style={{
+        minHeight: "95vh",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <div className="max-w-md mx-auto w-full flex-grow">
           <div className="text-3xl text-nrvGreyBlack font-semibold">
             Welcome Back, Samuel 🤗,
           </div>
@@ -149,19 +158,21 @@ const LoginScreen: React.FC = () => {
             />
           </div>
 
-          <div className="mt-48">
+   
+        </div>
+     <div>
+     <div className="max-w-md w-full flex-grow mx-auto">
             <Button
               size="large"
               className="block w-full"
               variant="bluebg"
-              showIcon={false} // Show icon only if not loading
+              showIcon={false}
               onClick={handleSubmit}
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Continue"} {/* Show loading text if loading */}
+              {isLoading ? "Loading..." : "Continue"}
             </Button>
-          </div>
-          <div className="w-full justify-center flex gap-3 mt-4">
+            <div className="justify-center flex gap-3 mt-4">
             <div className="text-sm text-nrvLightGrey">
               Do not have an account?
             </div>
@@ -172,7 +183,9 @@ const LoginScreen: React.FC = () => {
               Sign Up
             </Link>
           </div>
-        </div>
+          </div>
+     
+     </div>
       </div>
     </div>
   );

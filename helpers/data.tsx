@@ -48,4 +48,42 @@ export const carouselData = [
       text: "Organise and showcase your properties with essential details for potential tenants.",
     },
     // Add more items as needed
-  ];
+];
+
+export const onboardingOptions = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Marketing",
+    description:
+      "Effortlessly advertise your rental on multiple platforms, reaching potential tenants without any cost.",
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Application",
+    description:
+      "Access the information you need to make informed decisions about potential tenants.",
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Screening",
+    description:
+      "Request a detailed report covering credit, criminal history, and eviction records.",
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/gefw7v9qiee9so9usnza.png",
+    title: "Rent Collection",
+    description:
+      "Make rent collection effortless and convenient for all parties involved, ensuring a smooth process.",
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/k5gcjotzj3fu1yjxjgp3.png",
+    title: "Lease Agreement",
+    description:
+      "Access a customizable lease agreement tailored to your state's specific requirements.",
+  },
+];

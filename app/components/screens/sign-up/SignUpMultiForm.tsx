@@ -12,8 +12,8 @@ import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormData {
   firstName: string;
@@ -42,10 +42,10 @@ const SignUpMultiForm: React.FC = () => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
-
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
-
+  
     if (!formData.firstName.trim()) {
       errors.firstName = "First Name is required";
     }
@@ -62,6 +62,11 @@ const SignUpMultiForm: React.FC = () => {
     }
     if (!formData.password.trim()) {
       errors.password = "Password is required";
+    } else {
+      const passwordErrors = passwordValidation(formData.password);
+      if (passwordErrors.length > 0) {
+        errors.password = "Ensure your password choice meets all conditions"
+      }
     }
     if (!formData.phoneNumber.trim()) {
       errors.phoneNumber = "Phone Number is required";
@@ -72,11 +77,34 @@ const SignUpMultiForm: React.FC = () => {
     if (!formData.accountType.trim()) {
       errors.accountType = "Account Type is required";
     }
-
+  
     setErrors(errors);
-
+  
     return Object.keys(errors).length === 0;
   };
+  
+  const passwordValidation = (password: string): string[] => {
+    const errors: string[] = [];
+  
+    if (password.length < 8) {
+      errors.push("Password must have at least 8 characters");
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push("Password must contain at least one uppercase letter");
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push("Password must contain at least one lowercase letter");
+    }
+    if (!/[^a-zA-Z0-9]/.test(password)) {
+      errors.push("Password must contain at least one special character");
+    }
+    if (!/\d/.test(password)) {
+      errors.push("Password must contain at least one number");
+    }
+  
+    return errors;
+  };
+  
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -128,8 +156,14 @@ const SignUpMultiForm: React.FC = () => {
     <div className="container">
       <ToastContainer />
       {currentStep === 1 && (
-        <div>
-          <div className="max-w-md h-screen">
+        <div
+          style={{
+            minHeight: "90vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
             <div className="text-3xl text-nrvGreyBlack font-semibold">
               Welcome user 🚀,
             </div>
@@ -137,7 +171,7 @@ const SignUpMultiForm: React.FC = () => {
               What will you be joining naijarentverify as?
             </div>
             <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
+              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ${
                 activeIndex === 0 ? "bg-gray-100" : ""
               }`}
               onClick={() => {
@@ -165,7 +199,7 @@ const SignUpMultiForm: React.FC = () => {
               )}
             </div>
             <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
+              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ${
                 activeIndex === 1 ? "bg-gray-100" : ""
               }`}
               onClick={() => {
@@ -201,192 +235,206 @@ const SignUpMultiForm: React.FC = () => {
                 Log in
               </Link>
             </div>
-            <div className="mt-80">
-              <Button
-                size="large"
-                className="block w-full"
-                variant="bluebg"
-                showIcon={false}
-                onClick={handleNext}
-              >
-                Next
-              </Button>
-            </div>
+          </div>
+          <div className="flex justify-center max-w-lg mx-auto w-full">
+            <Button
+              size="large"
+              className="block w-full"
+              variant="bluebg"
+              showIcon={false}
+              onClick={handleNext}
+            >
+              Next
+            </Button>
           </div>
         </div>
       )}
       {currentStep === 2 && (
-        <div className="max-w-md">
-          <div className="text-2xl text-nrvGreyBlack font-semibold flex gap-2">
-            <span>
-              {" "}
-              <IoIosArrowBack
-              className="mt-1 hover:cursor-pointer"
-                onClick={() => {
-                  router.push("/");
-                }}
-              />{" "}
-            </span>{" "}
-            Sign up as a landlord 🚀,
-          </div>
-          <div className="pt-2 text-nrvLightGrey text-md">
-            Kindly fill the provided form.
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              <div className="flex gap-1">
-                <FaApple color="black" size={22} /> Sign in with Apple
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
+            <div className="text-2xl text-nrvGreyBlack font-semibold flex gap-2">
+              <span>
+                {" "}
+                <IoIosArrowBack
+                  className="mt-1 hover:cursor-pointer"
+                  onClick={() => {
+                    router.push("/");
+                  }}
+                />{" "}
+              </span>{" "}
+              Sign up as a landlord 🚀,
+            </div>
+            <div className="pt-2 text-nrvLightGrey text-md">
+              Kindly fill the provided form.
+            </div>
+            <div className="pt-4">
+              <Button
+                className="w-full block"
+                size="large"
+                variant="whitebg"
+                showIcon={false}
+              >
+                <div className="flex gap-1">
+                  <FaApple color="black" size={22} /> Sign in with Apple
+                </div>
+              </Button>
+            </div>
+            <div className="pt-4">
+              <Button
+                className="w-full block"
+                size="large"
+                variant="whitebg"
+                showIcon={false}
+              >
+                {" "}
+                <div className="flex gap-1">
+                  <FcGoogle size={22} /> Sign in with Google
+                </div>
+              </Button>
+            </div>
+            <div className="flex items-center w-full mt-6">
+              <div className="w-5/12 border-b border-nrvLightGrey"></div>
+              <div className="w-2/12 text-center text-nrvLightGrey text-sm">
+                OR
               </div>
-            </Button>
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              {" "}
-              <div className="flex gap-1">
-                <FcGoogle size={22} /> Sign in with Google
+              <div className="w-5/12 border-b border-nrvLightGrey"></div>
+            </div>
+            <div className="w-full  mt-6 flex gap-3">
+              <div className="w-1/2">
+                <InputField
+                  label="First Name"
+                  placeholder="Enter First Name"
+                  inputType="text"
+                  name="firstName"
+                  onChange={handleInputChange}
+                  error={errors.firstName}
+                />
               </div>
-            </Button>
-          </div>
-          <div className="flex items-center w-full mt-6">
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            <div className="w-2/12 text-center text-nrvLightGrey text-sm">
-              OR
+              <div className="w-1/2">
+                <InputField
+                  label="Last Name"
+                  placeholder="Enter Last Name"
+                  inputType="text"
+                  name="lastName"
+                  onChange={handleInputChange}
+                  error={errors.lastName}
+                />
+              </div>
             </div>
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-          </div>
-          <div className="w-full  mt-6 flex gap-3">
-            <div className="w-1/2">
+            <div className="w-full mt-4 flex gap-3">
+              <div className="w-1/2">
+                <InputField
+                  label="Email Address"
+                  placeholder="Enter Email Address"
+                  inputType="text"
+                  name="email"
+                  onChange={handleInputChange}
+                  error={errors.email}
+                />
+              </div>
+              <div className="w-1/2">
+                <InputField
+                  label="NIN"
+                  placeholder="Enter NIN"
+                  inputType="text"
+                  name="nin"
+                  onChange={handleInputChange}
+                  error={errors.nin}
+                />
+              </div>
+            </div>
+            <div className="w-full mt-4">
               <InputField
-                label="First Name"
-                placeholder="Enter First Name"
+                label="Home Address"
+                placeholder="Enter Home Address"
                 inputType="text"
-                name="firstName"
+                name="homeAddress"
                 onChange={handleInputChange}
-                error={errors.firstName}
+                error={errors.homeAddress}
               />
             </div>
-            <div className="w-1/2">
-              <InputField
-                label="Last Name"
-                placeholder="Enter Last Name"
-                inputType="text"
-                name="lastName"
-                onChange={handleInputChange}
-                error={errors.lastName}
-              />
+            <div className="w-full mt-4 flex gap-3">
+              <div className="w-1/2">
+                <InputField
+                  label="Phone Number"
+                  placeholder="Enter Phone Number"
+                  inputType="text"
+                  name="phoneNumber"
+                  onChange={handleInputChange}
+                  error={errors.phoneNumber}
+                />
+              </div>
+              <div className="w-1/2">
+                <InputField
+                  label="Password"
+                  placeholder="Enter Password"
+                  inputType={showPassword ? "text" : "password"}
+                  name="password"
+                  onChange={handleInputChange}
+                  error={errors.password}
+                />
+              </div>
+          
+            </div>
+            <div className="w-full mt-8" onClick={() => {
+              setShowPassword(!showPassword);
+            }}>
+              <CheckBox label="Show Password" />
+            </div>
+            <div className="text-xs text-nrvGreyBlack mt-3">AT LEAST : </div>
+            <div className="grid:col-3 gap-2 mt-1">
+              <Button
+                size="small"
+                className="rounded-3xl mt-2 mr-2"
+                variant="whitebg"
+                showIcon={false}
+              >
+                8 characters
+              </Button>
+              <Button
+                size="small"
+                className="rounded-3xl mt-2 mr-2"
+                variant="whitebg"
+                showIcon={false}
+              >
+                An uppercase letter
+              </Button>
+              <Button
+                size="small"
+                className="rounded-3xl mt-2 mr-2"
+                variant="whitebg"
+                showIcon={false}
+              >
+                A lowercase letter
+              </Button>
+              <Button
+                size="small"
+                className="rounded-3xl mt-2 mr-2"
+                variant="whitebg"
+                showIcon={false}
+              >
+                A special character
+              </Button>
+              <Button
+                size="small"
+                className="rounded-3xl mt-2 mr-2"
+                variant="whitebg"
+                showIcon={false}
+              >
+                A number
+              </Button>
+            </div>
+            <div className="w-full mt-8">
+              <CheckBox label="I agree to the terms of use and privacy policy" />
             </div>
           </div>
-          <div className="w-full mt-4 flex gap-3">
-            <div className="w-1/2">
-              <InputField
-                label="Email Address"
-                placeholder="Enter Email Address"
-                inputType="text"
-                name="email"
-                onChange={handleInputChange}
-                error={errors.email}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputField
-                label="NIN"
-                placeholder="Enter NIN"
-                inputType="text"
-                name="nin"
-                onChange={handleInputChange}
-                error={errors.nin}
-              />
-            </div>
-          </div>
-          <div className="w-full mt-4">
-            <InputField
-              label="Home Address"
-              placeholder="Enter Home Address"
-              inputType="text"
-              name="homeAddress"
-              onChange={handleInputChange}
-              error={errors.homeAddress}
-            />
-          </div>
-          <div className="w-full mt-4 flex gap-3">
-            <div className="w-1/2">
-              <InputField
-                label="Phone Number"
-                placeholder="Enter Phone Number"
-                inputType="text"
-                name="phoneNumber"
-                onChange={handleInputChange}
-                error={errors.phoneNumber}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputField
-                label="Password"
-                placeholder="Enter Password"
-                inputType="password"
-                name="password"
-                onChange={handleInputChange}
-                error={errors.password}
-              />
-            </div>
-          </div>
-          <div className="text-xs text-nrvGreyBlack mt-3">AT LEAST : </div>
-          <div className="grid:col-3 gap-2 mt-1">
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              8 characters
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              An uppercase letter
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A lowercase letter
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A special character
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A number
-            </Button>
-          </div>
-          <div className="w-full mt-8">
-            <CheckBox label="I agree to the terms of use and privacy policy" />
-          </div>
-          <div className="mt-4">
+          <div className="mt-4 max-w-lg mx-auto w-full flex justify-center">
             <Button
               onClick={handleSubmit}
               size="large"

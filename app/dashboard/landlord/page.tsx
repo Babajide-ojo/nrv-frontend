@@ -1,11 +1,11 @@
-import LandLordDashboardScreen from "../../components/dashboard/landlord/LandLordDashboardScreen";
+import OnboardingScreen from "../../components/screens/onboarding/OnboardingScreen";
 
 const Page = () => {
-return (
+  return (
     <div>
-        <LandLordDashboardScreen />
+      <OnboardingScreen />
     </div>
-)
-}
+  );
+};
 
 export default Page;

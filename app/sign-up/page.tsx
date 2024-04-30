@@ -14,7 +14,7 @@ const SignIn = () => {
     }, 2000); 
 
     return () => clearTimeout(timer); 
-  }, []);
+  }, [null]);
 
   return (
     <div>

@@ -154,7 +154,7 @@ const LoginScreen: React.FC = () => {
               size="large"
               className="block w-full"
               variant="bluebg"
-              showIcon={!isLoading} // Show icon only if not loading
+              showIcon={false} // Show icon only if not loading
               onClick={handleSubmit}
               disabled={isLoading} // Disable button while loading
             >

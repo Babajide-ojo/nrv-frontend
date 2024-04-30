@@ -32,7 +32,7 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
       )}
       <div
-        className={`${css} border border-nrvLightGrey  mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
+        className={`${css}relative border border-nrvLightGrey  mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
       >
 
         <input

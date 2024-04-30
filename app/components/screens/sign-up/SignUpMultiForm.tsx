@@ -165,7 +165,7 @@ const SignUpMultiForm: React.FC = () => {
         >
           <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
             <div className="text-3xl text-nrvGreyBlack font-semibold">
-              Welcome user 🚀,
+              Welcome user 🚀
             </div>
             <div className="pt-2 text-nrvLightGrey text-md">
               What will you be joining naijarentverify as?
@@ -238,6 +238,7 @@ const SignUpMultiForm: React.FC = () => {
           </div>
           <div className="flex justify-center max-w-lg mx-auto w-full">
             <Button
+              disabled={formData.accountType  === "" ? true : false}
               size="large"
               className="block w-full"
               variant="bluebg"

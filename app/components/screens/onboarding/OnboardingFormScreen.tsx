@@ -194,7 +194,7 @@ const OnboardingFormScreen: React.FC = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <div className="max-w-lg w-4/5 mx-auto pt-8 flex-grow">
+                  <div className="max-w-lg mx-auto pt-8 flex-grow">
                     <p className="text-2xl font-semibold text-swGray800 flex gap-2">
                       <span>
                         {" "}
@@ -326,7 +326,7 @@ const OnboardingFormScreen: React.FC = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <div className="max-w-lg w-4/5 mx-auto pt-8 flex-grow">
+                  <div className="max-w-lg  mx-auto pt-8 flex-grow">
                     <p className="text-2xl font-semibold text-swGray800 flex gap-2">
                       <span>
                         {" "}

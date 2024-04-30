@@ -12,6 +12,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CheckBox from "../../shared/input-fields/CheckBox";
 
 interface FormData {
   email: string;
@@ -27,7 +28,8 @@ const LoginScreen: React.FC = () => {
     password: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [showPassword, setShowPassword] = useState<boolean>(false); 
 
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
@@ -97,7 +99,7 @@ const LoginScreen: React.FC = () => {
       }}>
         <div className="max-w-md mx-auto w-full flex-grow">
           <div className="text-3xl text-nrvGreyBlack font-semibold">
-            Welcome Back, Samuel 🤗,
+            Welcome back 🤗
           </div>
           <div className="pt-2 text-nrvLightGrey text-md">
             Please enter your login to access your account.
@@ -154,13 +156,17 @@ const LoginScreen: React.FC = () => {
             <InputField
               label="Password"
               placeholder="Enter your password"
-              inputType="password"
+              inputType={showPassword ? "text" : "password"}
               name="password"
               onChange={handleInputChange}
               error={errors.password}
             />
           </div>
-
+          <div className="w-full mt-8" onClick={() => {
+              setShowPassword(!showPassword);
+            }}>
+              <CheckBox label="Show Password" />
+            </div>
    
         </div>
      <div>

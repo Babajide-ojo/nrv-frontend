@@ -350,7 +350,7 @@ const OnboardingFormScreen: React.FC = () => {
                       return (
                         <div
                           key={index}
-                          className={`h-24 mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ? "bg-gray-100" : ""
+                          className={`h-30 mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ? "bg-gray-100" : ""
                   }`}
                           onClick={() => {}}
                         >

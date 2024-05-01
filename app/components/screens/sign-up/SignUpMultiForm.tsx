@@ -41,8 +41,10 @@ const SignUpMultiForm: React.FC = () => {
     accountType: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
   
@@ -106,49 +108,28 @@ const SignUpMultiForm: React.FC = () => {
   };
   
 
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [currentStep, setCurrentStep] = useState(1);
 
-  const handleNext = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
-  };
 
-  const handleItemClick = (index: number) => {
-    setActiveIndex(index === activeIndex ? null : index);
-  };
-
-  const handleAccountType = (text: string) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      accountType: text,
-    }));
-  };
+  const handleNext = () => setCurrentStep((prevStep) => prevStep + 1);
+  const handleItemClick = (index: number) => setActiveIndex(index === activeIndex ? null : index);
+  const handleAccountType = (text: string) => setFormData((prevData) => ({ ...prevData, accountType: text }));
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-    setIsLoading(true); // Set loading state to true when starting the request
+    if (!validateForm()) return;
+    setIsLoading(true);
     try {
       await dispatch(createUser(formData) as any).unwrap();
       setCurrentStep(3);
     } catch (error: any) {
       toast.error(error);
     } finally {
-      setIsLoading(false); // Set loading state back to false after request completes
+      setIsLoading(false);
     }
   };
 

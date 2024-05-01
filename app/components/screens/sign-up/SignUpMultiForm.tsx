@@ -44,7 +44,7 @@ const SignUpMultiForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(1);
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
   

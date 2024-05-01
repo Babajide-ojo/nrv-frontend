@@ -23,7 +23,7 @@ const CardsList = () => {
 const HeroSection = () => {
   return (
     <div className="flex flex-col items-center justify-center my-8 px-4">
-      <div className="text-center">
+      <div className="text-center md:pt-4 pt-16">
         <div className="text-2xl sm:text-4xl text-nrvDarkBlue font-semibold">
           Streamline Your Rentals <br />
           with NaijaRentVerify: Secure, Simple, Smart.

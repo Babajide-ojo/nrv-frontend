@@ -10,8 +10,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OnboardingCard from "../../shared/cards/OnboardingCard";
 import Carousel from "./Carousel";
-import { onboardingOptions } from '../../../../helpers/data';
-
+import {
+  enquiryData,
+  onboardingOptions,
+  processData,
+} from "../../../../helpers/data";
+import MarketingDetailsScreen from "./MarketingDetailsScreen";
+import { IoPersonCircleSharp } from "react-icons/io5";
 
 interface FormData {
   streetAddress: string;
@@ -23,7 +28,6 @@ interface FormData {
   rentAmount: string;
   securityDeposit: string;
 }
-
 
 const OnboardingFormScreen: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,7 +48,7 @@ const OnboardingFormScreen: React.FC = () => {
     zipCode: "",
     familyType: "",
     securityDeposit: "",
-    rentAmount: ""
+    rentAmount: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
@@ -61,7 +65,7 @@ const OnboardingFormScreen: React.FC = () => {
     }
     if (!formData.state.trim()) {
       errors.state = "State is required";
-    } 
+    }
     if (!formData.zipCode.trim()) {
       errors.zipCode = "Zip code is required";
     }
@@ -78,8 +82,6 @@ const OnboardingFormScreen: React.FC = () => {
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
-
 
   const handleNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -102,14 +104,13 @@ const OnboardingFormScreen: React.FC = () => {
     if (!validateForm()) {
       return;
     }
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
-     console.log({formData});
-     
+      console.log({ formData });
     } catch (error: any) {
       toast.error(error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -185,7 +186,7 @@ const OnboardingFormScreen: React.FC = () => {
           )}
           {currentStep === 2 && (
             <div className="flex justify-center h-screen">
-              <Carousel currentItem={receivedData} />
+              <MarketingDetailsScreen />
               <div className="w-full sm:w-1/2 p-8 justify-center">
                 <div
                   style={{
@@ -201,7 +202,7 @@ const OnboardingFormScreen: React.FC = () => {
                         <IoIosArrowBack
                           className="mt-1 hover:cursor-pointer"
                           onClick={() => {
-                            router.push("/");
+                            setCurrentStep(1);
                           }}
                         />{" "}
                       </span>{" "}
@@ -315,11 +316,141 @@ const OnboardingFormScreen: React.FC = () => {
               </div>
             </div>
           )}
-            {currentStep === 3 && (
+          {currentStep === 3 && (
             <div className="flex justify-center h-screen">
-              <Carousel currentItem={receivedData} />
+              <MarketingDetailsScreen />
               <div className="w-full sm:w-1/2 p-8 justify-center">
-               Step 3
+                <div
+                  style={{
+                    minHeight: "95vh",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div className="max-w-lg mx-auto pt-8 flex-grow">
+                    <p className="text-2xl font-semibold text-swGray800 flex gap-2">
+                      <span>
+                        {" "}
+                        <IoIosArrowBack
+                          className="mt-1 hover:cursor-pointer"
+                          onClick={() => {
+                            setCurrentStep(2);
+                          }}
+                        />{" "}
+                      </span>{" "}
+                      Enquiry 🏘️
+                    </p>
+                    <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
+                      <span className="">
+                        What part of the rental process are you in{" "}
+                        {formData.streetAddress}
+                      </span>
+                    </p>
+                    {enquiryData.map(({ title, description }, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className={`h-24 mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ? "bg-gray-100" : ""
+                  }`}
+                          onClick={() => {}}
+                        >
+                          <div className="w-1/5 mx-auto flex items-center justify-center mt-2">
+                            <IoPersonCircleSharp color="#153969" size={40} />
+                          </div>
+
+                          <div className="w-4/5 p-1">
+                            <div className="text-nrvGreyBlack text-md font-semibold">
+                              {title}
+                            </div>
+                            <div className="text-nrvLightGrey text-sm pt-2">
+                              {description}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex justify-center">
+                    <Button
+                      size="large"
+                      className="w-96 mb-8"
+                      variant="bluebg"
+                      showIcon={false}
+                      onClick={handleNext}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {currentStep === 4 && (
+            <div className="flex justify-center h-screen">
+              <MarketingDetailsScreen />
+              <div className="w-full sm:w-1/2 p-8 justify-center">
+                <div
+                  style={{
+                    minHeight: "95vh",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div className="max-w-lg mx-auto pt-8 flex-grow">
+                    <p className="text-2xl font-semibold text-swGray800 flex gap-2">
+                      <span>
+                        {" "}
+                        <IoIosArrowBack
+                          className="mt-1 hover:cursor-pointer"
+                          onClick={() => {
+                            setCurrentStep(3);
+                          }}
+                        />{" "}
+                      </span>{" "}
+                      Here’s the process 🏘️
+                    </p>
+                    <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
+                      <span className="">
+                        This is just a few steps on finding the perfect tenant.
+                      </span>
+                    </p>
+                    {processData.map(({ title, description }, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="h-24 mt-4 text-sm flex bg-white p-3 bg-gray-100"
+                          onClick={() => {}}
+                        >
+                          <div className="w-1/10">
+                            <IoPersonCircleSharp color="#153969" size={40} />
+                          </div>
+
+                          <div className="w-9/10 p-1 ml-2">
+                            <div className="text-nrvDarkBlue text-md font-semibold">
+                              {title}
+                            </div>
+                            <div className="text-nrvLightGrey text-sm pt-2">
+                              {description}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex justify-center">
+                    <Button
+                      size="large"
+                      className="w-96 mb-8"
+                      variant="bluebg"
+                      showIcon={false}
+                      onClick={handleNext}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

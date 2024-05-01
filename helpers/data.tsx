@@ -32,22 +32,22 @@ export const CardData = [
 ];
 
 export const carouselData = [
-    {
-      image:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713868624/man-showing-house-icon-couch_1_uy6gsr.png",
-      text: "Effortlessly verify your tenant’s background and ensure a secure rental process.",
-    },
-    {
-      image:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713882551/african-american-man-having-video-call-holding-book_1_1_gxajjr.png",
-      text: "Streamline your tenant selection process with our comprehensive screening tools.",
-    },
-    {
-      image:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713882609/Frame_x5lzjr.png",
-      text: "Organise and showcase your properties with essential details for potential tenants.",
-    },
-    // Add more items as needed
+  {
+    image:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713868624/man-showing-house-icon-couch_1_uy6gsr.png",
+    text: "Effortlessly verify your tenant’s background and ensure a secure rental process.",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713882551/african-american-man-having-video-call-holding-book_1_1_gxajjr.png",
+    text: "Streamline your tenant selection process with our comprehensive screening tools.",
+  },
+  {
+    image:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1713882609/Frame_x5lzjr.png",
+    text: "Organise and showcase your properties with essential details for potential tenants.",
+  },
+  // Add more items as needed
 ];
 
 export const onboardingOptions = [
@@ -85,5 +85,43 @@ export const onboardingOptions = [
     title: "Lease Agreement",
     description:
       "Access a customizable lease agreement tailored to your state's specific requirements.",
+  },
+];
+
+export const enquiryData = [
+  {
+    title: "Looking for the perfect tenants to move in",
+    description:
+      "Advertise your rental and screen potential tenants all for free.",
+  },
+  {
+    title: "Have existing or upcoming tenants to set",
+    description:
+      "Get started with lease details, collecting rents, maintenance, and more.",
+  },
+  {
+    title: "Just want to explore NaijaRentVerify",
+    description: "Get a quick overview before exploring on your own.",
+  },
+];
+
+export const processData = [
+  {
+    title: "1. Build your own lease agreement or add current one.",
+    description:
+      "Watch the lease agreement video to see how customising your own lease works.",
+  },
+  {
+    title: "2. Add your tenants",
+    description:
+      "Invite them to the tenant portal to view & sign docs, pay rent, request maintenance, send you message, and more.",
+  },
+  {
+    title: "3. Set up rent payments.",
+    description: "Receipts, reminders, & more - learn about the professional ways to collect rent.",
+  },
+  {
+    title: "4. Efficiently manage the entire rental process",
+    description: "From tracking renters insurance to amending your lease agreements, systematically manage your tenants.",
   },
 ];

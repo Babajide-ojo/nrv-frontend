@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUpVerifyAccount: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,54 +37,47 @@ const SignUpVerifyAccount: React.FC = () => {
       confirmationCode: formattedCode,
     };
     setIsLoading(true);
-    await dispatch(verifyAccount(payload) as any)
-      .unwrap()
-      .then(() => {
-        const _formattedUser = JSON.parse(
-          localStorage.getItem("nrv-user") || "{}"
-        );
-        const userAccountType =
-          _formattedUser?.user?.data?.user?.accountType || "";
+    try {
+      await dispatch(verifyAccount(payload) as any).unwrap();
+      const _formattedUser = JSON.parse(
+        localStorage.getItem("nrv-user") || "{}"
+      );
+      const userAccountType =
+        _formattedUser?.user?.data?.user?.accountType || "";
 
-        if (userAccountType === "landlord") {
-          router.push("/dashboard/landlord");
-        } else if (userAccountType === "tenant") {
-          router.push("/dashboard/tenant");
-        }
-        setIsLoading(false); 
-      })
-      .catch((error: any) => {
-        toast.error(error);
-      });
-      setIsLoading(false); 
+      if (userAccountType === "landlord") {
+        router.push("/dashboard/landlord");
+      } else if (userAccountType === "tenant") {
+        router.push("/dashboard/tenant");
+      }
+    } catch (error: any) {
+      toast.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-
-  // Check if all inputs are filled
   const isVerifyCodeFilled = verifyCode.every((num) => num !== null);
 
   return (
     <main className="flex justify-center items-center bg-swSecondary50 mx-auto h-screen">
       <div className="w-full sm:w-3/5 p-2">
         <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        <span>
-              {" "}
-              <IoIosArrowBack
+          <span>
+            {" "}
+            <IoIosArrowBack
               className="mt-1 hover:cursor-pointer"
-                onClick={() => {
-                  router.push("/");
-                }}
-              />{" "}
-            </span>{" "}
+              onClick={() => {
+                router.push("/");
+              }}
+            />{" "}
+          </span>{" "}
           Check your mail!
         </p>
         <p className="text-center mt-2 mb-8 text-[0.86rem] flex items-center justify-center font-light mx-auto">
-          <span className="">
-            We just sent your a mail (samsunday@gmail.com). Enter the 6-digit
-            code to verify your account.
-          </span>
+          We just sent you an email (samsunday@gmail.com). Enter the 6-digit
+          code to verify your account.
         </p>
-
         <p className="text-center text-nrvLightBlue mt-5 mb-8 text-[0.86rem] flex items-center justify-center font-light nrvLightBlue">
           Open an email app <br></br>
           Change email or Resend code in 00:59
@@ -103,20 +96,25 @@ const SignUpVerifyAccount: React.FC = () => {
                 ref={(ref) => {
                   inputRefs.current[index] = ref;
                 }}
+                // Inside the onChange event handler of the input fields
                 onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  if (!isNaN(value)) {
+                  const value = e.target.value;
+                  if (value === "") {
+                    // Handle backspace or delete key press
                     const newVerifyCode = [...verifyCode];
-                    newVerifyCode[index] = value;
+                    newVerifyCode[index] = null;
                     setVerifyCode(newVerifyCode);
-                    setInputNum(index === 5 ? 6 : index + 2);
-                  } else {
-                    setVerifyCode((prevArray) =>
-                      prevArray.map((item, i) => (i === index ? 0 : item))
-                    );
                     setInputNum(index);
                     const prevInputRef = inputRefs.current[index - 1];
                     prevInputRef?.focus();
+                  } else {
+                    const num = parseInt(value);
+                    if (!isNaN(num)) {
+                      const newVerifyCode = [...verifyCode];
+                      newVerifyCode[index] = num;
+                      setVerifyCode(newVerifyCode);
+                      setInputNum(index === 5 ? 6 : index + 2);
+                    }
                   }
                 }}
               />
@@ -135,7 +133,7 @@ const SignUpVerifyAccount: React.FC = () => {
             className="block w-full"
             variant="lightGrey"
             showIcon={false}
-            disabled={!isVerifyCodeFilled || isLoading} 
+            disabled={!isVerifyCodeFilled || isLoading}
           >
             {isLoading ? "Loading..." : "Confirm"}
           </Button>

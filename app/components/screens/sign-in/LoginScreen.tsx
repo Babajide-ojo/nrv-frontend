@@ -28,8 +28,8 @@ const LoginScreen: React.FC = () => {
     password: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); 
-  const [showPassword, setShowPassword] = useState<boolean>(false); 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
@@ -76,10 +76,10 @@ const LoginScreen: React.FC = () => {
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error);
     } finally {
-      setIsLoading(false); // Set loading state back to false after request completes
+      setIsLoading(false);
     }
   };
 
@@ -87,16 +87,19 @@ const LoginScreen: React.FC = () => {
     <div
       className="flex justify-center h-screen"
       style={{
-        minHeight: "95vh",
+        minHeight: "85vh",
       }}
     >
-            <ToastContainer />
+      <ToastContainer />
       <Carousel />
-      <div className="w-full sm:w-1/2 p-8 justify-center h-screen"      style={{
-        minHeight: "95vh",
-        display: "flex",
-        flexDirection: "column",
-      }}>
+      <div
+        className="w-full sm:w-1/2 p-8 justify-center h-screen"
+        style={{
+          minHeight: "85vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <div className="max-w-md mx-auto w-full flex-grow">
           <div className="text-3xl text-nrvGreyBlack font-semibold">
             Welcome back 🤗
@@ -162,15 +165,17 @@ const LoginScreen: React.FC = () => {
               error={errors.password}
             />
           </div>
-          <div className="w-full mt-8" onClick={() => {
+          <div
+            className="w-full mt-8"
+            onClick={() => {
               setShowPassword(!showPassword);
-            }}>
-              <CheckBox label="Show Password" />
-            </div>
-   
+            }}
+          >
+            <CheckBox label="Show Password" />
+          </div>
         </div>
-     <div>
-     <div className="max-w-md w-full flex-grow mx-auto">
+        <div>
+          <div className="max-w-md w-full flex-grow mx-auto">
             <Button
               size="large"
               className="block w-full"
@@ -182,19 +187,18 @@ const LoginScreen: React.FC = () => {
               {isLoading ? "Loading..." : "Continue"}
             </Button>
             <div className="justify-center flex gap-3 mt-4">
-            <div className="text-sm text-nrvLightGrey">
-              Do not have an account?
+              <div className="text-sm text-nrvLightGrey">
+                Do not have an account?
+              </div>
+              <Link
+                href="/sign-up"
+                className="text-sm underline font-light text-[#153969]"
+              >
+                Sign Up
+              </Link>
             </div>
-            <Link
-              href="/sign-up"
-              className="text-sm underline font-light text-[#153969]"
-            >
-              Sign Up
-            </Link>
           </div>
-          </div>
-     
-     </div>
+        </div>
       </div>
     </div>
   );

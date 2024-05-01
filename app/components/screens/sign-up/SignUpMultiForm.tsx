@@ -44,7 +44,7 @@ const SignUpMultiForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(3);
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
   
@@ -107,8 +107,6 @@ const SignUpMultiForm: React.FC = () => {
     return errors;
   };
   
-
-
 
   const handleNext = () => setCurrentStep((prevStep) => prevStep + 1);
   const handleItemClick = (index: number) => setActiveIndex(index === activeIndex ? null : index);

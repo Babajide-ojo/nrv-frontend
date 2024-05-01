@@ -1,12 +1,14 @@
+import TenantProtectedRoute from "../../components/guard/TenantProtectedRoute";
 import TenantDashboardScreen from "../../components/dashboard/tenant/TenantDashboardScreen";
 
-
 const Page = () => {
-return (
+  return (
     <div>
-      <TenantDashboardScreen />
+      <TenantProtectedRoute>
+        <TenantDashboardScreen />
+      </TenantProtectedRoute>
     </div>
-)
-}
+  );
+};
 
 export default Page;

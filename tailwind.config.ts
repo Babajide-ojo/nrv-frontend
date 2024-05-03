@@ -19,6 +19,7 @@ const config: Config = {
         nrvDarkBlue: "#153969",
         nrvGold: "#FFB94E",
         nrvGreyBlack: "#333333",
+        nrvGrayText:'#6B6C6C',
         nrvLightGrey: "#999999",
         nrvLightGreyBg:"#EEF0F2", 
         nrvLightBlue: "#153969"

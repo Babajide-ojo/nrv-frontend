@@ -62,6 +62,29 @@ export const createUser = createAsyncThunk<UserData, FormData, {}>(
     }
 );
 
+export const updateUser = createAsyncThunk<UserData, FormData, {}>(
+    "user/update",
+    async (formData: any, { rejectWithValue }) => {
+        const { id, payload } = formData;
+        console.log({payload});
+        
+        try {
+            const response: any = await axios.put(`${API_URL}/users/${id}`, payload, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 // Async thunk to verify user
 export const verifyAccount = createAsyncThunk<UserData, verifyData, {}>(
     "user/verify",
@@ -156,6 +179,18 @@ const userSlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(loginUser.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(updateUser.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(updateUser.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             });

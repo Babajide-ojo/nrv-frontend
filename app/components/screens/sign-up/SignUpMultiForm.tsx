@@ -286,8 +286,8 @@ const SignUpMultiForm: React.FC = () => {
               </div>
               <div className="w-5/12 border-b border-nrvLightGrey"></div>
             </div>
-            <div className="w-full  mt-6 flex gap-3">
-              <div className="w-1/2">
+            <div className="w-full  mt-6 md:flex flex-row gap-3">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="First Name"
                   placeholder="Enter First Name"
@@ -297,7 +297,7 @@ const SignUpMultiForm: React.FC = () => {
                   error={errors.firstName}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="Last Name"
                   placeholder="Enter Last Name"
@@ -308,8 +308,8 @@ const SignUpMultiForm: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="w-full mt-4 flex gap-3">
-              <div className="w-1/2">
+            <div className="w-full  mt-6 md:flex flex-row gap-3">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="Email Address"
                   placeholder="Enter Email Address"
@@ -319,7 +319,7 @@ const SignUpMultiForm: React.FC = () => {
                   error={errors.email}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="NIN"
                   placeholder="Enter NIN"
@@ -340,8 +340,8 @@ const SignUpMultiForm: React.FC = () => {
                 error={errors.homeAddress}
               />
             </div>
-            <div className="w-full mt-4 flex gap-3">
-              <div className="w-1/2">
+            <div className="w-full  mt-6 md:flex flex-row gap-3">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="Phone Number"
                   placeholder="Enter Phone Number"
@@ -351,7 +351,7 @@ const SignUpMultiForm: React.FC = () => {
                   error={errors.phoneNumber}
                 />
               </div>
-              <div className="w-1/2">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0">
                 <InputField
                   label="Password"
                   placeholder="Enter Password"

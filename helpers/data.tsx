@@ -118,10 +118,84 @@ export const processData = [
   },
   {
     title: "3. Set up rent payments.",
-    description: "Receipts, reminders, & more - learn about the professional ways to collect rent.",
+    description:
+      "Receipts, reminders, & more - learn about the professional ways to collect rent.",
   },
   {
     title: "4. Efficiently manage the entire rental process",
-    description: "From tracking renters insurance to amending your lease agreements, systematically manage your tenants.",
+    description:
+      "From tracking renters insurance to amending your lease agreements, systematically manage your tenants.",
   },
+];
+
+export const dashboardMetrics = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Marketing",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Leads",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Applicants",
+    number: 0,
+  },
+];
+
+export const dashboardNavLinks = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Marketing",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Leads",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Applicants",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Marketing",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Leads",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Applicants",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Marketing",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Leads",
+    number: 0,
+  }
 ];

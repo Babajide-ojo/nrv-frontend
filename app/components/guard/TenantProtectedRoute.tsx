@@ -11,9 +11,10 @@ const TenantProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem('nrv-user') as any) ;
-
-    if (!token) {
+    const user = JSON.parse(localStorage.getItem('nrv-user') as any) ;
+    console.log({user: user?.user?.isOnboarded});
+    
+    if (!user) {
       router.push('/sign-in');
     }
   }, [router]);

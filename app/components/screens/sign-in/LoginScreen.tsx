@@ -71,8 +71,10 @@ const LoginScreen: React.FC = () => {
       localStorage.setItem("nrv-user", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
 
-      if (userAccountType === "landlord") {
+      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
         router.push("/dashboard/landlord");
+      } else if (userAccountType === "landlord" && userData.user.isOnboarded === false) {
+        router.push("/onboard/landlord")
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }

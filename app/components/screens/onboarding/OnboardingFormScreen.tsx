@@ -1,9 +1,9 @@
 "use client";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser } from "../../../../redux/slices/userSlice";
+import { createUser, updateUser } from "../../../../redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
@@ -87,6 +87,13 @@ const OnboardingFormScreen: React.FC = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
+  const handleNextAndVerify = () => {
+    if (!validateForm()) {
+      return;
+    }
+    setCurrentStep(3);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -101,12 +108,22 @@ const OnboardingFormScreen: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
     setIsLoading(true);
+
     try {
-      console.log({ formData });
+      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+      console.log({ user: user.user._id });
+
+      const x: any = {
+        payload: {
+          isOnboarded: true,
+        },
+        id: user.user?._id,
+      };
+      const userData = await dispatch(updateUser(x) as any).unwrap();
+      localStorage.setItem("nrv-user", JSON.stringify(userData));
+
+      router.push("/dashboard/landlord");
     } catch (error: any) {
       toast.error(error);
     } finally {
@@ -117,6 +134,15 @@ const OnboardingFormScreen: React.FC = () => {
   const handleReceiveData = (data: any) => {
     setReceivedData(data);
   };
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    console.log({ x: user });
+
+    if (user?.isOnboarded === true) {
+      setCurrentStep(5);
+    }
+  }, []);
 
   return (
     <div className="">
@@ -307,7 +333,7 @@ const OnboardingFormScreen: React.FC = () => {
                       className="w-96 mb-8"
                       variant="bluebg"
                       showIcon={false}
-                      onClick={handleNext}
+                      onClick={handleNextAndVerify}
                     >
                       Continue
                     </Button>
@@ -445,7 +471,7 @@ const OnboardingFormScreen: React.FC = () => {
                       className="w-96 mb-8"
                       variant="bluebg"
                       showIcon={false}
-                      onClick={handleNext}
+                      onClick={handleSubmit}
                     >
                       Continue
                     </Button>
@@ -454,6 +480,7 @@ const OnboardingFormScreen: React.FC = () => {
               </div>
             </div>
           )}
+          {currentStep === 5 && <div>Dashboard</div>}
         </div>
       </div>
     </div>

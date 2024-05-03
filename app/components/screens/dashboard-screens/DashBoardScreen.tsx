@@ -3,6 +3,7 @@ import {
   dashboardNavLinks,
   onboardingOptions,
 } from "../../../../helpers/data";
+import Button from "../../shared/buttons/Button";
 import DashboardNavigationCard from "../../shared/cards/DashboardNavigationCard";
 const DashboardScreen = () => {
   return (
@@ -29,8 +30,33 @@ const DashboardScreen = () => {
               </div>
             ))}
           </div>
-          <div className="mt-8 w-full bg-white rounded-lg p-3">Content 1</div>
-          <div className="mt-8 w-full bg-white rounded-lg p-3 mb-8">Content 1</div>
+          <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between">
+            <div className="pt-1">Ongoing Maintenance: 0</div>
+            <div>
+            <Button
+              size="small"
+              className=""
+              variant="lightGrey"
+              showIcon={false}
+            >
+              View
+            </Button>
+          </div>
+          </div>
+        
+          <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between mb-4">
+            <div className="pt-1">Collect Rent Online</div>
+            <div>
+            <Button
+              size="small"
+              className=""
+              variant="lightGrey"
+              showIcon={false}
+            >
+              View
+            </Button>
+          </div>
+          </div>
         </div>
 
         <div className="md:w-1/2 w-full">

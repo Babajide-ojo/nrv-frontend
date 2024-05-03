@@ -153,49 +153,49 @@ export const dashboardNavLinks = [
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-    title: "Marketing",
+    title: "Manage Marketing",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
-    title: "Leads",
+    title: "Screen a Tenant",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
-    title: "Applicants",
+    title: "Invite to Apply",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-    title: "Marketing",
+    title: "Get a Lease Agreement",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
-    title: "Leads",
+    title: "Build a Lease Addendum",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
-    title: "Applicants",
+    title: "E-Sign a Document",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-    title: "Marketing",
+    title: "Get Landlord Forms",
     number: 0,
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
-    title: "Leads",
+    title: "Record an Expense",
     number: 0,
   }
 ];

@@ -36,6 +36,7 @@ const SignUpVerifyAccount: React.FC = () => {
       email: user?.data?.email,
       confirmationCode: formattedCode,
     };
+
     setIsLoading(true);
     try {
       await dispatch(verifyAccount(payload) as any).unwrap();
@@ -43,13 +44,15 @@ const SignUpVerifyAccount: React.FC = () => {
         localStorage.getItem("nrv-user") || "{}"
       );
       const userAccountType =
-        _formattedUser?.user?.data?.user?.accountType || "";
+        _formattedUser?.user?.accountType || "";
 
-      if (userAccountType === "landlord") {
-        router.push("/dashboard/landlord");
-      } else if (userAccountType === "tenant") {
-        router.push("/dashboard/tenant");
-      }
+        if (userAccountType === "landlord" && _formattedUser.user.isOnboarded === true) {
+          router.push("/dashboard/landlord");
+        } else if (userAccountType === "landlord" && _formattedUser.user.isOnboarded === false) {
+          router.push("/onboard/landlord")
+        } else if (userAccountType === "tenant") {
+          router.push("/dashboard/tenant");
+        }
     } catch (error: any) {
       toast.error(error);
     } finally {

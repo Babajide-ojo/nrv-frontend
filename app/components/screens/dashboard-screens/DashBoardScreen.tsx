@@ -1,15 +1,20 @@
-import {
-  dashboardMetrics,
-  dashboardNavLinks,
-  onboardingOptions,
-} from "../../../../helpers/data";
+"use client";
+import { useEffect } from "react";
+import { dashboardMetrics, dashboardNavLinks } from "../../../../helpers/data";
 import Button from "../../shared/buttons/Button";
 import DashboardNavigationCard from "../../shared/cards/DashboardNavigationCard";
+import { useState } from "react";
+
 const DashboardScreen = () => {
+  const [user, setUser] = useState<any>({});
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+  }, []);
   return (
     <div className="md:p-8 p-3">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        Hey Sam 👋,
+        Hey {user?.firstName} 👋,
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
         <span className="">
@@ -33,29 +38,29 @@ const DashboardScreen = () => {
           <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between">
             <div className="pt-1">Ongoing Maintenance: 0</div>
             <div>
-            <Button
-              size="small"
-              className=""
-              variant="lightGrey"
-              showIcon={false}
-            >
-              View
-            </Button>
+              <Button
+                size="small"
+                className=""
+                variant="lightGrey"
+                showIcon={false}
+              >
+                View
+              </Button>
+            </div>
           </div>
-          </div>
-        
+
           <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between mb-4">
             <div className="pt-1">Collect Rent Online</div>
             <div>
-            <Button
-              size="small"
-              className=""
-              variant="lightGrey"
-              showIcon={false}
-            >
-              View
-            </Button>
-          </div>
+              <Button
+                size="small"
+                className=""
+                variant="lightGrey"
+                showIcon={false}
+              >
+                View
+              </Button>
+            </div>
           </div>
         </div>
 

@@ -51,7 +51,7 @@ const OnboardingFormScreen: React.FC = () => {
     rentAmount: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
   const [currentStep, setCurrentStep] = useState(1);
 
   const validateForm = () => {
@@ -112,8 +112,6 @@ const OnboardingFormScreen: React.FC = () => {
 
     try {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      console.log({ user: user.user._id });
-
       const x: any = {
         payload: {
           isOnboarded: true,
@@ -137,8 +135,6 @@ const OnboardingFormScreen: React.FC = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    console.log({ x: user });
-
     if (user?.isOnboarded === true) {
       setCurrentStep(5);
     }

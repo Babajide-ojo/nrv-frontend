@@ -32,7 +32,7 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
       )}
       <div
-        className={`${css}relative border border-nrvLightGrey  mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
+        className={` relative border border-nrvLightGrey  mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
       >
 
         <input
@@ -40,10 +40,11 @@ const InputField: React.FC<InputFieldProps> = ({
           id={name}
           name={name}
           placeholder={placeholder}
-          className={`font-light w-full h-10 px-3 py-2 focus:outline-none`}
+          className={`${css} font-light w-full h-10 px-3 py-2 focus:outline-none`}
           onChange={onChange}
           value={value}
           disabled={disabled}
+        
         />
       </div>
       {error && <div className="text-red-500 text-sm mt-1">{error}</div>} 

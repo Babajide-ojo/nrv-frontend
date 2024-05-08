@@ -50,6 +50,7 @@ export const createUser = createAsyncThunk<UserData, FormData, {}>(
                     "Content-Type": "application/json"
                 }
             });
+
             localStorage.setItem("emailToVerify", JSON.stringify(response?.data))
             return response.data;
         } catch (error: any) {
@@ -66,8 +67,6 @@ export const updateUser = createAsyncThunk<UserData, FormData, {}>(
     "user/update",
     async (formData: any, { rejectWithValue }) => {
         const { id, payload } = formData;
-        console.log({payload});
-        
         try {
             const response: any = await axios.put(`${API_URL}/users/${id}`, payload, {
                 headers: {
@@ -96,7 +95,7 @@ export const verifyAccount = createAsyncThunk<UserData, verifyData, {}>(
                 }
             });
             localStorage.setItem("nrv-user", JSON.stringify(response?.data))
-            localStorage.removeItem("emailToVerify");
+           // localStorage.removeItem("emailToVerify");
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

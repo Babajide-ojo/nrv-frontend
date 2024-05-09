@@ -22,7 +22,8 @@ const config: Config = {
         nrvGrayText:'#6B6C6C',
         nrvLightGrey: "#999999",
         nrvLightGreyBg:"#EEF0F2", 
-        nrvLightBlue: "#153969"
+        nrvLightBlue: "#153969",
+        nrvGreyMediumBg: "#E0E1E2"
 
       }
     },

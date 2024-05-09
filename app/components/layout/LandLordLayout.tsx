@@ -41,7 +41,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="relative min-h-screen  bg-nrvLightGreyBg">
+    <div className="md:relative fixed min-h-screen overflow-visible bg-nrvLightGreyBg">
       <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md md:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
@@ -72,7 +72,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
         </div>
       </div>
       <div className="flex  w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "60px" }}>
-        <div className={isSidebarOpen ? "w-1/5" : "hidden md:block w-1/5"}>
+        <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/5"}>
           <LandLordSideBar isOpen={isSidebarOpen} />
         </div>
         <div className={isSidebarOpen ? "w-4/5 flex-1 overflow-y-auto flex" : "w-full flex-1 overflow-y-auto"}>

@@ -36,10 +36,10 @@ const DashboardScreen = () => {
             ))}
           </div>
           <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between">
-            <div className="pt-1">Ongoing Maintenance: 0</div>
+            <div className="pt-1 font-light">Ongoing Maintenance: 0</div>
             <div>
               <Button
-                size="small"
+                size="normal"
                 className=""
                 variant="lightGrey"
                 showIcon={false}
@@ -50,10 +50,10 @@ const DashboardScreen = () => {
           </div>
 
           <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between mb-4">
-            <div className="pt-1">Collect Rent Online</div>
+            <div className="pt-1 font-light">Collect Rent Online</div>
             <div>
               <Button
-                size="small"
+                size="normal"
                 className=""
                 variant="lightGrey"
                 showIcon={false}

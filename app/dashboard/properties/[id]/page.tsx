@@ -1,9 +1,17 @@
+"use client";
+
 import { BsHouse } from "react-icons/bs";
 import { IoPencilOutline } from "react-icons/io5";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import { PiPencilSimpleLight } from "react-icons/pi";
 import Button from "../../../components/shared/buttons/Button";
+import { useState } from "react";
+import PropertyOverview from "../../../components/property-dashboard/PropertyOverview";
+import PropertyMarketing from "../../../components/property-dashboard/PropertyMarketing";
+import PropertyMaintenance from "../../../components/property-dashboard/PropertyMaintenance";
+import PropertyDocuments from '../../../components/property-dashboard/PropertyDocuments';
+import PropertyExpenses from '../../../components/property-dashboard/PropertyExpenses';
 
 const propertyDashboardLinks: any = [
   {
@@ -15,19 +23,22 @@ const propertyDashboardLinks: any = [
     name: "Marketing",
   },
   {
-    id: 1,
+    id: 3,
     name: "Maintenance",
   },
   {
-    id: 1,
+    id: 4,
     name: "Document",
   },
   {
-    id: 1,
+    id: 5,
     name: "Expenses",
   },
 ];
+
 const SingleProperty = () => {
+  const [currentState, setCurrentState] = useState<number>(1);
+
   return (
     <div>
       <ProtectedRoute>
@@ -75,19 +86,29 @@ const SingleProperty = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 pl-4">
+              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4">
                 {propertyDashboardLinks.map((item: any) => (
                   <div key={item.id}>
                     <Button
                       size="normal"
-                      className="bg-nrvGreyMediumBg text-nrvDarkBlue p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2"
+                      className="bg-nrvGreyMediumBg text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2"
                       variant="mediumGrey"
                       showIcon={false}
+                      onClick={() => {
+                        setCurrentState(item.id)
+                      }}
                     >
-                      <div className="text-xs  md:text-md  ">{item.name}</div>
+                      <div className="text-xs  md:text-md p-2">{item.name}</div>
                     </Button>
                   </div>
                 ))}
+              </div>
+              <div className="px-4 py-12 md:px-24 md:py-12">
+                {currentState === 1 && <PropertyOverview />}
+                {currentState === 2 && <PropertyMarketing />}
+                {currentState === 3 && <PropertyMaintenance />}
+                {currentState === 4 && <PropertyDocuments />}
+                {currentState === 5 && <PropertyExpenses />}
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@ const PropertyOverview = () => {
         </div>
       </div>
 
-      <div className="mt-8 md:w-1/2 w-full mx-auto grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
+      <div className="mt-8 md:w-full lg:w-full 2xl:w-1/2 xl:w-1/2 sm:w-full xs:w-full mx-auto grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
         {dashboardMetrics.map(({ title, imageLink, number }, index) => (
           <div key={index}>
             <DashboardNavigationCard

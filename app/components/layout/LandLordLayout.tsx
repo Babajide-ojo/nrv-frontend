@@ -72,10 +72,10 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
         </div>
       </div>
       <div className="flex  w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "60px" }}>
-        <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/5"}>
+        <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/10"}>
           <LandLordSideBar isOpen={isSidebarOpen} />
         </div>
-        <div className={isSidebarOpen ? "w-4/5 flex-1 overflow-y-auto flex" : "w-full flex-1 overflow-y-auto"}>
+        <div className={isSidebarOpen ? "w-9/10  flex-1 overflow-y-auto flex" : "w-full flex-1 overflow-y-auto"}>
           <main className="bg-nrvLightGreyBg w-full">{children}</main>
         </div>
       </div>

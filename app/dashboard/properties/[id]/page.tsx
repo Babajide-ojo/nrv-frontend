@@ -86,7 +86,7 @@ const SingleProperty = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4">
+              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
                 {propertyDashboardLinks.map((item: any) => (
                   <div key={item.id}>
                     <Button

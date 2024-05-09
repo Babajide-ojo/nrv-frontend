@@ -41,7 +41,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="md:relative fixed min-h-screen overflow-visible bg-nrvLightGreyBg">
+    <div className="relative min-h-screen  bg-nrvLightGreyBg">
       <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md md:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {

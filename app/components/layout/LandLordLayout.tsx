@@ -25,7 +25,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   useEffect(() => {
     const handleResize = () => {
       const screenWidth = window.innerWidth;
-      setIsSidebarOpen(screenWidth > 768); // Show sidebar if screen width > 768px
+      setIsSidebarOpen(screenWidth > 1110); // Show sidebar if screen width > 768px
     };
 
     // Initial check on mount
@@ -42,7 +42,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
 
   return (
     <div className="relative min-h-screen  bg-nrvLightGreyBg">
-      <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md md:hidden z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
             router.push("/dashboard/landlord")
@@ -71,7 +71,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
           </button>
         </div>
       </div>
-      <div className="flex  w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "60px" }}>
+      <div className="flex w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "40px" }}>
         <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/10"}>
           <LandLordSideBar isOpen={isSidebarOpen} />
         </div>

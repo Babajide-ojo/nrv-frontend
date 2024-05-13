@@ -30,7 +30,7 @@ const classes = {
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-md border border-nrvLightGrey',
     bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-md',
     lightGrey: 'rounded rounded-md text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
-    mediumGrey: 'rounded rounded-md text-nrvLightGrey bg-nrvGreyMediumBg border border-[#153969] hover:bg-nrvDarkBlue hover:text-white'
+    mediumGrey: 'rounded rounded-md  bg-nrvGreyMediumBg border border-[#153969]'
   }
 };
 

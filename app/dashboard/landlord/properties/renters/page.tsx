@@ -1,11 +1,11 @@
 "use client";
 
-import LoadingPage from "../../components/loaders/LoadingPage";
+import LoadingPage from "../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
-import ProtectedRoute from "../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../components/layout/LandLordLayout";
-import EmptyState from "../../components/screens/empty-state/EmptyState";
-import Button from "../../components/shared/buttons/Button";
+import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../../components/layout/LandLordLayout";
+import EmptyState from "../../../../components/screens/empty-state/EmptyState";
+import Button from "../../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
 
 const MessageScreen = () => {

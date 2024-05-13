@@ -2,16 +2,16 @@
 
 import { BsHouse } from "react-icons/bs";
 import { IoPencilOutline } from "react-icons/io5";
-import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../components/layout/LandLordLayout";
+import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../../components/layout/LandLordLayout";
 import { PiPencilSimpleLight } from "react-icons/pi";
-import Button from "../../../components/shared/buttons/Button";
+import Button from "../../../../components/shared/buttons/Button";
 import { useState } from "react";
-import PropertyOverview from "../../../components/property-dashboard/PropertyOverview";
-import PropertyMarketing from "../../../components/property-dashboard/PropertyMarketing";
-import PropertyMaintenance from "../../../components/property-dashboard/PropertyMaintenance";
-import PropertyDocuments from '../../../components/property-dashboard/PropertyDocuments';
-import PropertyExpenses from '../../../components/property-dashboard/PropertyExpenses';
+import PropertyOverview from "../../../../components/property-dashboard/PropertyOverview";
+import PropertyMarketing from "../../../../components/property-dashboard/PropertyMarketing";
+import PropertyMaintenance from "../../../../components/property-dashboard/PropertyMaintenance";
+import PropertyDocuments from '../../../../components/property-dashboard/PropertyDocuments';
+import PropertyExpenses from '../../../../components/property-dashboard/PropertyExpenses';
 
 const propertyDashboardLinks: any = [
   {

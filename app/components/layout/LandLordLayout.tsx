@@ -51,7 +51,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
             <span className="text-xs text-white">Dashboard</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/properties")
+            router.push("/dashboard/landlord/properties")
           }}>
             <IoMdHome size={24} color="white" />
             <span className="text-xs text-white">Properties</span>

@@ -1,15 +1,15 @@
 "use client";
 
-import LoadingPage from "../../components/loaders/LoadingPage";
+import LoadingPage from "../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
-import ProtectedRoute from "../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../components/layout/LandLordLayout";
-import EmptyState from "../../components/screens/empty-state/EmptyState";
-import Button from "../../components/shared/buttons/Button";
+import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../components/layout/LandLordLayout";
+import EmptyState from "../../../components/screens/empty-state/EmptyState";
+import Button from "../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { getPropertyByUserId } from "../../../redux/slices/propertySlice";
+import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BsHouse } from "react-icons/bs";
@@ -191,9 +191,9 @@ const PropertiesScreen = () => {
               </p>
 
               <ul className="list-disc pl-6">
-                <li className="mb-2 flex items-center mt-4">
+                <li className="mb-2 flex md:items-center items-start mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue text-md">
+                  <div className="text-nrvDarkBlue md:text-md text-sm">
                     Property Type:{" "}
                     <span className="text-nrvLightGrey">
                       Single-Family Home
@@ -202,19 +202,19 @@ const PropertiesScreen = () => {
                 </li>
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue text-md">
+                  <div className="text-nrvDarkBlue md:text-md text-sm">
                     Bedrooms: <span className="text-nrvLightGrey">3</span>
                   </div>
                 </li>
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue text-md">
+                  <div className="text-nrvDarkBlue md:text-md text-sm">
                     Baths:<span className="text-nrvLightGrey">5</span>
                   </div>
                 </li>
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue text-md">
+                  <div className="text-nrvDarkBlue md:text-md text-sm">
                     {" "}
                     Rent Amount:{" "}
                     <span className="text-nrvLightGrey">
@@ -225,7 +225,7 @@ const PropertiesScreen = () => {
                 </li>
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue text-md">
+                  <div className="text-nrvDarkBlue md:text-md text-sm">
                     Security Deposit:{" "}
                     <span className="text-nrvLightGrey"> ₦100,000</span>
                   </div>
@@ -241,7 +241,7 @@ const PropertiesScreen = () => {
                   <div
                     className="flex gap-3"
                     onClick={() => {
-                    router.push(`/dashboard/properties/${1}`)
+                    router.push(`/dashboard/landlord/properties/${1}`)
                     }}
                   >
                     Edit Property

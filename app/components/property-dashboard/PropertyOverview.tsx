@@ -1,9 +1,12 @@
+"use client"
 import { dashboardMetrics } from "../../../helpers/data";
 import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
 import Button from "../shared/buttons/Button";
 import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
+import { useRouter } from "next/navigation";
 
 const PropertyOverview = () => {
+    const router = useRouter()
   return (
     <div className="pb-12 md:pb-0">
       <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl p-4">
@@ -12,11 +15,14 @@ const PropertyOverview = () => {
           <div>
             <Button
               size="normal"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 hover:text-white "
+              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
               variant="mediumGrey"
               showIcon={false}
+              onClick={() => {
+                router.push("/dashboard/landlord/properties/rooms/create")
+              }}
             >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium text-nrvDarkBlue hover:text-white">
+              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
                 <BsPlusCircleFill size={15} />
                 Add Room
               </div>
@@ -49,11 +55,11 @@ const PropertyOverview = () => {
           <div>
             <Button
               size="normal"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 hover:text-white "
+              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
               variant="mediumGrey"
               showIcon={false}
             >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium text-nrvDarkBlue hover:text-white">
+              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
                
                 Create Request
               </div>

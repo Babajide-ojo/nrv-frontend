@@ -1,23 +1,23 @@
 "use client";
 
-import LoadingPage from "../../../components/loaders/LoadingPage";
+import LoadingPage from "../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
-import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../components/layout/LandLordLayout";
-import EmptyState from "../../../components/screens/empty-state/EmptyState";
-import Button from "../../../components/shared/buttons/Button";
+import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../../components/layout/LandLordLayout";
+import EmptyState from "../../../../components/screens/empty-state/EmptyState";
+import Button from "../../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
-import InputField from "../../../components/shared/input-fields/InputFields";
+import InputField from "../../../../components/shared/input-fields/InputFields";
 import { SlCloudUpload } from "react-icons/sl";
 import { useDispatch } from "react-redux";
 import {
   createProperty,
   getPropertyByUserId,
-} from "../../../../redux/slices/propertySlice";
+} from "../../../../../redux/slices/propertySlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import PropertySuccess from "../../../components/loaders/PropertySuccess";
+import PropertySuccess from "../../../../components/loaders/PropertySuccess";
 
 interface PropertyData {
   streetAddress: string;

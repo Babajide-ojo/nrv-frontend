@@ -122,7 +122,7 @@ const PropertiesScreen = () => {
                     <div
                       className="flex gap-3"
                       onClick={() => {
-                        router.push("/dashboard/properties/create");
+                        router.push("/dashboard/landlord/properties/create");
                       }}
                     >
                       <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}

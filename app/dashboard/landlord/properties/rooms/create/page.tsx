@@ -4,32 +4,29 @@ import LoadingPage from "../../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../../../components/layout/LandLordLayout";
-import EmptyState from "../../../../../components/screens/empty-state/EmptyState";
 import Button from "../../../../../components/shared/buttons/Button";
-import { IoAddCircle } from "react-icons/io5";
 import InputField from "../../../../../components/shared/input-fields/InputFields";
-import { SlCloudUpload } from "react-icons/sl";
 import { useDispatch } from "react-redux";
 import {
-  createProperty,
   getPropertyByUserId,
+  createRooms,
 } from "../../../../../../redux/slices/propertySlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import PropertySuccess from "../../../../../components/loaders/PropertySuccess";
 
-interface PropertyData {
-  streetAddress: string;
-  unit: string;
-  city: string;
-  state: string;
-  zipCode: string;
+interface RoomData {
+  name: string;
+  targetAudience: string;
+  targetDeposit: string;
+  description: string;
+  propertyId: any;
 }
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<any>([]);
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [properties, setProperties] = useState([]);
@@ -37,25 +34,26 @@ const CreateRoom = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
-  const [roomData, setRoomData] = useState([
+  const [roomData, setRoomData] = useState<RoomData[]>([
     {
-      streetAddress: "",
-      unit: "",
-      city: "",
-      state: "",
-      zipCode: "",
+      name: "",
+      targetAudience: "",
+      targetDeposit: "",
+      description: "null",
+      propertyId: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem("property") as any)._id : '',
     },
   ]);
+  
 
   const handleAddRoom = () => {
     setRoomData((prevRoomData) => [
       ...prevRoomData,
       {
-        streetAddress: "",
-        unit: "",
-        city: "",
-        state: "",
-        zipCode: "",
+        name: "",
+        targetAudience: "",
+        targetDeposit: "",
+        description: "null",
+        propertyId: "",
       },
     ]);
   };
@@ -67,42 +65,56 @@ const CreateRoom = () => {
     setRoomData(updatedRoomData);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(roomData);
+    const isValid = roomData.every((room) => {
+      return (
+        room.name.trim() &&
+        room.targetAudience.trim() &&
+        room.targetDeposit.trim()
+      );
+    });
+
+    if (isValid) {
+      try {
+        setLoading(true);
+        const userData = await dispatch(createRooms(roomData) as any).unwrap();
+        toast.success("Room added successfully");
+      } catch (error: any) {
+        setLoading(false);
+        toast.error(error);
+      }
+    } else {
+      // If any room data is invalid, set errors accordingly
+      const errors: any = roomData.map((room, index) => ({
+        name: !room.name.trim() ? "Room name is required" : "",
+        targetAudience: !room.targetAudience.trim()
+          ? "Target rent is required"
+          : "",
+        targetDeposit: !room.targetDeposit.trim()
+          ? "Target deposit is required"
+          : "",
+      }));
+      console.log(errors);
+
+      setErrors(errors);
+    }
   };
 
-//   const validateForm = () => {
-//     let errors: { [key: string]: string } = {};
-
-//     if (!propertyData.streetAddress.trim()) {
-//       errors.streetAddress = "Street address is required";
-//     }
-//     if (!propertyData.city.trim()) {
-//       errors.city = "City is required";
-//     }
-//     if (!propertyData.state.trim()) {
-//       errors.state = "State is required";
-//     }
-//     if (!propertyData.zipCode.trim()) {
-//       errors.zipCode = "Zip code is required";
-//     }
-
-//     setErrors(errors);
-//     return Object.keys(errors).length === 0;
-//   };
-
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const properties = dispatch(
-      getPropertyByUserId(user?.user?._id) as any
-    ).unwrap();
-    setProperties(properties?.data);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
+    if (typeof window !== 'undefined') {
+      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+      setUser(user?.user);
+      const properties = dispatch(
+        getPropertyByUserId(user?.user?._id) as any
+      ).unwrap();
+      setProperties(properties?.data);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  
   }, []);
 
   return (
@@ -134,9 +146,10 @@ const CreateRoom = () => {
                                 label="Room Name"
                                 placeholder="Enter room name"
                                 inputType="text"
-                                name="streetAddress"
+                                value={roomData[index].name}
+                                name="name"
                                 onChange={(e) => handleInputChange(index, e)}
-                                error={errors.streetAddress} // Corrected error prop name
+                                error={errors[index]?.name} // Corrected error prop name
                               />
                             </div>
                             <div className="w-full mt-4 flex gap-3">
@@ -146,20 +159,22 @@ const CreateRoom = () => {
                                   label="Target Rent"
                                   placeholder="₦"
                                   inputType="text"
-                                  name="city"
+                                  value={roomData[index].targetAudience}
+                                  name="targetAudience"
                                   onChange={(e) => handleInputChange(index, e)}
-                                  error={errors.city} // Corrected error prop name
+                                  error={errors[index]?.targetAudience} // Corrected error prop name
                                 />
                               </div>
                               <div className="w-1/2">
                                 <InputField
                                   css="bg-nrvLightGreyBg"
-                                  label="Target Deposit"
+                                  label="targetDeposit"
+                                  value={roomData[index].targetDeposit}
                                   placeholder="₦"
                                   inputType="text"
-                                  name="state"
+                                  name="targetDeposit"
                                   onChange={(e) => handleInputChange(index, e)}
-                                  error={errors.state} // Corrected error prop name
+                                  error={errors[index]?.targetDeposit} // Corrected error prop name
                                 />
                               </div>
                             </div>
@@ -183,7 +198,6 @@ const CreateRoom = () => {
                             disabled={loading ? true : false}
                             variant="lightGrey"
                             showIcon={false}
-                            // onClick={handleNextAndVerify}
                           >
                             {loading ? "Submitting" : "Delete"}
                           </Button>

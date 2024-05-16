@@ -71,6 +71,38 @@ export const getPropertyByUserId = createAsyncThunk<UserId, {}>(
     }
 );
 
+export const getPropertyById = createAsyncThunk<UserId, {}>(
+    "single-property/get",
+    async (id: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.get(`${API_URL}/properties/single/${id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const createRooms = createAsyncThunk< FormData, {}>(
+    "room/create",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.post(`${API_URL}/rooms/create`, formData);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 
 
 // Create user slice
@@ -107,6 +139,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getPropertyByUserId.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getPropertyById.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getPropertyById.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getPropertyById.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

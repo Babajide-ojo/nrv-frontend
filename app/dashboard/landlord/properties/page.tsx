@@ -160,6 +160,7 @@ const PropertiesScreen = () => {
                         <div
                           className="flex gap-3"
                           onClick={() => {
+                            localStorage.setItem("property", JSON.stringify(property))
                             setSingleProperty(property);
                             setIsOpen(true);
                           }}
@@ -241,7 +242,7 @@ const PropertiesScreen = () => {
                   <div
                     className="flex gap-3"
                     onClick={() => {
-                    router.push(`/dashboard/landlord/properties/${1}`)
+                    router.push(`/dashboard/landlord/properties/${singleProperty._id}`)
                     }}
                   >
                     Edit Property

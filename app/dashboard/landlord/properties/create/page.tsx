@@ -147,19 +147,23 @@ const PropertiesScreen = () => {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const properties = dispatch(
-      getPropertyByUserId(user?.user?._id) as any
-    ).unwrap();
-
-    setProperties(properties?.data);
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
+    if (typeof window !== 'undefined') {
+      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+      setUser(user?.user);
+      const properties = dispatch(
+        getPropertyByUserId(user?.user?._id) as any
+      ).unwrap();
+  
+      setProperties(properties?.data);
+  
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+  
+      return () => clearTimeout(timer);
+    }
   }, []);
+  
 
   return (
     <div>

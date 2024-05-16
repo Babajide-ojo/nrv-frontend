@@ -6,12 +6,17 @@ import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute"
 import LandLordLayout from "../../../../components/layout/LandLordLayout";
 import { PiPencilSimpleLight } from "react-icons/pi";
 import Button from "../../../../components/shared/buttons/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropertyOverview from "../../../../components/property-dashboard/PropertyOverview";
 import PropertyMarketing from "../../../../components/property-dashboard/PropertyMarketing";
 import PropertyMaintenance from "../../../../components/property-dashboard/PropertyMaintenance";
 import PropertyDocuments from '../../../../components/property-dashboard/PropertyDocuments';
 import PropertyExpenses from '../../../../components/property-dashboard/PropertyExpenses';
+import { getPropertyByUserId } from "@/redux/slices/propertySlice";
+import { useDispatch } from "react-redux";
+import { useRouter, useParams } from "next/navigation";
+import { getPropertyById } from '../../../../../redux/slices/propertySlice';
+
 
 const propertyDashboardLinks: any = [
   {
@@ -36,8 +41,52 @@ const propertyDashboardLinks: any = [
   },
 ];
 
+interface Property {
+  id: string;
+  file: string;
+  streetAddress: string;
+  unit: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
+
+
 const SingleProperty = () => {
+
+  const dispatch = useDispatch();
+  const {id} = useParams();
+  const router = useRouter();
+
+  
   const [currentState, setCurrentState] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<any>({});
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [singleProperty, setSingleProperty] = useState<any>({});
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+      setUser(user?.user);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+
+      try {
+        const properties = await dispatch(
+          getPropertyById(id) as any
+        ).unwrap();
+        console.log({properties});
+        
+        setSingleProperty(properties?.data);
+      } catch (error) {}
+
+      return () => clearTimeout(timer);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -104,7 +153,7 @@ const SingleProperty = () => {
                 ))}
               </div>
               <div className="px-4 py-12 md:px-24 md:py-12">
-                {currentState === 1 && <PropertyOverview />}
+                {currentState === 1 && singleProperty && <PropertyOverview data={singleProperty} />}
                 {currentState === 2 && <PropertyMarketing />}
                 {currentState === 3 && <PropertyMaintenance />}
                 {currentState === 4 && <PropertyDocuments />}

@@ -53,7 +53,7 @@ const CreateRoom = () => {
         targetAudience: "",
         targetDeposit: "",
         description: "null",
-        propertyId: "",
+        propertyId: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem("property") as any)._id : '',
       },
     ]);
   };

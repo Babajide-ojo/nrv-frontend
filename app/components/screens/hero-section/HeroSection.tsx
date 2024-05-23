@@ -123,8 +123,8 @@ const FeatureSection: React.FC = () => {
       <div className="text-center text-white">
         <h2 className="uppercase text-2xl">Key Features</h2>
         <p className="font-semibold text-3xl mt-2">
-          Experience the Next Level: <br></br> NaijaRentVerify&#39;s Top Features at
-          a Glance
+          Experience the Next Level: <br></br> NaijaRentVerify&#39;s Top
+          Features at a Glance
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 mt-8">
@@ -312,7 +312,7 @@ const TestimonialSection: React.FC = () => {
                 Landlord, Lagos, Nigeria 🇳🇬{" "}
               </p>
               <p className="mt-4 font-light">
-              &#34;NaijaRentVerify made tenant screening a breeze! The
+                &#34;NaijaRentVerify made tenant screening a breeze! The
                 user-friendly interface and detailed screening reports helped me
                 find the perfect tenant for my property.&#34;
               </p>
@@ -334,9 +334,10 @@ const TestimonialSection: React.FC = () => {
                 Tenant, Lagos, Nigeria 🇳🇬{" "}
               </p>
               <p className="mt-4 font-light">
-              &#34;https://lms-frontend-cki9.vercel.app/As a tenant, I appreciate the transparency NaijaRentVerify
-                provides. The application process was smooth, and the screening
-                report gave me confidence in my landlord&#39;s selection process.&#34;
+                &#34;https://lms-frontend-cki9.vercel.app/As a tenant, I
+                appreciate the transparency NaijaRentVerify provides. The
+                application process was smooth, and the screening report gave me
+                confidence in my landlord&#39;s selection process.&#34;
               </p>
             </div>
           </div>
@@ -460,29 +461,47 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
-          <div>
-            <p className="mt-12 mb-12">
-              NaijaRentVerify 2023. All rights reserved.
-            </p>
-            <p className="mt-12 mb-12 font-light">
-              Changes to Terms: NaijaRentVerify retains the authority to modify
-              or substitute any segment of these Terms of Service and Privacy
-              Policy. Users will be notified of any alterations, and it is
-              incumbent upon them to regularly review and stay informed about
-              these policies.
-            </p>
-          </div>
           <div className="" style={{ alignItems: "flex-end" }}>
-            <p className="mt-12 mb-12">
-              NaijaRentVerify 2024. All rights reserved.
-            </p>
+            <div className="mt-12 mb-12 flex gap-2 text-sm">
+              <img
+                src="https://res.cloudinary.com/dyb8cgrxm/image/upload/v1716442703/icon-park-outline_handle-c_cdcjiz.png"
+                alt="icon"
+              />{" "}
+              <p>NaijaRentVerify 2024. All rights reserved.</p>
+            </div>
             <p className="mt-12 mb-12 font-light">
-              Changes to Terms: NaijaRentVerify retains the authority to modify
-              or substitute any segment of these Terms of Service and Privacy
-              Policy. Users will be notified of any alterations, and it is
-              incumbent upon them to regularly review and stay informed about
-              these policies.
+              <span className="font-semibold">Changes to Terms :</span>{" "}
+              NaijaRentVerify retains the authority to modify or substitute any
+              segment of these Terms of Service and Privacy Policy. Users will
+              be notified of any alterations, and it is incumbent upon them to
+              regularly review and stay informed about these policies.
             </p>
+            <p className="mb-8 text-lg font-semibold text-nrvDarkBlue">
+              Connect with us
+            </p>
+
+            <div className="flex gap-12 pb-20">
+              <img
+                src="https://res.cloudinary.com/dyb8cgrxm/image/upload/v1716442703/ri_facebook-fill_uqpbfe.png"
+                alt="socials"
+                className=""
+              />
+              <img
+                src="https://res.cloudinary.com/dyb8cgrxm/image/upload/v1716442703/ri_twitter-fill_gjymnu.png"
+                alt="socials"
+                className=""
+              />
+              <img
+                src="https://res.cloudinary.com/dyb8cgrxm/image/upload/v1716442703/ri_instagram-fill_vnwn7o.png"
+                alt="socials"
+                className=""
+              />
+              <img
+                src="https://res.cloudinary.com/dyb8cgrxm/image/upload/v1716442703/ri_twitter-fill_gjymnu.png"
+                alt="socials"
+                className=""
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -492,7 +511,7 @@ const Footer: React.FC = () => {
 
 const HeroSection = () => {
   return (
-    <div className="flex flex-col items-center justify-center my-8">
+    <div className="flex flex-col items-center justify-center">
       <div className="text-center md:pt-4 pt-16">
         <div className="text-2xl sm:text-4xl text-nrvDarkBlue font-semibold">
           Streamline Your Rentals <br />
@@ -632,7 +651,6 @@ const HeroSection = () => {
               />
               <div className="bg-nrvDarkBlue p-4 text-white h-72 rounded-b-3xl">
                 <h2 className="mt-4 flex space-between gap-6">
-                  
                   <img
                     src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1716353814/Frame_427319567_1_g8at5l.png"
                     alt="img"
@@ -668,7 +686,6 @@ const HeroSection = () => {
               />
               <div className="bg-nrvDarkBlue p-4 text-white h-72 rounded-b-3xl">
                 <h2 className="mt-4 flex space-between gap-6">
-                 
                   <img
                     src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1716353814/Frame_427319567_2_c63odl.png"
                     alt="img"

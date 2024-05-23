@@ -77,8 +77,6 @@ const SingleProperty = () => {
         const properties = await dispatch(
           getPropertyById(id) as any
         ).unwrap();
-        console.log({properties});
-        
         setSingleProperty(properties?.data);
       } catch (error) {}
 

@@ -10,7 +10,6 @@ interface Data {
   data: any;
 }
 const PropertyOverview: React.FC<Data> = ({ data }) => {
-  console.log({ data });
   const router = useRouter();
   return (
     <div className="pb-12 md:pb-0">

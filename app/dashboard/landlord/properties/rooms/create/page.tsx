@@ -80,6 +80,8 @@ const CreateRoom = () => {
         setLoading(true);
         const userData = await dispatch(createRooms(roomData) as any).unwrap();
         toast.success("Room added successfully");
+        setLoading(false);
+        router.push(`/dashboard/landlord/properties/${ JSON.parse(localStorage.getItem("property") as any)._id}`)
       } catch (error: any) {
         setLoading(false);
         toast.error(error);
@@ -95,8 +97,6 @@ const CreateRoom = () => {
           ? "Target deposit is required"
           : "",
       }));
-      console.log(errors);
-
       setErrors(errors);
     }
   };

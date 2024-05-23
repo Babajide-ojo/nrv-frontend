@@ -8,9 +8,7 @@ import LoadingPage from "./LoadingPage";
 
 const PropertySuccess = () => {
   const router = useRouter();
-  const [showContent, setShowContent] = useState<
-    "propertyListed" | "otherContent"
-  >("propertyListed");
+  const [showContent, setShowContent] = useState< "propertyListed" | "otherContent">("propertyListed");
 
   useEffect(() => {
     const firstTimer = setTimeout(() => {
@@ -18,7 +16,7 @@ const PropertySuccess = () => {
     }, 3000);
 
     const secondTimer = setTimeout(() => {
-      router.push("/dashboard/properties");
+      router.push("/dashboard/landlord/properties");
     }, 6000);
 
     return () => {

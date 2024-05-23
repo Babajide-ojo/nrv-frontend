@@ -55,7 +55,6 @@ const PropertiesScreen = () => {
         const properties = await dispatch(
           getPropertyByUserId(user?.user?._id) as any
         ).unwrap();
-        console.log({ x: properties });
         setProperties(properties?.data);
       } catch (error) {}
 

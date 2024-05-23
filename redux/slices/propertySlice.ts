@@ -40,8 +40,6 @@ export const createProperty = createAsyncThunk< FormData, {}>(
     async (formData: any, { rejectWithValue }) => {
         try {
             const response: any = await axios.post(`${API_URL}/properties/add`, formData);
-            console.log({response});
-            
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -57,9 +55,7 @@ export const getPropertyByUserId = createAsyncThunk<UserId, {}>(
     "property/get",
     async (id: any, { rejectWithValue }) => {
         try {
-            const response: any = await axios.get(`${API_URL}/properties/all/${id}`);
-            console.log({response});
-            
+            const response: any = await axios.get(`${API_URL}/properties/all/${id}`);            
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

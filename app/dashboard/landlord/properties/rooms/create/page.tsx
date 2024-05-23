@@ -43,7 +43,6 @@ const CreateRoom = () => {
       propertyId: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem("property") as any)._id : '',
     },
   ]);
-  
 
   const handleAddRoom = () => {
     setRoomData((prevRoomData) => [
@@ -56,6 +55,10 @@ const CreateRoom = () => {
         propertyId: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem("property") as any)._id : '',
       },
     ]);
+  };
+
+  const handleDeleteRoom = (index: number) => {
+    setRoomData((prevRoomData) => prevRoomData.filter((_, i) => i !== index));
   };
 
   const handleInputChange = (index: any, e: any) => {
@@ -81,13 +84,12 @@ const CreateRoom = () => {
         const userData = await dispatch(createRooms(roomData) as any).unwrap();
         toast.success("Room added successfully");
         setLoading(false);
-        router.push(`/dashboard/landlord/properties/${ JSON.parse(localStorage.getItem("property") as any)._id}`)
+        router.push(`/dashboard/landlord/properties/${JSON.parse(localStorage.getItem("property") as any)._id}`);
       } catch (error: any) {
         setLoading(false);
         toast.error(error);
       }
     } else {
-      // If any room data is invalid, set errors accordingly
       const errors: any = roomData.map((room, index) => ({
         name: !room.name.trim() ? "Room name is required" : "",
         targetAudience: !room.targetAudience.trim()
@@ -114,7 +116,6 @@ const CreateRoom = () => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  
   }, []);
 
   return (
@@ -149,7 +150,7 @@ const CreateRoom = () => {
                                 value={roomData[index].name}
                                 name="name"
                                 onChange={(e) => handleInputChange(index, e)}
-                                error={errors[index]?.name} // Corrected error prop name
+                                error={errors[index]?.name}
                               />
                             </div>
                             <div className="w-full mt-4 flex gap-3">
@@ -162,7 +163,7 @@ const CreateRoom = () => {
                                   value={roomData[index].targetAudience}
                                   name="targetAudience"
                                   onChange={(e) => handleInputChange(index, e)}
-                                  error={errors[index]?.targetAudience} // Corrected error prop name
+                                  error={errors[index]?.targetAudience}
                                 />
                               </div>
                               <div className="w-1/2">
@@ -174,10 +175,23 @@ const CreateRoom = () => {
                                   inputType="text"
                                   name="targetDeposit"
                                   onChange={(e) => handleInputChange(index, e)}
-                                  error={errors[index]?.targetDeposit} // Corrected error prop name
+                                  error={errors[index]?.targetDeposit}
                                 />
                               </div>
                             </div>
+                            {roomData.length > 1 && (
+                              <div className="w-full mt-4 flex gap-2">
+                                <Button
+                                  size="small"
+                                  variant="lightGrey"
+                                  onClick={() => handleDeleteRoom(index)}
+                                  showIcon={false}
+                                  className="border-red"
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
 
@@ -191,15 +205,6 @@ const CreateRoom = () => {
                             onClick={handleAddRoom}
                           >
                             {loading ? "Submitting" : "Duplicate Room"}
-                          </Button>
-                          <Button
-                            size="large"
-                            className="max-w-md w-full mb-8"
-                            disabled={loading ? true : false}
-                            variant="lightGrey"
-                            showIcon={false}
-                          >
-                            {loading ? "Submitting" : "Delete"}
                           </Button>
                         </div>
 

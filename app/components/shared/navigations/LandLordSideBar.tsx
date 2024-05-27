@@ -48,7 +48,9 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       }`}
     >
       {/* LandLordSideBar content */}
-      <div className="mt-10">
+      <div className="mt-10" onClick={() => {
+        router.push('/')
+      }}>
         <Image
           src={Logo}
           width={200}

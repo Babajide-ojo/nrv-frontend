@@ -1,9 +1,13 @@
 // MobileNavBar.tsx
+"use client";
+
 import React from "react";
 import { FaBars } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import { useEffect, useState } from "react";
+import { IoClose, IoPersonCircle } from "react-icons/io5";
 import NavLink from "./NavLink";
 import Button from "../buttons/Button";
+import { useRouter } from "next/navigation";
 
 interface NavItem {
   text: string;
@@ -19,20 +23,30 @@ const navItems: NavItem[] = [
 
 const MobileNavBar: React.FC = () => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
+  const [currentUser, setCurrentUser] = useState<any>({});
+  const router = useRouter();
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    if (user) {
+      setIsLoggedIn(true);
+      setCurrentUser(user?.user);
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
   return (
-    <div className={`fixed top-0 left-0 w-full bg-white z-50 pt-4 pb-4 ${isOpen ? "h-screen" : ""}`}>
+    <div
+      className={`fixed top-0 left-0 w-full bg-white z-50 pt-4 pb-4 ${
+        isOpen ? "h-screen" : ""
+      }`}
+    >
       <div className="flex justify-between items-center px-4">
         <NavLink href="/">
-          <img
-            src="/images/nrv-logo.png"
-            alt="Logo"
-            className="w-28 h-auto"
-          />
+          <img src="/images/nrv-logo.png" alt="Logo" className="w-28 h-auto" />
         </NavLink>
         <div className="md:hidden">
           <button onClick={toggleMenu} className="text-nrvDarkBlue">
@@ -53,14 +67,30 @@ const MobileNavBar: React.FC = () => {
               </div>
             ))}
           </nav>
-          <div className="flex justify-between mt-4">
-            <NavLink href="/sign-in" className="text-nrvDarkBlue mr-4 mt-4">
-              Sign In
-            </NavLink>
-            <Button size="large" variant="primary" showIcon={false}>
-              Get Started
-            </Button>
-          </div>
+          {isLoggedIn ? (
+            <div
+              onClick={() => {
+                if (currentUser.accountType === "landlord") {
+                  router.push("/dashboard/landlord");
+                }
+                if (currentUser.accountType === "tenant") {
+                  router.push("/dashboard/tenant");
+                }
+              }}
+              className="cursor-pointer"
+            >
+              <IoPersonCircle size={50} color="#153969" />
+            </div>
+          ) : (
+            <div className="flex justify-between mt-4">
+              <NavLink href="/sign-in" className="text-nrvDarkBlue mr-4 mt-4">
+                Sign In
+              </NavLink>
+              <Button size="large" variant="primary" showIcon={false}>
+                Get Started
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

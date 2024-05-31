@@ -35,7 +35,9 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
         </div>
         <div className="flex gap-4">
           {data && data?.rooms?.map((item: any, index: any) => (
-            <div key={index} className="">
+            <div key={index} className="cursor-pointer" onClick={()=> {
+              router.push(`/dashboard/landlord/properties/rooms/${item._id}`)
+            }}>
               <div className="h-12 w-12 bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
                 {item?.roomId}
               </div>

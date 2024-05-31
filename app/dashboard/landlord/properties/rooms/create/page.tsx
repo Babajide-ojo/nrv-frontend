@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import PropertySuccess from "../../../../../components/loaders/PropertySuccess";
+import { FaArrowLeft } from 'react-icons/fa6';
 
 interface RoomData {
   name: string;
@@ -133,7 +134,9 @@ const CreateRoom = () => {
                   <form onSubmit={handleSubmit}>
                     <div className="w-full sm:w-1/2 p-8 justify-center mx-auto">
                       <div>
-                        <div className="text-2xl">Add rooms 🏘️</div>
+                        <div className="text-2xl flex gap-3 "> <span onClick={() => {
+                          router.push('/dashboard/landlord/properties')
+                        }}><FaArrowLeft size={20} className="mt-1 cursor-pointer" /></span> Add rooms 🏘️</div>
                         <p className="text-sm text-nrvLightGrey">
                           These details are used to help you identify the
                           rental. It is not connected to Rent Payments or Lease
@@ -169,7 +172,7 @@ const CreateRoom = () => {
                               <div className="w-1/2">
                                 <InputField
                                   css="bg-nrvLightGreyBg"
-                                  label="targetDeposit"
+                                  label="Target Deposit"
                                   value={roomData[index].targetDeposit}
                                   placeholder="₦"
                                   inputType="text"

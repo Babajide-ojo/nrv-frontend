@@ -83,6 +83,22 @@ export const getPropertyById = createAsyncThunk<UserId, {}>(
     }
 );
 
+export const getRoomById = createAsyncThunk<UserId, {}>(
+    "single-room/get",
+    async (id: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.get(`${API_URL}/rooms/single/${id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 export const createRooms = createAsyncThunk< FormData, {}>(
     "room/create",
     async (formData: any, { rejectWithValue }) => {

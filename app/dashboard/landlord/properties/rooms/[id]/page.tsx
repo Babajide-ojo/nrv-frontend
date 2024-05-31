@@ -2,42 +2,32 @@
 
 import { BsHouse } from "react-icons/bs";
 import { IoPencilOutline } from "react-icons/io5";
-import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../../components/layout/LandLordLayout";
+import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../../../components/layout/LandLordLayout";
 import { PiPencilSimpleLight } from "react-icons/pi";
-import Button from "../../../../components/shared/buttons/Button";
+import Button from "../../../../../components/shared/buttons/Button";
 import { useEffect, useState } from "react";
-import PropertyOverview from "../../../../components/property-dashboard/PropertyOverview";
-import PropertyMarketing from "../../../../components/property-dashboard/PropertyMarketing";
-import PropertyMaintenance from "../../../../components/property-dashboard/PropertyMaintenance";
-import PropertyDocuments from "../../../../components/property-dashboard/PropertyDocuments";
-import PropertyExpenses from "../../../../components/property-dashboard/PropertyExpenses";
-import { getPropertyByUserId } from "@/redux/slices/propertySlice";
+import PropertyOverview from "../../../../../components/property-dashboard/PropertyOverview";
+import PropertyMarketing from "../../../../../components/property-dashboard/PropertyMarketing";
+import PropertyMaintenance from "../../../../../components/property-dashboard/PropertyMaintenance";
+import PropertyDocuments from '../../../../../components/property-dashboard/PropertyDocuments';
+import PropertyExpenses from '../../../../../components/property-dashboard/PropertyExpenses';
+import { getPropertyById, getPropertyByUserId, getRoomById } from "../../../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
-import { getPropertyById } from "../../../../../redux/slices/propertySlice";
+import RoomOverview from "../../../../../components/room-dashboard/RoomOverview";
+
+
 
 const propertyDashboardLinks: any = [
   {
     id: 1,
     name: "Overview",
   },
-  // {
-  //   id: 2,
-  //   name: "Marketing",
-  // },
   {
     id: 2,
-    name: "Maintenance",
-  },
-  {
-    id: 3,
-    name: "Document",
-  },
-  {
-    id: 4,
-    name: "Expenses",
-  },
+    name: "Marketing",
+  }
 ];
 
 interface Property {
@@ -50,17 +40,20 @@ interface Property {
   zipCode: string;
 }
 
-const SingleProperty = () => {
+
+const SingleRoom = () => {
+
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const {id} = useParams();
   const router = useRouter();
 
+  
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [properties, setProperties] = useState<Property[]>([]);
-  const [singleProperty, setSingleProperty] = useState<any>({});
-
+  const [singleRoom, setRoomDetails] = useState<any>({});
+  
   useEffect(() => {
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -70,8 +63,10 @@ const SingleProperty = () => {
       }, 2000);
 
       try {
-        const properties = await dispatch(getPropertyById(id) as any).unwrap();
-        setSingleProperty(properties?.data);
+        const properties = await dispatch(
+          getRoomById(id) as any
+        ).unwrap();
+        setRoomDetails(properties?.data);
       } catch (error) {}
 
       return () => clearTimeout(timer);
@@ -98,7 +93,7 @@ const SingleProperty = () => {
                           alt="Property"
                         /> */}
                     <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
-                      {singleProperty?.streetAddress}
+                      {singleRoom?.propertyId?.streetAddress}
                     </p>
                   </div>
                   <div className="flex gap-3 mt-4">
@@ -108,7 +103,7 @@ const SingleProperty = () => {
                       variant="lightGrey"
                       showIcon={false}
                     >
-                      <div className="flex gap-3 p-1.5">Rental ID: 1340201</div>
+                      <div className="flex gap-3 p-1.5">Rental ID:   {singleRoom?.roomId}</div>
                     </Button>
                     <Button
                       size="normal"
@@ -127,24 +122,8 @@ const SingleProperty = () => {
                   </div>
                 </div>
               </div>
-              {/* <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
-                {propertyDashboardLinks.map((item: any) => (
-                  <div key={item.id}>
-                    <Button
-                      size="normal"
-                      className="bg-nrvGreyMediumBg text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2"
-                      variant="mediumGrey"
-                      showIcon={false}
-                      onClick={() => {
-                        setCurrentState(item.id)
-                      }}
-                    >
-                      <div className="text-xs  md:text-md p-2">{item.name}</div>
-                    </Button>
-                  </div>
-                ))}
-              </div> */}
-              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
+         
+              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 overflow-scroll justify-center">
                 {propertyDashboardLinks.map((item: any) => (
                   <div key={item.id}>
                     <Button
@@ -155,7 +134,7 @@ const SingleProperty = () => {
                       variant="mediumGrey"
                       showIcon={false}
                       onClick={() => {
-                        setCurrentState(item.id);
+                        setCurrentState(item.id)
                       }}
                     >
                       <div className="text-xs  md:text-md p-2">{item.name}</div>
@@ -163,15 +142,10 @@ const SingleProperty = () => {
                   </div>
                 ))}
               </div>
-
               <div className="px-4 py-12 md:px-24 md:py-12">
-                {currentState === 1 && singleProperty && (
-                  <PropertyOverview data={singleProperty} />
-                )}
-                {/* {currentState === 2 && <PropertyMarketing />} */}
-                {currentState === 2 && <PropertyMaintenance />}
-                {currentState === 3 && <PropertyDocuments />}
-                {currentState === 4 && <PropertyExpenses />}
+                {currentState === 1 && singleRoom && <RoomOverview data={singleRoom} />}
+                {currentState === 2 && <PropertyMarketing />}
+
               </div>
             </div>
           </div>
@@ -181,4 +155,4 @@ const SingleProperty = () => {
   );
 };
 
-export default SingleProperty;
+export default SingleRoom;

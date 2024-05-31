@@ -57,7 +57,6 @@ const DesktopNavBar: React.FC = () => {
       </div>
       <div className="md:w-1/4">
         <div className="flex justify-end">
-        
             {isLoggedIn ? (
               <div onClick={() => {
                   if(currentUser.accountType === 'landlord'){
@@ -80,7 +79,6 @@ const DesktopNavBar: React.FC = () => {
                 </Button>
               </div>
             )}
-        
         </div>
       </div>
     </div>

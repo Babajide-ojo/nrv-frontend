@@ -129,9 +129,9 @@ const SingleRoom = () => {
                     <Button
                       size="normal"
                       className={` text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
-                        currentState === item.id ? "bg-[#153969] text-white" : ""
+                        currentState === item.id ? "bg-[#153969] text-white" : "bg-nrvGreyMediumBg"
                       }`}
-                      variant="mediumGrey"
+                      variant="ordinary"
                       showIcon={false}
                       onClick={() => {
                         setCurrentState(item.id)

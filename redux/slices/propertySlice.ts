@@ -9,6 +9,11 @@ interface PropertyState {
     error: string | null;
 }
 
+interface GetPropertyByUserIdArgs {
+    id: any;
+    page: number;
+  }
+
 
 
 interface FormData {
@@ -51,21 +56,23 @@ export const createProperty = createAsyncThunk< FormData, {}>(
     }
 );
 
-export const getPropertyByUserId = createAsyncThunk<UserId, {}>(
+
+  
+  export const getPropertyByUserId = createAsyncThunk<any, {}>(
     "property/get",
-    async (id: any, { rejectWithValue }) => {
-        try {
-            const response: any = await axios.get(`${API_URL}/properties/all/${id}`);            
-            return response.data;
-        } catch (error: any) {
-            if (error.response.data.message) {
-                return rejectWithValue(error.response.data.message);
-            } else {
-                return rejectWithValue("An error occurred, please try again later");
-            }
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/all/${formData.id}?page=${formData.page}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
         }
+      }
     }
-);
+  );
 
 export const getPropertyById = createAsyncThunk<UserId, {}>(
     "single-property/get",

@@ -1,68 +1,72 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
-import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BsHouse } from "react-icons/bs";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 
-interface PropertyData {
-  streetAddress: string;
-  unit: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
-
-interface Property {
-  id: string;
-  file: string;
-  streetAddress: string;
-  unit: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
-
 const PropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [page, setPage] = useState(1); // Current page
+  const [totalPages, setTotalPages] = useState(0); // Total pages
   const [singleProperty, setSingleProperty] = useState<any>({});
   const [isOpen, setIsOpen] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
 
   const dispatch = useDispatch();
   const router = useRouter();
+  
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const formData = {
+      id: user?.user?._id,
+      page: page,
+    };
+    
+    try {
+      const response = await dispatch(getPropertyByUserId(formData) as any); // Pass page parameter
+      setProperties(response?.payload?.data);
+      setTotalPages(response?.totalPages);
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setIsLoading(false);
+      setIsPageLoading(false); // Stop page loading after fetch
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-
-      try {
-        const properties = await dispatch(
-          getPropertyByUserId(user?.user?._id) as any
-        ).unwrap();
-        setProperties(properties?.data);
-      } catch (error) {}
-
-      return () => clearTimeout(timer);
-    };
-
     fetchData();
-  }, []);
+  }, [page]); // Reload properties when page changes
+
+  const handleNextPage = () => {
+    if (page ) {
+      setIsPageLoading(true);
+      setPage(page + 1);
+     // setIsPageLoading(false);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setIsPageLoading(true);
+      setPage(page - 1);
+      //setIsPageLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -72,7 +76,14 @@ const PropertiesScreen = () => {
         <ProtectedRoute>
           <LandLordLayout>
             <ToastContainer />
-            {properties.length == 2 ? (
+            {isPageLoading && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="text-white">
+                  
+                </div>
+              </div>
+            )}
+            {properties?.length < 1 ? (
               <div className="p-8 w-full">
                 <div className="text-2xl">Properties 🏘️,</div>
                 <p className="text-sm text-nrvLightGrey">
@@ -93,7 +104,7 @@ const PropertiesScreen = () => {
                       <div
                         className="flex gap-3"
                         onClick={() => {
-                          router.push("/dashboard/landlord/properties/create")
+                          router.push("/dashboard/landlord/properties/create");
                         }}
                       >
                         <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
@@ -129,7 +140,7 @@ const PropertiesScreen = () => {
                     </div>
                   </Button>
                 </div>
-                {properties.map((property: Property) => (
+                {properties?.map((property: any) => (
                   <div
                     key={property.id}
                     className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
@@ -159,7 +170,7 @@ const PropertiesScreen = () => {
                         <div
                           className="flex gap-3"
                           onClick={() => {
-                            localStorage.setItem("property", JSON.stringify(property))
+                            localStorage.setItem("property", JSON.stringify(property));
                             setSingleProperty(property);
                             setIsOpen(true);
                           }}
@@ -172,6 +183,28 @@ const PropertiesScreen = () => {
                     </div>
                   </div>
                 ))}
+                <div className="flex justify-between mt-4">
+                  <Button
+                    size="small"
+                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={handlePrevPage}
+                    disabled={page === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    size="small"
+                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
               </div>
             )}
           </LandLordLayout>
@@ -196,22 +229,22 @@ const PropertiesScreen = () => {
                   <div className="text-nrvDarkBlue md:text-md text-sm">
                     Property Type:{" "}
                     <span className="text-nrvLightGrey">
-                      Single-Family Home
+                      {singleProperty.propertyType}
                     </span>
                   </div>
                 </li>
-                <li className="mb-2 flex items-center mt-4">
+                {/* <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
                   <div className="text-nrvDarkBlue md:text-md text-sm">
-                    Bedrooms: <span className="text-nrvLightGrey">3</span>
+                    Bedrooms: <span className="text-nrvLightGrey">  {singleProperty?.rooms?.length()}</span>
                   </div>
-                </li>
-                <li className="mb-2 flex items-center mt-4">
+                </li> */}
+                {/* <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
                   <div className="text-nrvDarkBlue md:text-md text-sm">
                     Baths:<span className="text-nrvLightGrey">5</span>
                   </div>
-                </li>
+                </li> */}
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
                   <div className="text-nrvDarkBlue md:text-md text-sm">
@@ -241,7 +274,7 @@ const PropertiesScreen = () => {
                   <div
                     className="flex gap-3"
                     onClick={() => {
-                    router.push(`/dashboard/landlord/properties/${singleProperty._id}`)
+                      router.push(`/dashboard/landlord/properties/${singleProperty._id}`);
                     }}
                   >
                     Edit Property
@@ -256,12 +289,7 @@ const PropertiesScreen = () => {
                     setIsOpen(false);
                   }}
                 >
-                  <div
-                    className="flex gap-3"
-                 
-                  >
-                    Close
-                  </div>
+                  <div className="flex gap-3">Close</div>
                 </Button>
               </div>
             </div>

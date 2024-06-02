@@ -18,6 +18,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import PropertySuccess from "../../../../components/loaders/PropertySuccess";
+import SelectField from "@/app/components/shared/input-fields/SelectField";
 
 interface PropertyData {
   streetAddress: string;
@@ -25,6 +26,7 @@ interface PropertyData {
   city: string;
   state: string;
   zipCode: string;
+  propertyType: string;
 }
 
 const PropertiesScreen = () => {
@@ -37,6 +39,14 @@ const PropertiesScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [properties, setProperties] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<any>(null);
+
+  console.log({selectedOption});
+  
+
+  const handleChange = (selectedOption : any) => {
+    setSelectedOption(selectedOption);
+  };
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -46,6 +56,7 @@ const PropertiesScreen = () => {
     city: "",
     state: "",
     zipCode: "",
+    propertyType: "",
   });
 
   const validateForm = () => {
@@ -63,6 +74,9 @@ const PropertiesScreen = () => {
     if (!propertyData.zipCode.trim()) {
       errors.zipCode = "Zip code is required";
     }
+    // if (!propertyData.propertyType.trim()) {
+    //   errors.propertyType = "Zip code is required";
+    // }
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -82,9 +96,13 @@ const PropertiesScreen = () => {
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
+    formData.append("propertyType", selectedOption?.value);
     formData.append("file", selectedFiles[0]);
     formData.append("createdBy", user?._id);
 
+
+    console.log({formData});
+    
     try {
       setLoading(true);
       const userData = await dispatch(createProperty(formData) as any).unwrap();
@@ -94,6 +112,7 @@ const PropertiesScreen = () => {
         city: "",
         state: "",
         zipCode: "",
+        propertyType: "",
       });
 
       setLoading(false);
@@ -147,23 +166,22 @@ const PropertiesScreen = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
       setUser(user?.user);
       const properties = dispatch(
         getPropertyByUserId(user?.user?._id) as any
       ).unwrap();
-  
+
       setProperties(properties?.data);
-  
+
       const timer = setTimeout(() => {
         setIsLoading(false);
       }, 2000);
-  
+
       return () => clearTimeout(timer);
     }
   }, []);
-  
 
   return (
     <div>
@@ -188,6 +206,20 @@ const PropertiesScreen = () => {
                           No worries, you can change the information later
                         </p>
                         <div className="max-w-md mx-auto pt-8 ">
+                          <div className="w-full mt-4">
+                            <SelectField
+                              label="Property Type"
+                              name="propertyType"
+                              value={selectedOption}
+                              onChange={handleChange}
+                              options={[
+                                { value: "office", label: "Office" },
+                                { value: "duplex", label: "Duplex" },
+                                { value: "flat", label: "Flat" },
+                              ]}
+                              placeholder="Select Property Type"
+                            />
+                          </div>
                           <div className="w-full mt-4">
                             <InputField
                               css="bg-nrvLightGreyBg"

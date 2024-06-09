@@ -41,9 +41,7 @@ const PropertiesScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState<any>(null);
 
-  console.log({selectedOption});
   
-
   const handleChange = (selectedOption : any) => {
     setSelectedOption(selectedOption);
   };
@@ -84,7 +82,6 @@ const PropertiesScreen = () => {
 
   const handleNextAndVerify = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
@@ -100,9 +97,6 @@ const PropertiesScreen = () => {
     formData.append("file", selectedFiles[0]);
     formData.append("createdBy", user?._id);
 
-
-    console.log({formData});
-    
     try {
       setLoading(true);
       const userData = await dispatch(createProperty(formData) as any).unwrap();

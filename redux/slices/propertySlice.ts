@@ -56,6 +56,26 @@ export const createProperty = createAsyncThunk< FormData, {}>(
     }
 );
 
+export const updateProperty = createAsyncThunk< FormData, {}>(
+    "/properties/update",
+    async (formData: any, { rejectWithValue }) => {
+        console.log({formData});
+        
+        try {
+            const response: any = await axios.patch(`${API_URL}/properties/update?propertyId=${formData.id}`, formData?.body);
+            console.log({response});
+            
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 
   
   export const getPropertyByUserId = createAsyncThunk<any, {}>(
@@ -122,7 +142,21 @@ export const createRooms = createAsyncThunk< FormData, {}>(
     }
 );
 
-
+export const deleteDocumentById = createAsyncThunk<UserId, {}>(
+    "properties/delete-document",
+    async (body: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.delete(`${API_URL}/properties/delete-document?id=${body.id}&documentUrl=${body.documentUrl}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+)
 
 // Create user slice
 const propertySlice = createSlice({
@@ -170,6 +204,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getPropertyById.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(deleteDocumentById.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(deleteDocumentById.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(deleteDocumentById.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

@@ -47,6 +47,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled = false,
       icon: Icon = BsDownload,
       showIcon = true,
+      onClick = () => {},
       ...props
     },
     ref
@@ -68,7 +69,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             `)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={onClick}
         {...props}
+
       >
         <div className="flex items-center justify-center">
         <span>{children}</span>

@@ -1,13 +1,6 @@
 "use client";
-import { dashboardMetrics } from "../../../helpers/data";
-import {
-  BsHouse,
-  BsPlus,
-  BsPlusCircle,
-  BsPlusCircleFill,
-} from "react-icons/bs";
+
 import Button from "../shared/buttons/Button";
-import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
 import { useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
 import { useState } from "react";

@@ -41,7 +41,7 @@ const customStyles = {
       ? "#999999"
       : "#999999",
     boxShadow: state.isFocused ? "none" : "none",
-    backgroundColor: "#EEF0F2",
+    backgroundColor: "transparent",
     borderRadius: "10px",
     fontSize: "15px",
     colors: "#EEF0F2"

@@ -4,12 +4,17 @@ import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
 import Button from "../shared/buttons/Button";
 import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
 import { useRouter } from "next/navigation";
-import { log } from "console";
+import {useState} from 'react';
+
 
 interface Data {
   data: any;
 }
+
 const PropertyOverview: React.FC<Data> = ({ data }) => {
+
+ 
+
   const router = useRouter();
   return (
     <div className="pb-12 md:pb-0">
@@ -34,15 +39,22 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
           </div>
         </div>
         <div className="flex gap-4">
-          {data && data?.rooms?.map((item: any, index: any) => (
-            <div key={index} className="cursor-pointer" onClick={()=> {
-              router.push(`/dashboard/landlord/properties/rooms/${item._id}`)
-            }}>
-              <div className="h-12 w-12 bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
-                {item?.roomId}
+          {data &&
+            data?.rooms?.map((item: any, index: any) => (
+              <div
+                key={index}
+                className="cursor-pointer"
+                onClick={() => {
+                  router.push(
+                    `/dashboard/landlord/properties/rooms/${item._id}`
+                  );
+                }}
+              >
+                <div className="h-12 w-12 bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
+                  {item?.roomId}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
@@ -83,6 +95,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
           you or your tenant.
         </div>
       </div>
+   
     </div>
   );
 };

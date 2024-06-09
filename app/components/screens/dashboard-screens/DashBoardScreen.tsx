@@ -12,7 +12,7 @@ const DashboardScreen = () => {
     setUser(user?.user);
   }, []);
   return (
-    <div className="md:p-8 p-3">
+    <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
         Hey {user?.firstName} 👋,
       </p>

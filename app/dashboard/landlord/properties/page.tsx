@@ -27,7 +27,7 @@ const PropertiesScreen = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
-  
+
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
@@ -35,7 +35,7 @@ const PropertiesScreen = () => {
       id: user?.user?._id,
       page: page,
     };
-    
+
     try {
       const response = await dispatch(getPropertyByUserId(formData) as any); // Pass page parameter
       setProperties(response?.payload?.data);
@@ -53,10 +53,10 @@ const PropertiesScreen = () => {
   }, [page]); // Reload properties when page changes
 
   const handleNextPage = () => {
-    if (page ) {
+    if (page) {
       setIsPageLoading(true);
       setPage(page + 1);
-     // setIsPageLoading(false);
+      // setIsPageLoading(false);
     }
   };
 
@@ -78,9 +78,7 @@ const PropertiesScreen = () => {
             <ToastContainer />
             {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="text-white">
-                  
-                </div>
+                <div className="text-white"></div>
               </div>
             )}
             {properties?.length < 1 ? (
@@ -146,16 +144,17 @@ const PropertiesScreen = () => {
                     className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
                   >
                     <div className="w-3/5">
-                      <div className="flex gap-2">
-                        <div className="h-16 md:w-16 w-32 bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
-                          <BsHouse color="white" size={35} />
-                        </div>
-                        {/* <img
+                      <div className="flex gap-2 ">
+                     
+                      <div className="md:w-1/5 w-2/5">
+                      <img
                           src={property.file}
-                          className="h-16 w-16"
+                          className="h-16 w-16 "
                           alt="Property"
-                        /> */}
-                        <p className="text-xs text-nrvDarkGrey font-light">
+                        />
+                      </div>
+                      
+                        <p className="md:w-4/5 w-3/5 text-xs text-nrvDarkGrey font-light">
                           {property.streetAddress}
                         </p>
                       </div>
@@ -170,7 +169,10 @@ const PropertiesScreen = () => {
                         <div
                           className="flex gap-3"
                           onClick={() => {
-                            localStorage.setItem("property", JSON.stringify(property));
+                            localStorage.setItem(
+                              "property",
+                              JSON.stringify(property)
+                            );
                             setSingleProperty(property);
                             setIsOpen(true);
                           }}
@@ -274,7 +276,9 @@ const PropertiesScreen = () => {
                   <div
                     className="flex gap-3"
                     onClick={() => {
-                      router.push(`/dashboard/landlord/properties/${singleProperty._id}`);
+                      router.push(
+                        `/dashboard/landlord/properties/${singleProperty._id}`
+                      );
                     }}
                   >
                     Edit Property

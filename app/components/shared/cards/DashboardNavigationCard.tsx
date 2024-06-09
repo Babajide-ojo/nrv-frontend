@@ -21,7 +21,7 @@ const DashboardNavigationCard: React.FC<OnboardingCardProps> = ({
       <div className="flex flex-col justify-center items-center">
         <div className="flex flex-col items-center">
           <img src={imageLink} className="w-8 h-8" alt={title} />
-          <p className="font-semibold text-nrvGreyBlack text-xs mt-4">
+          <p className="font-semibold text-nrvGreyBlack text-xs mt-4 text-center">
             {title}
           </p>
           {isMetric ? (

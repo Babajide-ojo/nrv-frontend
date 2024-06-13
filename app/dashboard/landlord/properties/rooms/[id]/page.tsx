@@ -123,7 +123,7 @@ const SingleRoom = () => {
                 </div>
               </div>
          
-              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 overflow-scroll justify-center">
+              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 overflow-scroll justify-center text-md">
                 {propertyDashboardLinks.map((item: any) => (
                   <div key={item.id}>
                     <Button

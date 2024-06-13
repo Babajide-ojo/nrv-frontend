@@ -34,6 +34,7 @@ const PropertyDocuments = () => {
   const [itemUrl, setItemUrl] = useState<any>(null);
   const [viewerVisible, setViewerVisible] = useState<boolean>(true);
   const [pdf, setPdf] = useState<any>(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileError("");
@@ -98,12 +99,14 @@ const PropertyDocuments = () => {
     }
   };
 
-  const deleteDocument = async (documentUrl: any) => {
+  const deleteDocument = async () => {
     try {
       setLoading(true);
-      await dispatch(deleteDocumentById({ documentUrl, id }) as any);
+      await dispatch(deleteDocumentById({ documentUrl: itemUrl, id }) as any);
       await dispatch(getPropertyById(id) as any).unwrap();
       toast.success("Document deleted successfully");
+      setItemUrl(null);
+      setShowDeleteConfirmation(false);
       setLoading(false);
     } catch (error) {
       toast.error("An error occured while uploding document");
@@ -149,40 +152,42 @@ const PropertyDocuments = () => {
     }
   };
 
-  const isImage =
-    pdf === "image" &&
-    (fileUrl.endsWith("jpg") ||
-      fileUrl.endsWith("jpeg") ||
-      fileUrl.endsWith("png") ||
-      fileUrl.endsWith("gif"));
-  const isPDF = pdf === "pdf" && fileUrl.endsWith("pdf");
+  const openDeleteConfirmation = (item: string) => {
+    setShowDeleteConfirmation(true);
+    setItemUrl(item);
+  };
 
+  const closeDeleteConfirmation = () => {
+    setShowDeleteConfirmation(false);
+    setItemUrl(null);
+  };
   return (
     <div className="pb-12 md:pb-0 md:flex gap-6">
       <ToastContainer />
       <div className="md:w-1/2 w-full">
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">
-            <div className="font-light text-nrvDarkBlue">
-              Ongoing Maintenance: 0
+            <div>
+              <div className="font-semibold text-nrvDarkBlue">
+                Rental Settings
+              </div>
+              <div className="text-start flex mx-auto mt-2 text-nrvLightGrey font-medium text-sm">
+                Keep track of all the documents related to this property in one
+                place. This documents are not shared with your tenants.
+              </div>
             </div>
             <div>
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className=" p-2 border  mt-2  mb-2  hover:text-white hover:bg-nrvDarkBlue"
                 variant="mediumGrey"
                 showIcon={false}
               >
-                <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                  Create Request
+                <div className="text-xs md:text-md p-2  flex gap-2">
+                  Documents
                 </div>
               </Button>
             </div>
-          </div>
-          <div className="text-center flex mx-auto mt-2 text-nrvGrayText font-light text-[13px]">
-            Instead of being spread across text/emails/voicemails you now have a
-            centralized place to view, respond to, and track maintenance logged
-            by you or your tenant.
           </div>
         </div>
 
@@ -244,40 +249,44 @@ const PropertyDocuments = () => {
 
         {/* Utility & Maintenance Documents */}
         <div className="w-full mt-4">
-          <label className="text-nrvGreyBlack mb-2 text-md mb-2 border-b-2 border-grey-500">
+          <label className="text-nrvGreyBlack mb-2 text-md mb-2">
             Utility & Maintenance
           </label>
+          <p className="text-sm text-nrvLightGrey mt-2">
+            Examples include: HOA, service contracts, appliance manuals,
+            property assets, invoices, receipts
+          </p>
 
           <div className="text-center w-full mt-2">
             <div className="w-full border border-nrvLightGrey rounded-lg text-swBlack">
-            <div className="text-center">
-                  {utilityMaintenanceFiles.length > 0 ? (
-                    utilityMaintenanceFiles.map((file: any, index: any) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+              <div className="text-center">
+                {utilityMaintenanceFiles.length > 0 ? (
+                  utilityMaintenanceFiles.map((file: any, index: any) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                    >
+                      <span>{file.name}</span>
+                      <button
+                        className="text-red-500"
+                        onClick={() =>
+                          handleRemoveFile(index, setUtilityMaintenanceFiles)
+                        }
                       >
-                        <span>{file.name}</span>
-                        <button
-                          className="text-red-500"
-                          onClick={() =>
-                            handleRemoveFile(index, setUtilityMaintenanceFiles)
-                          }
-                        >
-                          <MdDelete />
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex justify-center mt-4 ">
-                      <SlCloudUpload
-                        size={30}
-                        fontWeight={900}
-                        className="text-nrvLightGrey"
-                      />
+                        <MdDelete />
+                      </button>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center mt-4 ">
+                    <SlCloudUpload
+                      size={30}
+                      fontWeight={900}
+                      className="text-nrvLightGrey"
+                    />
+                  </div>
+                )}
+              </div>
               <input
                 type="file"
                 id="utilityMaintenance"
@@ -290,7 +299,6 @@ const PropertyDocuments = () => {
                 htmlFor="utilityMaintenance"
                 className="cursor-pointer p-1 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-3 mb-3"
               >
-              
                 <div className="">
                   {utilityMaintenanceFiles.length > 0
                     ? "Add more files"
@@ -306,36 +314,40 @@ const PropertyDocuments = () => {
           <label className="text-nrvGreyBlack mb-2 text-md">
             Other Documents
           </label>
+          <p className="text-sm text-nrvLightGrey mt-2">
+            Examples include: property policies, home inspection reports,
+            notices, covenants, property-specific templates
+          </p>
           <div className="text-center w-full mt-2">
             <div className="w-full border border-nrvLightGrey rounded-lg text-swBlack">
-            <div className="text-center">
+              <div className="text-center">
                 {otherDocumentFiles.length > 0 ? (
-                    otherDocumentFiles.map((file: any, index: any) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                  otherDocumentFiles.map((file: any, index: any) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                    >
+                      <span>{file.name}</span>
+                      <button
+                        className="text-red-500"
+                        onClick={() =>
+                          handleRemoveFile(index, setOtherDocumentFiles)
+                        }
                       >
-                        <span>{file.name}</span>
-                        <button
-                          className="text-red-500"
-                          onClick={() =>
-                            handleRemoveFile(index, setOtherDocumentFiles)
-                          }
-                        >
-                          <MdDelete />
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="flex justify-center mt-4 ">
-                      <SlCloudUpload
-                        size={30}
-                        fontWeight={900}
-                        className="text-nrvLightGrey"
-                      />
+                        <MdDelete />
+                      </button>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <div className="flex justify-center mt-4 ">
+                    <SlCloudUpload
+                      size={30}
+                      fontWeight={900}
+                      className="text-nrvLightGrey"
+                    />
+                  </div>
+                )}
+              </div>
               <input
                 type="file"
                 id="otherDocuments"
@@ -348,7 +360,6 @@ const PropertyDocuments = () => {
                 htmlFor="otherDocuments"
                 className="cursor-pointer p-1 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
               >
-             
                 <div className="">
                   {otherDocumentFiles.length > 0
                     ? "Add more files"
@@ -369,7 +380,7 @@ const PropertyDocuments = () => {
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
-            variant="lightGrey"
+            variant="primary"
             showIcon={false}
             onClick={handleUpload}
             disabled={
@@ -378,9 +389,7 @@ const PropertyDocuments = () => {
               !otherDocumentFiles.length
             }
           >
-            <div className="text-sm md:text-md p-1 flex gap-2 font-medium">
-              Update Property
-            </div>
+            <div className="">Upload document</div>
           </Button>
         </div>
       </div>
@@ -389,81 +398,115 @@ const PropertyDocuments = () => {
           <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
             Uploaded Land Insurance Documents
           </div>
-          {data?.data?.landlordInsurancePolicy &&
-            data?.data?.landlordInsurancePolicy.map((item: any, index: any) => (
-              <div className="w-full mt-6" key={index}>
-                <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
-                  <div
-                    className="underline text-xs cursor-pointer"
-                    onClick={() => viewDocument(item)}
-                  >
-                    {" "}
-                    Docs ({index})
-                  </div>{" "}
-                  <div
-                    className="text-red-300 cursor-pointer"
-                    onClick={() => {
-                      deleteDocument(item);
-                    }}
-                  >
-                    <MdDelete size={20} />
-                  </div>
-                </div>
-              </div>
-            ))}
+          {data?.data?.landlordInsurancePolicy?.length > 0 ? (
+            <div>
+              {data?.data?.landlordInsurancePolicy &&
+                data?.data?.landlordInsurancePolicy.map(
+                  (item: any, index: any) => (
+                    <div className="w-full mt-6" key={index}>
+                      <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                        <div
+                          className="underline text-xs cursor-pointer"
+                          onClick={() => viewDocument(item)}
+                        >
+                          {" "}
+                          Docs ({index})
+                        </div>{" "}
+                        <div
+                          className="text-red-300 cursor-pointer"
+                          onClick={() => {
+                            openDeleteConfirmation(item);
+                            //deleteDocument(item);
+                          }}
+                        >
+                          <MdDelete size={20} />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+            </div>
+          ) : (
+            <div className="text-sm italics text-nrvLightGrey pt-3">
+              {" "}
+              No document uploaded yet
+            </div>
+          )}
 
           <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
             Utility & Maintenanace Documents
           </div>
-          {data?.data?.utilityAndMaintenance &&
-            data?.data?.utilityAndMaintenance.map((item: any, index: any) => (
-              <div className="w-full mt-6" key={index}>
-                <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
-                  <div
-                    className="underline text-xs cursor-pointer"
-                    onClick={() => viewDocument(item)}
-                  >
-                    {" "}
-                    Docs ({index})
-                  </div>{" "}
-                  <div
-                    className="text-red-300 cursor-pointer"
-                    onClick={() => {
-                      deleteDocument(item);
-                    }}
-                  >
-                    <MdDelete size={20} />
-                  </div>
-                </div>
-              </div>
-            ))}
+          {data?.data?.utilityAndMaintenance?.length > 0 ? (
+            <div>
+              {data?.data?.utilityAndMaintenance &&
+                data?.data?.utilityAndMaintenance.map(
+                  (item: any, index: any) => (
+                    <div className="w-full mt-6" key={index}>
+                      <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                        <div
+                          className="underline text-xs cursor-pointer"
+                          onClick={() => viewDocument(item)}
+                        >
+                          {" "}
+                          Docs ({index})
+                        </div>{" "}
+                        <div
+                          className="text-red-300 cursor-pointer"
+                          onClick={() => {
+                            openDeleteConfirmation(item);
+                            // deleteDocument(item);
+                          }}
+                        >
+                          <MdDelete size={20} />
+                        </div>
+                      </div>
+                    </div>
+                  )
+                )}
+            </div>
+          ) : (
+            <div className="text-sm italics text-nrvLightGrey pt-3">
+              {" "}
+              No document uploaded yet
+            </div>
+          )}
 
           <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
             Other Documents Uploaded
           </div>
-          {data?.data?.otherDocuments &&
-            data?.data?.otherDocuments.map((item: any, index: any) => (
-              <div className="w-full mt-6" key={index}>
-                <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
-                  <div
-                    className="underline text-xs cursor-pointer"
-                    onClick={() => viewDocument(item)}
-                  >
-                    {" "}
-                    Docs ({index})
-                  </div>{" "}
-                  <div
-                    className="text-red-300 cursor-pointer"
-                    onClick={() => {
-                      deleteDocument(item);
-                    }}
-                  >
-                    <MdDelete size={20} />
+          {data?.data?.otherDocuments?.length > 0 ? (
+            <div>
+              {data?.data?.otherDocuments &&
+                data?.data?.otherDocuments.map((item: any, index: any) => (
+                  <div className="w-full mt-6" key={index}>
+                    <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div
+                        className="underline text-xs cursor-pointer"
+                        onClick={() => viewDocument(item)}
+                      >
+                        {" "}
+                        Docs ({index})
+                      </div>{" "}
+                      <div
+                        className="text-red-300 cursor-pointer"
+                        onClick={() => {
+                          openDeleteConfirmation(item);
+                          //  deleteDocument(item);
+                        }}
+                      >
+                        <MdDelete size={20} />
+                      </div>
+                    </div>
+                    {/* {viewDocs ? <FileViewer fileUrl={item} /> : null} */}
                   </div>
-                </div>
-                {/* {viewDocs ? <FileViewer fileUrl={item} /> : null} */}
-              </div>
-            ))}
+                ))}
+            </div>
+          ) : (
+            <div className="text-sm italics text-nrvLightGrey pt-3">
+              {" "}
+              No document uploaded yet
+            </div>
+          )}
         </div>
       </div>
       {loading && (
@@ -511,6 +554,31 @@ const PropertyDocuments = () => {
           )}
         </div>
       ) : null}
+
+      {showDeleteConfirmation && (
+        <div
+          id="overlay"
+          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+        >
+          <div className="bg-white p-8 rounded shadow-md text-center">
+            <p>Are you sure you want to delete this item?</p>
+            <div className="mt-4 flex justify-center space-x-4">
+              <button
+                onClick={deleteDocument}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Yes
+              </button>
+              <button
+                onClick={closeDeleteConfirmation}
+                className="bg-gray-500 text-white px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

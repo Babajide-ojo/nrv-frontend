@@ -59,12 +59,9 @@ export const createProperty = createAsyncThunk< FormData, {}>(
 export const updateProperty = createAsyncThunk< FormData, {}>(
     "/properties/update",
     async (formData: any, { rejectWithValue }) => {
-        console.log({formData});
-        
+   
         try {
             const response: any = await axios.patch(`${API_URL}/properties/update?propertyId=${formData.id}`, formData?.body);
-            console.log({response});
-            
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -158,7 +155,23 @@ export const deleteDocumentById = createAsyncThunk<UserId, {}>(
     }
 )
 
-// Create user slice
+export const deletePropertyById = createAsyncThunk<UserId, {}>(
+    "properties/delete-property",
+    async (id: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.delete(`${API_URL}/properties/delete/${id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+)
+
+
 const propertySlice = createSlice({
     name: "user",
     initialState,
@@ -216,6 +229,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(deleteDocumentById.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(deletePropertyById.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(deletePropertyById.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(deletePropertyById.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

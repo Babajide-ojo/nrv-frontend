@@ -162,7 +162,7 @@ const PropertiesScreen = () => {
                     <div className="w-2/5 text-end">
                       <Button
                         size="small"
-                        className="text-nrvDarkBlue text-xs  border border-nrvDarkBlue mt-8 rounded-md"
+                        className="text-nrvDarkBlue text-xs rounded border border-nrvDarkBlue mt-8"
                         variant="lightGrey"
                         showIcon={false}
                       >
@@ -177,7 +177,7 @@ const PropertiesScreen = () => {
                             setIsOpen(true);
                           }}
                         >
-                          <p className="text-nrvDarkBlue text-xs">
+                          <p className="text-nrvDarkBlue text-sm p-1.5">
                             View details
                           </p>
                         </div>
@@ -281,7 +281,7 @@ const PropertiesScreen = () => {
                       );
                     }}
                   >
-                    Edit Property
+                    View property
                   </div>
                 </Button>
                 <Button

@@ -58,7 +58,7 @@ const PropertyMaintenance = () => {
           </div>
         </div>
       </div>
-      <div className="md:w-1/2 w-full mt-4">
+      <div className="md:w-1/2 w-full mt-4 md:mt-0">
         <div className="bg-white rounded rounded-2xl p-4">
           <div className="text-start text-nrvDarkBlue font-semibold text-[15px]  pb-12">
             Objectives

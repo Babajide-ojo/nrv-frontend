@@ -19,19 +19,19 @@ const classes = {
   size: {
     small: 'px-3.5 py-1.5 text-sm',
     normal: 'px-3.5 py-1.5 text-sm',
-    large: 'px-6 py-3 text-md'
+    large: 'px-5 py-2.5 text-lg'
   },
   variant: {
     primary:
-      'rounded rounded-full hover:text-white hover:bg-nrvDarkBlue border border-nrvDarkBlue outline-none text-nrvDarkBlue bg-white',
-    darkPrimary: 'rounded rounded-full outline-none bg-nrvDarkBlue text-white',
-    light: 'rounded rounded-full bg-white text-nrvDarkBlue',
-    lightPrimary : 'rounded rounded-full text-white border border-white bg-nrvDarkBlue',
-    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-md border border-nrvLightGrey',
-    bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-md',
-    lightGrey: 'rounded rounded-md text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
-    mediumGrey: 'rounded rounded-md  bg-nrvGreyMediumBg border border-[#153969]',
-    ordinary: 'rounded rounded-md  border border-[#153969]'
+      ' rounded-2xl hover:text-white hover:bg-nrvDarkBlue border border-nrvDarkBlue outline-none text-nrvDarkBlue bg-white',
+    darkPrimary: ' rounded-2xl outline-none bg-nrvDarkBlue text-white',
+    light: ' rounded-2xl bg-white text-nrvDarkBlue',
+    lightPrimary : ' rounded-2xl text-white border border-white bg-nrvDarkBlue',
+    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey',
+    bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
+    lightGrey: 'rounded rounded-lg text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
+    mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue',
+    ordinary: ' rounded-2xl  border border-[#153969]'
   }
 };
 

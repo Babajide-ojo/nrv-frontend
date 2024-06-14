@@ -25,7 +25,7 @@ const TenantDashboardScreen = () => {
       </p>
       <div className="">
         <div className="w-full">
-          <div className="flex gap-6 w-full md:w-3/5">
+          <div className="flex gap-6 w-full md:w-3/5 my-2">
             {tenantDashboardMetrics.map(({ title, imageLink, number }, index) => (
               <div key={index} className="w-1/3">
                 <TenantDashboardNavigationCard
@@ -38,13 +38,20 @@ const TenantDashboardScreen = () => {
             ))}
           </div>
           <div>
-            <h2>Manage Apartmemts</h2>
-            <div className="flex gap-4"> 
-                <div className="p-3 bg-white h-40">Lease Aggrement Docs</div>
-                <div className="p-3 bg-white h-40">Request Maintenance</div>
-                <div className="p-3 bg-white h-40">E Documents</div>
-            </div>
-          </div>
+  <h2 className="text-xl font-semibold mb-4">Manage Apartments</h2>
+  <div className="flex gap-4">
+    <div className="p-3 bg-white h-40 rounded-md shadow-md flex-grow">
+      Lease Agreement Docs
+    </div>
+    <div className="p-3 bg-white h-40 rounded-md shadow-md flex-grow">
+      Request Maintenance
+    </div>
+    <div className="p-3 bg-white h-40 rounded-md shadow-md flex-grow">
+      E Documents
+    </div>
+  </div>
+</div>
+
 
           {/* <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between mb-4">
             <div className="pt-1 font-light">Collect Rent Online</div>

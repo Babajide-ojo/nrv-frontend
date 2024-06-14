@@ -149,7 +149,79 @@ export const dashboardMetrics = [
   },
 ];
 
+export const tenantDashboardMetrics = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Rented Apartments",
+    number: 1,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Current Balance",
+    number: "550,000 NGN",
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Maintenance Issued",
+    number: 20,
+  },
+];
+
 export const dashboardNavLinks = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Manage Marketing",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Screen a Tenant",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Invite to Apply",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Get a Lease Agreement",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Build a Lease Addendum",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "E-Sign a Document",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Get Landlord Forms",
+    number: 0,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    title: "Record an Expense",
+    number: 0,
+  }
+];
+
+export const dashboardTenantNavLinks = [
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",

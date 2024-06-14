@@ -1,8 +1,4 @@
 "use client";
-
-import { BsExclamationCircle } from "react-icons/bs";
-import { useState } from "react";
-
 interface OnboardingCardProps {
   imageLink: string;
   title: string;

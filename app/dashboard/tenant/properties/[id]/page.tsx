@@ -269,8 +269,8 @@ const TenantPropertiesScreen = () => {
                     Imagine a cozy country house surrounded by hills. It has two
                     bedrooms, one bathroom, and a cozy living room with a
                     fireplace. The porch has great views, perfect for watching
-                    sunsets. There's a beautiful garden with a small stream
-                    nearby. It's a peaceful place for people who love nature and
+                    sunsets. There&lsquo;s a beautiful garden with a small stream
+                    nearby. It&lsquo;s a peaceful place for people who love nature and
                     quiet.
                   </div>
                 </div>

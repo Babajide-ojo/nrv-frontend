@@ -298,7 +298,7 @@ const TenantPropertiesScreen = () => {
             }}>
               <svg
                 onClick={() => {
-                    copyToClipboard(`http://localhost:3000/dashboard/tenant/properties/${property._id}`);
+                    copyToClipboard(`https://nrv-frontend.vercel.app/dashboard/tenant/properties/${property._id}`);
                 }}
                 className="cursor-pointer"
                 width="54"

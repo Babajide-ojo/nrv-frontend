@@ -49,7 +49,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
             <span className="text-xs text-white">Dashboard</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/Tenant/properties")
+            router.push("/dashboard/tenant/properties")
           }}>
             <IoMdHome size={24} color="white" />
             <span className="text-xs text-white">Properties</span>

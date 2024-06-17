@@ -12,11 +12,11 @@ interface TenantSideBarProps {
 const links = [
   {
     name: "Dashboard",
-    route: "/dashboard/Tenant",
+    route: "/dashboard/tenant",
   },
   {
     name: "Properties",
-    route: "/dashboard/tenant",
+    route: "/dashboard/tenant/properties",
   },
   {
     name: "Messages",

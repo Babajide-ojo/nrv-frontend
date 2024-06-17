@@ -90,6 +90,22 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
       }
     }
   );
+    
+  export const getAllProperty = createAsyncThunk<any, {}>(
+    "property/all",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/all?page=${formData.page}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+  );
 
 export const getPropertyById = createAsyncThunk<UserId, {}>(
     "single-property/get",
@@ -241,6 +257,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(deletePropertyById.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getAllProperty.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getAllProperty.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getAllProperty.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

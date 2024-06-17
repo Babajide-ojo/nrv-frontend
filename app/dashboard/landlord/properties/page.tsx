@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BsHouse } from "react-icons/bs";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 
 const PropertiesScreen = () => {
@@ -217,7 +216,7 @@ const PropertiesScreen = () => {
             }}
           >
             <div className="mx-auto text-center p-4">
-              <h2 className="text-nrvDarkBlue font-semibold">Full Details</h2>
+              <h2 className="text-nrvDarkBlue font-semibold text-xl">Contact Info</h2>
               <p className="text-nrvLightGrey text-sm">
                 View your property full details
               </p>

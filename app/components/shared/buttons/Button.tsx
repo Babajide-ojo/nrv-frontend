@@ -1,12 +1,12 @@
 "use client"
 import React, { forwardRef, ButtonHTMLAttributes, useState, ReactElement } from 'react';
 import { cls } from '../../../../helpers/utils';
-import { IconType } from 'react-icons';
+import { IconType } from 'react-icons'; 
 import { BsDownload } from 'react-icons/bs';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary';
-  size?: 'small' | 'normal' | 'large';
+  size?: 'small' | 'normal' | 'large' | 'smaller';
   pill?: boolean;
   icon?: IconType | ReactElement; // Allowing IconType or JSX elements
   showIcon?: boolean;
@@ -17,6 +17,7 @@ const classes = {
   disabled: 'opacity-50 cursor-not-allowed',
   pill: 'rounded',
   size: {
+    smaller:'px-1.5 py-1 text-xs',
     small: 'px-3.5 py-1.5 text-sm',
     normal: 'px-3.5 py-1.5 text-sm',
     large: 'px-5 py-2.5 text-lg'
@@ -29,7 +30,7 @@ const classes = {
     lightPrimary : ' rounded-2xl text-white border border-white bg-nrvDarkBlue',
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey',
     bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
-    lightGrey: 'rounded rounded-lg text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
+    lightGrey: 'rounded rounded-2xl text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
     mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue',
     ordinary: ' rounded-2xl  border border-[#153969]'
   }

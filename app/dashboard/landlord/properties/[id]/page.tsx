@@ -110,7 +110,6 @@ const SingleProperty = () => {
     if (!propertyData.zipCode.trim()) {
       errors.zipCode = "Zip code is required";
     }
-
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -276,8 +275,6 @@ const SingleProperty = () => {
       <ProtectedRoute>
         <LandLordLayout>
         <ToastContainer />
-
-          <div className="">
             <div>
               <div className="flex justify-between px-4 py-12 md:px-24 md:py-12">
                 <div>
@@ -325,23 +322,6 @@ const SingleProperty = () => {
                   </div>
                 </div>
               </div>
-              {/* <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
-                {propertyDashboardLinks.map((item: any) => (
-                  <div key={item.id}>
-                    <Button
-                      size="normal"
-                      className="bg-nrvGreyMediumBg text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2"
-                      variant="mediumGrey"
-                      showIcon={false}
-                      onClick={() => {
-                        setCurrentState(item.id)
-                      }}
-                    >
-                      <div className="text-xs  md:text-md p-2">{item.name}</div>
-                    </Button>
-                  </div>
-                ))}
-              </div> */}
               <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
                 {propertyDashboardLinks.map((item: any) => (
                   <div key={item.id}>
@@ -374,7 +354,6 @@ const SingleProperty = () => {
                 {currentState === 5 && <PropertyExpenses />}
               </div>
             </div>
-          </div>
           {showEditProperty && (
       <div
       id="overlay"

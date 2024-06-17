@@ -13,6 +13,8 @@
     "@types/axios": "^0.14.0",
     "@types/form-data": "^2.5.0",
     "axios": "^1.6.8",
+    "copy-to-clipboard": "^3.3.3",
+    "google-map-react": "^2.2.1",
     "next": "14.2.1",
     "react": "^18",
     "react-dom": "^18",
@@ -23,6 +25,7 @@
     "react-viewer": "^3.2.2"
   },
   "devDependencies": {
+    "@types/google-map-react": "^2.1.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

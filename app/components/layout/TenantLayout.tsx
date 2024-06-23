@@ -43,7 +43,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
       <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/Tenant")
+            router.push("/dashboard/tenant")
           }}>
             <RxDashboard size={24} color="white" />
             <span className="text-xs text-white">Dashboard</span>

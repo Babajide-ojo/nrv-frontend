@@ -8,12 +8,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "../../../../components/layout/TenantLayout";
-import { getPropertyById } from "../../../../../redux/slices/propertySlice";
+import { applyForProperty, getPropertyById } from "../../../../../redux/slices/propertySlice";
 import GoogleMapReact from "google-map-react";
 import CenterModal from "../../../../components/shared/modals/CenterModal";
-import { useRef } from "react";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -23,12 +21,13 @@ const TenantPropertiesScreen = () => {
   const [user, setUser] = useState<any>({});
   const [property, setProperty] = useState<any>({});
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
 
   const dispatch = useDispatch();
   const router = useRouter();
-  const textRef = useRef<any>(null);
+
 
   const defaultProps = {
     center: {
@@ -73,10 +72,38 @@ const TenantPropertiesScreen = () => {
   };
 }
 
+const handleSubmit = async () => {
+  const payload = {
+    "propertyId": property?._id,
+    "applicant": user?._id,
+    "ownerId": property.createdBy._id
+  }
+
+  try {
+    setLoading(true);
+    await dispatch(applyForProperty(payload) as any).unwrap();
+    toast.success('Your property application has been sent to the landlord', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      style: {
+        background: '#ffffff',
+        color: '#153969',
+      },
+      progressStyle: {
+        background: '#153969', 
+      },
+      icon: <FaCheckCircle size={25} style={{ color: '#153969' }} />, 
+    });
+  } catch (error: any) {
+    toast.error(error);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
-  }, []); // Reload properties when page changes
+  }, []); 
 
   return (
     <div>
@@ -116,21 +143,21 @@ const TenantPropertiesScreen = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                   <div className="pb-4 h-60">
                     <img
-                      src={property.file}
+                      src={property?.file}
                       alt="photo"
                       className="h-60 w-full rounded rounded-lg"
                     />
                   </div>
                   <div className="pb-4 h-60">
                     <img
-                      src={property.file}
+                      src={property?.file}
                       alt="photo"
                       className="h-60 w-full rounded rounded-lg"
                     />
                   </div>
                   <div className="pb-4 h-60">
                     <img
-                      src={property.file}
+                      src={property?.file}
                       alt="photo"
                       className="h-60 w-full rounded rounded-lg"
                     />
@@ -139,7 +166,7 @@ const TenantPropertiesScreen = () => {
                 <div className="flex justify-between">
                   <div className="pt-4">
                     <h2 className="text-2xl font-medium text-nrvGreyBlack pt-2">
-                      {property.city}, {property.state}
+                      {property?.city}, {property?.state}
                     </h2>
                   </div>
 
@@ -210,7 +237,7 @@ const TenantPropertiesScreen = () => {
                           />
                         </svg>
                       </div>
-                      <div>{property.streetAddress}</div>
+                      <div>{property?.streetAddress}</div>
                     </div>
                   </div>
                   <div
@@ -224,7 +251,7 @@ const TenantPropertiesScreen = () => {
                         variant="ordinary"
                         showIcon={false}
                       >
-                        {property.propertyType.toUpperCase()}
+                        {property?.propertyType.toUpperCase()}
                       </Button>
                       <Button
                         size="smaller"
@@ -252,6 +279,7 @@ const TenantPropertiesScreen = () => {
 
                   <div>
                     <Button
+                      onClick={()=>handleSubmit()}
                       size="large"
                       className=""
                       variant="bluebg"
@@ -412,7 +440,7 @@ const TenantPropertiesScreen = () => {
                   <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
                     Phone Number :
                     <span className="text-nrvLightGrey pl-1.5">
-                      {property.createdBy?.phoneNumber}
+                      {property?.createdBy?.phoneNumber}
                     </span>
                   </div>
                 </li>
@@ -422,7 +450,7 @@ const TenantPropertiesScreen = () => {
                   <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
                     Mail Address :
                     <span className="text-nrvLightGrey pl-1.5">
-                      {property.createdBy?.email}
+                      {property?.createdBy?.email}
                     </span>
                   </div>
                 </li>

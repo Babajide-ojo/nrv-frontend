@@ -1,13 +1,13 @@
+"use client"
+
 import GroupPeople from "../../../../public/images/group-people.png";
 import Image from "next/image";
-import { FaStar, FaRegStar, FaArrowRightLong } from "react-icons/fa6";
+import { FaStar, FaRegStar } from "react-icons/fa6";
 import Button from "../../shared/buttons/Button";
 import HoverableCard from "@/app/components/shared/cards/HoverableCard";
 import { CardData } from "@/helpers/data";
-import { SlArrowRightCircle } from "react-icons/sl";
-import { BiSolidRightArrowCircle } from "react-icons/bi";
-import { FaSearch, FaSearchPlus } from "react-icons/fa";
 import GuideCard from "../../shared/cards/GuideCard";
+import { useRouter } from 'next/navigation';
 
 interface Feature {
   imageUrl: string;
@@ -20,7 +20,11 @@ interface Testimonials {
   title: string;
 }
 
+
+
 const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
+
+
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", height: "100%" }}>
@@ -510,6 +514,7 @@ const Footer: React.FC = () => {
 };
 
 const HeroSection = () => {
+  const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="text-center md:pt-4 pt-16">
@@ -536,8 +541,10 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      <div className="mt-8">
-        <Button showIcon={true} size="large" variant="darkPrimary">
+      <div className="mt-8" >
+        <Button showIcon={true} size="large" variant="darkPrimary" onClick={() => {
+          router.push('/sign-up')
+        }}>
           Get Started
         </Button>
       </div>

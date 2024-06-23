@@ -8,17 +8,14 @@ import { MdDelete } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getPropertyById,
-  updateProperty,
-} from "../../../redux/slices/propertySlice";
-
+import { getPropertyById, updateProperty } from "../../../redux/slices/propertySlice";
 import dynamic from "next/dynamic";
 import { deleteDocumentById } from "../../../redux/slices/propertySlice";
+
 const Viewer = dynamic(() => import("react-viewer"), { ssr: false });
 const PropertyDocuments = () => {
   const dispatch = useDispatch();
-  const { error, data } = useSelector((state: any) => state.property);
+  const { data } = useSelector((state: any) => state.property);
   const { id } = useParams();
   const router = useRouter();
   const [landlordInsuranceFiles, setLandlordInsuranceFiles] = useState<File[]>(
@@ -35,6 +32,7 @@ const PropertyDocuments = () => {
   const [viewerVisible, setViewerVisible] = useState<boolean>(true);
   const [pdf, setPdf] = useState<any>(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [fileUrl, setFileUrl] = useState<string>("");
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFileError("");
@@ -114,7 +112,7 @@ const PropertyDocuments = () => {
     }
   };
 
-  const [fileUrl, setFileUrl] = useState<string>("");
+
   const viewDocument = (item: string) => {
     const fileType = getFileExtension(item);
     if (

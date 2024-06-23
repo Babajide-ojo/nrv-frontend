@@ -73,7 +73,7 @@ const TenantDashboardScreen = () => {
                   </svg>
                 </div>
 
-                <div className="md:text-lg text-sm">Lease Agreement Docs</div>
+                <div className="md:text-lg text-sm font-light">Lease Agreement Docs</div>
               </div>
               <div className="w-full md:h-30 h-30 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer light flex flex-col justify-end p-4 text-center">
                 <div className="text-center flex justify-center mb-2">
@@ -111,7 +111,7 @@ const TenantDashboardScreen = () => {
                   </svg>
                 </div>
 
-                <div className="md:text-lg text-sm">Request Maintenance</div>
+                <div className="md:text-lg text-sm font-light">Request Maintenance</div>
               </div>
               <div className="w-full md:h-30 h-30 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer light flex flex-col justify-end p-4 text-center">
                 <div className="text-center flex justify-center mb-2">
@@ -149,7 +149,7 @@ const TenantDashboardScreen = () => {
                   </svg>
                 </div>
 
-                <div className="md:text-lg text-sm">E Documents</div>
+                <div className="md:text-lg text-sm font-light">E Documents</div>
               </div>
             </div>
           </div>

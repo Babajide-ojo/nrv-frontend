@@ -20,23 +20,23 @@ const links = [
   },
   {
     name: "Messages",
-    route: "/dashboard/landlord/messages",
+    route: "/dashboard/landlord",
   },
   {
     name: "Renters",
-    route: "/dashboard/landlord/renters",
+    route: "/dashboard/landlord/properties/renters",
   },
   {
     name: "Maintenance",
-    route: "/dashboard/landlord/maintenance",
+    route: "/dashboard/landlord",
   },
   {
     name: "Reports",
-    route: "/dashboard/landlord/reports",
+    route: "/dashboard/landlord",
   },
   {
     name: "Settings",
-    route: "/dashboard/landlord/settings",
+    route: "/dashboard/landlord",
   },
 ];
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {

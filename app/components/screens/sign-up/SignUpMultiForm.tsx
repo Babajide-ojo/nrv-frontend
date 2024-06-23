@@ -297,7 +297,7 @@ const SignUpMultiForm: React.FC = () => {
                   error={errors.firstName}
                 />
               </div>
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
+              <div className="md:w-1/2 w-full mt-4 md:mt-0" >
                 <InputField
                   label="Last Name"
                   placeholder="Enter Last Name"
@@ -422,10 +422,9 @@ const SignUpMultiForm: React.FC = () => {
               className="block w-full"
               variant="bluebg"
               showIcon={false}
-              disabled={isLoading} // Disable button while loading
+              disabled={isLoading} 
             >
-              {isLoading ? "Loading..." : "Continue"}{" "}
-              {/* Show loading text if loading */}
+              {isLoading ? "Loading..." : "Continue"}
             </Button>
           </div>
         </div>

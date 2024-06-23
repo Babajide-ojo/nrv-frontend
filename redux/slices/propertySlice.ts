@@ -9,13 +9,6 @@ interface PropertyState {
     error: string | null;
 }
 
-interface GetPropertyByUserIdArgs {
-    id: any;
-    page: number;
-  }
-
-
-
 interface FormData {
     streetAddress: string;
     unit: string;
@@ -26,12 +19,9 @@ interface FormData {
     createdBy: string;
 }
 
-
 interface UserId {
     id: any;
 }
-
-
 
 const initialState: PropertyState = {
     data: null,
@@ -73,9 +63,7 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
     }
 );
 
-
-  
-  export const getPropertyByUserId = createAsyncThunk<any, {}>(
+export const getPropertyByUserId = createAsyncThunk<any, {}>(
     "property/get",
     async (formData: any, { rejectWithValue }) => {
       try {
@@ -89,9 +77,9 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
         }
       }
     }
-  );
+);
     
-  export const getAllProperty = createAsyncThunk<any, {}>(
+export const getAllProperty = createAsyncThunk<any, {}>(
     "property/all",
     async (formData: any, { rejectWithValue }) => {
       try {
@@ -105,7 +93,7 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
         }
       }
     }
-  );
+);
 
 export const getPropertyById = createAsyncThunk<UserId, {}>(
     "single-property/get",
@@ -186,6 +174,70 @@ export const deletePropertyById = createAsyncThunk<UserId, {}>(
         }
     }
 )
+
+export const applyForProperty = createAsyncThunk< FormData, {}>(
+    "property/apply",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.post(`${API_URL}/properties/apply`, formData);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const getApplicationsByLandlordId = createAsyncThunk<any, {}>(
+    "property/application",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/applications?id=${formData.id}&page=${formData.page}&status=${formData.status}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
+export const updateApplicationStatus = createAsyncThunk<any, {}>(
+    "property/application-update",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/application/update-status?id=${formData.id}&status=${formData.status}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
+export const inviteApplicant = createAsyncThunk<any, {}>(
+    "property/invite-applicant",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/application/invite-applicant?name=${formData.name}&email=${formData.email}&landlordId=1`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
 
 
 const propertySlice = createSlice({
@@ -269,6 +321,42 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getAllProperty.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getApplicationsByLandlordId.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getApplicationsByLandlordId.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getApplicationsByLandlordId.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(updateApplicationStatus.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(updateApplicationStatus.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(updateApplicationStatus.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(inviteApplicant.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(inviteApplicant.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(inviteApplicant.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

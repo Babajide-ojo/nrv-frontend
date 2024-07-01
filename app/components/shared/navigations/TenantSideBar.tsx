@@ -23,15 +23,15 @@ const links = [
     route: "/dashboard/tenant",
   },
   {
-    name: "Renters",
+    name: "Payments",
+    route: "/dashboard/tenant",
+  },
+  {
+    name: "Documents",
     route: "/dashboard/tenant",
   },
   {
     name: "Maintenance",
-    route: "/dashboard/tenant",
-  },
-  {
-    name: "Reports",
     route: "/dashboard/tenant",
   },
   {

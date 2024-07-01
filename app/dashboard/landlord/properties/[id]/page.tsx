@@ -396,7 +396,7 @@ const SingleProperty = () => {
                     name="streetAddress"
                     value={propertyData.streetAddress}
                     onChange={handleInputChange}
-                    error={errors.streetAddress} // Corrected error prop name
+                    error={errors.streetAddress} 
                   />
                 </div>
                 <div className="w-full mt-4">

@@ -87,7 +87,6 @@ const PropertiesScreen = () => {
     }
 
     const formData = new FormData();
-
     formData.append("streetAddress", propertyData.streetAddress);
     formData.append("unit", propertyData.unit);
     formData.append("city", propertyData.city);
@@ -108,7 +107,6 @@ const PropertiesScreen = () => {
         zipCode: "",
         propertyType: "",
       });
-
       setLoading(false);
       setCurrentStep(1);
     } catch (error: any) {

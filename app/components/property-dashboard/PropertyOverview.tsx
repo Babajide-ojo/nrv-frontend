@@ -20,7 +20,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
     <div className="pb-12 md:pb-0">
       <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl p-4">
         <div className="flex justify-between border-b border-b-1 mb-4">
-          <div className="font-light text-nrvDarkBlue">Rooms</div>
+          <div className="font-medium text-nrvDarkBlue">Apartments</div>
           <div>
             <Button
               size="normal"
@@ -33,7 +33,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
             >
               <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
                 <BsPlusCircleFill size={15} />
-                Add Room
+                Add Apartment
               </div>
             </Button>
           </div>

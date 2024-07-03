@@ -12,7 +12,7 @@ interface FileViewerProps {
 const FileViewer: React.FC<FileViewerProps> = ( {initialFileUrl} ) => {
   const [viewerVisible, setViewerVisible] = useState<boolean>(true);
   const [fileUrl, setFileUrl] = useState<any>(initialFileUrl);
-  console.log({fileUrl});
+
 
   useEffect(() => {
     setFileUrl(initialFileUrl);
@@ -23,11 +23,8 @@ const FileViewer: React.FC<FileViewerProps> = ( {initialFileUrl} ) => {
   };
 
   const getFileExtension = (filename: any) => {
-    console.log({filename});
-    
     if (filename && filename) {
       const parts = filename.split(".");
-      console.log({parts});
       
       if (parts.length > 1) {
         return parts.pop()?.toLowerCase() || null;

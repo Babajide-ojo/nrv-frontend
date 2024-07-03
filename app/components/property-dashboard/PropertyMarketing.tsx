@@ -1,6 +1,11 @@
 import Button from "../shared/buttons/Button";
+import PropertyOptions from "./PropertyOptions";
 
-const PropertyMarketing = () => {
+
+interface Data {
+  data: any;
+}
+const PropertyMarketing : React.FC<Data> = ({ data }) => {
   return (
     <div className="pb-12 md:pb-0 md:flex gap-6">
       <div className="md:w-1/2 w-full">
@@ -175,78 +180,7 @@ const PropertyMarketing = () => {
           </div>
         </div>
       </div>
-      <div className="md:w-1/2 w-full mt-4 md:mt-0">
-        <div className="bg-white rounded rounded-2xl p-4">
-          <div className="text-start text-nrvDarkBlue font-semibold text-[15px]  pb-12">
-            Objectives
-          </div>
-
-          <div className="w-full mt-6">
-            <Button
-              size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-            >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                List room
-              </div>
-            </Button>
-          </div>
-
-          <div className="w-full mt-6">
-            <Button
-              size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-            >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                Invite to apply
-              </div>
-            </Button>
-          </div>
-
-          <div className="w-full mt-6">
-            <Button
-              size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-            >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                Screen a tenant
-              </div>
-            </Button>
-          </div>
-
-          <div className="w-full mt-6">
-            <Button
-              size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-            >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                Build a lease agreement
-              </div>
-            </Button>
-          </div>
-
-          <div className="w-full mt-6">
-            <Button
-              size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-            >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                E-sign a document
-              </div>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <PropertyOptions data={data} />
     </div>
   );
 };

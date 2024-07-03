@@ -5,7 +5,7 @@ import LoadingPage from "../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import {getAllProperty,} from "../../../../redux/slices/propertySlice";
+import {getAllProperty, getAllPropertyForTenant,} from "../../../../redux/slices/propertySlice";
 import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "../../../components/layout/TenantLayout";
 import PropertyCard from "../../../components/shared/cards/PropertyCard";
@@ -30,9 +30,9 @@ const TenantPropertiesScreen = () => {
     };
 
     try {
-      const response = await dispatch(getAllProperty(formData) as any); // Pass page parameter
+      const response = await dispatch(getAllPropertyForTenant(formData) as any); // Pass page parameter
       setProperties(response?.payload?.data);
-      setTotalPages(response?.totalPages);
+     // setTotalPages(response?.totalPages);
     } catch (error) {
       console.error("Error fetching properties:", error);
     } finally {
@@ -102,9 +102,9 @@ const TenantPropertiesScreen = () => {
                     router.push(`/dashboard/tenant/properties/${property._id}`)
                   }}>
                     <PropertyCard
-                      imageUrl={property.file}
-                      address={property.streetAddress}
-                      rentAmount="200,000"
+                      imageUrl={property?.file}
+                      address={property?.propertyId.streetAddress}
+                      rentAmount={property?.rentAmount}
                       property={property}
                     />
                   </div>

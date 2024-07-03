@@ -31,9 +31,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
       <div className="pt-4" style={{ maxHeight: "100px", minHeight: "100px" }}>
         <h2 className="text-lg font-medium text-nrvGreyBlack pt-2">
-          {property.city}, {property.state}
+          {property.propertyId.city}, {property.propertyId.state}
         </h2>
-        <h2 className="text-sm font-medium text-nrvLightGrey pt-2">{address}</h2>
+        <h2 className="text-sm text-nrvLightGrey pt-2">
+          {address}
+        </h2>
       </div>
       <div className="pt-4" style={{ maxHeight: "50px", minHeight: "50px" }}>
         <div className="flex gap-2">
@@ -43,15 +45,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             variant="ordinary"
             showIcon={false}
           >
-            {property.propertyType.toUpperCase()}
-          </Button>
-          {/* <Button
-            size="smaller"
-            className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-            variant="ordinary"
-            showIcon={false}
-          >
-            3 Bedrooms
+            {property?.noOfRooms} Rooms
           </Button>
           <Button
             size="smaller"
@@ -59,9 +53,16 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             variant="ordinary"
             showIcon={false}
           >
-            2 Pools
-          </Button> */}
-          
+            {property?.noOfBaths} Baths
+          </Button>
+          <Button
+            size="smaller"
+            className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+            variant="ordinary"
+            showIcon={false}
+          >
+            {property?.noOfPools} Pools
+          </Button>
         </div>
       </div>
       <div
@@ -69,7 +70,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         style={{ maxHeight: "50px", minHeight: "50px" }}
       >
         <div className="text-md font-medium text-nrvGreyBlack pt-4">
-          {rentAmount}/month
+          {property?.rentAmount}/ <span className="font-light">{property?.rentAmountMetrics}</span>
         </div>
       </div>
     </div>

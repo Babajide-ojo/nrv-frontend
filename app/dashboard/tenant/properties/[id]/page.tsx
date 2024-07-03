@@ -207,11 +207,8 @@ const TenantPropertiesScreen = () => {
   };
 
   const handleSubmit = async () => {
-    // if (!validateForm()) {
-    //   return;
-    // }
     const formData: any = new FormData();
-    console.log({ property });
+
 
     formData.append("propertyId", property?._id);
     formData.append("applicant", user?._id);
@@ -221,7 +218,10 @@ const TenantPropertiesScreen = () => {
     formData.append("jobTitle", applicationData.jobTitle);
     formData.append("monthlyIncome", applicationData.monthlyIncome);
     formData.append("jobStartDate", applicationData.jobStartDate);
-    formData.append("criminalRecordDetails",applicationData.criminalRecordDetails);
+    formData.append(
+      "criminalRecordDetails",
+      applicationData.criminalRecordDetails
+    );
     formData.append("numberOfVehicles", applicationData.numberOfVehicles);
     formData.append("petNumber", applicationData.petNumber);
     formData.append("evictionHistory", selectedEvictionOption.value);
@@ -237,7 +237,6 @@ const TenantPropertiesScreen = () => {
 
     try {
       setLoading(true);
-      console.log("hello");
       await dispatch(applyForProperty(formData) as any).unwrap();
       toast.success("Your property application has been sent to the landlord");
       setApplicationData({
@@ -309,21 +308,21 @@ const TenantPropertiesScreen = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
                     <div className="pb-4 h-60">
                       <img
-                        src={property?.file}
+                        src={property?.property?.file}
                         alt="photo"
                         className="h-60 w-full rounded rounded-lg"
                       />
                     </div>
                     <div className="pb-4 h-60">
                       <img
-                        src={property?.file}
+                        src={property?.property?.file}
                         alt="photo"
                         className="h-60 w-full rounded rounded-lg"
                       />
                     </div>
                     <div className="pb-4 h-60">
                       <img
-                        src={property?.file}
+                        src={property?.property?.file}
                         alt="photo"
                         className="h-60 w-full rounded rounded-lg"
                       />
@@ -332,7 +331,8 @@ const TenantPropertiesScreen = () => {
                   <div className="flex justify-between">
                     <div className="pt-4">
                       <h2 className="text-2xl font-medium text-nrvGreyBlack pt-2">
-                        {property?.city}, {property?.state}
+                        {property?.property.propertyId.city},{" "}
+                        {property?.property.propertyId.state}
                       </h2>
                     </div>
 
@@ -403,7 +403,7 @@ const TenantPropertiesScreen = () => {
                             />
                           </svg>
                         </div>
-                        <div>{property?.streetAddress}</div>
+                        <div>{property?.property.propertyId.streetAddress}</div>
                       </div>
                     </div>
                     <div
@@ -417,7 +417,7 @@ const TenantPropertiesScreen = () => {
                           variant="ordinary"
                           showIcon={false}
                         >
-                          {property?.propertyType.toUpperCase()}
+                          {property?.property.propertyId.propertyType}
                         </Button>
                         <Button
                           size="smaller"
@@ -425,7 +425,7 @@ const TenantPropertiesScreen = () => {
                           variant="ordinary"
                           showIcon={false}
                         >
-                          3 Bedrooms
+                          {property?.property.noOfRooms} Rooms
                         </Button>
                         <Button
                           size="smaller"
@@ -433,14 +433,23 @@ const TenantPropertiesScreen = () => {
                           variant="ordinary"
                           showIcon={false}
                         >
-                          2 Pools
+                          {property?.property.noOfPools} Pools
+                        </Button>
+                        <Button
+                          size="smaller"
+                          className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+                          variant="ordinary"
+                          showIcon={false}
+                        >
+                          {property?.property.noOfBaths} Baths
                         </Button>
                       </div>
                     </div>
                   </div>
                   <div className="flex justify-between">
                     <div className="text-xl font-medium text-nrvGreyBlack pt-4">
-                      2,000,000/month
+                      {property?.property?.rentAmount}/
+                      {property?.property?.rentAmountMetrics}
                     </div>
 
                     <div>
@@ -463,12 +472,7 @@ const TenantPropertiesScreen = () => {
                       Description:
                     </h2>
                     <div className="text-md text-nrvGreyBlack">
-                      Imagine a cozy country house surrounded by hills. It has
-                      two bedrooms, one bathroom, and a cozy living room with a
-                      fireplace. The porch has great views, perfect for watching
-                      sunsets. There&lsquo;s a beautiful garden with a small
-                      stream nearby. It&lsquo;s a peaceful place for people who
-                      love nature and quiet.
+                      {property?.property?.description}
                     </div>
                   </div>
                   <div
@@ -932,7 +936,7 @@ const TenantPropertiesScreen = () => {
                   <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
                     Phone Number :
                     <span className="text-nrvLightGrey pl-1.5">
-                      {property?.createdBy?.phoneNumber}
+                      {property?.property.propertyId.createdBy?.phoneNumber}
                     </span>
                   </div>
                 </li>
@@ -942,7 +946,7 @@ const TenantPropertiesScreen = () => {
                   <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
                     Mail Address :
                     <span className="text-nrvLightGrey pl-1.5">
-                      {property?.createdBy?.email}
+                      {property?.property.propertyId.createdBy?.email}
                     </span>
                   </div>
                 </li>

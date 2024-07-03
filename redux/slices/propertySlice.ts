@@ -95,6 +95,21 @@ export const getAllProperty = createAsyncThunk<any, {}>(
     }
 );
 
+export const getAllPropertyForTenant = createAsyncThunk<any, {}>(
+    "property-tenant/all",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/rooms/all?page=${formData.page}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
 export const getPropertyById = createAsyncThunk<UserId, {}>(
     "single-property/get",
     async (id: any, { rejectWithValue }) => {
@@ -115,7 +130,7 @@ export const getPropertyByIdForTenant = createAsyncThunk<UserId, {}>(
     "single-property-tenant/get",
     async (body: any, { rejectWithValue }) => {
         try {
-            const response: any = await axios.get(`${API_URL}/properties/single/tenant/${body?.id}/${body?.tenantId}`);
+            const response: any = await axios.get(`${API_URL}/rooms/single/tenant/${body?.id}/${body?.tenantId}`);
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -244,6 +259,22 @@ export const inviteApplicant = createAsyncThunk<any, {}>(
     async (formData: any, { rejectWithValue }) => {
       try {
         const response = await axios.get(`${API_URL}/properties/application/invite-applicant?name=${formData.name}&email=${formData.email}&landlordId=1`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
+export const updateRoomStatus = createAsyncThunk<any, {}>(
+    "room/update-status",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/rooms/update/status?id=${formData.id}&status=${formData.status}`);
         return response.data;
       } catch (error: any) {
         if (error.response.data.message) {
@@ -385,6 +416,30 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getPropertyByIdForTenant.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(updateRoomStatus.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(updateRoomStatus.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(updateRoomStatus.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getAllPropertyForTenant.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getAllPropertyForTenant.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getAllPropertyForTenant.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

@@ -1,0 +1,11 @@
+name:name
+description:description
+propertyId:66783d30573b3cb6667092be
+targetDeposit:targetDeposit
+targetRent:targetRent
+rentAmountMetrics:rentAmountMetrics
+rentAmount:rentAmount
+noOfRooms:1
+noOfBaths:2
+noOfPools:3
+otherAmentities:otherAmentities

@@ -15,13 +15,18 @@ import PropertyExpenses from "../../../../components/property-dashboard/Property
 import { getPropertyByUserId } from "@/redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
-import { getPropertyById, updateProperty, deletePropertyById } from '../../../../../redux/slices/propertySlice';
+import {
+  getPropertyById,
+  updateProperty,
+  deletePropertyById,
+} from "../../../../../redux/slices/propertySlice";
 import { SlCloudUpload } from "react-icons/sl";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { RiDeleteBin7Line } from "react-icons/ri";
+import SingleRoom from "../rooms/[id]/page";
 const propertyDashboardLinks: any = [
   {
     id: 1,
@@ -56,7 +61,7 @@ interface Property {
 }
 
 interface PropertyData {
-  _id: any
+  _id: any;
   streetAddress: string;
   unit: string;
   city: string;
@@ -129,8 +134,8 @@ const SingleProperty = () => {
         zipCode: propertyData.zipCode,
         propertyType: selectedOption.value,
       },
-      id: propertyData._id
-    }
+      id: propertyData._id,
+    };
     try {
       setLoading(true);
       await dispatch(updateProperty(formData) as any).unwrap();
@@ -145,7 +150,7 @@ const SingleProperty = () => {
       });
       const properties = await dispatch(getPropertyById(id) as any).unwrap();
       setPropertyData(properties?.data);
-      setSingleProperty(properties?.data)
+      setSingleProperty(properties?.data);
       const selectedPropertyType = [
         { value: "office", label: "Office" },
         { value: "duplex", label: "Duplex" },
@@ -153,8 +158,7 @@ const SingleProperty = () => {
       ].filter((item) => item.value == properties?.data?.propertyType);
       setSelectedOption(selectedPropertyType);
       setLoading(false);
-      toast.success("Property updated successfully")
-
+      toast.success("Property updated successfully");
     } catch (error: any) {
       setLoading(false);
       toast.error(error);
@@ -213,7 +217,7 @@ const SingleProperty = () => {
       await dispatch(deletePropertyById(id) as any);
       toast.success("Property deleted successfully");
       setLoading(false);
-      router.push("/dashboard/landlord/properties")
+      router.push("/dashboard/landlord/properties");
     } catch (error) {
       toast.error("An error occured while uploding document");
       setLoading(false);
@@ -237,7 +241,7 @@ const SingleProperty = () => {
 
   const openDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);
-    setShowEditProperty(false)
+    setShowEditProperty(false);
   };
 
   const closeDeleteConfirmation = () => {
@@ -256,7 +260,7 @@ const SingleProperty = () => {
       try {
         const properties = await dispatch(getPropertyById(id) as any).unwrap();
         setPropertyData(properties?.data);
-        setSingleProperty(properties?.data)
+        setSingleProperty(properties?.data);
         const selectedPropertyType = [
           { value: "office", label: "Office" },
           { value: "duplex", label: "Duplex" },
@@ -274,274 +278,273 @@ const SingleProperty = () => {
     <div>
       <ProtectedRoute>
         <LandLordLayout>
-        <ToastContainer />
-            <div>
-              <div className="flex justify-between px-4 py-12 md:px-24 md:py-12">
-                <div>
-                  <div className="flex gap-2">
-                    <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
-                      <BsHouse color="white" size={35} />
-                    </div>
-                    {/* <img
+          <ToastContainer />
+          <div>
+            <div className="flex justify-between px-4 py-12 md:px-24 md:py-12">
+              <div>
+                <div className="flex gap-2">
+                  <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
+                    <BsHouse color="white" size={35} />
+                  </div>
+                  {/* <img
                           src={property.file}
                           className="h-16 w-16"
                           alt="Property"
                         /> */}
-                    <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
-                      {singleProperty?.streetAddress}
-                    </p>
-                  </div>
-                  <div className="flex gap-3 mt-4">
-                    <Button
-                      size="normal"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
-                      variant="lightGrey"
-                      showIcon={false}
-                    >
-                      <div className="flex gap-3 p-1.5">Rental ID: 1340201</div>
-                    </Button>
-                    <Button
-                      size="normal"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
-                      variant="lightGrey"
-                      showIcon={false}
-                    >
-                      <div className="flex gap-3 p-1.5">Rent: ₦0.00</div>
-                    </Button>
-                  </div>
+                  <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
+                    {singleProperty?.streetAddress}
+                  </p>
                 </div>
+                {/* <div className="flex gap-3 mt-4">
+                    <Button
+                      size="normal"
+                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
+                      variant="lightGrey"
+                      showIcon={false}
+                    >
+                      <div className="flex gap-3 p-1.5">Unit ID: {}</div>
+                    </Button>
+                    <Button
+                      size="normal"
+                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
+                      variant="lightGrey"
+                      showIcon={false}
+                    >
+                      <div className="flex gap-3 p-1.5">Rent: {}</div>
+                    </Button>
+                  </div> */}
+              </div>
 
-                <div>
-                  <div
-                    className="p-2 border border-gray-500 rounded rounded-full"
+              <div>
+                <div
+                  className="p-2 border border-gray-500 rounded rounded-full"
+                  onClick={() => {
+                    showProperty();
+                  }}
+                >
+                  <PiPencilSimpleLight />
+                </div>
+              </div>
+            </div>
+            <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
+              {propertyDashboardLinks.map((item: any) => (
+                <div key={item.id}>
+                  <Button
+                    size="large"
+                    className={` text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                      currentState === item.id
+                        ? "bg-nrvDarkBlue text-white"
+                        : "bg-nrvGreyMediumBg"
+                    }`}
+                    variant="ordinary"
+                    showIcon={false}
                     onClick={() => {
-                      showProperty();
+                      setCurrentState(item.id);
                     }}
                   >
-                    <PiPencilSimpleLight />
-                  </div>
+                    <div className="text-xs  md:text-md p-2">{item.name}</div>
+                  </Button>
                 </div>
-              </div>
-              <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
-                {propertyDashboardLinks.map((item: any) => (
-                  <div key={item.id}>
-                    <Button
-                      size="large"
-                      className={` text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
-                        currentState === item.id
-                          ? "bg-nrvDarkBlue text-white"
-                          : "bg-nrvGreyMediumBg"
-                      }`}
-                      variant="ordinary"
-                      showIcon={false}
-                      onClick={() => {
-                        setCurrentState(item.id);
-                      }}
-                    >
-                      <div className="text-xs  md:text-md p-2">{item.name}</div>
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="px-4 py-12 md:px-24 md:py-12">
-                {currentState === 1 && singleProperty && (
-                  <PropertyOverview data={singleProperty} />
-                )}
-                {currentState === 2 && <PropertyMarketing />}
-                {currentState === 3 && <PropertyMaintenance />}
-                {currentState === 4 && <PropertyDocuments />}
-                {currentState === 5 && <PropertyExpenses />}
-              </div>
+              ))}
             </div>
+
+            <div className="px-4 py-12 md:px-24 md:py-12">
+              {currentState === 1 && singleProperty && (
+                <PropertyOverview data={singleProperty} />
+              )}
+              {currentState === 2 && <PropertyMarketing data={SingleRoom} />}
+              {currentState === 3 && <PropertyMaintenance />}
+              {currentState === 4 && <PropertyDocuments />}
+              {currentState === 5 && <PropertyExpenses />}
+            </div>
+          </div>
           {showEditProperty && (
-      <div
-      id="overlay"
-      className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
-    >
-      <div className="bg-white w-4/5 md:w-3/5 p-4 relative mt-32 rounded-t-3xl overflow-auto max-h-full">
-        <button
-          className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvDarkBlue rounded-full px-2.5 py-2.5"
-          onClick={() => {
-            openDeleteConfirmation()
-          }}
-        >
-          <RiDeleteBin7Line className="text-nrvDarkBlue" />
-        </button>
-    
-        <form onSubmit={handleNextAndVerify}>
-          <div className="w-full md:w-1/2 mx-auto p-0 md:p-8 justify-center">
-            <div>
-              <div className="mx-auto pt-8">
-                <div className="w-full mt-4">
-                  <SelectField
-                    label="Property Type"
-                    name="propertyType"
-                    value={selectedOption}
-                    onChange={handleChange}
-                    options={[
-                      { value: "office", label: "Office" },
-                      { value: "duplex", label: "Duplex" },
-                      { value: "flat", label: "Flat" },
-                    ]}
-                    placeholder="Select Property Type"
-                  />
-                </div>
-                <div className="w-full mt-4">
-                  <InputField
-                    css="bg-white"
-                    label="Street Address"
-                    placeholder="Enter Street Address"
-                    inputType="text"
-                    name="streetAddress"
-                    value={propertyData.streetAddress}
-                    onChange={handleInputChange}
-                    error={errors.streetAddress} 
-                  />
-                </div>
-                <div className="w-full mt-4">
-                  <InputField
-                    css="bg-white"
-                    label="Unit (Optional)"
-                    placeholder="Enter Unit"
-                    inputType="text"
-                    name="unit"
-                    value={singleProperty.propertyType}
-                    onChange={handleInputChange}
-                    error={errors.unit} // Corrected error prop name
-                  />
-                </div>
-                <div className="w-full mt-4 flex gap-3">
-                  <div className="w-1/2">
-                    <InputField
-                      css="bg-white"
-                      label="City"
-                      placeholder="Enter City"
-                      inputType="text"
-                      name="city"
-                      value={propertyData.city}
-                      onChange={handleInputChange}
-                      error={errors.city} // Corrected error prop name
-                    />
-                  </div>
-                  <div className="w-1/2">
-                    <InputField
-                      css="bg-white"
-                      label="State"
-                      placeholder="Enter State"
-                      inputType="text"
-                      name="state"
-                      value={propertyData.state}
-                      onChange={handleInputChange}
-                      error={errors.state} // Corrected error prop name
-                    />
-                  </div>
-                </div>
-                <div className="w-full mt-4">
-                  <InputField
-                    css="bg-white"
-                    label="Zip Code"
-                    placeholder="Enter Zip Code"
-                    inputType="text"
-                    name="zipCode"
-                    value={propertyData.zipCode}
-                    onChange={handleInputChange}
-                    error={errors.zipCode} // Corrected error prop name
-                  />
-                </div>
-                <div className="w-full mt-4">
-                  <label className="text-nrvGreyBlack mb-2 text-sm">
-                    Property Photo
-                  </label>
-                  <div
-                    className="text-center w-full mt-2"
-                    onDrop={handleFileDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                  >
-                    <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
-                      <input
-                        type="file"
-                        id="fileInput"
-                        className="hidden"
-                        accept=".png, .jpg , .jpeg"
-                        onChange={handleFileInputChange}
-                      />
-                      <label
-                        htmlFor="fileInput"
-                        className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
-                      >
-                        <div className="text-center flex justify-center">
-                          {selectedFiles.length > 0 ? (
-                            selectedFiles[0]?.name
-                          ) : (
-                            <SlCloudUpload size={30} fontWeight={900} />
-                          )}
+            <div
+              id="overlay"
+              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+            >
+              <div className="bg-white w-4/5 md:w-3/5 p-4 relative mt-32 rounded-t-3xl overflow-auto max-h-full">
+                <button
+                  className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvDarkBlue rounded-full px-2.5 py-2.5"
+                  onClick={() => {
+                    openDeleteConfirmation();
+                  }}
+                >
+                  <RiDeleteBin7Line className="text-nrvDarkBlue" />
+                </button>
+
+                <form onSubmit={handleNextAndVerify}>
+                  <div className="w-full md:w-1/2 mx-auto p-0 md:p-8 justify-center">
+                    <div>
+                      <div className="mx-auto pt-8">
+                        <div className="w-full mt-4">
+                          <SelectField
+                            label="Property Type"
+                            name="propertyType"
+                            value={selectedOption}
+                            onChange={handleChange}
+                            options={[
+                              { value: "office", label: "Office" },
+                              { value: "duplex", label: "Duplex" },
+                              { value: "flat", label: "Flat" },
+                            ]}
+                            placeholder="Select Property Type"
+                          />
                         </div>
-                        {selectedFiles.length > 0
-                          ? "Change file"
-                          : "Click to upload"}
-                      </label>
+                        <div className="w-full mt-4">
+                          <InputField
+                            css="bg-white"
+                            label="Street Address"
+                            placeholder="Enter Street Address"
+                            inputType="text"
+                            name="streetAddress"
+                            value={propertyData.streetAddress}
+                            onChange={handleInputChange}
+                            error={errors.streetAddress}
+                          />
+                        </div>
+                        <div className="w-full mt-4">
+                          <InputField
+                            css="bg-white"
+                            label="Unit (Optional)"
+                            placeholder="Enter Unit"
+                            inputType="text"
+                            name="unit"
+                            value={singleProperty.propertyType}
+                            onChange={handleInputChange}
+                            error={errors.unit} // Corrected error prop name
+                          />
+                        </div>
+                        <div className="w-full mt-4 flex gap-3">
+                          <div className="w-1/2">
+                            <InputField
+                              css="bg-white"
+                              label="City"
+                              placeholder="Enter City"
+                              inputType="text"
+                              name="city"
+                              value={propertyData.city}
+                              onChange={handleInputChange}
+                              error={errors.city} // Corrected error prop name
+                            />
+                          </div>
+                          <div className="w-1/2">
+                            <InputField
+                              css="bg-white"
+                              label="State"
+                              placeholder="Enter State"
+                              inputType="text"
+                              name="state"
+                              value={propertyData.state}
+                              onChange={handleInputChange}
+                              error={errors.state} // Corrected error prop name
+                            />
+                          </div>
+                        </div>
+                        <div className="w-full mt-4">
+                          <InputField
+                            css="bg-white"
+                            label="Zip Code"
+                            placeholder="Enter Zip Code"
+                            inputType="text"
+                            name="zipCode"
+                            value={propertyData.zipCode}
+                            onChange={handleInputChange}
+                            error={errors.zipCode} // Corrected error prop name
+                          />
+                        </div>
+                        <div className="w-full mt-4">
+                          <label className="text-nrvGreyBlack mb-2 text-sm">
+                            Property Photo
+                          </label>
+                          <div
+                            className="text-center w-full mt-2"
+                            onDrop={handleFileDrop}
+                            onDragOver={(e) => e.preventDefault()}
+                          >
+                            <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
+                              <input
+                                type="file"
+                                id="fileInput"
+                                className="hidden"
+                                accept=".png, .jpg , .jpeg"
+                                onChange={handleFileInputChange}
+                              />
+                              <label
+                                htmlFor="fileInput"
+                                className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
+                              >
+                                <div className="text-center flex justify-center">
+                                  {selectedFiles.length > 0 ? (
+                                    selectedFiles[0]?.name
+                                  ) : (
+                                    <SlCloudUpload size={30} fontWeight={900} />
+                                  )}
+                                </div>
+                                {selectedFiles.length > 0
+                                  ? "Change file"
+                                  : "Click to upload"}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-center mt-4 gap-4">
+                        <Button
+                          type="submit"
+                          size="large"
+                          className="max-w-md w-full mb-8"
+                          disabled={loading ? true : false}
+                          variant="bluebg"
+                          showIcon={false}
+                        >
+                          {loading ? "Submitting" : "Save"}
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setShowEditProperty(false);
+                          }}
+                          type="button"
+                          size="large"
+                          className="max-w-md w-full mb-8"
+                          disabled={loading ? true : false}
+                          variant="lightGrey"
+                          showIcon={false}
+                        >
+                          Close
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="flex justify-center mt-4 gap-4">
-                <Button
-                  type="submit"
-                  size="large"
-                  className="max-w-md w-full mb-8"
-                  disabled={loading ? true : false}
-                  variant="bluebg"
-                  showIcon={false}
-                >
-                  {loading ? "Submitting" : "Save"}
-                </Button>
-                <Button
-                   onClick={() => {
-                    setShowEditProperty(false);
-                  }}
-                  type="button"
-                  size="large"
-                  className="max-w-md w-full mb-8"
-                  disabled={loading ? true : false}
-                  variant="lightGrey"
-                  showIcon={false}
-                >
-                 Close
-                </Button>
+                </form>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </div>
-    
           )}
 
-{showDeleteConfirmation && (
-        <div
-          id="overlay"
-          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
-        >
-          <div className="bg-white p-8 rounded shadow-md text-center">
-            <p>Are you sure you want to delete this property?</p>
-            <div className="mt-4 flex justify-center space-x-4">
-              <button
-                onClick={deleteProperty}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Yes
-              </button>
-              <button
-                onClick={closeDeleteConfirmation}
-                className="bg-gray-500 text-white px-4 py-2 rounded"
-              >
-                No
-              </button>
+          {showDeleteConfirmation && (
+            <div
+              id="overlay"
+              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+            >
+              <div className="bg-white p-8 rounded shadow-md text-center">
+                <p>Are you sure you want to delete this property?</p>
+                <div className="mt-4 flex justify-center space-x-4">
+                  <button
+                    onClick={deleteProperty}
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    onClick={closeDeleteConfirmation}
+                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                  >
+                    No
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
         </LandLordLayout>
       </ProtectedRoute>
     </div>

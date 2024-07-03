@@ -72,7 +72,7 @@ const PropertyMaintenance = () => {
               showIcon={false}
             >
               <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                List room
+                List Apartment
               </div>
             </Button>
           </div>

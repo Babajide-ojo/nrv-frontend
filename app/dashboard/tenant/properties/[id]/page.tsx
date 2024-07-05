@@ -65,67 +65,7 @@ const TenantPropertiesScreen = () => {
     zoom: 11,
   };
 
-  const validateForm = () => {
-    let errors: { [key: string]: string } = {};
 
-    if (!applicationData.currentEmployer.trim()) {
-      errors.currentEmployer = "Current employer is required";
-    }
-    if (!applicationData.jobTitle.trim()) {
-      errors.jobTitle = "Job title is required";
-    }
-    if (!applicationData.monthlyIncome.trim()) {
-      errors.monthlyIncome = "Monthly income is required";
-    }
-    if (!applicationData.jobStartDate.trim()) {
-      errors.jobStartDate = "Job start date is required";
-    }
-    if (!applicationData.criminalRecord.trim()) {
-      errors.criminalRecord = "Criminal record status is required";
-    }
-    if (
-      applicationData.criminalRecord &&
-      !applicationData.criminalRecordDetails.trim()
-    ) {
-      errors.criminalRecordDetails = "Criminal record details are required";
-    }
-    if (!applicationData.numberOfVehicles.trim()) {
-      errors.numberOfVehicles = "Number of vehicles is required";
-    }
-    if (!applicationData.petNumber.trim()) {
-      errors.petNumber = "Number of pets is required";
-    }
-    if (!applicationData.smoker.trim()) {
-      errors.smoker = "Smoker status is required";
-    }
-    if (!applicationData.evictionHistory.trim()) {
-      errors.evictionHistory = "Eviction history is required";
-    }
-    if (
-      applicationData.evictionHistory &&
-      !applicationData.evictionDetails.trim()
-    ) {
-      errors.evictionDetails = "Eviction details are required";
-    }
-    if (!applicationData.currentLandlord.trim()) {
-      errors.currentLandlord = "Current landlord is required";
-    }
-    if (!applicationData.currentAddress.trim()) {
-      errors.currentAddress = "Current address is required";
-    }
-    if (!applicationData.reasonForLeaving.trim()) {
-      errors.reasonForLeaving = "Reason for leaving is required";
-    }
-    if (!applicationData.leaseStartDate.trim()) {
-      errors.leaseStartDate = "Lease start date is required";
-    }
-    if (!applicationData.leaseEndDate.trim()) {
-      errors.leaseEndDate = "Lease end date is required";
-    }
-
-    setErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -206,64 +146,72 @@ const TenantPropertiesScreen = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    const formData: any = new FormData();
+const handleSubmit = async () => {
+  const formData: any = new FormData();
 
+  // Append all the form data fields
+  formData.append("propertyId", id);
+  formData.append("applicant", user?._id);
+  formData.append("status", "New");
+  formData.append("ownerId", property?.property.propertyId.createdBy?._id);
+  formData.append("currentEmployer", applicationData.currentEmployer);
+  formData.append("jobTitle", applicationData.jobTitle);
+  formData.append("monthlyIncome", applicationData.monthlyIncome);
+  //formData.append("jobStartDate", applicationData.jobStartDate);
+  formData.append("criminalRecordDetails", applicationData.criminalRecordDetails);
+  formData.append("numberOfVehicles", applicationData.numberOfVehicles);
+  formData.append("petNumber", applicationData.petNumber);
+  formData.append("evictionHistory", selectedEvictionOption?.value);
+  formData.append("smoker", selectedSmokerOption?.value);
+  formData.append("criminalRecord", selectedCriminalOption?.value);
+  formData.append("evictionDetails", applicationData.evictionDetails);
+  formData.append("currentLandlord", applicationData.currentLandlord);
+  formData.append("currentAddress", applicationData.currentAddress);
+  formData.append("reasonForLeaving", applicationData.reasonForLeaving);
+  formData.append("leaseStartDate", applicationData.leaseStartDate);
+  formData.append("leaseEndDate", applicationData.leaseEndDate);
+  formData.append("file", applicationData.file);
 
-    formData.append("propertyId", property?._id);
-    formData.append("applicant", user?._id);
-    formData.append("status", "New");
-    formData.append("ownerId", property?.createdBy?._id);
-    formData.append("currentEmployer", applicationData.currentEmployer);
-    formData.append("jobTitle", applicationData.jobTitle);
-    formData.append("monthlyIncome", applicationData.monthlyIncome);
-    formData.append("jobStartDate", applicationData.jobStartDate);
-    formData.append(
-      "criminalRecordDetails",
-      applicationData.criminalRecordDetails
-    );
-    formData.append("numberOfVehicles", applicationData.numberOfVehicles);
-    formData.append("petNumber", applicationData.petNumber);
-    formData.append("evictionHistory", selectedEvictionOption.value);
-    formData.append("smoker", selectedSmokerOption.value);
-    formData.append("criminalRecord", selectedCriminalOption.value);
-    formData.append("evictionDetails", applicationData.evictionDetails);
-    formData.append("currentLandlord", applicationData.currentLandlord);
-    formData.append("currentAddress", applicationData.currentAddress);
-    formData.append("reasonForLeaving", applicationData.reasonForLeaving);
-    formData.append("leaseStartDate", applicationData.leaseStartDate);
-    formData.append("leaseEndDate", applicationData.leaseEndDate);
-    formData.append("file", applicationData.file);
+  // Check if any field in formData is empty
+  const values = Array.from(formData.values());
+  console.log({values});
+  
+  if (values.some(value => !value)) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      await dispatch(applyForProperty(formData) as any).unwrap();
-      toast.success("Your property application has been sent to the landlord");
-      setApplicationData({
-        currentEmployer: "",
-        jobTitle: "",
-        monthlyIncome: "",
-        jobStartDate: "",
-        criminalRecord: "",
-        criminalRecordDetails: "",
-        numberOfVehicles: "",
-        petNumber: "",
-        smoker: "",
-        evictionHistory: "",
-        evictionDetails: "",
-        currentLandlord: "",
-        currentAddress: "",
-        reasonForLeaving: "",
-        leaseStartDate: "",
-        leaseEndDate: "",
-      });
-      setTimeout(() => {
-        router.push("/dashboard/tenant/properties");
-      }, 2000);
-    } catch (error: any) {
-      toast.error(error);
-    }
-  };
+  try {
+    setLoading(true);
+    
+    await dispatch(applyForProperty(formData) as any).unwrap();
+    toast.success("Your property application has been sent to the landlord");
+    setApplicationData({
+      currentEmployer: "",
+      jobTitle: "",
+      monthlyIncome: "",
+      jobStartDate: "",
+      criminalRecord: "",
+      criminalRecordDetails: "",
+      numberOfVehicles: "",
+      petNumber: "",
+      smoker: "",
+      evictionHistory: "",
+      evictionDetails: "",
+      currentLandlord: "",
+      currentAddress: "",
+      reasonForLeaving: "",
+      leaseStartDate: "",
+      leaseEndDate: "",
+    });
+    setTimeout(() => {
+      router.push("/dashboard/tenant/properties");
+    }, 2000);
+  } catch (error: any) {
+    toast.error(error);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -518,22 +466,13 @@ const TenantPropertiesScreen = () => {
                 <div className="">
                   <p className="mt-8">Applicant Details</p>
                   <div className="w-full md:flex block gap-4">
-                    <div className="w-full mt-2">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Current Address"
-                        inputType="text"
-                        name="currentAddress"
-                        value={applicationData.currentAddress}
-                        onChange={handleInputChange}
-                        error={errors.currentAddress} // Corrected error prop name
-                      />
-                    </div>
+                   
                     <div className="w-full mt-2">
                       <InputField
                         css="bg-nrvLightGreyBg"
                         placeholder="Desired Move In Date"
-                        inputType="text"
+                        inputType="date"
+                        label="Desired Move In Date"
                         name="moveInDate"
                         value={applicationData.moveInDate}
                         onChange={handleInputChange}
@@ -542,10 +481,11 @@ const TenantPropertiesScreen = () => {
                     </div>
                     <div className="w-full mt-2">
                       <InputField
-                        css="bg-nrvLightGreyBg"
+                        css="bg-nrvLightGreyBg text-sm"
                         placeholder="Upload ID Card"
                         inputType="file"
                         name="file"
+                        label="Upload Identification Card"
                         //value={applicationData.file}
                         onChange={handleFileInputChange}
                         error={errors.file} // Corrected error prop name
@@ -561,17 +501,21 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Current Employer"
                         inputType="text"
+                        label="Current Employer Name"
                         name="currentEmployer"
+                
                         value={applicationData.currentEmployer}
                         onChange={handleInputChange}
                         error={errors.currentEmployer} // Corrected error prop name
                       />
+                      <p className="text-nrvDarkBlue text-xs">Enter your name if self employed</p>
                     </div>
                     <div className="w-full mt-4">
                       <InputField
                         css="bg-nrvLightGreyBg"
                         placeholder="Position/Job Title"
                         inputType="text"
+                        label="Position/Job Title"
                         name="jobTitle"
                         value={applicationData.jobTitle}
                         onChange={handleInputChange}
@@ -586,6 +530,7 @@ const TenantPropertiesScreen = () => {
                         placeholder="Employment Start Date"
                         inputType="date"
                         name="employmentStartDate"
+                        label="Employment Start Date"
                         value={applicationData.employmentStartDate}
                         onChange={handleInputChange}
                         error={errors.employmentStartDate} // Corrected error prop name
@@ -596,6 +541,7 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Monthly Income"
                         inputType="text"
+                        label="Monthly Income"
                         name="monthlyIncome"
                         value={applicationData.monthlyIncome}
                         onChange={handleInputChange}
@@ -611,6 +557,7 @@ const TenantPropertiesScreen = () => {
                       <InputField
                         css="bg-nrvLightGreyBg"
                         placeholder="Current Landlord"
+                        label="Current Landlord Name"
                         inputType="text"
                         name="currentLandlord"
                         value={applicationData.currentLandlord}
@@ -623,6 +570,7 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Current Address"
                         inputType="text"
+                        label="Current Address"
                         name="currentAddress"
                         value={applicationData.currentAddress}
                         onChange={handleInputChange}
@@ -633,6 +581,7 @@ const TenantPropertiesScreen = () => {
                       <InputField
                         css="bg-nrvLightGreyBg"
                         placeholder="Lease Start Date"
+                        label="Lease Start Date"
                         inputType="date"
                         name="leaseStartDate"
                         value={applicationData.leaseStartDate}
@@ -646,7 +595,8 @@ const TenantPropertiesScreen = () => {
                       <InputField
                         css="bg-nrvLightGreyBg"
                         placeholder="Lease End Date"
-                        inputType="text"
+                        inputType="date"
+                        label="Lease End Date"
                         name="leaseEndDate"
                         value={applicationData.leaseEndDate}
                         onChange={handleInputChange}
@@ -658,6 +608,7 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Reason for Living"
                         inputType="text"
+                        label="Reason for Living"
                         name="reasonForLeaving"
                         value={applicationData.reasonForLeaving}
                         onChange={handleInputChange}
@@ -706,6 +657,7 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Full Name"
                         inputType="text"
+                        label="Reference Full Name"
                         name="referenceFullName"
                         value={applicationData.referenceFullName}
                         onChange={handleInputChange}
@@ -717,6 +669,7 @@ const TenantPropertiesScreen = () => {
                         css="bg-nrvLightGreyBg"
                         placeholder="Phone Number"
                         inputType="text"
+                        label="Reference Phone Number"
                         name="referencePhoneNumber"
                         value={applicationData.referencePhoneNumber}
                         onChange={handleInputChange}

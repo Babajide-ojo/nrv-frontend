@@ -333,18 +333,31 @@ const LeadScreen = () => {
                   {" "}
                   Actions
                 </div>
-                <div className="flex mt-4">
+                <div className="flex mt-4 gap-4">
                   <Button
                     onClick={() => {
                       handleSubmit("Rejected");
                     }}
                     size="normal"
-                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
+                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-red-400"
                     variant="mediumGrey"
                     showIcon={false}
                   >
                     <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
                       Reject Applicant
+                    </div>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSubmit("Rejected");
+                    }}
+                    size="normal"
+                    className="p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
+                    variant="bluebg"
+                    showIcon={false}
+                  >
+                    <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
+                      Convert to Tenant
                     </div>
                   </Button>
                 </div>

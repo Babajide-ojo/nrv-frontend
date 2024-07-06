@@ -11,6 +11,8 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaCheckCircle } from "react-icons/fa";
+import InputField from "../../shared/input-fields/InputFields";
+import CenterModal from "../../shared/modals/CenterModal";
 
 const LeadScreen = () => {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ const LeadScreen = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isOpen, setIsOpen] = useState(false);
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -55,7 +58,7 @@ const LeadScreen = () => {
     try {
       setIsLoading(true);
       await dispatch(updateApplicationStatus(payload) as any).unwrap();
-      toast.success("Application accepted", {
+      toast.success("Application moved to tenant", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -71,6 +74,21 @@ const LeadScreen = () => {
     } catch (error: any) {
       toast.error(error);
     }
+  };
+
+  const handleInvitation = async () => {
+    // const payload = {
+    //   name: applicantDetails.fullName,
+    //   email: applicantDetails.email,
+    // };
+    // try {
+    //   setIsLoading(true);
+    //   await dispatch(inviteApplicant(payload) as any).unwrap();
+    //   toast.success("Invitation sent successfully");
+    //   setIsOpen(false);
+    // } catch (error: any) {
+    //   toast.error(error);
+    // }
   };
 
   useEffect(() => {
@@ -125,8 +143,6 @@ const LeadScreen = () => {
                 Easily manage all your leads as they automatically start coming
                 in.
               </div>
-
-       
             </div>
           )}
         </div>
@@ -202,19 +218,19 @@ const LeadScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Current Employer{" "}
                   </span>{" "}
-                  ABC Corporation
+                  {application?.currentEmployer}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Job Title{" "}
                   </span>{" "}
-                  Software Engineer
+                  {application?.jobTitle}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Monthly Income{" "}
                   </span>{" "}
-                  500000 Naira
+                  {application?.monthlyIncome}{" "} Naira
                 </div>
               </div>
               <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
@@ -226,19 +242,19 @@ const LeadScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Previous Landlord{" "}
                   </span>{" "}
-                  Jane Smith
+                  {application?.currentLandlord}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Previous Address{" "}
                   </span>{" "}
-                  456 Elm St, Lagos, Nigeria
+                  {application?.currentAddress}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Reason for Leaving{" "}
                   </span>{" "}
-                  Relocation
+                  {application?.reasonForLeaving}{" "}
                 </div>
               </div>
               <div className="mb-4 pb-4 px-2 md:mr-20 mr-3">
@@ -250,32 +266,32 @@ const LeadScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Criminal Record{" "}
                   </span>{" "}
-                  No criminal records
+                  {application?.criminalRecord === true ? "YES" : "NO"}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Eviction History{" "}
                   </span>{" "}
-                  No eviction records
+                  {application?.evictionHistory === true ? "YES" : "NO"}{" "}
                 </div>
               </div>
             </div>
 
             <div className="md:w-3/5 w-full">
-              <div className="mb-4 border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
+            <div className="mb-4 border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
                 <div className="mt-4 font-medium text-md text-nrvGreyBlack ">
                   {" "}
                   References
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reference 1
+                    Reference Full Name
                   </span>{" "}
                   {application?.applicant?.firstName}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reference 2
+              Phone Number
                   </span>
                   {application?.applicant?.lastName}
                 </div>
@@ -289,25 +305,25 @@ const LeadScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Desired Move-in Date
                   </span>{" "}
-                  July 2, 2024
+                  {application?.applicant?.firstName}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Pets{" "}
+                    Number of Pets{" "}
                   </span>{" "}
-                  No Pets
+                  {application?.petNumber}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Smoking
                   </span>{" "}
-                  Non Smoker
+                  {application?.smoker === true ? "YES" : "NO"}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Vehicles
+                    Number of Vehicles
                   </span>{" "}
-                  1
+                  {application?.numberOfVehicles}{" "}
                 </div>
               </div>
               <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
@@ -319,13 +335,14 @@ const LeadScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
                     ID Proof
                   </span>{" "}
-                  ID.pdf
+                  <a className="underline" href={application?.identificationCard}>View ID Card</a>
+              
                 </div>
                 <div className="mt-3 text-sm font-light cursor-pointer">
                   <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
                     Income Verification
                   </span>{" "}
-                  Bank Statement
+                  {application?.applicant?.firstName}{" "}
                 </div>
               </div>
               <div className="mb-4 pb-4 px-2 mr-3 md:ml-20 ml-3">
@@ -349,7 +366,7 @@ const LeadScreen = () => {
                   </Button>
                   <Button
                     onClick={() => {
-                      handleSubmit("Rejected");
+                    setIsOpen(true)
                     }}
                     size="normal"
                     className="p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
@@ -366,6 +383,53 @@ const LeadScreen = () => {
           </div>
         </div>
       )}
+
+      <CenterModal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <div className="mx-auto text-center p-4 w-full md:w-4/5">
+          <h2 className="text-nrvDarkBlue font-semibold text-xl">
+            Transfer Application as Tenant
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will make this applicant the current occupant of this property for the designated time
+          </p>
+
+          <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+            <Button
+              size="large"
+              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+              variant="bluebg"
+              showIcon={false}
+            >
+              <div
+                className="flex gap-3"
+                onClick={() => {
+                  handleSubmit("activeTenant")
+                }}
+              >
+                Submit
+              </div>
+            </Button>
+          </div>
+          <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
+            <Button
+              size="large"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              variant="mediumGrey"
+              showIcon={false}
+              onClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex gap-2">Close</div>
+            </Button>
+          </div>
+        </div>
+      </CenterModal>
     </div>
   );
 };

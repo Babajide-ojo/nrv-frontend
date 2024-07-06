@@ -7,37 +7,61 @@ import LandLordLayout from "../../../../components/layout/LandLordLayout";
 import EmptyState from "../../../../components/screens/empty-state/EmptyState";
 import Button from "../../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
-import LeadsScreen from '../../../../components/screens/renters/LeadsScreen';
-import ApplicantScreen from '../../../../components/screens/renters/ApplicantScreen';
-import TenantScreen from '../../../../components/screens/renters/TenantScreen';
+import LeadsScreen from "../../../../components/screens/renters/LeadsScreen";
+import ApplicantScreen from "../../../../components/screens/renters/ApplicantScreen";
+import TenantScreen from "../../../../components/screens/renters/TenantScreen";
+import { useDispatch } from "react-redux";
+import { getApplicationCount } from "../../../../../redux/slices/propertySlice";
 
-const propertyDashboardLinks: any = [
-  {
-    id: 1,
-    name: "Leads(0)",
-  },
-  {
-    id: 2,
-    name: "Applicants(0)",
-  },
-  {
-    id: 3,
-    name: "Tenants",
-  },
-];
+
 
 const MessageScreen = () => {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [showEmptyState, setShowEmptyState] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
+  const [user, setUser] = useState<any>({});
+  const [count, setCount] = useState<any>({});
+
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const formData = {
+      id: user?.user?._id,
+    };
+
+    try {
+      const response = await dispatch(getApplicationCount(formData) as any);
+      console.log({response: response.payload.data});
+      
+      setCount(response.payload.data);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 4000);
-
+    fetchData();
     return () => clearTimeout(timer);
   }, []);
+  const propertyDashboardLinks: any = [
+    {
+      id: 1,
+      name: `Leads(${count.totalAccepted})`,
+    },
+    {
+      id: 2,
+      name: `Applicants(${count.totalNew})`,
+    },
+    {
+      id: 3,
+      name:`Tenants(${count.totalActiveTenants})`,
+    },
+  ];
   return (
     <div>
       {isLoading ? (
@@ -102,12 +126,10 @@ const MessageScreen = () => {
                   ))}
                 </div>
                 <div className="p-3">
-    
-                {currentState === 1 && <LeadsScreen />}
-                {currentState === 2 && <ApplicantScreen />}
-                {currentState === 3 && <TenantScreen />}
-      
-              </div>
+                  {currentState === 1 && <LeadsScreen />}
+                  {currentState === 2 && <ApplicantScreen />}
+                  {currentState === 3 && <TenantScreen />}
+                </div>
               </div>
             )}
           </LandLordLayout>

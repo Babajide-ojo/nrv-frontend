@@ -4,13 +4,57 @@ import { dashboardMetrics, dashboardNavLinks } from "../../../../helpers/data";
 import Button from "../../shared/buttons/Button";
 import DashboardNavigationCard from "../../shared/cards/DashboardNavigationCard";
 import { useState } from "react";
+import { getApplicationCount } from "@/redux/slices/propertySlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const DashboardScreen = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [user, setUser] = useState<any>({});
+  const [count, setCount] = useState<any>({});
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
+    fetchData();
   }, []);
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const formData = {
+      id: user?.user?._id,
+    };
+
+    try {
+      const response = await dispatch(getApplicationCount(formData) as any);
+      console.log({ response: response.payload.data });
+
+      setCount(response.payload.data);
+    } catch (error) {
+    } finally {
+    }
+  };
+const dashboardMetrics = [
+    {
+      imageLink:
+        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+      title: "Tenants",
+      number: count.totalActiveTenants,
+    },
+    {
+      imageLink:
+        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+      title: "Leads",
+      number:  count.totalAccepted,
+    },
+    {
+      imageLink:
+        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+      title: "Applicants",
+      number:  count.totalNew,
+    },
+  ];
+
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
@@ -25,7 +69,7 @@ const DashboardScreen = () => {
         <div className="md:w-1/2 w-full">
           <div className=" grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
             {dashboardMetrics.map(({ title, imageLink, number }, index) => (
-              <div key={index}>
+              <div key={index} onClick={() => router.push('/dashboard/landlord/properties/renters')}>
                 <DashboardNavigationCard
                   title={title}
                   imageLink={imageLink}

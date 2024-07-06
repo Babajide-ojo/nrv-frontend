@@ -234,19 +234,19 @@ const ApplicantScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Current Employer{" "}
                   </span>{" "}
-                  ABC Corporation
+                  {application?.currentEmployer}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Job Title{" "}
                   </span>{" "}
-                  Software Engineer
+                  {application?.jobTitle}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Monthly Income{" "}
                   </span>{" "}
-                  500000 Naira
+                  {application?.monthlyIncome}{" "} Naira
                 </div>
               </div>
               <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
@@ -258,19 +258,19 @@ const ApplicantScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Previous Landlord{" "}
                   </span>{" "}
-                  Jane Smith
+                  {application?.currentLandlord}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Previous Address{" "}
                   </span>{" "}
-                  456 Elm St, Lagos, Nigeria
+                  {application?.currentAddress}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Reason for Leaving{" "}
                   </span>{" "}
-                  Relocation
+                  {application?.reasonForLeaving}{" "}
                 </div>
               </div>
               <div className="mb-4 pb-4 px-2 md:mr-20 mr-3">
@@ -282,13 +282,13 @@ const ApplicantScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Criminal Record{" "}
                   </span>{" "}
-                  No criminal records
+                  {application?.criminalRecord === true ? "YES" : "NO"}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Eviction History{" "}
                   </span>{" "}
-                  No eviction records
+                  {application?.evictionHistory === true ? "YES" : "NO"}{" "}
                 </div>
               </div>
             </div>
@@ -301,13 +301,13 @@ const ApplicantScreen = () => {
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reference 1
+                    Reference Full Name
                   </span>{" "}
                   {application?.applicant?.firstName}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reference 2
+              Phone Number
                   </span>
                   {application?.applicant?.lastName}
                 </div>
@@ -321,25 +321,25 @@ const ApplicantScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Desired Move-in Date
                   </span>{" "}
-                  July 2, 2024
+                  {application?.applicant?.firstName}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Pets{" "}
+                    Number of Pets{" "}
                   </span>{" "}
-                  No Pets
+                  {application?.petNumber}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Smoking
                   </span>{" "}
-                  Non Smoker
+                  {application?.smoker === true ? "YES" : "NO"}{" "}
                 </div>
                 <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
-                    Vehicles
+                    Number of Vehicles
                   </span>{" "}
-                  1
+                  {application?.numberOfVehicles}{" "}
                 </div>
               </div>
               <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
@@ -351,13 +351,14 @@ const ApplicantScreen = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
                     ID Proof
                   </span>{" "}
-                  ID.pdf
+                  <a className="underline" href={application?.identificationCard}>View ID Card</a>
+              
                 </div>
                 <div className="mt-3 text-sm font-light cursor-pointer">
                   <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
                     Income Verification
                   </span>{" "}
-                  Bank Statement
+                  {application?.applicant?.firstName}{" "}
                 </div>
               </div>
               <div className="mb-4 pb-4 px-2 mr-3 md:ml-20 ml-3">

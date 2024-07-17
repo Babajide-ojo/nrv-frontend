@@ -92,7 +92,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                 </div>
                 <div className="mt-6">
                   <h2 className="mb-2 text-nrvGreyBlack font-medium text-md">
-                    Employer's Address
+                    Employer&rsquos Address
                   </h2>
 
                   <p className="text-sm text-nrvGreyBlack font-light">

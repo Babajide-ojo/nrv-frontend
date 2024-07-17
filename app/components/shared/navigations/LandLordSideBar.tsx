@@ -23,7 +23,7 @@ const links = [
     route: "/dashboard/landlord",
   },
   {
-    name: "Renters",
+    name: "Tenants",
     route: "/dashboard/landlord/properties/renters",
   },
   {

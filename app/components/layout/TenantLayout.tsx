@@ -63,13 +63,11 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
             <IoPeopleOutline size={24} color="white" />
             <span className="text-xs text-white">Payment</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center">
-            <RxDashboard size={24} color="white" />
-            <span className="text-xs text-white">Documents</span>
-          </button>
-          <button className="py-3 w-full flex flex-col items-center">
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => {
+            router.push("/dashboard/tenant/rented-properties")
+          }}>
             <IoPeopleOutline size={24} color="white" />
-            <span className="text-xs text-white">Maintenance</span>
+            <span className="text-xs text-white">Rented Apartment</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center">
             <RxDashboard size={24} color="white" />

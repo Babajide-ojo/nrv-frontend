@@ -64,6 +64,7 @@ const ApplicantScreen = () => {
       setIsLoading(true);
       await dispatch(updateApplicationStatus(payload) as any).unwrap();
       toast.success("Application accepted");
+      router.push('/dashboard/landlord/properties/renters')
     } catch (error: any) {
       toast.error(error);
     }

@@ -43,7 +43,7 @@ const TenantScreen = () => {
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+ 
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
@@ -117,15 +117,15 @@ const TenantScreen = () => {
                         />
                       </div>
                       <div>
-                        <div className="text-nrvDarkBlue text-sm">
+                        <div className="text-nrvDarkBlue text-md">
                           {item?.applicant?.firstName}{" "}
                           {item?.applicant?.lastName}
                         </div>
-                        <div className="text-nrvDarkBlue text-xs">
+                        <div className="text-nrvDarkBlue text-sm">
                           {item?.applicant?.homeAddress}
                         </div>
-                        <div className="text-nrvLightGrey text-[12px]">
-                          Applied 2 days ago
+                        <div className="text-nrvDarkBlue text-sm underline mt-2">
+                         view property
                         </div>
                       </div>
                     </div>
@@ -353,7 +353,7 @@ const TenantScreen = () => {
                 <div className="flex mt-4 gap-4">
                   <Button
                     onClick={() => {
-                      handleSubmit("Rejected");
+                  router.push(`http://localhost:3000/dashboard/landlord/properties/rooms/${application.propertyId._id}`)
                     }}
                     size="normal"
                     className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-red-400"
@@ -361,7 +361,7 @@ const TenantScreen = () => {
                     showIcon={false}
                   >
                     <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                      Terminate Tenantship
+                     View Property
                     </div>
                   </Button>
                   <Button

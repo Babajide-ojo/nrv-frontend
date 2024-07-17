@@ -46,7 +46,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
     }
   };
   return (
-    <div className="md:w-1/2 w-full mt-4">
+    <div className="md:w-1/2 w-full mt-4 md:mt-0">
         <ToastContainer />
       <div className="bg-white rounded rounded-2xl p-4 m-1">
         <div className="text-start text-nrvDarkBlue font-semibold text-[15px]  pb-12">

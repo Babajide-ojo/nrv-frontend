@@ -43,7 +43,6 @@ const LeadScreen = () => {
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
-      console.error("Error fetching properties:", error);
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
@@ -54,25 +53,23 @@ const LeadScreen = () => {
     const payload = {
       id: application?._id,
       status: status,
+      roomId: application?.propertyId?._id
     };
+
+   
+    
     try {
       setIsLoading(true);
-      await dispatch(updateApplicationStatus(payload) as any).unwrap();
-      toast.success("Application moved to tenant", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        style: {
-          background: "#ffffff",
-          color: "#153969",
-        },
-        progressStyle: {
-          background: "#153969",
-        },
-        icon: <FaCheckCircle size={25} style={{ color: "#153969" }} />,
-      });
+      const data = await dispatch(updateApplicationStatus(payload) as any).unwrap();
+      if (data.response.statusCode === 400){
+        toast.error(data.response.message);
+      }
+  
+      router.push('/dashboard/landlord/properties/renters')
     } catch (error: any) {
       toast.error(error);
+    } finally {
+      setIsOpen(false)
     }
   };
 
@@ -96,6 +93,7 @@ const LeadScreen = () => {
   }, []);
   return (
     <div>
+      <ToastContainer />
       {currentStep === 1 && (
         <div>
           {properties && properties.length > 0 ? (

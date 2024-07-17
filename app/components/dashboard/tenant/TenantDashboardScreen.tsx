@@ -6,10 +6,12 @@ import {
 } from "../../../../helpers/data";
 import Button from "../../shared/buttons/Button";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import TenantDashboardNavigationCard from "../../shared/cards/TenantDashboardNavigationCard";
 
 const TenantDashboardScreen = () => {
   const [user, setUser] = useState<any>({});
+  const router = useRouter()
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
@@ -17,7 +19,7 @@ const TenantDashboardScreen = () => {
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        Hey {user?.firstName} 👋,
+        Hey {user?.firstName} {user?.lastName}👋,
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
         <span className="">
@@ -165,6 +167,9 @@ const TenantDashboardScreen = () => {
                 className=""
                 variant="lightGrey"
                 showIcon={false}
+                onClick={() => {
+                  router.push('/dashboard/tenant/properties')
+                }}
               >
                 View
               </Button>

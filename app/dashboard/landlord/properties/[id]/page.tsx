@@ -295,24 +295,7 @@ const SingleProperty = () => {
                     {singleProperty?.streetAddress}
                   </p>
                 </div>
-                {/* <div className="flex gap-3 mt-4">
-                    <Button
-                      size="normal"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
-                      variant="lightGrey"
-                      showIcon={false}
-                    >
-                      <div className="flex gap-3 p-1.5">Unit ID: {}</div>
-                    </Button>
-                    <Button
-                      size="normal"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue mt-2 rounded-md"
-                      variant="lightGrey"
-                      showIcon={false}
-                    >
-                      <div className="flex gap-3 p-1.5">Rent: {}</div>
-                    </Button>
-                  </div> */}
+        
               </div>
 
               <div>

@@ -27,12 +27,8 @@ const links = [
     route: "/dashboard/tenant",
   },
   {
-    name: "Documents",
-    route: "/dashboard/tenant",
-  },
-  {
-    name: "Maintenance",
-    route: "/dashboard/tenant",
+    name: "Rented Apartments",
+    route: "/dashboard/tenant/rented-properties",
   },
   {
     name: "Settings",

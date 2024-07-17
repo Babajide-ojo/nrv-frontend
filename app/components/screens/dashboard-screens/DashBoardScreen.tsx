@@ -18,6 +18,7 @@ const DashboardScreen = () => {
     setUser(user?.user);
     fetchData();
   }, []);
+  
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
@@ -27,8 +28,6 @@ const DashboardScreen = () => {
 
     try {
       const response = await dispatch(getApplicationCount(formData) as any);
-      console.log({ response: response.payload.data });
-
       setCount(response.payload.data);
     } catch (error) {
     } finally {

@@ -65,8 +65,6 @@ const TenantPropertiesScreen = () => {
     zoom: 11,
   };
 
-
-
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
@@ -146,72 +144,73 @@ const TenantPropertiesScreen = () => {
     }
   };
 
-const handleSubmit = async () => {
-  const formData: any = new FormData();
+  const handleSubmit = async () => {
+    const formData: any = new FormData();
 
-  // Append all the form data fields
-  formData.append("propertyId", id);
-  formData.append("applicant", user?._id);
-  formData.append("status", "New");
-  formData.append("ownerId", property?.property.propertyId.createdBy?._id);
-  formData.append("currentEmployer", applicationData.currentEmployer);
-  formData.append("jobTitle", applicationData.jobTitle);
-  formData.append("monthlyIncome", applicationData.monthlyIncome);
-  //formData.append("jobStartDate", applicationData.jobStartDate);
-  formData.append("criminalRecordDetails", applicationData.criminalRecordDetails);
-  formData.append("numberOfVehicles", applicationData.numberOfVehicles);
-  formData.append("petNumber", applicationData.petNumber);
-  formData.append("evictionHistory", selectedEvictionOption?.value);
-  formData.append("smoker", selectedSmokerOption?.value);
-  formData.append("criminalRecord", selectedCriminalOption?.value);
-  formData.append("evictionDetails", applicationData.evictionDetails);
-  formData.append("currentLandlord", applicationData.currentLandlord);
-  formData.append("currentAddress", applicationData.currentAddress);
-  formData.append("reasonForLeaving", applicationData.reasonForLeaving);
-  formData.append("leaseStartDate", applicationData.leaseStartDate);
-  formData.append("leaseEndDate", applicationData.leaseEndDate);
-  formData.append("file", applicationData.file);
+    // Append all the form data fields
+    formData.append("propertyId", id);
+    formData.append("applicant", user?._id);
+    formData.append("status", "New");
+    formData.append("ownerId", property?.property.propertyId.createdBy?._id);
+    formData.append("currentEmployer", applicationData.currentEmployer);
+    formData.append("jobTitle", applicationData.jobTitle);
+    formData.append("monthlyIncome", applicationData.monthlyIncome);
+    //formData.append("jobStartDate", applicationData.jobStartDate);
+    formData.append(
+      "criminalRecordDetails",
+      applicationData.criminalRecordDetails
+    );
+    formData.append("numberOfVehicles", applicationData.numberOfVehicles);
+    formData.append("petNumber", applicationData.petNumber);
+    formData.append("evictionHistory", selectedEvictionOption?.value);
+    formData.append("smoker", selectedSmokerOption?.value);
+    formData.append("criminalRecord", selectedCriminalOption?.value);
+    formData.append("evictionDetails", applicationData.evictionDetails);
+    formData.append("currentLandlord", applicationData.currentLandlord);
+    formData.append("currentAddress", applicationData.currentAddress);
+    formData.append("reasonForLeaving", applicationData.reasonForLeaving);
+    formData.append("leaseStartDate", applicationData.leaseStartDate);
+    formData.append("leaseEndDate", applicationData.leaseEndDate);
+    formData.append("file", applicationData.file);
 
-  // Check if any field in formData is empty
-  const values = Array.from(formData.values());
-  console.log({values});
-  
-  if (values.some(value => !value)) {
-    toast.error("Please fill in all required fields.");
-    return;
-  }
+    // Check if any field in formData is empty
+    const values = Array.from(formData.values());
 
-  try {
-    setLoading(true);
-    
-    await dispatch(applyForProperty(formData) as any).unwrap();
-    toast.success("Your property application has been sent to the landlord");
-    setApplicationData({
-      currentEmployer: "",
-      jobTitle: "",
-      monthlyIncome: "",
-      jobStartDate: "",
-      criminalRecord: "",
-      criminalRecordDetails: "",
-      numberOfVehicles: "",
-      petNumber: "",
-      smoker: "",
-      evictionHistory: "",
-      evictionDetails: "",
-      currentLandlord: "",
-      currentAddress: "",
-      reasonForLeaving: "",
-      leaseStartDate: "",
-      leaseEndDate: "",
-    });
-    setTimeout(() => {
-      router.push("/dashboard/tenant/properties");
-    }, 2000);
-  } catch (error: any) {
-    toast.error(error);
-  }
-};
+    if (values.some((value) => !value)) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
 
+    try {
+      setLoading(true);
+
+      await dispatch(applyForProperty(formData) as any).unwrap();
+      toast.success("Your property application has been sent to the landlord");
+      setApplicationData({
+        currentEmployer: "",
+        jobTitle: "",
+        monthlyIncome: "",
+        jobStartDate: "",
+        criminalRecord: "",
+        criminalRecordDetails: "",
+        numberOfVehicles: "",
+        petNumber: "",
+        smoker: "",
+        evictionHistory: "",
+        evictionDetails: "",
+        currentLandlord: "",
+        currentAddress: "",
+        reasonForLeaving: "",
+        leaseStartDate: "",
+        leaseEndDate: "",
+      });
+      setTimeout(() => {
+        router.push("/dashboard/tenant/properties");
+      }, 2000);
+    } catch (error: any) {
+      toast.error(error);
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -466,7 +465,6 @@ const handleSubmit = async () => {
                 <div className="">
                   <p className="mt-8">Applicant Details</p>
                   <div className="w-full md:flex block gap-4">
-                   
                     <div className="w-full mt-2">
                       <InputField
                         css="bg-nrvLightGreyBg"
@@ -503,12 +501,13 @@ const handleSubmit = async () => {
                         inputType="text"
                         label="Current Employer Name"
                         name="currentEmployer"
-                
                         value={applicationData.currentEmployer}
                         onChange={handleInputChange}
                         error={errors.currentEmployer} // Corrected error prop name
                       />
-                      <p className="text-nrvDarkBlue text-xs">Enter your name if self employed</p>
+                      <p className="text-nrvDarkBlue text-xs">
+                        Enter your name if self employed
+                      </p>
                     </div>
                     <div className="w-full mt-4">
                       <InputField

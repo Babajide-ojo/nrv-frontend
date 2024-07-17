@@ -16,7 +16,6 @@ interface OnboardingCardProps {
 const OnboardingCard: React.FC<OnboardingCardProps>  = ({ imageLink, title, description ,onReceiveData }) => {
 
     const sendDataToParent = (data: any) => {
-    
         onReceiveData(data);
       };
     

@@ -32,8 +32,6 @@ const MessageScreen = () => {
 
     try {
       const response = await dispatch(getApplicationCount(formData) as any);
-      console.log({response: response.payload.data});
-      
       setCount(response.payload.data);
     } catch (error) {
     } finally {

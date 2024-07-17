@@ -158,12 +158,6 @@ export const tenantDashboardMetrics = [
   },
   {
     imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
-    title: "Current Balance",
-    number: "550,000 NGN",
-  },
-  {
-    imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
     title: "Maintenance Issued",
     number: 20,
@@ -270,4 +264,19 @@ export const dashboardTenantNavLinks = [
     title: "Record an Expense",
     number: 0,
   }
+];
+
+export const tenantPropertyMetrics = [
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    title: "Rent Due",
+    number: 1,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Maintenance Issued",
+    number: 0,
+  },
 ];

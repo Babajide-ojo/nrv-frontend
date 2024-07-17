@@ -22,11 +22,12 @@ import RoomOverview from "../../../../../components/room-dashboard/RoomOverview"
 import PropertyUnitDetails from "../../../../../components/property-dashboard/PropertyUnitDetails";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 import { updateRoomStatus } from '../../../../../../redux/slices/propertySlice';
+import CurrentTenantDashboard from '../../../../../components/property-dashboard/CurrentTenantDashboard';
 
 const propertyDashboardLinks: any = [
   {
     id: 1,
-    name: "Unit Details",
+    name: "Apartment Details",
   },
   {
     id: 2,
@@ -35,6 +36,10 @@ const propertyDashboardLinks: any = [
   {
     id: 3,
     name: "Marketing",
+  },
+  {
+    id: 4,
+    name: "Tenant Details",
   },
 ];
 
@@ -178,6 +183,9 @@ const SingleRoom = () => {
                 {currentState === 3 && <PropertyMarketing data={singleRoom} />}
                 {currentState === 1 && (
                   <PropertyUnitDetails data={singleRoom} />
+                )}
+                   {currentState === 4 && (
+                  <CurrentTenantDashboard data={singleRoom} />
                 )}
               </div>
             </div>

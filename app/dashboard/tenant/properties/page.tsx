@@ -34,7 +34,7 @@ const TenantPropertiesScreen = () => {
       setProperties(response?.payload?.data);
      // setTotalPages(response?.totalPages);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+   
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch

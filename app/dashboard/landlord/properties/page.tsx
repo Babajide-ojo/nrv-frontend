@@ -40,7 +40,7 @@ const PropertiesScreen = () => {
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
@@ -145,15 +145,15 @@ const PropertiesScreen = () => {
                     <div className="w-3/5">
                       <div className="flex gap-2 ">
                      
-                      <div className="md:w-1/5 w-2/5">
+                      <div className="md:w-1/5 w-2/5 ">
                       <img
                           src={property.file}
-                          className="h-16 w-16 "
+                          className="h-20 w-20 rounded-md"
                           alt="Property"
                         />
                       </div>
                       
-                        <p className="md:w-4/5 w-3/5 text-xs text-nrvDarkGrey font-light">
+                        <p className="md:w-4/5 w-3/5 text- text-nrvDarkGrey font-light">
                           {property.streetAddress}
                         </p>
                       </div>
@@ -224,7 +224,7 @@ const PropertiesScreen = () => {
                 {singleProperty.streetAddress}
               </p>
 
-              <ul className="list-disc pl-6">
+              {/* <ul className="list-disc pl-6">
                 <li className="mb-2 flex md:items-center items-start mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
                   <div className="text-nrvDarkBlue md:text-md text-sm">
@@ -234,18 +234,7 @@ const PropertiesScreen = () => {
                     </span>
                   </div>
                 </li>
-                {/* <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
-                    Bedrooms: <span className="text-nrvLightGrey">  {singleProperty?.rooms?.length()}</span>
-                  </div>
-                </li> */}
-                {/* <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
-                    Baths:<span className="text-nrvLightGrey">5</span>
-                  </div>
-                </li> */}
+           
                 <li className="mb-2 flex items-center mt-4">
                   <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
                   <div className="text-nrvDarkBlue md:text-md text-sm">
@@ -264,7 +253,7 @@ const PropertiesScreen = () => {
                     <span className="text-nrvLightGrey"> ₦100,000</span>
                   </div>
                 </li>
-              </ul>
+              </ul> */}
               <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                 <Button
                   size="large"
@@ -280,7 +269,7 @@ const PropertiesScreen = () => {
                       );
                     }}
                   >
-                    View property
+                    View full details
                   </div>
                 </Button>
                 <Button

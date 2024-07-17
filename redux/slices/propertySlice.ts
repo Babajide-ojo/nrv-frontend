@@ -242,7 +242,12 @@ export const updateApplicationStatus = createAsyncThunk<any, {}>(
     "property/application-update",
     async (formData: any, { rejectWithValue }) => {
       try {
-        const response = await axios.get(`${API_URL}/properties/application/update-status?id=${formData.id}&status=${formData.status}`);
+        let apiUrl = `${API_URL}/properties/application/update-status?id=${formData.id}&status=${formData.status}`;
+
+        if (formData.roomId) {
+          apiUrl += `&roomId=${formData.roomId}`;
+        }
+        const response = await axios.get(apiUrl);
         return response.data;
       } catch (error: any) {
         if (error.response.data.message) {
@@ -302,6 +307,37 @@ export const getApplicationCount = createAsyncThunk<any, {}>(
     }
 );
 
+export const getCurrentTenantForProperty = createAsyncThunk<UserId, {}>(
+    "current-tenant/get",
+    async (id: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.get(`${API_URL}/rooms/active/tenant?id=${id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const getRentedApartmentsForTenant = createAsyncThunk<any, {}>(
+    "current-tenant/properties",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.get(`${API_URL}/rooms/properties/renters?id=${formData.id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
 
 const propertySlice = createSlice({
     name: "user",
@@ -468,6 +504,30 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getApplicationCount.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getCurrentTenantForProperty.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getCurrentTenantForProperty.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getCurrentTenantForProperty.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getRentedApartmentsForTenant.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getRentedApartmentsForTenant.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getRentedApartmentsForTenant.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

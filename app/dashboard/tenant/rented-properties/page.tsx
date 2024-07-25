@@ -122,10 +122,10 @@ const RentedPropertiesScreen = () => {
                         </p>
                       </div>
                     </div>
-                    <div className="w-2/5 text-end">
+                    <div className="w-2/5 text-end flec flex-col justify-between h-full">
                       <Button
                         size="small"
-                        className="text-nrvDarkBlue text-xs rounded border border-nrvDarkBlue mt-8"
+                        className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
                         variant="lightGrey"
                         showIcon={false}
                       >
@@ -137,9 +137,9 @@ const RentedPropertiesScreen = () => {
                             );
                           }}
                         >
-                          <p className="text-nrvDarkBlue text-sm p-1">
+                        
                             View details
-                          </p>
+               
                         </div>
                       </Button>
                     </div>

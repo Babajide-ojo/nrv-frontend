@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import { tenantDashboardMetrics, tenantPropertyMetrics } from "@/helpers/data";
 import TenantDashboardNavigationCard from "@/app/components/shared/cards/TenantDashboardNavigationCard";
+import Link from "next/link";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -149,7 +150,7 @@ const RentedPropertiesScreen = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="w-1/3">
+                    <Link href={`/dashboard/tenant/rented-properties/maintenance/${id}`} className="w-1/3">
                       <div className="w-full md:h-28 h-28 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer  p-4 justify-center text-center">
                         <div className="w-full justify-center flex">
                           <img
@@ -164,7 +165,7 @@ const RentedPropertiesScreen = () => {
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </div>

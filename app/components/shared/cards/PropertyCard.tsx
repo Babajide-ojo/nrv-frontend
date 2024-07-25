@@ -70,7 +70,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         style={{ maxHeight: "50px", minHeight: "50px" }}
       >
         <div className="text-md font-medium text-nrvGreyBlack pt-4">
-          {property?.rentAmount}/ <span className="font-light">{property?.rentAmountMetrics}</span>
+        ₦ {parseInt(property?.rentAmount).toLocaleString() }/ <span className="font-light">{property?.rentAmountMetrics}</span>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { IconType } from 'react-icons';
 import { BsDownload } from 'react-icons/bs';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary';
+  variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary' | 'roundedRec';
   size?: 'small' | 'normal' | 'large' | 'smaller';
   pill?: boolean;
   icon?: IconType | ReactElement; // Allowing IconType or JSX elements
@@ -26,13 +26,14 @@ const classes = {
     primary:
       ' rounded-2xl hover:text-white hover:bg-nrvDarkBlue border border-nrvDarkBlue outline-none text-nrvDarkBlue bg-white',
     darkPrimary: ' rounded-2xl outline-none bg-nrvDarkBlue text-white',
-    light: ' rounded-2xl bg-white text-nrvDarkBlue',
+    light: ' rounded-2xl bg-white text-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
     lightPrimary : ' rounded-2xl text-white border border-white bg-nrvDarkBlue',
-    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey',
+    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
     bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
-    lightGrey: 'rounded rounded-2xl text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969]',
-    mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue',
-    ordinary: ' rounded-2xl  border border-[#153969]'
+    lightGrey: 'rounded rounded-2xl text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969] hover:bg-nrvDarkBlue hover:text-white',
+    mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
+    ordinary: ' rounded-2xl  border border-[#153969]',
+    roundedRec: 'font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvDarkBlue'
   }
 };
 

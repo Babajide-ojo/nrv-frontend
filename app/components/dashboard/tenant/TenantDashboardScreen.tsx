@@ -42,7 +42,7 @@ const TenantDashboardScreen = () => {
               )
             )}
           </div>
-          <div>
+          {/* <div>
             <h2 className="text-lg my-4 text-nrvDarkGrey font-medium">Manage Apartments</h2>
             <div className="flex gap-6 w-full md:w-3/5">
               <div className="w-full md:h-30 h-30 bg-white border border-nrvLightGray hover:border-black rounded-2xl m-1 p-2 cursor-pointer light flex flex-col justify-end p-4 text-center hover:bg-nrvLightGreyBg">
@@ -154,7 +154,7 @@ const TenantDashboardScreen = () => {
                 <div className="md:text-lg text-sm font-light">E Documents</div>
               </div>
             </div>
-          </div>
+          </div> */}
           <h2 className="text-lg my-4 text-nrvDarkGrey font-medium">Other Properties</h2>
           <div className="w-full md:w-3/5 bg-white rounded-lg p-3 flex justify-between mb-4">
             <div className="pt-1 font-light">

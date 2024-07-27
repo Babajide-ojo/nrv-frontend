@@ -20,7 +20,7 @@ const Maintainance = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [maintenance, setMaintenance] = useState<any>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -58,7 +58,7 @@ const Maintainance = () => {
               <div className="flex justify-between items-center  mb-8">
               <div className="text-nrvGreyBlack mb-4 flex gap-3">
                   <BackIcon />
-                  <div className="text-xl font-medium text-nrvDarkGrey">
+                  <div className="md:text-xl text-md font-medium text-nrvDarkGrey">
                     Maintenance Requests
                   </div>
                 </div>

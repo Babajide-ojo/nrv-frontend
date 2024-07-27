@@ -103,12 +103,12 @@ const RequestMaintainance = () => {
         <ProtectedRoute>
           <TenantLayout>
             <ToastContainer />
-            <div className="py-10 px-20">
+            <div className="py-10 md:px-20 px-4">
               <div>
                 <div className="flex gap-4">
                 <div className="text-nrvGreyBlack mb-4 flex gap-3">
                   <BackIcon />
-                  <div className="text-xl font-medium text-nrvDarkGrey">
+                  <div className="md:text-xl text-md font-medium text-nrvDarkGrey">
                     Log Maintenance Request/Complain
                   </div>
                 </div>

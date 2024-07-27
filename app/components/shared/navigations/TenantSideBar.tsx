@@ -18,18 +18,16 @@ const links = [
     name: "Properties",
     route: "/dashboard/tenant/properties",
   },
-  {
-    name: "Messages",
-    route: "/dashboard/tenant",
-  },
-  {
-    name: "Payments",
-    route: "/dashboard/tenant",
-  },
+
   {
     name: "Rented Apartments",
     route: "/dashboard/tenant/rented-properties",
   },
+  {
+    name: "Messages",
+    route: "/dashboard/tenant",
+  },
+
   {
     name: "Settings",
     route: "/dashboard/tenant",

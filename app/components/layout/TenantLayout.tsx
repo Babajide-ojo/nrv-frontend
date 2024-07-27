@@ -46,7 +46,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
             router.push("/dashboard/tenant")
           }}>
             <RxDashboard size={24} color="white" />
-            <span className="text-xs text-white">Dashboard</span>
+            <span className="text-xs text-white">Home</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
             router.push("/dashboard/tenant/properties")
@@ -54,21 +54,18 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
             <IoMdHome size={24} color="white" />
             <span className="text-xs text-white">Properties</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center">
-            <FaMessage size={24} color="white" />
-            <span className="text-xs text-white">Messages</span>
-          </button>
- 
-          <button className="py-3 w-full flex flex-col items-center">
-            <IoPeopleOutline size={24} color="white" />
-            <span className="text-xs text-white">Payment</span>
-          </button>
+
           <button className="py-3 w-full flex flex-col items-center" onClick={() => {
             router.push("/dashboard/tenant/rented-properties")
           }}>
             <IoPeopleOutline size={24} color="white" />
-            <span className="text-xs text-white">Rented Apartment</span>
+            <span className="text-xs text-white">Apartments</span>
           </button>
+          <button className="py-3 w-full flex flex-col items-center">
+            <FaMessage size={24} color="white" />
+            <span className="text-xs text-white">Messages</span>
+          </button>
+    
           <button className="py-3 w-full flex flex-col items-center">
             <RxDashboard size={24} color="white" />
             <span className="text-xs text-white">Settings</span>

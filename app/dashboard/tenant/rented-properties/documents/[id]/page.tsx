@@ -18,6 +18,7 @@ import { tenantDashboardMetrics, tenantPropertyMetrics } from "@/helpers/data";
 import TenantDashboardNavigationCard from "@/app/components/shared/cards/TenantDashboardNavigationCard";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
 import { FaBackspace } from "react-icons/fa";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -73,31 +74,10 @@ const RentedPropertiesScreen = () => {
               <div>
                 <div className="p-8">
                   <div className="flex gap-4">
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        router.back();
-                      }}
-                    >
-                      <svg
-                        width="30"
-                        height="30"
-                        viewBox="0 0 30 30"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M19.6548 5L10.8333 13.8215C10.2778 14.377 10 14.6548 10 15C10 15.3452 10.2778 15.623 10.8333 16.1785L19.6548 25"
-                          stroke="#333333"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </div>
+                  <BackIcon />
                     <div className=" text-xl font-medium ">Documents</div>
                   </div>
-                  <div className=" text-md font-medium text-nrvLightGrey">
+                  <div className=" text-md font-light text-nrvDarkGrey">
                     Here are the documents for this apartments!
                   </div>
                   {property && <ApartmentDocuments data={property} />}

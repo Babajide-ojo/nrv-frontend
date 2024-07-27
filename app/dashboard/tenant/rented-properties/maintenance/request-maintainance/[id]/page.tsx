@@ -12,6 +12,7 @@ import { createMaintenance } from "../../../../../../../redux/slices/maintenance
 import { useParams } from "next/navigation";
 import { SlCloudUpload } from "react-icons/sl";
 import "react-toastify/dist/ReactToastify.css";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
 
 const RequestMaintainance = () => {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ const RequestMaintainance = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [fileError, setFileError] = useState<string>("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  
+
   const [_formData, setFormData] = useState<any>({
     title: "",
     description: "",
@@ -64,13 +65,11 @@ const RequestMaintainance = () => {
   const handleSubmit = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
 
-    const formData = new FormData();
+    const formData :any = new FormData();
 
     formData.append("title", _formData.title);
     formData.append("description", _formData.description);
     selectedFiles.forEach((file, index) => {
-      console.log({ file });
-
       formData.append(`file`, file);
     });
     formData.append("roomId", id);
@@ -106,9 +105,15 @@ const RequestMaintainance = () => {
             <ToastContainer />
             <div className="py-10 px-20">
               <div>
-                <p className="text-3xl font-medium">
-                  Create Maintenance Request
-                </p>
+                <div className="flex gap-4">
+                <div className="text-nrvGreyBlack mb-4 flex gap-3">
+                  <BackIcon />
+                  <div className="text-xl font-medium text-nrvDarkGrey">
+                    Log Maintenance Request/Complain
+                  </div>
+                </div>
+                </div>
+              
                 <p className="text-nrvLightGrey font-light max-w-[25rem]">
                   Create a request yourself to stay organized and keep accurate
                   records.
@@ -135,12 +140,13 @@ const RequestMaintainance = () => {
                     className="w-full rounded-lg border border-nrvLightGrey font-light w-full px-3 py-2 bg-nrvLightGreyBg focus:outline-none"
                     onChange={handleInputChange}
                     rows={5}
+                    value={_formData.description}
                   />
                 </div>
                 <div className="flex flex-col w-full">
                   <div className="w-full">
                     <label className="text-nrvGreyBlack mb-2 text-sm">
-                      Property Photos
+                      Upload an Image as a proof
                     </label>
                     <div
                       className="text-center w-full mt-2"
@@ -201,7 +207,7 @@ const RequestMaintainance = () => {
                       showIcon={false}
                       onClick={handleSubmit}
                     >
-                   {loading ? "Submitting" : "Submit Request"}
+                      {loading ? "Submitting" : "Submit Request"}
                     </Button>
                   </div>
                 </div>

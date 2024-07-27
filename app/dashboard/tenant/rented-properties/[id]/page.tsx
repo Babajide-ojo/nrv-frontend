@@ -56,7 +56,7 @@ const RentedPropertiesScreen = () => {
   }, [id]); // Dependency on `id` to refetch when it changes
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 ">
       {isLoading ? (
         <LoadingPage />
       ) : (
@@ -70,7 +70,7 @@ const RentedPropertiesScreen = () => {
             )}
 
             {property && (
-              <div className="p-6 md:p-8">
+              <div className="p-6 md:p-8 mb-40">
                 <div className="flex items-center mb-4 text-nrvGreyBlack mb-8">
                   <BackIcon width={24} height={24} />
                   <h3 className="ml-3 text-lg font-medium text-nrvDarkBlue">

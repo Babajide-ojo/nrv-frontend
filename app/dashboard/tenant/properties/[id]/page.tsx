@@ -19,6 +19,7 @@ import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
 
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
@@ -228,29 +229,11 @@ const TenantPropertiesScreen = () => {
               <div className="md:p-8 p-4">
                 <div>
                   <div className="text-2xl text-nrvGreyBlack mb-4 flex gap-3">
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        router.back();
-                      }}
-                    >
-                      <svg
-                        width="30"
-                        height="30"
-                        viewBox="0 0 30 30"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M19.6548 5L10.8333 13.8215C10.2778 14.377 10 14.6548 10 15C10 15.3452 10.2778 15.623 10.8333 16.1785L19.6548 25"
-                          stroke="#333333"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
+                    <BackIcon />
+                    <div className="text-lg text-nrvDarkGrey font-medium">
+                      {" "}
+                      Property Details
                     </div>
-                    <div> Property Details</div>
                   </div>
                   <div className="md:flex md:gap-8 block">
                     <div className="pb-4 h-100 md:w-1/2 w-full">
@@ -261,135 +244,134 @@ const TenantPropertiesScreen = () => {
                       />
                     </div>
                     <div className="md:w-1/2 w-full h-100 flex flex-col justify-between">
-                   <div>
-                   <div className="flex justify-between">
-                        <div className="">
-                          <h2 className="text-2xl font-medium text-nrvGreyBlack">
-                            {property?.property.propertyId.city},{" "}
-                            {property?.property.propertyId.state}
-                          </h2>
-
-                          
-                        </div>
-                        <div
-                          className="flex-col flex justify-end"
-                          onClick={() => setIsOpen(true)}
-                        >
-                          <svg
-                            width="50"
-                            height="50"
-                            viewBox="0 0 50 50"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                      <div>
+                        <div className="flex justify-between">
+                          <div className="">
+                            <h2 className="text-2xl font-medium text-nrvGreyBlack">
+                              {property?.property.propertyId.city},{" "}
+                              {property?.property.propertyId.state}
+                            </h2>
+                          </div>
+                          <div
+                            className="flex-col flex justify-end"
+                            onClick={() => setIsOpen(true)}
                           >
-                            <path
-                              d="M36.458 4.1665H16.6663C12.064 4.1665 8.33301 7.89746 8.33301 12.4998V37.4998C8.33301 42.1022 12.064 45.8332 16.6663 45.8332H36.458C41.0604 45.8332 44.7913 42.1022 44.7913 37.4998V12.4998C44.7913 7.89746 41.0604 4.1665 36.458 4.1665Z"
-                              fill="#153969"
-                              stroke="#153969"
-                              stroke-width="2"
-                            />
-                            <path
-                              d="M22.0625 28.6263C20.7526 29.5038 17.3179 31.2957 19.4099 33.5377C20.4318 34.633 21.57 35.4163 23.0008 35.4163H31.1658C32.5967 35.4163 33.735 34.633 34.7569 33.5377C36.8487 31.2957 33.4142 29.5038 32.1042 28.6263C29.0323 26.5686 25.1344 26.5686 22.0625 28.6263Z"
-                              stroke="#EEF0F2"
-                              stroke-width="2"
-                            />
-                            <path
-                              d="M31.2503 18.7497C31.2503 21.0509 29.3849 22.9163 27.0837 22.9163C24.7824 22.9163 22.917 21.0509 22.917 18.7497C22.917 16.4485 24.7824 14.583 27.0837 14.583C29.3849 14.583 31.2503 16.4485 31.2503 18.7497Z"
-                              stroke="#EEF0F2"
-                              stroke-width="2"
-                            />
-                            <path
-                              d="M10.4163 12.5H5.20801M10.4163 25H5.20801M10.4163 37.5H5.20801"
-                              stroke="#EEF0F2"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
+                            <svg
+                              width="50"
+                              height="50"
+                              viewBox="0 0 50 50"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M36.458 4.1665H16.6663C12.064 4.1665 8.33301 7.89746 8.33301 12.4998V37.4998C8.33301 42.1022 12.064 45.8332 16.6663 45.8332H36.458C41.0604 45.8332 44.7913 42.1022 44.7913 37.4998V12.4998C44.7913 7.89746 41.0604 4.1665 36.458 4.1665Z"
+                                fill="#153969"
+                                stroke="#153969"
+                                stroke-width="2"
+                              />
+                              <path
+                                d="M22.0625 28.6263C20.7526 29.5038 17.3179 31.2957 19.4099 33.5377C20.4318 34.633 21.57 35.4163 23.0008 35.4163H31.1658C32.5967 35.4163 33.735 34.633 34.7569 33.5377C36.8487 31.2957 33.4142 29.5038 32.1042 28.6263C29.0323 26.5686 25.1344 26.5686 22.0625 28.6263Z"
+                                stroke="#EEF0F2"
+                                stroke-width="2"
+                              />
+                              <path
+                                d="M31.2503 18.7497C31.2503 21.0509 29.3849 22.9163 27.0837 22.9163C24.7824 22.9163 22.917 21.0509 22.917 18.7497C22.917 16.4485 24.7824 14.583 27.0837 14.583C29.3849 14.583 31.2503 16.4485 31.2503 18.7497Z"
+                                stroke="#EEF0F2"
+                                stroke-width="2"
+                              />
+                              <path
+                                d="M10.4163 12.5H5.20801M10.4163 25H5.20801M10.4163 37.5H5.20801"
+                                stroke="#EEF0F2"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </div>
                         </div>
-
-                   
-                      </div>
-                      <div className="">
-                        <div className="pt-4">
-                          <div className="text-md font-400 text-nrvLightGrey pt-2 flex gap-2">
-                            <div>
-                              <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 20 20"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
+                        <div className="">
+                          <div className="pt-4">
+                            <div className="text-md font-400 text-nrvLightGrey pt-2 flex gap-2">
+                              <div>
+                                <svg
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M10.0003 8.33317C11.8413 8.33317 13.3337 6.84079 13.3337 4.99984C13.3337 3.15889 11.8413 1.6665 10.0003 1.6665C8.15938 1.6665 6.66699 3.15889 6.66699 4.99984C6.66699 6.84079 8.15938 8.33317 10.0003 8.33317Z"
+                                    stroke="#999999"
+                                    stroke-linejoin="round"
+                                  />
+                                  <path
+                                    d="M4.16667 13.3335C3.12433 13.8607 2.5 14.5322 2.5 15.2633C2.5 16.9589 5.85787 18.3335 10 18.3335C14.1422 18.3335 17.5 16.9589 17.5 15.2633C17.5 14.5322 16.8757 13.8607 15.8333 13.3335"
+                                    stroke="#999999"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  />
+                                  <path
+                                    d="M10 8.3335V15.0002"
+                                    stroke="#999999"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  />
+                                </svg>
+                              </div>
+                              <div>
+                                {property?.property.propertyId.streetAddress}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className="pt-2"
+                            style={{ maxHeight: "50px", minHeight: "50px" }}
+                          >
+                            <div className="flex gap-2">
+                              <Button
+                                size="smaller"
+                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+                                variant="ordinary"
+                                showIcon={false}
                               >
-                                <path
-                                  d="M10.0003 8.33317C11.8413 8.33317 13.3337 6.84079 13.3337 4.99984C13.3337 3.15889 11.8413 1.6665 10.0003 1.6665C8.15938 1.6665 6.66699 3.15889 6.66699 4.99984C6.66699 6.84079 8.15938 8.33317 10.0003 8.33317Z"
-                                  stroke="#999999"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M4.16667 13.3335C3.12433 13.8607 2.5 14.5322 2.5 15.2633C2.5 16.9589 5.85787 18.3335 10 18.3335C14.1422 18.3335 17.5 16.9589 17.5 15.2633C17.5 14.5322 16.8757 13.8607 15.8333 13.3335"
-                                  stroke="#999999"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M10 8.3335V15.0002"
-                                  stroke="#999999"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                              </svg>
+                                {property?.property.propertyId.propertyType}
+                              </Button>
+                              <Button
+                                size="smaller"
+                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+                                variant="ordinary"
+                                showIcon={false}
+                              >
+                                {property?.property.noOfRooms} Rooms
+                              </Button>
+                              <Button
+                                size="smaller"
+                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+                                variant="ordinary"
+                                showIcon={false}
+                              >
+                                {property?.property.noOfPools} Pools
+                              </Button>
+                              <Button
+                                size="smaller"
+                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+                                variant="ordinary"
+                                showIcon={false}
+                              >
+                                {property?.property.noOfBaths} Baths
+                              </Button>
                             </div>
-                            <div>
-                              {property?.property.propertyId.streetAddress}
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="pt-2"
-                          style={{ maxHeight: "50px", minHeight: "50px" }}
-                        >
-                          <div className="flex gap-2">
-                            <Button
-                              size="smaller"
-                              className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                              variant="ordinary"
-                              showIcon={false}
-                            >
-                              {property?.property.propertyId.propertyType}
-                            </Button>
-                            <Button
-                              size="smaller"
-                              className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                              variant="ordinary"
-                              showIcon={false}
-                            >
-                              {property?.property.noOfRooms} Rooms
-                            </Button>
-                            <Button
-                              size="smaller"
-                              className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                              variant="ordinary"
-                              showIcon={false}
-                            >
-                              {property?.property.noOfPools} Pools
-                            </Button>
-                            <Button
-                              size="smaller"
-                              className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                              variant="ordinary"
-                              showIcon={false}
-                            >
-                              {property?.property.noOfBaths} Baths
-                            </Button>
                           </div>
                         </div>
                       </div>
-                   </div>
                       <div className="flex justify-between">
                         <div className="text-xl font-medium text-nrvGreyBlack pt-4">
-                        ₦ {parseInt(property?.property?.rentAmount).toLocaleString()}/
-                          {property?.property?.rentAmountMetrics}
+                          ₦{" "}
+                          {parseInt(
+                            property?.property?.rentAmount
+                          ).toLocaleString()}
+                          /{property?.property?.rentAmountMetrics}
                         </div>
 
                         <div>
@@ -415,7 +397,7 @@ const TenantPropertiesScreen = () => {
                     <h2 className="mb-2 text-nrvGreyBlack font-semibold">
                       Description:
                     </h2>
-                    <div className="text-md text-nrvGreyBlack">
+                    <div className="text-md text-nrvGreyBlack font-light">
                       {property?.property?.description}
                     </div>
                   </div>

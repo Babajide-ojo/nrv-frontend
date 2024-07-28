@@ -100,11 +100,19 @@ export const getAllPropertyForTenant = createAsyncThunk<any, {}>(
     async (formData: any, { rejectWithValue }) => {
       try {
         let url = `${API_URL}/rooms/all?page=${formData.page}`
-        if(formData.search){
-            url = url + `&search=${formData.search}`
+        if(formData.searchTerm){
+            url = url + `&search=${formData.searchTerm}`
         }
 
-        console.log({url});
+        if(formData.minimiumPrice){
+            url = url + `&minPrice=${formData.minimiumPrice}`
+        }
+       
+        if(formData.maximiumPrice){
+            url = url + `&maxPrice=${formData.maximiumPrice}`
+        }
+
+    
         
         const response = await axios.get(url);
         return response.data;

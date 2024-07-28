@@ -11,6 +11,8 @@ interface InputFieldProps {
   name?: string;
   disabled?: boolean;
   error?: string; 
+  ariaLabel?: any;
+  onWheel?: (event: any) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -23,6 +25,8 @@ const InputField: React.FC<InputFieldProps> = ({
   name,
   disabled,
   error, 
+  ariaLabel,
+  onWheel
 }) => {
   return (
     <div className="">
@@ -44,7 +48,8 @@ const InputField: React.FC<InputFieldProps> = ({
           onChange={onChange}
           value={value}
           disabled={disabled}
-        
+          onWheel={onWheel}
+          aria-label={ariaLabel}
         />
       </div>
       {error && <div className="text-red-500 text-sm mt-1">{error}</div>} 

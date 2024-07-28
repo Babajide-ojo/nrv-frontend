@@ -13,27 +13,32 @@ import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "../../../components/layout/TenantLayout";
 import PropertyCard from "../../../components/shared/cards/PropertyCard";
 import InputField from "../../../components/shared/input-fields/InputFields";
+import Button from "@/app/components/shared/buttons/Button";
 
 const TenantPropertiesScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [properties, setProperties] = useState<any[]>([]);
-  const [page, setPage] = useState(1); // Current page
-  const [totalPages, setTotalPages] = useState(0); // Total pages
-  const [searchTerm, setSearchTerm] = useState<any>(null);
-  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [formData, setFormData] = useState<any>({
+    searchTerm: "",
+    minimiumPrice: "",
+    maximiumPrice: "",
+  });
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
+  
     const formData = {
       page: page,
     };
 
     try {
+      setIsLoading(true);
       const response = await dispatch(getAllPropertyForTenant(formData) as any); // Pass page parameter
       setProperties(response?.payload?.data);
       // setTotalPages(response?.totalPages);
@@ -44,11 +49,14 @@ const TenantPropertiesScreen = () => {
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setSearchTerm(e.target.value);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData: any) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
+
 
   useEffect(() => {
     fetchData();
@@ -68,24 +76,29 @@ const TenantPropertiesScreen = () => {
     }
   };
 
-  const handleSearchByLocation = async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const formData = {
-      page: page,
-      search: e.target.value,
-    };
-
+  const handleSearchByLocation = async () => {
+  
     try {
+      setIsLoading(true);
       const response = await dispatch(getAllPropertyForTenant(formData) as any); // Pass page parameter
       setProperties(response?.payload?.data);
-      // setTotalPages(response?.totalPages);
+      setTotalPages(response?.totalPages);
     } catch (error) {
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
     }
   };
+
+  const resetFilters = () => {
+    setFormData({
+      searchTerm: "",
+      minimiumPrice: "",
+      maximiumPrice: "",
+    });
+    fetchData();
+  };
+
 
   return (
     <div>
@@ -103,23 +116,67 @@ const TenantPropertiesScreen = () => {
                   Look for apartments that suit your preferences.
                 </div>
               </div>
+        
               <div>
-                <div className="mt-2">
+                <div className="mt-2 ">Filter by location and budget price</div>
+                <div>
+                    <Button
+                      size="small"
+                      className="text-nrvDarkGrey bg-nrvGreyMediumBg border border-nrvGreyMediumBg  hover:text-white hover:bg-nrvDarkBlue"
+                      variant="ordinary"
+                      showIcon={false}
+                      //disabled={isLoading === true ? true : false}
+                      onClick={() => {
+                        handleSearchByLocation();
+                      }}
+                    >
+                      Apply Filters
+                    </Button>
+                    <Button
+                      size="small"
+                      className="text-nrvDarkGrey bg-nrvGreyMediumBg border border-nrvGreyMediumBg  hover:text-white hover:bg-red-700 mt-2 ml-4"
+                      variant="ordinary"
+                      showIcon={false}
+                      onClick={() => {
+                        resetFilters();
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
+
+                <div className="md:flex md:gap-4 block mt-4">
                   <InputField
                     css="bg-nrvLightGreyBg"
                     label="Search by Location"
                     placeholder="Search"
                     inputType="search"
-                    onChange={(e) => handleSearchByLocation(e)}
+                    name="searchTerm"
+                    value={formData.searchTerm}
+                    onChange={handleInputChange}
                   />
-                </div>
-                <div className="mt-2">
                   <InputField
                     css="bg-nrvLightGreyBg"
-                    label="Rent Range"
-                    placeholder="1000 - 50000"
-                    inputType="search"
+                    label="Minimum Price"
+                    ariaLabel="Number input"
+                    placeholder="100,000"
+                    //inputType="text"
+                    name="minimiumPrice"
+                    value={formData?.minimiumPrice.toLocaleString()}
+                    onChange={handleInputChange}
+                   // onWheel={() => document.activeElement.blur()}
                   />
+                  <InputField
+                    css="bg-nrvLightGreyBg"
+                    label="Maximium Price"
+                    placeholder="5,000,000"
+                    inputType="number"
+                    name="maximiumPrice"
+                    value={formData.maximiumPrice}
+                    onChange={handleInputChange}
+                  />
+
+            
                 </div>
               </div>
               <div className="pt-8 text-nrvGreyBlack text-lg font-semibold">

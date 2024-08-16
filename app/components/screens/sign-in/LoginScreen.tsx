@@ -13,6 +13,8 @@ import { FaApple } from "react-icons/fa6";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CheckBox from "../../shared/input-fields/CheckBox";
+import { MdOutlineMail } from "react-icons/md";
+import { MdOutlineKey } from "react-icons/md";
 
 interface FormData {
   email: string;
@@ -93,7 +95,7 @@ const LoginScreen: React.FC = () => {
       }}
     >
       <ToastContainer />
-      <Carousel />
+    
       <div
         className="w-full sm:w-1/2 p-8 justify-center h-screen"
         style={{
@@ -102,20 +104,20 @@ const LoginScreen: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        <div className="max-w-md mx-auto w-full flex-grow">
-          <div className="text-3xl text-nrvGreyBlack font-semibold">
-            Welcome back 🤗
+        <div className="max-w-md mx-auto w-full">
+          <div className="text-2xl text-nrvGreyBlack font-semibold">
+            Welcome to NaijaRentVerify
           </div>
           <div className="pt-2 text-nrvLightGrey text-md">
             Please enter your login to access your account.
           </div>
           <div className="pt-1 text-nrvLightGrey text-md flex gap-2">
-            Not a landlord?{" "}
+            {/* Not a landlord?{" "}
             <Link className="underline text-nrvDarkBlue" href="/">
               sign in as tenant
-            </Link>
+            </Link> */}
           </div>
-          <div className="pt-4">
+          {/* <div className="pt-4">
             <Button
               className="w-full block"
               size="large"
@@ -139,13 +141,13 @@ const LoginScreen: React.FC = () => {
                 <FcGoogle size={22} /> Sign in with Google
               </div>
             </Button>
-          </div>
+          </div> */}
           <div className="flex items-center w-full mt-6">
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            <div className="w-2/12 text-center text-nrvLightGrey text-sm">
+            {/* <div className="w-5/12 border-b border-nrvLightGrey"></div> */}
+            {/* <div className="w-2/12 text-center text-nrvLightGrey text-sm">
               OR
-            </div>
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
+            </div> */}
+            {/* <div className="w-5/12 border-b border-nrvLightGrey"></div> */}
           </div>
           <div className="mt-2">
             <InputField
@@ -155,6 +157,7 @@ const LoginScreen: React.FC = () => {
               name="email"
               onChange={handleInputChange}
               error={errors.email}
+              icon={<MdOutlineMail size={20} color="#999999" />}
             />
           </div>
           <div className="mt-4">
@@ -165,19 +168,14 @@ const LoginScreen: React.FC = () => {
               name="password"
               onChange={handleInputChange}
               error={errors.password}
+              password={true}
+              icon={<MdOutlineKey size={20} color="#999999" />}
             />
           </div>
-          <div
-            className="w-full mt-8"
-            onClick={() => {
-              setShowPassword(!showPassword);
-            }}
-          >
-            <CheckBox label="Show Password" />
-          </div>
+      
         </div>
         <div>
-          <div className="max-w-md w-full flex-grow mx-auto">
+          <div className="max-w-md w-full flex-grow mx-auto mt-4">
             <Button
               size="large"
               className="block w-full"
@@ -186,7 +184,7 @@ const LoginScreen: React.FC = () => {
               onClick={handleSubmit}
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Continue"}
+              {isLoading ? "Loading..." : "Login"}
             </Button>
             <div className="justify-center flex gap-3 mt-4">
               <div className="text-sm text-nrvLightGrey">
@@ -202,6 +200,7 @@ const LoginScreen: React.FC = () => {
           </div>
         </div>
       </div>
+      <Carousel />
     </div>
   );
 };

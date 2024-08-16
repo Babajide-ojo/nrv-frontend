@@ -332,7 +332,7 @@ const TenantPropertiesScreen = () => {
                               <Button
                                 size="smaller"
                                 className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                                variant="ordinary"
+                                variant="lightGrey"
                                 showIcon={false}
                               >
                                 {property?.property.propertyId.propertyType}
@@ -340,7 +340,7 @@ const TenantPropertiesScreen = () => {
                               <Button
                                 size="smaller"
                                 className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                                variant="ordinary"
+                                variant="lightGrey"
                                 showIcon={false}
                               >
                                 {property?.property.noOfRooms} Rooms
@@ -348,15 +348,15 @@ const TenantPropertiesScreen = () => {
                               <Button
                                 size="smaller"
                                 className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                                variant="ordinary"
+                                variant="lightGrey"
                                 showIcon={false}
                               >
                                 {property?.property.noOfPools} Pools
                               </Button>
                               <Button
                                 size="smaller"
-                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                                variant="ordinary"
+                                className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg border border-nrvDarkGrey"
+                                variant="lightGrey"
                                 showIcon={false}
                               >
                                 {property?.property.noOfBaths} Baths
@@ -397,7 +397,7 @@ const TenantPropertiesScreen = () => {
                     <h2 className="mb-2 text-nrvGreyBlack font-semibold">
                       Description:
                     </h2>
-                    <div className="text-md text-nrvGreyBlack font-light">
+                    <div className="text-sm text-nrvGreyBlack font-light leading-8">
                       {property?.property?.description}
                     </div>
                   </div>
@@ -458,7 +458,7 @@ const TenantPropertiesScreen = () => {
                     </div>
                     <div className="w-full mt-2">
                       <InputField
-                        css="bg-nrvLightGreyBg text-sm"
+                        css="bg-nrvLightGreyBg p-2"
                         placeholder="Upload ID Card"
                         inputType="file"
                         name="file"

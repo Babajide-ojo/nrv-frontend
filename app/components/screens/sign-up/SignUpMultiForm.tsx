@@ -1,140 +1,99 @@
-import Button from "@/app/components/shared/buttons/Button";
-import CheckBox from "@/app/components/shared/input-fields/CheckBox";
-import InputField from "@/app/components/shared/input-fields/InputFields";
-import Link from "next/link";
 import React, { useState } from "react";
-import { FaApple, FaArrowLeft } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
-import { IoPersonCircleSharp } from "react-icons/io5";
-import { IoCheckmarkCircleSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { ToastContainer, toast } from "react-toastify";
+import * as yup from "yup";
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
-import { useRouter } from "next/navigation";
+import Button from "@/app/components/shared/buttons/Button";
+import CheckBox from "@/app/components/shared/input-fields/CheckBox";
+import { IoPersonCircleSharp, IoCheckmarkCircleSharp } from "react-icons/io5";
 import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
+import InputField from "@/app/components/shared/input-fields/InputFields";
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  nin: string;
-  password: string;
-  phoneNumber: string;
-  homeAddress: string;
-  accountType: string;
-}
+// Validation schema using yup
+const validationSchema = yup.object({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  nin: yup.string().required("NIN is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(
+      /[^a-zA-Z0-9]/,
+      "Password must contain at least one special character"
+    )
+    .matches(/\d/, "Password must contain at least one number"),
+  phoneNumber: yup.string().required("Phone Number is required"),
+  homeAddress: yup.string().required("Home Address is required"),
+  accountType: yup.string().required("Account Type is required"),
+});
 
-const SignUpMultiForm: React.FC = () => {
+// Custom InputField component
+const CustomInputField = ({ name , ...props }: any) => {
+  const { setFieldValue, setFieldTouched } = useFormikContext();
+
+  const handleChange = (event: any) => {
+    const { name, value } = event.target;
+    setFieldValue(name, value);
+  };
+
+  const handleBlur = (event: any) => {
+    const { name } = event.target;
+    setFieldTouched(name, true);
+  };
+
+  return (
+    <div className="w-full mt-4">
+      <InputField
+        name={name}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        {...props}
+      />
+      <ErrorMessage
+        name={name}
+        component="div"
+        className="text-red-500 text-xs"
+      />
+    </div>
+  );
+};
+
+const SignUpMultiForm = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { loading, error, data } = useSelector((state: any) => state.user);
-  const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    nin: "",
-    password: "",
-    phoneNumber: "",
-    homeAddress: "",
-    accountType: "",
-  });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+ // const { loading, error, data } = useSelector((state: any) => state.user);
   const [currentStep, setCurrentStep] = useState(1);
-  
-  const validateForm = () => {
-    let errors: { [key: string]: string } = {};
-  
-    if (!formData.firstName.trim()) {
-      errors.firstName = "First Name is required";
-    }
-    if (!formData.lastName.trim()) {
-      errors.lastName = "Last Name is required";
-    }
-    if (!formData.nin.trim()) {
-      errors.nin = "Nin is required";
-    }
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    } else {
-      const passwordErrors = passwordValidation(formData.password);
-      if (passwordErrors.length > 0) {
-        errors.password = "Ensure your password choice meets all conditions"
-      }
-    }
-    if (!formData.phoneNumber.trim()) {
-      errors.phoneNumber = "Phone Number is required";
-    }
-    if (!formData.homeAddress.trim()) {
-      errors.homeAddress = "Home Address is required";
-    }
-    if (!formData.accountType.trim()) {
-      errors.accountType = "Account Type is required";
-    }
-  
-    setErrors(errors);
-  
-    return Object.keys(errors).length === 0;
-  };
-  
-  const passwordValidation = (password: string): string[] => {
-    const errors: string[] = [];
-  
-    if (password.length < 8) {
-      errors.push("Password must have at least 8 characters");
-    }
-    if (!/[A-Z]/.test(password)) {
-      errors.push("Password must contain at least one uppercase letter");
-    }
-    if (!/[a-z]/.test(password)) {
-      errors.push("Password must contain at least one lowercase letter");
-    }
-    if (!/[^a-zA-Z0-9]/.test(password)) {
-      errors.push("Password must contain at least one special character");
-    }
-    if (!/\d/.test(password)) {
-      errors.push("Password must contain at least one number");
-    }
-  
-    return errors;
-  };
-  
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [accountType, setAccountType] = useState<string>("");
 
-  const handleNext = () => setCurrentStep((prevStep) => prevStep + 1);
-  const handleItemClick = (index: number) => setActiveIndex(index === activeIndex ? null : index);
-  const handleAccountType = (text: string) => setFormData((prevData) => ({ ...prevData, accountType: text }));
+  const handleItemClick = (index: number) =>
+    setActiveIndex(index === activeIndex ? null : index);
+  const handleAccountType = (text: string) => setAccountType(text);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
-    setIsLoading(true);
+  const handleSubmit = async (values: any) => {
     try {
-      await dispatch(createUser(formData) as any).unwrap();
+      await dispatch(createUser(values) as any).unwrap();
       setCurrentStep(3);
     } catch (error: any) {
       toast.error(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="container">
-      <ToastContainer />
+
       {currentStep === 1 && (
         <div
           style={{
@@ -143,7 +102,7 @@ const SignUpMultiForm: React.FC = () => {
             flexDirection: "column",
           }}
         >
-          <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
+          <div className="max-w-md mx-auto pt-8 flex-grow w-full">
             <div className="text-3xl text-nrvGreyBlack font-semibold">
               Welcome user 🚀
             </div>
@@ -159,19 +118,17 @@ const SignUpMultiForm: React.FC = () => {
                 handleAccountType("landlord");
               }}
             >
-              <div className="w-1/5 mx-auto flex items-center justify-center">
+              <div className="flex items-center justify-center">
                 <IoPersonCircleSharp color="#153969" size={40} />
               </div>
-
-              <div className="4/5 p-2">
-                <div className="text-nrvGreyBlack text-lg font-semibold">
+              <div className="p-1.5">
+                <div className="text-nrvGreyBlack text-sm font-medium pb-2">
                   Sign up as a landlord
                 </div>
-                <div className="text-nrvLightGrey text-sm">
+                <div className="text-nrvLightGrey text-xs font-light">
                   Explore our powerful tools for thorough tenant screening.
                 </div>
               </div>
-
               {activeIndex === 0 && (
                 <div className="top-0 right-0">
                   <IoCheckmarkCircleSharp color="#153969" size={25} />
@@ -187,14 +144,14 @@ const SignUpMultiForm: React.FC = () => {
                 handleAccountType("tenant");
               }}
             >
-              <div className="w-1/5 mx-auto flex items-center justify-center">
+              <div className="flex items-center justify-center">
                 <IoPersonCircleSharp color="#153969" size={40} />
               </div>
-              <div className="4/5 p-2">
-                <div className="text-nrvGreyBlack text-lg font-semibold">
+              <div className="p-2">
+                <div className="text-nrvGreyBlack text-md font-medium pb-2">
                   Sign up as a tenant
                 </div>
-                <div className="text-nrvLightGrey text-sm">
+                <div className="text-nrvLightGrey text-xs font-light">
                   Explore our powerful tools for thorough tenant screening.
                 </div>
               </div>
@@ -218,12 +175,12 @@ const SignUpMultiForm: React.FC = () => {
           </div>
           <div className="flex justify-center max-w-lg mx-auto w-full">
             <Button
-              disabled={formData.accountType  === "" ? true : false}
+              disabled={!accountType}
               size="large"
               className="block w-full"
               variant="bluebg"
               showIcon={false}
-              onClick={handleNext}
+              onClick={() => setCurrentStep(2)}
             >
               Next
             </Button>
@@ -231,209 +188,125 @@ const SignUpMultiForm: React.FC = () => {
         </div>
       )}
       {currentStep === 2 && (
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <div>
           <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
             <div className="text-2xl text-nrvGreyBlack font-semibold flex gap-2">
               <span>
-                {" "}
                 <IoIosArrowBack
                   className="mt-1 hover:cursor-pointer"
-                  onClick={() => {
-                    router.push("/");
-                  }}
-                />{" "}
+                  onClick={() => router.push("/")}
+                />
               </span>{" "}
-              Sign up as a landlord 🚀,
+              Sign up as a {accountType} 🚀
             </div>
-            <div className="pt-2 text-nrvLightGrey text-md">
-              Kindly fill the provided form.
-            </div>
-            <div className="pt-4">
-              <Button
-                className="w-full block"
-                size="large"
-                variant="whitebg"
-                showIcon={false}
-              >
-                <div className="flex gap-1">
-                  <FaApple color="black" size={22} /> Sign in with Apple
-                </div>
-              </Button>
-            </div>
-            <div className="pt-4">
-              <Button
-                className="w-full block"
-                size="large"
-                variant="whitebg"
-                showIcon={false}
-              >
-                {" "}
-                <div className="flex gap-1">
-                  <FcGoogle size={22} /> Sign in with Google
-                </div>
-              </Button>
-            </div>
-            <div className="flex items-center w-full mt-6">
-              <div className="w-5/12 border-b border-nrvLightGrey"></div>
-              <div className="w-2/12 text-center text-nrvLightGrey text-sm">
-                OR
-              </div>
-              <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            </div>
-            <div className="w-full  mt-6 md:flex flex-row gap-3">
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                <InputField
-                  label="First Name"
-                  placeholder="Enter First Name"
-                  inputType="text"
-                  name="firstName"
-                  onChange={handleInputChange}
-                  error={errors.firstName}
-                />
-              </div>
-              <div className="md:w-1/2 w-full mt-4 md:mt-0" >
-                <InputField
-                  label="Last Name"
-                  placeholder="Enter Last Name"
-                  inputType="text"
-                  name="lastName"
-                  onChange={handleInputChange}
-                  error={errors.lastName}
-                />
-              </div>
-            </div>
-            <div className="w-full  mt-6 md:flex flex-row gap-3">
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                <InputField
-                  label="Email Address"
-                  placeholder="Enter Email Address"
-                  inputType="text"
-                  name="email"
-                  onChange={handleInputChange}
-                  error={errors.email}
-                />
-              </div>
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                <InputField
-                  label="NIN"
-                  placeholder="Enter NIN"
-                  inputType="text"
-                  name="nin"
-                  onChange={handleInputChange}
-                  error={errors.nin}
-                />
-              </div>
-            </div>
-            <div className="w-full mt-4">
-              <InputField
-                label="Home Address"
-                placeholder="Enter Home Address"
-                inputType="text"
-                name="homeAddress"
-                onChange={handleInputChange}
-                error={errors.homeAddress}
-              />
-            </div>
-            <div className="w-full  mt-6 md:flex flex-row gap-3">
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                <InputField
-                  label="Phone Number"
-                  placeholder="Enter Phone Number"
-                  inputType="text"
-                  name="phoneNumber"
-                  onChange={handleInputChange}
-                  error={errors.phoneNumber}
-                />
-              </div>
-              <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                <InputField
-                  label="Password"
-                  placeholder="Enter Password"
-                  inputType={showPassword ? "text" : "password"}
-                  name="password"
-                  onChange={handleInputChange}
-                  error={errors.password}
-                />
-              </div>
-          
-            </div>
-            <div className="w-full mt-8" onClick={() => {
-              setShowPassword(!showPassword);
-            }}>
-              <CheckBox label="Show Password" />
-            </div>
-            <div className="text-xs text-nrvGreyBlack mt-3">AT LEAST : </div>
-            <div className="grid:col-3 gap-2 mt-1">
-              <Button
-                size="small"
-                className="rounded-3xl mt-2 mr-2"
-                variant="whitebg"
-                showIcon={false}
-              >
-                8 characters
-              </Button>
-              <Button
-                size="small"
-                className="rounded-3xl mt-2 mr-2"
-                variant="whitebg"
-                showIcon={false}
-              >
-                An uppercase letter
-              </Button>
-              <Button
-                size="small"
-                className="rounded-3xl mt-2 mr-2"
-                variant="whitebg"
-                showIcon={false}
-              >
-                A lowercase letter
-              </Button>
-              <Button
-                size="small"
-                className="rounded-3xl mt-2 mr-2"
-                variant="whitebg"
-                showIcon={false}
-              >
-                A special character
-              </Button>
-              <Button
-                size="small"
-                className="rounded-3xl mt-2 mr-2"
-                variant="whitebg"
-                showIcon={false}
-              >
-                A number
-              </Button>
-            </div>
-            <div className="w-full mt-8">
-              <CheckBox label="I agree to the terms of use and privacy policy" />
-            </div>
-          </div>
-          <div className="mt-4 max-w-lg mx-auto w-full flex justify-center">
-            <Button
-              onClick={handleSubmit}
-              size="large"
-              className="block w-full"
-              variant="bluebg"
-              showIcon={false}
-              disabled={isLoading} 
+
+            <Formik
+              initialValues={{
+                firstName: "",
+                lastName: "",
+                email: "",
+                nin: "",
+                password: "",
+                phoneNumber: "",
+                homeAddress: "",
+                accountType: accountType,
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
             >
-              {isLoading ? "Loading..." : "Continue"}
-            </Button>
+              {({ isSubmitting }) => (
+                <Form>
+                  <div
+                    style={{
+                      minHeight: "70vh",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <div>
+                      <div className="w-full md:flex flex-row gap-3">
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="firstName"
+                            placeholder="Enter First Name"
+                            label="Enter first name"
+                          />
+                        </div>
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="lastName"
+                            placeholder="Enter Last Name"
+                            label="Enter Last Name"
+                          />
+                        </div>
+                      </div>
+                      <div className="w-full md:flex flex-row gap-3">
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="email"
+                            placeholder="Enter Email Address"
+                            label="Enter Email Address"
+                          />
+                        </div>
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="nin"
+                            placeholder="Enter NIN"
+                            label="Enter NIN"
+                          />
+                        </div>
+                      </div>
+                      <div className="w-full mt-4">
+                        <CustomInputField
+                          name="homeAddress"
+                          placeholder="Enter Home Address"
+                          label="Enter Home Address"
+                        />
+                      </div>
+                      <div className="w-full mt-6 md:flex flex-row gap-3">
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="phoneNumber"
+                            placeholder="Enter Phone Number"
+                            label="Enter Phone Number"
+                          />
+                        </div>
+                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
+                          <CustomInputField
+                            name="password"
+                            placeholder="Enter Password"
+                            label="Enter Password"
+                            type="password"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid:col-3 gap-2 mt-16">
+                        {/* Password strength requirements buttons */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 max-w-lg mx-auto w-full">
+                    <div className="w-full mb-2">
+                      <CheckBox label="I agree to the terms of use and privacy policy" />
+                    </div>
+                    <Button
+                      type="submit"
+                      size="large"
+                      className="block w-full"
+                      variant="bluebg"
+                      showIcon={false}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Loading..." : "Continue"}
+                    </Button>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </div>
         </div>
       )}
-      {currentStep === 3 && (
-        <div>
-          <SignUppVerifyAccountScreen />
-        </div>
-      )}
+      {currentStep === 3 && <SignUppVerifyAccountScreen />}
     </div>
   );
 };

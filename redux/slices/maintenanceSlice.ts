@@ -62,11 +62,43 @@ export const getMaintenanceByUserId = createAsyncThunk<any, {}>(
     }
 );
 
+export const getMaintenanceByOwnerId = createAsyncThunk<any, {}>(
+  "maintenance/landlord",
+  async (formData: any, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/maintenance/get-landlord-maintenance/${formData.ownerId}/?page=${formData.page}`);
+      return response.data;
+    } catch (error: any) {
+      if (error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue("An error occurred, please try again later");
+      }
+    }
+  }
+);
+
 export const getMaintenanceById = createAsyncThunk<any, {}>(
     "maintenance/get",
     async (formData: any, { rejectWithValue }) => {
       try {
         const response = await axios.get(`${API_URL}/maintenance/single/${formData.id}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
+export const markIssueAsResolved = createAsyncThunk<any, {}>(
+    "maintenance/resolve",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/maintenance/resolve/${formData.id}`);
         return response.data;
       } catch (error: any) {
         if (error.response.data.message) {
@@ -114,6 +146,30 @@ const maintenanceSlice = createSlice({
                 state.loading = "failed";
                 state.error = action.payload as string;
             })
+            .addCase(markIssueAsResolved.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(markIssueAsResolved.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(markIssueAsResolved.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getMaintenanceByOwnerId.pending, (state) => {
+              state.loading = "pending";
+              state.error = null;
+          })
+          .addCase(getMaintenanceByOwnerId.fulfilled, (state, action) => {
+              state.loading = "succeeded";
+              state.data = action.payload;
+          })
+          .addCase(getMaintenanceByOwnerId.rejected, (state, action) => {
+              state.loading = "failed";
+              state.error = action.payload as string;
+          })
     },
 });
 

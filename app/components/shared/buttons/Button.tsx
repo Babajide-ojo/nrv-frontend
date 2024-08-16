@@ -30,7 +30,7 @@ const classes = {
     lightPrimary : ' rounded-2xl text-white border border-white bg-nrvDarkBlue',
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
     bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
-    lightGrey: 'rounded rounded-2xl text-nrvLightGrey bg-nrvLightGreyBg border border-[#153969] hover:bg-nrvDarkBlue hover:text-white',
+    lightGrey: 'rounded rounded-2xl text-nrvDarkBlue bg-nrvLightGreyBg border border-[#153969] hover:bg-nrvDarkBlue hover:text-white',
     mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
     ordinary: ' rounded-2xl',
     roundedRec: 'font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvDarkBlue'

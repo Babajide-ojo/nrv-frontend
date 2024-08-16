@@ -34,7 +34,7 @@ const Carousel = () => {
         <div className="flex justify-center text-white text-lg pt-4 text-center">
           {carouselData[currentItem].text}
         </div>
-        <div className="flex gap-10 justify-between">
+        <div className="flex gap-10 justify-between pt-4">
           <Button
             onClick={handleSkip}
             size="normal"

@@ -122,7 +122,7 @@ const PropertiesScreen = () => {
                   </div>
                   <Button
                     size="small"
-                    className="text-nrvDarkBlue p-3  border border-nrvDarkBlue mt-4 rounded-md"
+                    className="text-nrvDarkBlue p-3  border border-nrvDarkBlue mt-4 rounded-md hover:text-white"
                     variant="lightGrey"
                     showIcon={false}
                   >
@@ -133,7 +133,7 @@ const PropertiesScreen = () => {
                       }}
                     >
                       <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
-                      <p className="text-nrvDarkBlue">Add New</p>
+                      <p className="">Add New</p>
                     </div>
                   </Button>
                 </div>
@@ -153,7 +153,7 @@ const PropertiesScreen = () => {
                         />
                       </div>
                       
-                        <p className="md:w-4/5 w-3/5 text- text-nrvDarkGrey font-light">
+                        <p className="md:w-4/5 w-3/5 md:text-sm text-xs text-nrvDarkGrey font-lighter">
                           {property.streetAddress}
                         </p>
                       </div>
@@ -176,7 +176,7 @@ const PropertiesScreen = () => {
                             setIsOpen(true);
                           }}
                         >
-                          <p className="text-nrvDarkBlue text-sm p-1.5">
+                          <p className="text-sm p-1.5">
                             View details
                           </p>
                         </div>
@@ -260,14 +260,16 @@ const PropertiesScreen = () => {
                   className="text-white w-72 max-w-full   border border-nrvDarkBlue mt-2 rounded-md"
                   variant="bluebg"
                   showIcon={false}
+                  onClick={() => {
+                  //  setIsOpen(false);
+                    router.push(
+                      `/dashboard/landlord/properties/${singleProperty._id}`
+                    );
+                  }}
                 >
                   <div
                     className="flex gap-3"
-                    onClick={() => {
-                      router.push(
-                        `/dashboard/landlord/properties/${singleProperty._id}`
-                      );
-                    }}
+              
                   >
                     View full details
                   </div>

@@ -49,12 +49,13 @@ const MessageScreen = () => {
   const propertyDashboardLinks: any = [
     {
       id: 1,
-      name: `Leads(${count.totalAccepted})`,
+      name: `Applicants(${count.totalNew})`,
     },
     {
       id: 2,
-      name: `Applicants(${count.totalNew})`,
+      name: `Leads(${count.totalAccepted})`,
     },
+
     {
       id: 3,
       name:`Tenants(${count.totalActiveTenants})`,
@@ -104,8 +105,8 @@ const MessageScreen = () => {
                   {propertyDashboardLinks.map((item: any) => (
                     <div key={item.id}>
                       <Button
-                        size="small"
-                        className={` text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                        size="large"
+                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-md mb-2 font-medium text-md ${
                           currentState === item.id
                             ? "bg-nrvDarkBlue text-white"
                             : "bg-nrvGreyMediumBg"
@@ -124,8 +125,8 @@ const MessageScreen = () => {
                   ))}
                 </div>
                 <div className="p-3">
-                  {currentState === 1 && <LeadsScreen />}
-                  {currentState === 2 && <ApplicantScreen />}
+                  {currentState === 1 && <ApplicantScreen />}
+                  {currentState === 2 && <LeadsScreen />}
                   {currentState === 3 && <TenantScreen />}
                 </div>
               </div>

@@ -176,7 +176,7 @@ const SingleRoom = () => {
                   </div>
                 ))}
               </div>
-              <div className="px-4 py-12 md:px-24 md:py-12">
+              <div className="px-4 py-12 md:px-12 md:py-6">
                 {currentState === 2 && singleRoom && (
                   <RoomOverview data={singleRoom} />
                 )}

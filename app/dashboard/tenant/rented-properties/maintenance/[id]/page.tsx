@@ -93,6 +93,7 @@ const Maintainance = () => {
                     maintenance.map((item: any, index: any) => (
                       <div key={index}>
                         <MaintainanceCard
+                           type="tenant"
                           title={item.title}
                           description={item.description}
                           dateLogged={item.createdAt}

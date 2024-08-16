@@ -8,15 +8,17 @@ import { useState, useEffect, useRef } from "react";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import Button from "@/app/components/shared/buttons/Button";
 import { useDispatch } from "react-redux";
-import { createMaintenance } from "../../../../../../../redux/slices/maintenanceSlice";
-import { useParams } from "next/navigation";
+import { createMaintenance } from "@/redux/slices/maintenanceSlice";
+import { useParams, useRouter } from "next/navigation";
 import { SlCloudUpload } from "react-icons/sl";
 import "react-toastify/dist/ReactToastify.css";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
+import { Router } from "next/router";
 
 const RequestMaintainance = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -64,12 +66,11 @@ const RequestMaintainance = () => {
 
   const handleSubmit = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
-
     const formData :any = new FormData();
 
     formData.append("title", _formData.title);
     formData.append("description", _formData.description);
-    selectedFiles.forEach((file, index) => {
+    selectedFiles.forEach((file) => {
       formData.append(`file`, file);
     });
     formData.append("roomId", id);
@@ -85,6 +86,7 @@ const RequestMaintainance = () => {
       setSelectedFiles([]);
       setLoading(false);
       toast.success("Maintenance request created successfully.");
+      router.push(`/dashboard/tenant/rented-properties/maintenance/${id}`)
     } catch (error) {
       setLoading(false);
       toast.error("Failed to create maintenance request.");

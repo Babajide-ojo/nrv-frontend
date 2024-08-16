@@ -125,7 +125,7 @@ const TenantPropertiesScreen = () => {
                       className="text-nrvDarkGrey bg-nrvGreyMediumBg border border-nrvGreyMediumBg  hover:text-white hover:bg-nrvDarkBlue"
                       variant="ordinary"
                       showIcon={false}
-                      //disabled={isLoading === true ? true : false}
+                      // disabled={isLoading === false ? false : true}
                       onClick={() => {
                         handleSearchByLocation();
                       }}

@@ -13,6 +13,7 @@ interface MaintenanceCardProps {
   dateLogged: string;
   status: any;
   id: string;
+  type: string;
 }
 
 
@@ -21,6 +22,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
   description,
   dateLogged,
   status,
+  type,
   id
 }) => {
 
@@ -60,7 +62,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
             variant="whitebg"
             showIcon={false}
             onClick={() => {
-               router.push(`/dashboard/tenant/rented-properties/maintenance/single/${id}`)
+               router.push(`/dashboard/tenant/rented-properties/maintenance/single/${type}`)
             }}
           >
             Cancel
@@ -71,7 +73,14 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
             variant="whitebg"
             showIcon={false}
             onClick={() => {
+             if(type === "tenant") {
               router.push(`/dashboard/tenant/rented-properties/maintenance/single/${id}`)
+             }
+
+             if(type === "landlord") {
+              router.push(`/dashboard/landlord/properties/maintenance/single/${id}`)
+             }
+
             }}
           >
             Open Request

@@ -1,22 +1,49 @@
 "use client";
-
-import LoadingPage from "../../../../components/loaders/LoadingPage";
-import { useEffect, useState } from "react";
-import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../../components/layout/LandLordLayout";
-import EmptyState from "../../../../components/screens/empty-state/EmptyState";
-import Button from "../../../../components/shared/buttons/Button";
+import { ToastContainer } from "react-toastify";
+import TenantLayout from "@/app/components/layout/TenantLayout";
+import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
+import LoadingPage from "@/app/components/loaders/LoadingPage";
+import { useState, useEffect } from "react";
+import Button from "@/app/components/shared/buttons/Button";
+import { useParams, useRouter } from "next/navigation";
+import MaintainanceCard from "@/app/components/maintainance/MaintainanceCard";
+import { useDispatch } from "react-redux";
+import { getMaintenanceById, getMaintenanceByOwnerId, getMaintenanceByUserId } from "@/redux/slices/maintenanceSlice";
+import EmptyState from "@/app/components/screens/empty-state/EmptyState";
 import { IoAddCircle } from "react-icons/io5";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
+import CenterModal from "@/app/components/shared/modals/CenterModal";
+import LandLordLayout from '../../../../components/layout/LandLordLayout';
 
-const MessageScreen = () => {
-  const [isLoading, setIsLoading] = useState(true);
+const Maintainance = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [maintenance, setMaintenance] = useState<any>([]);
+
+
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    const formData = {
+      page: 5,
+      ownerId: user?.user?._id,
+    };
+
+    try {
+      const response = await dispatch(getMaintenanceByOwnerId(formData) as any); // Pass page parameter
+      setMaintenance(response?.payload?.data);
+    } catch (error) {
+    } finally {
+    }
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
+    fetchData();
+  }, []);
 
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    setIsLoading(false);
   }, []);
   return (
     <div>
@@ -25,29 +52,57 @@ const MessageScreen = () => {
       ) : (
         <ProtectedRoute>
           <LandLordLayout>
-            <div className="p-8 w-full">
-              <div className="text-2xl">Properties 🏘️,</div>
-              <p className="text-sm text-nrvLightGrey">
-                Let’s add another property :)
-              </p>
-              <div className="w-full h-screen flex justify-center items-center">
-                <div className="">
-                  <EmptyState />
-                  <p className="text-nrvLightGrey m-2">No property listed yet</p>
-                  <Button
-                    size="small"
-                    className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                  >
-    
-                    <div className="flex gap-3 ">
-                      <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
-                      <p className="text-nrvDarkBlue">Add New</p>
-                    </div>
-                  </Button>
+            <ToastContainer />
+            <div className="md:py-10 md:px-20 p-5">
+              <div className="flex justify-between items-center  mb-8">
+              <div className="text-nrvGreyBlack mb-4 flex gap-3">
+                  <BackIcon />
+                  <div className="md:text-xl text-md font-medium text-nrvDarkGrey">
+                    Maintenance Requests
+                  </div>
                 </div>
+                <Button
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
+                    )
+                  }
+                  variant="roundedRec"
+                  showIcon={false}
+                >
+                  Create Request
+                </Button>
               </div>
+              {maintenance.length < 1 ? (
+                <div>
+                  <div className="p-8 w-full">
+                    <div className="w-full flex justify-center items-center">
+                      <div className="">
+                        <EmptyState />
+                        <p className="text-nrvLightGrey m-2">
+                          No Maintenance Request
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 grid-cols-1 w-full">
+                  {maintenance &&
+                    maintenance.map((item: any, index: any) => (
+                      <div key={index}>
+                        <MaintainanceCard
+                          type="landlord"
+                          title={item.title}
+                          description={item.description}
+                          dateLogged={item.createdAt}
+                          status={item.status}
+                          id={item._id}
+                        />
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </LandLordLayout>
         </ProtectedRoute>
@@ -56,4 +111,4 @@ const MessageScreen = () => {
   );
 };
 
-export default MessageScreen;
+export default Maintainance;

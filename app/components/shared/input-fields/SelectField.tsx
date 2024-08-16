@@ -19,6 +19,7 @@ interface Props {
   value: any;
   disabled?: boolean;
   setValue?: any;
+  onBlur?: any
 }
 
 const _options: Option[] = [
@@ -68,6 +69,7 @@ const SelectField: React.FC<Props> = ({
   noOptionsMessage,
   options,
   onChange,
+  onBlur,
   value,
   disabled,
   setValue,
@@ -95,7 +97,8 @@ const SelectField: React.FC<Props> = ({
         value={value}
         noOptionsMessage={noOptionsMessage}
         formatOptionLabel={formatOptionLabel}
-        onChange={handleSelectChange}
+        onChange={handleSelectChange || onChange}
+        onBlur={onBlur}
       />
     </div>
   );

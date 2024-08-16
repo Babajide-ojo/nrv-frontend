@@ -125,6 +125,28 @@ export const getAllPropertyForTenant = createAsyncThunk<any, {}>(
       }
     }
 );
+
+export const getAllLandlordApartment = createAsyncThunk<any, {}>(
+    "property-tenant/landlord",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        let url = `${API_URL}/rooms/all?page=100`
+   
+
+        if(formData.id){
+            url = url + `&id=${formData.id}`
+        } 
+        const response = await axios.get(url);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
 export const getPropertyById = createAsyncThunk<UserId, {}>(
     "single-property/get",
     async (id: any, { rejectWithValue }) => {

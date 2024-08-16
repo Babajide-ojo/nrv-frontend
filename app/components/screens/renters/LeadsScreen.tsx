@@ -4,14 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Button from "../../shared/buttons/Button";
-import {
-  getApplicationsByLandlordId,
-  updateApplicationStatus,
-} from "../../../../redux/slices/propertySlice";
+import { getApplicationsByLandlordId, updateApplicationStatus } from "../../../../redux/slices/propertySlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FaCheckCircle } from "react-icons/fa";
-import InputField from "../../shared/input-fields/InputFields";
 import CenterModal from "../../shared/modals/CenterModal";
 
 const LeadScreen = () => {

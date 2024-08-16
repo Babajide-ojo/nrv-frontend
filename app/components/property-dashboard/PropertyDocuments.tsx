@@ -200,7 +200,7 @@ const PropertyDocuments = () => {
                   landlordInsuranceFiles.map((file: any, index: any) => (
                     <div
                       key={index}
-                      className="flex pb-2 items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
                     >
                       <span>{file.name}</span>
                       <button
@@ -235,7 +235,7 @@ const PropertyDocuments = () => {
                 htmlFor="landlordInsurancePolicy"
                 className="cursor-pointer rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-3 mb-3"
               >
-                <div className="pt-4 pb-4">
+                <div className="pt-5 pb-5Explore Properties">
                   {landlordInsuranceFiles.length > 0
                     ? "Add more files"
                     : "Click to upload"}

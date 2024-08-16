@@ -7,11 +7,15 @@ import LoadingPage from "@/app/components/loaders/LoadingPage";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { getMaintenanceById, markIssueAsResolved } from '@/redux/slices/maintenanceSlice';
+import {
+  getMaintenanceById,
+  markIssueAsResolved,
+} from "@/redux/slices/maintenanceSlice";
 import Image from "next/image";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
 import Button from "@/app/components/shared/buttons/Button";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
+import React from "react";
 
 const SingleMaintainance = () => {
   const router = useRouter();
@@ -38,22 +42,24 @@ const SingleMaintainance = () => {
     const payload = {
       id: id,
     };
-    
+
     try {
       setIsLoading(true);
       const data = await dispatch(markIssueAsResolved(payload) as any).unwrap();
-      if (data.response.statusCode === 400){
+      if (data.response.statusCode === 400) {
         toast.error(data.response.message);
       }
       setMaintenance(data?.payload?.data);
-      router.push(`/dashboard/tenant/rented-properties/maintenance/single/${id}`)
+      router.push(
+        `/dashboard/tenant/rented-properties/maintenance/single/${id}`
+      );
       setIsLoading(false);
     } catch (error: any) {
       toast.error(error);
       setIsLoading(false);
     } finally {
       setIsLoading(false);
-      setIsOpen(false)
+      setIsOpen(false);
     }
   };
 
@@ -108,9 +114,14 @@ const SingleMaintainance = () => {
                         {maintenance.status}
                       </Button>
                       {maintenance.status != "Resolved" ? (
-                        <p className="underline pt-2 text-nrvDarkGrey text-sm cursor-pointer" onClick={() => {
-                          setIsOpen(!isOpen)
-                        }}>Mark Issue as Resolved</p>
+                        <p
+                          className="underline pt-2 text-nrvDarkGrey text-sm cursor-pointer"
+                          onClick={() => {
+                            setIsOpen(!isOpen);
+                          }}
+                        >
+                          Mark Issue as Resolved
+                        </p>
                       ) : (
                         ""
                       )}
@@ -140,52 +151,53 @@ const SingleMaintainance = () => {
             </div>
 
             <CenterModal
-        isOpen={isOpen}
-        onClose={() => {
-          setIsOpen(false);
-        }}
-      >
-        <div className="mx-auto text-center p-4 w-full md:w-4/5">
-          <h2 className="text-nrvDarkBlue font-semibold text-xl">
-           Has this issue been resolved?
-          </h2>
-          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-            Performing this action will mark this issue as resolved and close the issue
-          </p>
-
-          <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
-            <Button
-              size="small"
-              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
-              variant="bluebg"
-              showIcon={false}
-               disabled={isLoading === false ? false : true}
-            >
-              <div
-                className="flex gap-3"
-                onClick={() => {
-                  handleSubmit()
-                }}
-              >
-                Submit
-              </div>
-            </Button>
-          </div>
-          <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
-            <Button
-              size="small"
-              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
-              variant="mediumGrey"
-              showIcon={false}
-              onClick={() => {
+              isOpen={isOpen}
+              onClose={() => {
                 setIsOpen(false);
               }}
             >
-              <div className="flex gap-2">Close</div>
-            </Button>
-          </div>
-        </div>
-      </CenterModal>
+              <div className="mx-auto text-center p-4 w-full md:w-4/5">
+                <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                  Has this issue been resolved?
+                </h2>
+                <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+                  Performing this action will mark this issue as resolved and
+                  close the issue
+                </p>
+
+                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    variant="bluebg"
+                    showIcon={false}
+                    disabled={isLoading === false ? false : true}
+                  >
+                    <div
+                      className="flex gap-3"
+                      onClick={() => {
+                        handleSubmit();
+                      }}
+                    >
+                      Submit
+                    </div>
+                  </Button>
+                </div>
+                <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                    variant="mediumGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      setIsOpen(false);
+                    }}
+                  >
+                    <div className="flex gap-2">Close</div>
+                  </Button>
+                </div>
+              </div>
+            </CenterModal>
           </TenantLayout>
         </ProtectedRoute>
       )}

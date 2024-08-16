@@ -23,9 +23,8 @@ const DashboardScreen = () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
     const formData = {
-      id: user?.user?._id,
+      id: user?._id,
     };
-
     try {
       const response = await dispatch(getApplicationCount(formData) as any);
       setCount(response.payload.data);

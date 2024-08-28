@@ -157,8 +157,8 @@ const VerificationScreen = () => {
                   </Formik>
                 </div>
               ) : (
-                <div className="mt-8 w-full flex">
-                  <div className="w-2/5">
+                <div className="mt-8 w-full md:flex">
+                  <div className="md:w-2/5 w-full">
                     <div className="mb-8">
                       <p className="text-md font-medium text-nrvDarkBlue">
                         Applicant Personal Information
@@ -176,7 +176,7 @@ const VerificationScreen = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="w-4/5">
+                  <div className="md:w-4/5 w-full">
                     {/* <p className="text-md font-medium mb-4 text-nrvDarkBlue">
                       Applicant Rental History
                     </p> */}

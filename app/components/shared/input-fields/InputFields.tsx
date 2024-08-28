@@ -59,7 +59,7 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
       )}
       <div
-        className={` relative border border-nrvLightGrey pl-2 mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
+        className={`relative border border-nrvLightGrey pl-2 mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
       >
         {icon && (
           <div className="w-6 h-6 mr-2 flex items-center justify-center">

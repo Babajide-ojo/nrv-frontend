@@ -21,6 +21,8 @@ const DashboardScreen = () => {
   
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    console.log({user});
+    
     setUser(user?.user);
     const formData = {
       id: user?._id,
@@ -56,7 +58,7 @@ const dashboardMetrics = [
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        Hey {user?.firstName} 👋,
+        Hey {user?.firstName || "Landlord" }  👋,
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
         <span className="">

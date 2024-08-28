@@ -376,6 +376,23 @@ export const getRentedApartmentsForTenant = createAsyncThunk<any, {}>(
     }
 );
 
+export const tenantRentalHistory = createAsyncThunk<any, {}>(
+    "tenant/history",
+    async (formData: any, { rejectWithValue }) => {
+     
+        try {
+            const response: any = await axios.get(`${API_URL}/properties/tenant-history?nin=${formData.nin}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 const propertySlice = createSlice({
     name: "user",
     initialState,

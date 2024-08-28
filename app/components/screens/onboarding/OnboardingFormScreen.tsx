@@ -136,7 +136,7 @@ const OnboardingFormScreen: React.FC = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     if (user?.isOnboarded === true) {
-      setCurrentStep(5);
+      setCurrentStep(4);
     }
   }, []);
 
@@ -206,7 +206,7 @@ const OnboardingFormScreen: React.FC = () => {
               <Carousel currentItem={receivedData} />
             </div>
           )}
-          {currentStep === 2 && (
+          {/* {currentStep === 2 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
               <div className="w-full sm:w-1/2 p-8 justify-center">
@@ -337,8 +337,8 @@ const OnboardingFormScreen: React.FC = () => {
                 </div>
               </div>
             </div>
-          )}
-          {currentStep === 3 && (
+          )} */}
+          {currentStep === 2 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
               <div className="w-full sm:w-1/2 p-8 justify-center">
@@ -408,7 +408,7 @@ const OnboardingFormScreen: React.FC = () => {
               </div>
             </div>
           )}
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
               <div className="w-full sm:w-1/2 p-8 justify-center">
@@ -476,7 +476,7 @@ const OnboardingFormScreen: React.FC = () => {
               </div>
             </div>
           )}
-          {currentStep === 5 && <div>Dashboard</div>}
+          {currentStep === 4 && <div>Dashboard</div>}
         </div>
       </div>
     </div>

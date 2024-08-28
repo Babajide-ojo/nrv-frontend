@@ -77,7 +77,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <div className="flex items-center justify-center">
         <span>{children}</span>
-          {showIcon && !isHovered && typeof Icon === 'function' && <Icon className="ml-2" />} {/* Render icon if provided, not hovered, and it's a function */}
+          {/* {showIcon && !isHovered && typeof Icon === 'function' && <Icon className="ml-2" />} */}
         </div>
       </button>
     );

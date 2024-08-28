@@ -249,19 +249,19 @@ const TenantScreen = () => {
                               </div>
                               <div className="w-full">
                                 <div className="flex gap-3">
-                                  <div className="text-nrvDarkGrey font-light text-md">
+                                  <div className="text-nrvDarkGrey font-light text-md w-1/2">
                                     {item?.applicant?.firstName}{" "}
                                     {item?.applicant?.lastName}
                                   </div>
                                   <div
-                                    className="border border-nrvDarkBlue text-nrvDarkBlue py-1 px-2 rounded rounded-full text-xs cursor-pointer"
+                                    className="cursor-pointer text-sm underline text-end w-1/2"
                                     onClick={() =>
                                       router.push(
                                         `rooms/${item?.propertyId?._id}`
                                       )
                                     }
                                   >
-                                    {item?.propertyId?.roomId}
+                                   Aparment ID : {item?.propertyId?.roomId}
                                   </div>
                                 </div>
                                 <div className="text-nrvDarkBlue text-sm mt-2">
@@ -561,14 +561,15 @@ const TenantScreen = () => {
                                 {item?.applicant?.lastName}
                               </div>
                               <div
-                                className="border border-nrvDarkBlue text-nrvDarkBlue py-1 px-3 rounded rounded-full text-sm cursor-pointer"
-                                onClick={() =>
-                                  router.push(`rooms/${item?.propertyId?._id}`)
-                                }
-                              >
-                                {" "}
-                                {item?.propertyId?.roomId}
-                              </div>
+                                    className="cursor-pointer text-sm underline text-end w-1/2"
+                                    onClick={() =>
+                                      router.push(
+                                        `rooms/${item?.propertyId?._id}`
+                                      )
+                                    }
+                                  >
+                                   Aparment ID : {item?.propertyId?.roomId}
+                                  </div>
                             </div>
                             <div className="text-nrvDarkBlue text-sm mt-2">
                               {item?.propertyId?.propertyId.streetAddress},{" "}

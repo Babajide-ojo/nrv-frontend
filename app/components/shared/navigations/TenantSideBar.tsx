@@ -37,7 +37,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   const router = useRouter();
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-72 bg-white transition duration-300 ease-in-out transform ${
+      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -70,7 +70,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </ul>
       </nav>
 
-      <ul className="mt-32">
+      <ul className="mt-16">
         <li
           className="px-6 py-3 cursor-pointer text-nrvGrayText text-sm m-6"
           onClick={() => {

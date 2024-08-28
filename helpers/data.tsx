@@ -189,24 +189,24 @@ export const dashboardNavLinks = [
     title: "Get a Lease Agreement",
     number: 0,
   },
-  {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
-    title: "Build a Lease Addendum",
-    number: 0,
-  },
+  // {
+  //   imageLink:
+  //     "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+  //   title: "Build a Lease Addendum",
+  //   number: 0,
+  // },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
     title: "E-Sign a Document",
     number: 0,
   },
-  {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-    title: "Get Landlord Forms",
-    number: 0,
-  },
+  // {
+  //   imageLink:
+  //     "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+  //   title: "Get Landlord Forms",
+  //   number: 0,
+  // },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",

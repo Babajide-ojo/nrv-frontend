@@ -61,7 +61,6 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
     const fetchUserInfo = () => {
       // Simulate fetching user info (replace this with actual logic)
       const storedUser = localStorage.getItem("nrv-user");
-      console.log({storedUser})
       if (storedUser) {
         const userInfo = JSON.parse(storedUser);
         setUser({

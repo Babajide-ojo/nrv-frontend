@@ -3,10 +3,9 @@
 import { useState } from "react";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Link from "next/link";
 import Carousel from "./Carousel";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "@/redux/slices/userSlice";
+import { loginUser, resetPassword } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,17 +13,16 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdOutlineKey } from "react-icons/md";
 
 interface FormData {
-  email: string;
-  password: string;
+ token: string,
+  newPassword: string;
 }
 
-const LoginScreen: React.FC = () => {
+const ResetPasswordScreen: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { loading, error, data } = useSelector((state: any) => state.user);
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
+    token: "",
+    newPassword: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -33,12 +31,8 @@ const LoginScreen: React.FC = () => {
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!formData.password.trim()) {
+
+    if (!formData.newPassword.trim()) {
       errors.password = "Password is required";
     }
 
@@ -66,17 +60,9 @@ const LoginScreen: React.FC = () => {
     }
     setIsLoading(true); // Set loading state to true when starting the request
     try {
-      const userData = await dispatch(loginUser(formData) as any).unwrap();
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
-      const userAccountType = userData?.user?.accountType || "";
-
-      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
-        router.push("/dashboard/landlord");
-      } else if (userAccountType === "landlord" && userData.user.isOnboarded === false) {
-        router.push("/onboard/landlord")
-      } else if (userAccountType === "tenant") {
-        router.push("/dashboard/tenant");
-      }
+      await dispatch(resetPassword(formData) as any).unwrap();
+      toast.success("Password reset successfully");
+      router.push("/sign-in");
     } catch (error: any) {
       toast.error(error);
     } finally {
@@ -92,7 +78,6 @@ const LoginScreen: React.FC = () => {
       }}
     >
       <ToastContainer />
-    
       <div
         className="w-full sm:w-1/2 p-8 justify-center h-screen"
         style={{
@@ -103,10 +88,10 @@ const LoginScreen: React.FC = () => {
       >
         <div className="max-w-md mx-auto w-full">
           <div className="text-2xl text-nrvGreyBlack font-semibold">
-            Welcome to NaijaRentVerify
+             Reset Password
           </div>
           <div className="pt-2 text-nrvLightGrey text-md">
-            Please enter your login to access your account.
+          Enter and confirm your new password, don’t forget this one again :)
           </div>
           <div className="pt-1 text-nrvLightGrey text-md flex gap-2">
     
@@ -117,21 +102,21 @@ const LoginScreen: React.FC = () => {
           </div>
           <div className="mt-2">
             <InputField
-              label="Email Address"
-              placeholder="Enter your email address"
-              inputType="email"
-              name="email"
+              label="Confirmation Code"
+              placeholder="Enter your confirmation code"
+              inputType="text"
+              name="token"
               onChange={handleInputChange}
-              error={errors.email}
+              error={errors.token}
               icon={<MdOutlineMail size={20} color="#999999" />}
             />
           </div>
           <div className="mt-4">
             <InputField
               label="Password"
-              placeholder="Enter your password"
+              placeholder="Enter a new password"
               inputType={showPassword ? "text" : "password"}
-              name="password"
+              name="newPassword"
               onChange={handleInputChange}
               error={errors.password}
               password={true}
@@ -152,26 +137,7 @@ const LoginScreen: React.FC = () => {
             >
               {isLoading ? "Loading..." : "Login"}
             </Button>
-            <div className="justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey">
-                Do not have an account?
-              </div>
-              <Link
-                href="/sign-up"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Sign Up
-              </Link>
-            </div>
-            <div className="justify-center flex gap-3 mt-4">
-      
-              <Link
-                href="/forgot-password"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Forgot password?
-              </Link>
-            </div>
+         
           </div>
         </div>
       </div>
@@ -180,4 +146,4 @@ const LoginScreen: React.FC = () => {
   );
 };
 
-export default LoginScreen;
+export default ResetPasswordScreen;

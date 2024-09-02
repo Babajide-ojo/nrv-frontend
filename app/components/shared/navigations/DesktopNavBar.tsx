@@ -59,10 +59,10 @@ const DesktopNavBar: React.FC = () => {
         <div className="flex justify-end">
             {isLoggedIn ? (
               <div onClick={() => {
-                  if(currentUser.accountType === 'landlord'){
+                  if(currentUser?.accountType === 'landlord'){
                     router.push("/dashboard/landlord")
                   }
-                  if(currentUser.accountType === 'tenant'){
+                  if(currentUser?.accountType === 'tenant'){
                     router.push("/dashboard/tenant")
                   }
               }} className="cursor-pointer">

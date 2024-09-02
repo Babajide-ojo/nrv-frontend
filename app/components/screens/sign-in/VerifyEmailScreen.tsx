@@ -6,7 +6,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import Link from "next/link";
 import Carousel from "./Carousel";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "@/redux/slices/userSlice";
+import { loginUser, verifyEmail } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,20 +15,18 @@ import { MdOutlineKey } from "react-icons/md";
 
 interface FormData {
   email: string;
-  password: string;
 }
 
-const LoginScreen: React.FC = () => {
+const VerifyEmailScreen: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { loading, error, data } = useSelector((state: any) => state.user);
   const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
+    email: ""
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+
 
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
@@ -37,9 +35,6 @@ const LoginScreen: React.FC = () => {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.email = "Invalid email address";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
     }
 
     setErrors(errors);
@@ -66,17 +61,15 @@ const LoginScreen: React.FC = () => {
     }
     setIsLoading(true); // Set loading state to true when starting the request
     try {
-      const userData = await dispatch(loginUser(formData) as any).unwrap();
+      const userData = await dispatch(verifyEmail(formData) as any).unwrap();
       localStorage.setItem("nrv-user", JSON.stringify(userData));
-      const userAccountType = userData?.user?.accountType || "";
+      //const userAccountType = userData?.user?.accountType || "";
 
-      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
-        router.push("/dashboard/landlord");
-      } else if (userAccountType === "landlord" && userData.user.isOnboarded === false) {
-        router.push("/onboard/landlord")
-      } else if (userAccountType === "tenant") {
-        router.push("/dashboard/tenant");
-      }
+      toast.success("Password reset code sent");
+      setFormData({
+        email: ""
+      })
+      router.push('/reset-password')
     } catch (error: any) {
       toast.error(error);
     } finally {
@@ -120,24 +113,14 @@ const LoginScreen: React.FC = () => {
               label="Email Address"
               placeholder="Enter your email address"
               inputType="email"
+              value={formData.email}
               name="email"
               onChange={handleInputChange}
               error={errors.email}
               icon={<MdOutlineMail size={20} color="#999999" />}
             />
           </div>
-          <div className="mt-4">
-            <InputField
-              label="Password"
-              placeholder="Enter your password"
-              inputType={showPassword ? "text" : "password"}
-              name="password"
-              onChange={handleInputChange}
-              error={errors.password}
-              password={true}
-              icon={<MdOutlineKey size={20} color="#999999" />}
-            />
-          </div>
+
       
         </div>
         <div>
@@ -163,15 +146,7 @@ const LoginScreen: React.FC = () => {
                 Sign Up
               </Link>
             </div>
-            <div className="justify-center flex gap-3 mt-4">
-      
-              <Link
-                href="/forgot-password"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Forgot password?
-              </Link>
-            </div>
+         
           </div>
         </div>
       </div>
@@ -180,4 +155,4 @@ const LoginScreen: React.FC = () => {
   );
 };
 
-export default LoginScreen;
+export default VerifyEmailScreen;

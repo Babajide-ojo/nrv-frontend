@@ -41,6 +41,15 @@ interface verifyData {
     email: string;
 }
 
+interface verifyEmail {
+    email: string;
+}
+
+interface resetPassword {
+    token: string;
+    newPassword: string;
+}
+
 interface loginData {
     password: string;
     email: string;
@@ -179,6 +188,49 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, {}>(
     }
 );
 
+// Async thunk to login user
+export const verifyEmail = createAsyncThunk<UserToken, verifyEmail, {}>(
+    "user/reset-code-token",
+    async (verifyEmail: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.post(`${API_URL}/users/request-password-reset`, verifyEmail, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+
+export const resetPassword = createAsyncThunk<UserToken, resetPassword, {}>(
+    "user/reset-password",
+    async (verifyEmail: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.post(`${API_URL}/users/reset-password`, verifyEmail, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
 // Create user slice
 const userSlice = createSlice({
     name: "user",

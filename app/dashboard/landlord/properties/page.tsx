@@ -267,12 +267,9 @@ const PropertiesScreen = () => {
                     );
                   }}
                 >
-                  <div
-                    className="flex gap-3"
               
-                  >
                     View full details
-                  </div>
+             
                 </Button>
                 <Button
                   size="large"

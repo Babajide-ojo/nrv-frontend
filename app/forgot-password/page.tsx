@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import LoadingPage from '@/app/components/loaders/LoadingPage';
 import VerifyEmailScreen from '../components/screens/sign-in/VerifyEmailScreen';
 
-const verifyEmail = () => {
+const VerifyEmail = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,4 +22,4 @@ const verifyEmail = () => {
   );
 };
 
-export default verifyEmail;
+export default VerifyEmail;

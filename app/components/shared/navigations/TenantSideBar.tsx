@@ -70,7 +70,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </ul>
       </nav>
 
-      <ul className="mt-16">
+      <ul className="mt-32">
         <li
           className="px-6 py-3 cursor-pointer text-nrvGrayText text-sm m-6"
           onClick={() => {

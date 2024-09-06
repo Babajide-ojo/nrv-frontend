@@ -16,10 +16,10 @@ interface FormikSelectFieldProps {
   noOptionsMessage?: () => string;
   options: Option[];
   disabled?: boolean;
-
+  styles?: any
 }
 
-const FormikSelectField: React.FC<FormikSelectFieldProps> = ({
+const FormikSelectField: React.FC<FormikSelectFieldProps | any> = ({
   name,
   label,
   required,
@@ -28,6 +28,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps> = ({
   noOptionsMessage,
   options,
   disabled,
+  styles
 }) => {
   const { values, setFieldValue, setFieldTouched, errors, touched } = useFormikContext<any>();
 
@@ -40,6 +41,31 @@ const FormikSelectField: React.FC<FormikSelectFieldProps> = ({
   };
 
   const value = values[name] || null;
+
+  const customStyles: any = {
+    control: (provided: any, state: any) => ({
+      ...provided,
+      height: "40px",
+      borderColor: state.isFocused
+        ? "your-custom-border-color"
+        : provided.borderColor,
+      boxShadow: state.isFocused ? "none" : provided.boxShadow,
+      fontSize: "14px"
+    }),
+  
+    option: (provided: any, state: any) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#f5f5f5" : "white",
+      color: state.isFocused ? "#000000" : "#000000",
+      borderRadius: "5px",
+      margin: "5px",
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: "#f5f5f5",
+      },
+      fontSize:"14px"
+    }),
+  };
 
   return (
     <div className="w-full mt-8">
@@ -55,6 +81,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps> = ({
         onChange={handleChange}
         onBlur={handleBlur}
         disabled={disabled}
+        //styles={customStyles}
         
       />
       <ErrorMessage

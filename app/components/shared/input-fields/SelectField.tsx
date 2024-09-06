@@ -35,14 +35,14 @@ const formatOptionLabel = ({ label, isSelected }: { label: string; isSelected: b
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    height: "43px",
+    height: "60px",
     borderColor: state.isFocused
       ? "#999999"
       : "#999999",
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
-    fontSize: "15px",
+    fontSize: "12px",
     colors: "#EEF0F2"
 
   }),
@@ -50,7 +50,7 @@ const customStyles = {
   option: (provided: any, state: any) => ({
     ...provided,
     backgroundColor: state.isFocused ? "#f5f5f5" : "white",
-    color: state.isFocused ? "#000000" : "#000000",
+    color: state.isFocused ? "" : "#000000",
     borderRadius: "5px",
     margin: "5px",
     cursor: "pointer",
@@ -91,7 +91,8 @@ const SelectField: React.FC<Props> = ({
         name={name}
         isDisabled={disabled}
         styles={customStyles}
-        isSearchable={isSearchable}
+        isSearchable={true}
+        isClearable={true}
         options={options || _options}
         placeholder={placeholder}
         value={value}

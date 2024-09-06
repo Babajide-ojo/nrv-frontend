@@ -86,6 +86,9 @@ const PropertiesScreen = () => {
                 <p className="text-sm text-nrvLightGrey">
                   Let’s add another property :)
                 </p>
+                <p className="text-sm text-nrvLightGrey">
+                  Afer creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
+                </p>
                 <div className="w-full h-screen flex justify-center items-center">
                   <div className="">
                     <EmptyState />
@@ -119,6 +122,7 @@ const PropertiesScreen = () => {
                     <p className="text-sm text-nrvLightGrey">
                       Let’s add another property :)
                     </p>
+             
                   </div>
                   <Button
                     size="small"
@@ -136,7 +140,11 @@ const PropertiesScreen = () => {
                       <p className="">Add New</p>
                     </div>
                   </Button>
+
                 </div>
+                <p className="text-sm text-nrvDarkBlue mt-4">
+                  After creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
+                </p>
                 {properties?.map((property: any) => (
                   <div
                     key={property.id}
@@ -176,7 +184,7 @@ const PropertiesScreen = () => {
                             setIsOpen(true);
                           }}
                         >
-                          <p className="text-sm p-1.5">
+                          <p className="text-sm p-0.5">
                             View details
                           </p>
                         </div>
@@ -256,12 +264,12 @@ const PropertiesScreen = () => {
               </ul> */}
               <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                 <Button
-                  size="large"
+                  size="small"
                   className="text-white w-72 max-w-full   border border-nrvDarkBlue mt-2 rounded-md"
                   variant="bluebg"
                   showIcon={false}
                   onClick={() => {
-                  //  setIsOpen(false);
+        
                     router.push(
                       `/dashboard/landlord/properties/${singleProperty._id}`
                     );
@@ -272,7 +280,7 @@ const PropertiesScreen = () => {
              
                 </Button>
                 <Button
-                  size="large"
+                  size="small"
                   className="text-nrvDarkBlue  w-72  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
                   variant="lightGrey"
                   showIcon={false}

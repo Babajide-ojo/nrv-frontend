@@ -110,7 +110,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
        {/* User Info Section */}
        {user && (
-        <div className="px-6 py-4  border-gray-200 ml-6 mt-16">
+        <div className="px-6 py-4  border-gray-200 ml-6 mt-40">
           <p className="text-sm font-semibold">{user.name}</p>
           <p className="text-sm text-nrvDarkBlue mt-2">Account Type : {user.role}</p>
           <p className="text-sm text-gray-500 mt-2">Current Time: {user.loggedInTime}</p>
@@ -124,7 +124,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           variant="whitebg"
           size="small"
         >
-          Take A Break
+          Sign Out
         </Button>
      </div>
         </div>

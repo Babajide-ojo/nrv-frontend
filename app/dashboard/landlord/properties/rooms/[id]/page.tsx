@@ -109,11 +109,7 @@ const SingleRoom = () => {
                     <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
                       <BsHouse color="white" size={35} />
                     </div>
-                    {/* <img
-                          src={property.file}
-                          className="h-16 w-16"
-                          alt="Property"
-                        /> */}
+
                     <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
                       {singleRoom?.propertyId?.streetAddress}
                     </p>

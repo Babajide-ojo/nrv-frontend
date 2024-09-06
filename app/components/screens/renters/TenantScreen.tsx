@@ -23,7 +23,6 @@ import {
 } from "../../../../redux/slices/userSlice";
 import { AnyAction, Dispatch, ThunkDispatch } from "@reduxjs/toolkit";
 import Modal from "../../shared/modals/Modal";
-import DatePickerComponent from "../../shared/CustomDatePicker";
 import CustomDatePicker from "../../shared/CustomDatePicker";
 
 const TenantScreen = () => {
@@ -42,7 +41,7 @@ const TenantScreen = () => {
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [landlordProperties, setLandlordProperties] = useState<any>([]);
   const [toggleTenantView, setToggleTenantView] =
-    useState<string>("general_tenant");
+    useState<string>("onboarded_tenant");
 
   // Define a type for the function parameters
   type AddTenantFunction = (
@@ -67,6 +66,10 @@ const TenantScreen = () => {
         getAllLandlordApartment(formData) as any
       );
 
+      console.log({x :_response?.payload?.data});
+      
+
+
       const formattedOptions: any = _response?.payload?.data.map(
         (item: any) => ({
           value: item._id,
@@ -79,8 +82,8 @@ const TenantScreen = () => {
         })
       );
       setLandlordProperties(formattedOptions);
-      setProperties(response?.payload?.data);
-      setTotalPages(response?.totalPages);
+      setProperties(_response?.payload?.data);
+      setTotalPages(_response?.totalPages);
     } catch (error) {
     } finally {
       setIsLoading(false);
@@ -154,11 +157,13 @@ const TenantScreen = () => {
     };
 
     try {
-      const response = await dispatch(
+      const _response = await dispatch(
         getTenantsOnboardedByLandlord(formData) as any
       );
-      if (response?.payload?.data) {
-        setTenants(response.payload.data);
+      console.log({_response});
+      
+      if (_response?.payload?.data) {
+        setTenants(_response.payload.data);
       }
     } catch (error) {
       console.error("Failed to fetch tenants:", error);
@@ -189,7 +194,7 @@ const TenantScreen = () => {
       <ToastContainer />
 
       <div className="">
-        <div className=" w-full md:w-2/5  max-w-full mx-auto  flex justify-between gap-8 mt-4">
+        {/* <div className=" w-full md:w-2/5  max-w-full mx-auto  flex justify-between gap-8 mt-4">
           <Button
             size="large"
             className="font-light text-sm border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white w-1/2"
@@ -212,7 +217,7 @@ const TenantScreen = () => {
           >
             General Tenant
           </Button>
-        </div>
+        </div> */}
 
         <div className=" w-full md:w-2/5  max-w-full mx-auto  flex justify-end items-end mt-2">
           <Button
@@ -228,312 +233,7 @@ const TenantScreen = () => {
           </Button>
         </div>
         <div className="">
-          {toggleTenantView === "general_tenant" && (
-            <div>
-              {currentStep === 1 && (
-                <div className=" w-full md:w-2/5  max-w-full mx-auto ">
-                  {properties && properties.length > 0 ? (
-                    <div>
-                      {properties?.map((item, index) => {
-                        return (
-                          <div key={index}>
-                            <div
-                              className="flex gap-4 bg-white mt-4 rounded rounded-2xl p-4 w-full"
-                              onClick={() => {}}
-                            >
-                              <div>
-                                <img
-                                  src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1718917936/image_17_1_y9aa8e.png"
-                                  alt="photos"
-                                />
-                              </div>
-                              <div className="w-full">
-                                <div className="flex gap-3">
-                                  <div className="text-nrvDarkGrey font-light text-md w-1/2">
-                                    {item?.applicant?.firstName}{" "}
-                                    {item?.applicant?.lastName}
-                                  </div>
-                                  <div
-                                    className="cursor-pointer text-sm underline text-end w-1/2"
-                                    onClick={() =>
-                                      router.push(
-                                        `rooms/${item?.propertyId?._id}`
-                                      )
-                                    }
-                                  >
-                                   Aparment ID : {item?.propertyId?.roomId}
-                                  </div>
-                                </div>
-                                <div className="text-nrvDarkBlue text-sm mt-2">
-                                  {item?.applicant?.homeAddress}
-                                </div>
-                                {/* <div className="text-nrvLightGrey text-sm underline mt-2 cursor-pointer">
-                                  view property
-                                </div> */}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="max-w-full w-120 rounded rounded-2xl p-4 mt-8 text-center">
-                      <div className="text-md py-2">
-                        {" "}
-                        Your leads at your fingertips!
-                      </div>
-                      <div className="text-center flex mx-auto w-2/5 mt-4 text-sm text-nrvGrayText font-light">
-                        Easily manage all your leads as they automatically start
-                        coming in.
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              {currentStep === 2 && (
-                <div>
-                  <div className="p-3 bg-white rounded-md mx-2 my-4 text-sm flex gap-3">
-                    <div
-                      className="pt-1 font-light"
-                      onClick={() => {
-                        setCurrentStep(1);
-                      }}
-                    >
-                      <svg
-                        width="22"
-                        height="12"
-                        viewBox="0 0 22 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M21 6.75C21.4142 6.75 21.75 6.41421 21.75 6C21.75 5.58579 21.4142 5.25 21 5.25V6.75ZM0.469669 5.46967C0.176777 5.76256 0.176777 6.23744 0.469669 6.53033L5.24264 11.3033C5.53553 11.5962 6.01041 11.5962 6.3033 11.3033C6.59619 11.0104 6.59619 10.5355 6.3033 10.2426L2.06066 6L6.3033 1.75736C6.59619 1.46447 6.59619 0.989593 6.3033 0.696699C6.01041 0.403806 5.53553 0.403806 5.24264 0.696699L0.469669 5.46967ZM21 5.25L1 5.25V6.75L21 6.75V5.25Z"
-                          fill="#333333"
-                        />
-                      </svg>
-                    </div>
-                    <div> Tenant Details</div>
-                  </div>
-                  <div className="md:flex mx-2 bg-white p-3 rounded-md border-r ">
-                    <div className="md:w-2/5 w-full md:border-r">
-                      <div className="mb-4 border-b pb-4 px-2 md:mr-20 mr-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack ">
-                          {" "}
-                          Personal Information
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            First Name{" "}
-                          </span>{" "}
-                          {application?.applicant?.firstName}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Last Name{" "}
-                          </span>
-                          {application?.applicant?.lastName}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Phone Number{" "}
-                          </span>{" "}
-                          {application?.applicant?.phoneNumber}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Current Address{" "}
-                          </span>{" "}
-                          {application?.applicant?.homeAddress}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Date Of Birth{" "}
-                          </span>{" "}
-                          January 1, 1990{" "}
-                        </div>
-                      </div>
-                      <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Employment Information
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Current Employer{" "}
-                          </span>{" "}
-                          {application?.currentEmployer}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Job Title{" "}
-                          </span>{" "}
-                          {application?.jobTitle}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Monthly Income{" "}
-                          </span>{" "}
-                          {application?.monthlyIncome} Naira
-                        </div>
-                      </div>
-                      <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Rental History
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Previous Landlord{" "}
-                          </span>{" "}
-                          {application?.currentLandlord}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Previous Address{" "}
-                          </span>{" "}
-                          {application?.currentAddress}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Reason for Leaving{" "}
-                          </span>{" "}
-                          {application?.reasonForLeaving}{" "}
-                        </div>
-                      </div>
-                      <div className="mb-4 pb-4 px-2 md:mr-20 mr-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Background Check Results
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Criminal Record{" "}
-                          </span>{" "}
-                          {application?.criminalRecord === true ? "YES" : "NO"}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Eviction History{" "}
-                          </span>{" "}
-                          {application?.evictionHistory === true ? "YES" : "NO"}{" "}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="md:w-3/5 w-full">
-                      <div className="mb-4 border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack ">
-                          {" "}
-                          References
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Reference Full Name
-                          </span>{" "}
-                          {application?.applicant?.firstName}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Phone Number
-                          </span>
-                          {application?.applicant?.lastName}
-                        </div>
-                      </div>
-                      <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Additional Information
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Desired Move-in Date
-                          </span>{" "}
-                          {application?.applicant?.firstName}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Number of Pets{" "}
-                          </span>{" "}
-                          {application?.petNumber}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Smoking
-                          </span>{" "}
-                          {application?.smoker === true ? "YES" : "NO"}{" "}
-                        </div>
-                        <div className="mt-3 text-sm font-light">
-                          <span className="text-nrvGreyBlack font-medium pr-3">
-                            Number of Vehicles
-                          </span>{" "}
-                          {application?.numberOfVehicles}{" "}
-                        </div>
-                      </div>
-                      <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Uploaded Documents
-                        </div>
-                        <div className="mt-3 text-sm font-light cursor-pointer">
-                          <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
-                            ID Proof
-                          </span>{" "}
-                          <a
-                            className="underline"
-                            href={application?.identificationCard}
-                          >
-                            View ID Card
-                          </a>
-                        </div>
-                        <div className="mt-3 text-sm font-light cursor-pointer">
-                          <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
-                            Income Verification
-                          </span>{" "}
-                          {application?.applicant?.firstName}{" "}
-                        </div>
-                      </div>
-                      <div className="mb-4 pb-4 px-2 mr-3 md:ml-20 ml-3">
-                        <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                          {" "}
-                          Actions
-                        </div>
-                        <div className="flex mt-4 gap-4">
-                          <Button
-                            onClick={() => {
-                              router.push(
-                                `http://localhost:3000/dashboard/landlord/properties/rooms/${application.propertyId._id}`
-                              );
-                            }}
-                            size="normal"
-                            className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-red-400"
-                            variant="mediumGrey"
-                            showIcon={false}
-                          >
-                            {/* <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                              View Property
-                            </div> */}
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setIsOpen(true);
-                            }}
-                            size="normal"
-                            className="p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
-                            variant="bluebg"
-                            showIcon={false}
-                          >
-                            <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                              Extend Lease Date
-                            </div>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
           {toggleTenantView === "onboarded_tenant" && (
             <div>
               {tenents && tenents.length > 0 ? (
@@ -542,26 +242,26 @@ const TenantScreen = () => {
                     return (
                       <div key={index}>
                         <div
-                          className="flex gap-4 bg-white mt-4 mrounded rounded-2xl p-4"
+                          className="flex bg-white mt-4 mrounded rounded-2xl p-4"
                           onClick={() => {
                             // setApplication(item);
                             // setCurrentStep(2);
                           }}
                         >
-                          <div>
+                          <div className="w-1/5">
                             <img
                               src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1718917936/image_17_1_y9aa8e.png"
                               alt="photos"
                             />
                           </div>
-                          <div>
-                            <div className="flex justify-between">
-                              <div className="text-nrvDarkGrey font-light text-md">
+                          <div className="w-4/5">
+                            <div className="flex justify-between w-full">
+                              <div className="text-nrvDarkGrey font-light text-md w-1/2">
                                 {item?.applicant?.firstName}{" "}
                                 {item?.applicant?.lastName}
                               </div>
                               <div
-                                    className="cursor-pointer text-sm underline text-end w-1/2"
+                                    className="cursor-pointer text-sm underline text-end w-1/2 text-end"
                                     onClick={() =>
                                       router.push(
                                         `rooms/${item?.propertyId?._id}`

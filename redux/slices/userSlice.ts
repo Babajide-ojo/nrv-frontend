@@ -176,7 +176,7 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, {}>(
     "onboarded-by-landlord/get",
     async (formData: any, { rejectWithValue }) => {
         try {
-            const response = await axios.get(`${API_URL}/properties/tenent/landlord-onboarded?id=${formData.id}`);
+            const response = await axios.get(`${API_URL}/properties/tenant/landlord-onboarded?id=${formData.id}`);
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

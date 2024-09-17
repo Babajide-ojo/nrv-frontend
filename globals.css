@@ -47,3 +47,25 @@ fieldset.MuiOutlinedInput-notchedOutline {
 .rooms > * .css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root {
   color: transparent !important;
 }
+
+
+.css-z3c6am-MuiFormControl-root-MuiTextField-root {
+  width: 100%;
+  border:1px solid#5a5a5a !important;
+  height: 40px !important;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.css-z3c6am-MuiFormControl-root-MuiTextField-root:focus, 
+.css-z3c6am-MuiFormControl-root-MuiTextField-root:active {
+  width: 100%;
+  border:1px solid#5a5a5a !important;
+  height: 40px !important;
+  border-radius: 10px;
+  font-size: 12px;
+  outline: none !important;
+  box-shadow: none !important;
+}

@@ -17,9 +17,15 @@ import GoogleMapReact from "google-map-react";
 import CenterModal from "../../../../components/shared/modals/CenterModal";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
-import InputField from "@/app/components/shared/input-fields/InputFields";
-import SelectField from "@/app/components/shared/input-fields/SelectField";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
+
+import CustomDatePicker from "@/app/components/shared/CustomDatePicker";
+import { Form, Formik } from "formik";
+import FormikInputField from "@/app/components/shared/input-fields/FormikInputField";
+
+import { SlCloudUpload } from "react-icons/sl";
+
+
 
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
@@ -29,30 +35,15 @@ const TenantPropertiesScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<any>(1);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const [selectedSmokerOption, setSelectedSmokerOption] = useState<any>(null);
-  const [selectedCriminalOption, setSelectedCriminalOption] =
-    useState<any>(null);
-  const [selectedEvictionOption, setSelectedEvictionOption] =
-    useState<any>(null);
+  const [fileError, setFileError] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<any>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [applicationData, setApplicationData] = useState<any>({
     currentEmployer: "",
-    jobTitle: "",
     monthlyIncome: "",
-    jobStartDate: "",
-    criminalRecord: "",
-    criminalRecordDetails: "",
-    numberOfVehicles: "",
-    petNumber: "",
-    smoker: "",
-    evictionHistory: "",
-    evictionDetails: "",
-    currentLandlord: "",
-    currentAddress: "",
+    currentResidence: "",
     reasonForLeaving: "",
-    leaseStartDate: "",
-    leaseEndDate: "",
   });
 
   const dispatch = useDispatch();
@@ -92,17 +83,7 @@ const TenantPropertiesScreen = () => {
     }));
   };
 
-  const handleChangeForSmoker = (selectedOption: any) => {
-    setSelectedSmokerOption(selectedOption);
-  };
 
-  const handleChangeForCriminal = (selectedOption: any) => {
-    setSelectedCriminalOption(selectedOption);
-  };
-
-  const handleChangeForEviction = (selectedOption: any) => {
-    setSelectedEvictionOption(selectedOption);
-  };
 
   const copyToClipboard = (text: any) => {
     let copyText = text;
@@ -129,58 +110,53 @@ const TenantPropertiesScreen = () => {
 
   const handleFileInputChange = (e: any) => {
     const files: any = Array.from(e.target.files);
+    console.log({files: e.target.id});
+    
     if (e.target.id === "file" && e.target.files.length > 0) {
+      console.log("hello");
+      
       const fileExtension = files[0].name.split(".").pop().toLowerCase();
 
       const allowedExtensions = ["jpg", "jpeg", "png", "pdf"];
       if (!allowedExtensions.includes(fileExtension)) {
         setApplicationData((prev: any) => ({
           ...prev,
-          [e.target.id]: files[0],
+          [e.target.id]: files,
         }));
         return;
       }
-      setApplicationData((prev: any) => ({ ...prev, [e.target.id]: files[0] }));
+      setSelectedFiles(files[0]);
+
     } else {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (value: any) => {
+
+    
     const formData: any = new FormData();
 
-    // Append all the form data fields
     formData.append("propertyId", id);
     formData.append("applicant", user?._id);
     formData.append("status", "New");
     formData.append("ownerId", property?.property.propertyId.createdBy?._id);
-    formData.append("currentEmployer", applicationData.currentEmployer);
-    formData.append("jobTitle", applicationData.jobTitle);
-    formData.append("monthlyIncome", applicationData.monthlyIncome);
-    //formData.append("jobStartDate", applicationData.jobStartDate);
-    formData.append(
-      "criminalRecordDetails",
-      applicationData.criminalRecordDetails
-    );
-    formData.append("numberOfVehicles", applicationData.numberOfVehicles);
-    formData.append("petNumber", applicationData.petNumber);
-    formData.append("evictionHistory", selectedEvictionOption?.value);
-    formData.append("smoker", selectedSmokerOption?.value);
-    formData.append("criminalRecord", selectedCriminalOption?.value);
-    formData.append("evictionDetails", applicationData.evictionDetails);
-    formData.append("currentLandlord", applicationData.currentLandlord);
-    formData.append("currentAddress", applicationData.currentAddress);
-    formData.append("reasonForLeaving", applicationData.reasonForLeaving);
-    formData.append("leaseStartDate", applicationData.leaseStartDate);
-    formData.append("leaseEndDate", applicationData.leaseEndDate);
-    formData.append("file", applicationData.file);
+    formData.append("currentEmployer", value.currentEmployer);
 
-    // Check if any field in formData is empty
-    const values = Array.from(formData.values());
+    formData.append("monthlyIncome", value.monthlyIncome);
 
-    if (values.some((value) => !value)) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
+    formData.append("currentAddress", value.currentResidence);
+    formData.append("reasonForLeaving", value.reasonForLeaving);
+    formData.append("file", selectedFiles);
+
+    console.log({formData});
+
+    // // Check if any field in formData is empty
+    // const values = Array.from(formData.values());
+
+    // if (values.some((value) => !value)) {
+    //   toast.error("Please fill in all required fields.");
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -416,7 +392,26 @@ const TenantPropertiesScreen = () => {
             )}
             {currentStep === 2 && (
               <div className="p-3 md:p-8 mb-20 md:m-4">
-                <div className="flex gap-4">
+       
+
+                <Formik
+                  initialValues={{
+                    currentResidence: "",
+                    monthlyIncome: "",
+                    desiredMoveInDate: "",
+                    currentEmployer: "",
+                    reasonForLeaving: "",
+                    ownerId: user?._id,
+        
+                  }}
+                  // validationSchema={validationSchema}
+                   onSubmit={(values, formikHelpers) =>
+                    handleSubmit(values)
+                   }
+                >
+                  {({ isSubmitting, resetForm, values }) => (
+                    <Form className="w-1/2 mx-auto">
+                               <div className="flex gap-4">
                   <div onClick={() => setCurrentStep(1)}>
                     <svg
                       width="30"
@@ -440,305 +435,123 @@ const TenantPropertiesScreen = () => {
                   Kindly fill the necessary boxes, this is the tenant
                   application process.
                 </p>
+                      <div className="" style={{ display: "flex", flexDirection: "column" }}>
+                        <div className="w-full gap-3">
+                          <div className="w-full mt-8 md:mt-0">
+                            <CustomDatePicker
+                              name="desiredMoveInDate"
+                              label="Desired Move In Date"
+                              cls="bg-nrvLightGreyBg"
+                            />
+                          </div>
+                          <div className="w-full mt-8 md:mt-0">
+                            <FormikInputField
+                              name="currentResidence"
+                              placeholder="Current Residence Address"
+                              label="Current Residence Address"
+                              value={values.currentResidence}
+                              css="bg-nrvLightGreyBg"
+                            />
+                          </div>
+                        </div>
+                        <div className="w-full gap-3">
+                          <div className=" w-full mt-8 md:mt-0">
+                            <FormikInputField
+                              name="currentEmployer"
+                              placeholder="Current Employer"
+                              label="Current Employer"
+                              value={values.currentEmployer}
+                              css="bg-nrvLightGreyBg"
+                            />
+                          </div>
+       
+                          <div className="w-full mt-8 md:mt-0">
+                            <FormikInputField
+                              name="monthlyIncome"
+                              placeholder="Current Salary Per Month"
+                              label="Current Salary Per Month"
+                              value={values.monthlyIncome}
+                              css="bg-nrvLightGreyBg"
+                            />
+                          </div>
 
-                <div className="">
-                  <p className="mt-8">Applicant Details</p>
-                  <div className="w-full md:flex block gap-4">
-                    <div className="w-full mt-2">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Desired Move In Date"
-                        inputType="date"
-                        label="Desired Move In Date"
-                        name="moveInDate"
-                        value={applicationData.moveInDate}
-                        onChange={handleInputChange}
-                        error={errors.moveInDate} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-2">
-                      <InputField
-                        css="bg-nrvLightGreyBg p-2"
-                        placeholder="Upload ID Card"
-                        inputType="file"
-                        name="file"
-                        label="Upload Identification Card"
-                        //value={applicationData.file}
-                        onChange={handleFileInputChange}
-                        error={errors.file} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="mt-8">Employment Verification</p>
-                  <div className="w-full gap-4 md:flex block">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Current Employer"
-                        inputType="text"
-                        label="Current Employer Name"
-                        name="currentEmployer"
-                        value={applicationData.currentEmployer}
-                        onChange={handleInputChange}
-                        error={errors.currentEmployer} // Corrected error prop name
-                      />
-                      <p className="text-nrvDarkBlue text-xs">
-                        Enter your name if self employed
-                      </p>
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Position/Job Title"
-                        inputType="text"
-                        label="Position/Job Title"
-                        name="jobTitle"
-                        value={applicationData.jobTitle}
-                        onChange={handleInputChange}
-                        error={errors.jobTitle} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full gap-4 md:flex block">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Employment Start Date"
-                        inputType="date"
-                        name="employmentStartDate"
-                        label="Employment Start Date"
-                        value={applicationData.employmentStartDate}
-                        onChange={handleInputChange}
-                        error={errors.employmentStartDate} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Monthly Income"
-                        inputType="text"
-                        label="Monthly Income"
-                        name="monthlyIncome"
-                        value={applicationData.monthlyIncome}
-                        onChange={handleInputChange}
-                        error={errors.monthlyIncome} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="mt-8">Rental History</p>
-                  <div className="w-full gap-4 md:flex block">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Current Landlord"
-                        label="Current Landlord Name"
-                        inputType="text"
-                        name="currentLandlord"
-                        value={applicationData.currentLandlord}
-                        onChange={handleInputChange}
-                        error={errors.currentLandlord} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Current Address"
-                        inputType="text"
-                        label="Current Address"
-                        name="currentAddress"
-                        value={applicationData.currentAddress}
-                        onChange={handleInputChange}
-                        error={errors.currentAddress} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Lease Start Date"
-                        label="Lease Start Date"
-                        inputType="date"
-                        name="leaseStartDate"
-                        value={applicationData.leaseStartDate}
-                        onChange={handleInputChange}
-                        error={errors.leaseStartDate} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                  <div className="w-full gap-4 md:flex block">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Lease End Date"
-                        inputType="date"
-                        label="Lease End Date"
-                        name="leaseEndDate"
-                        value={applicationData.leaseEndDate}
-                        onChange={handleInputChange}
-                        error={errors.leaseEndDate} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Reason for Living"
-                        inputType="text"
-                        label="Reason for Living"
-                        name="reasonForLeaving"
-                        value={applicationData.reasonForLeaving}
-                        onChange={handleInputChange}
-                        error={errors.reasonForLeaving} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                </div>
+                          <div className="w-full mt-8 md:mt-0">
+                            <FormikInputField
+                              name="reasonForLeaving"
+                              placeholder="Reason for leaving"
+                              label="Reason for Leaving/Relocation"
+                              value={values.reasonForLeaving}
+                              css="bg-nrvLightGreyBg"
+                            />
+                          </div>
+                          <div className="w-full mt-4">
+                          <label className="text-nrvGreyBlack mb-2 text-sm">
+                         Upload an Identification Card
+                          </label>
+                          <div
+                            className="text-center w-full mt-2"
+                            //onDrop={handleFileDrop}
+                            onDragOver={(e) => e.preventDefault()}
+                          >
+                            <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
+                              <input
+                                type="file"
+                                id="file"
+                                className="hidden"
+                                accept=".png, .jpg , .jpeg"
+                                name="file"
+                                onChange={handleFileInputChange}
+                              />
+                              <label
+                                htmlFor="file"
+                                className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
+                              >
+                                <div className="text-center flex justify-center">
+                                  {selectedFiles ? (
+                                  selectedFiles.name
+                                  ) : (
+                                    <SlCloudUpload size={30} fontWeight={900} />
+                                  )}
+                                </div>
+                                {selectedFiles 
+                                  ? "Change file"
+                                  : "Click to upload"}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
 
-                <div className="">
-                  <p className="mt-8">Criminal Background Check</p>
-                  <div className="w-full md:flex block  gap-4">
-                    <div className="w-full mt-5">
-                      <SelectField
-                        label="Do you have any criminal record?"
-                        name="criminalRecord"
-                        onChange={handleChangeForCriminal}
-                        options={[
-                          { value: "true", label: "YES" },
-                          { value: "false", label: "NO" },
-                        ]}
-                        placeholder="[Yes/No]"
-                        value={selectedCriminalOption}
-                      />
-                    </div>
-
-                    <div className="w-full mt-4">
-                      <InputField
-                        label="Enter Criminal Details"
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Criminal Record Details"
-                        inputType="text"
-                        name="criminalRecordDetails"
-                        value={applicationData.criminalRecordDetails}
-                        onChange={handleInputChange}
-                        // error={errors.streetAddress} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="mt-8">Referencees</p>
-                  <div className="w-full md:flex block  gap-4">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Full Name"
-                        inputType="text"
-                        label="Reference Full Name"
-                        name="referenceFullName"
-                        value={applicationData.referenceFullName}
-                        onChange={handleInputChange}
-                        // error={errors.streetAddress} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Phone Number"
-                        inputType="text"
-                        label="Reference Phone Number"
-                        name="referencePhoneNumber"
-                        value={applicationData.referencePhoneNumber}
-                        onChange={handleInputChange}
-                        // error={errors.streetAddress} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="mt-8">Eviction History</p>
-                  <div className="w-full md:flex block  gap-4">
-                    <div className="w-full mt-5">
-                      <SelectField
-                        label="Any Eviction Records?"
-                        name="evictionHistory"
-                        onChange={handleChangeForEviction}
-                        options={[
-                          { value: "true", label: "YES" },
-                          { value: "false", label: "NO" },
-                        ]}
-                        placeholder="[Yes/No]"
-                        value={selectedEvictionOption}
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Eviction Record Details"
-                        inputType="text"
-                        name="evictionDetails"
-                        value={applicationData.evictionDetails}
-                        onChange={handleInputChange}
-                        label="Enter Eviction Details"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="mt-8">General Information</p>
-
-                  <div className="w-full md:flex block  gap-4">
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg"
-                        placeholder="Enter number of pets"
-                        label="How many pets do you have?"
-                        inputType="text"
-                        name="petNumber"
-                        value={applicationData.petNumber}
-                        onChange={handleInputChange}
-                        // error={errors.streetAddress} // Corrected error prop name
-                      />
-                    </div>
-                    <div className="w-full mt-5">
-                      <SelectField
-                        label="Do you Smoke?"
-                        name="smoker"
-                        onChange={handleChangeForSmoker}
-                        options={[
-                          { value: "true", label: "YES" },
-                          { value: "false", label: "NO" },
-                        ]}
-                        placeholder="[Yes/No]"
-                        value={selectedSmokerOption}
-                      />
-                    </div>
-                    <div className="w-full mt-4">
-                      <InputField
-                        css="bg-nrvLightGreyBg h-30"
-                        placeholder="Number of Vehicles"
-                        inputType="text"
-                        name="numberOfVehicles"
-                        label="How many vehicles do you have? "
-                        value={applicationData.numberOfVehicles}
-                        onChange={handleInputChange}
-                        // error={errors.streetAddress} // Corrected error prop name
-                      />
-                    </div>
-                  </div>
-                  <div className="flex mt-4 justify-center">
-                    <Button
-                      onClick={() => handleSubmit()}
-                      size="large"
-                      className=""
-                      variant="bluebg"
-                      showIcon={false}
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </div>
+                        <div className="w-full md:flex flex-row gap-3"></div>
+                      </div>
+                      <div className="mt-4  mx-auto md:w-1/2 w-full mt-8 flex gap-4 justify-between">
+                        <Button
+                          type="button"
+                          size="large"
+                          className="block w-full"
+                          variant="lightGrey"
+                          showIcon={false}
+                          onClick={() => {
+                            resetForm();
+                            // setOpenAddTenantModal(false);
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="submit"
+                          size="large"
+                          className="block w-full"
+                          variant="lightGrey"
+                          showIcon={false}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? "Loading..." : "Submit"}
+                        </Button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               </div>
             )}
           </TenantLayout>

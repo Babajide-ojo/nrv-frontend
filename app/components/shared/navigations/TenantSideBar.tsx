@@ -20,6 +20,11 @@ const links = [
   },
 
   {
+    name: "Maintenance",
+    route: "/dashboard/tenant/rented-properties/maintenance",
+  },
+
+  {
     name: "Rented Apartments",
     route: "/dashboard/tenant/rented-properties",
   },

@@ -159,6 +159,12 @@ export const tenantDashboardMetrics = [
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    title: "Property Applications",
+    number: 20,
+  },
+  {
+    imageLink:
+      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
     title: "Maintenance Issued",
     number: 20,
   },

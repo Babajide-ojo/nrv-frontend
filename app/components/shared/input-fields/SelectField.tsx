@@ -35,15 +35,15 @@ const formatOptionLabel = ({ label, isSelected }: { label: string; isSelected: b
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    height: "60px",
+    height: "40px",
     borderColor: state.isFocused
       ? "#999999"
       : "#999999",
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
-    fontSize: "12px",
-    colors: "#EEF0F2"
+    fontSize: "14px",
+    colors: "#caced5",
 
   }),
 
@@ -57,6 +57,8 @@ const customStyles = {
     "&:hover": {
       backgroundColor: "#f5f5f5",
     },
+        fontSize: "12px",
+    colors: "#EEF0F2"
   }),
 };
 

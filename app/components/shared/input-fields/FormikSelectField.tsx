@@ -33,7 +33,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps | any> = ({
   const { values, setFieldValue, setFieldTouched, errors, touched } = useFormikContext<any>();
 
   const handleChange = (selectedOption: Option | any) => {
-    setFieldValue(name, selectedOption.value);
+    setFieldValue(name, selectedOption?.value);
   };
 
   const handleBlur = () => {

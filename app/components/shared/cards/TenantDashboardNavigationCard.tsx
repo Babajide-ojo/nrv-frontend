@@ -13,10 +13,10 @@ const TenantDashboardNavigationCard: React.FC<OnboardingCardProps> = ({
   isMetric,
 }) => {
   return (
-    <div className="w-full md:h-44 h-36 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden  flex flex-col justify-end p-4">
+    <div className="w-full md:h-32 h-32 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden  flex flex-col justify-end p-4">
     <div className="flex flex-col">
       <img src={imageLink} className="w-8 h-8" alt={title} />
-      <p className=" text-nrvGreyBlack md:text-lg text-xs mt-4">
+      <p className=" text-nrvGreyBlack md:text-md text-xs mt-4">
         {title}
       </p>
       {isMetric ? (

@@ -7,9 +7,10 @@ import '../shared/CustomDatePicker.css'
 interface CustomDatePickerProps {
   label?: string;
   name: string;
+  cls?: any
 }
 
-const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name }) => {
+const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<'day' | 'month' | 'year'>('day');
@@ -111,7 +112,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name }) => {
           name={name}
           value={selectedDate ? selectedDate.toLocaleDateString() : ''}
           readOnly
-          className="date-input text-sm"
+          className={`date-input text-sm ${cls}`}
           placeholder='dd/mm/yyyy'
           aria-label={label}
         />

@@ -73,14 +73,8 @@ const TenantScreen = () => {
       const formattedOptions: any = _response?.payload?.data.map(
         (item: any) => ({
           value: item._id,
-          label: (
-            <div className="p-2 text-sm text-nrvDarkBlue">
-              <div className="text-md">{item.propertyId.streetAddress}</div>
-              Apartment ID: {item.roomId}, Property Type: {item.propertyId.propertyType}
-            </div>
-          ),
-        })
-      );
+          label: item.propertyId.streetAddress
+    }))
       setLandlordProperties(formattedOptions);
       setProperties(_response?.payload?.data);
       setTotalPages(_response?.totalPages);
@@ -421,13 +415,13 @@ const TenantScreen = () => {
                   </div>
 
                   <div className="w-full md:flex flex-row gap-3">
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
                       <CustomDatePicker
                         label="Rent Start Date"
                         name="rentStartDate"
                       />
                     </div>
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
                       <CustomDatePicker
                         label="Rent End Date"
                         name="rentEndDate"
@@ -436,7 +430,7 @@ const TenantScreen = () => {
                   </div>
                   <div className="w-full md:flex flex-row gap-3"></div>
 
-                  <div className="w-full mt-8 md:mt-0">
+                  <div className="w-full mt-0 md:mt-0">
                     <FormikSelectField
                       name="propertyId"
                       placeholder="Select Property"

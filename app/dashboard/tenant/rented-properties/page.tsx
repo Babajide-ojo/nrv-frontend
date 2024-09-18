@@ -24,8 +24,6 @@ const RentedPropertiesScreen = () => {
   const [properties, setProperties] = useState<any[]>([]);
   const [page, setPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
-  const [singleProperty, setSingleProperty] = useState<any>({});
-  const [isOpen, setIsOpen] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
 
   const dispatch = useDispatch();

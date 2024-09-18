@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import LandlordSideBar from "../shared/navigations/LandLordSideBar";
 import { FaMessage } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome } from "react-icons/io";
@@ -17,10 +16,6 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
 
-  // Function to toggle sidebar state
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   // Close sidebar on component mount for mobile screens and on screen resize
   useEffect(() => {

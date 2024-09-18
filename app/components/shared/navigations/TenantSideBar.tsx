@@ -20,8 +20,8 @@ const links = [
   },
 
   {
-    name: "Maintenance",
-    route: "/dashboard/tenant/rented-properties/maintenance",
+    name: "Applications",
+    route: "/dashboard/tenant/properties/applications",
   },
 
   {

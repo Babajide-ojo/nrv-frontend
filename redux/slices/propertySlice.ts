@@ -275,6 +275,22 @@ export const getApplicationsByLandlordId = createAsyncThunk<any, {}>(
     }
 );
 
+export const getApplicationsByTenantId = createAsyncThunk<any, {}>(
+    "property/tenant-applications",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/tenant-applications?id=${formData.id}&page=${formData.page}&status=${formData.status}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
 export const updateApplicationStatus = createAsyncThunk<any, {}>(
     "property/application-update",
     async (formData: any, { rejectWithValue }) => {

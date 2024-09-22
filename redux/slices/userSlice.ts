@@ -188,6 +188,8 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, {}>(
     }
 );
 
+
+
 // Async thunk to login user
 export const verifyEmail = createAsyncThunk<UserToken, verifyEmail, {}>(
     "user/reset-code-token",

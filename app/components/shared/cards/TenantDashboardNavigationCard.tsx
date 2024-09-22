@@ -1,9 +1,12 @@
 "use client";
+import { useRouter } from "next/navigation";
+
 interface OnboardingCardProps {
   imageLink: string;
   title: string;
   number: any;
   isMetric: boolean;
+  link?: string;
 }
 
 const TenantDashboardNavigationCard: React.FC<OnboardingCardProps> = ({
@@ -11,20 +14,31 @@ const TenantDashboardNavigationCard: React.FC<OnboardingCardProps> = ({
   title,
   number,
   isMetric,
+  link,
 }) => {
-  return (
-    <div className="w-full md:h-32 h-32 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden  flex flex-col justify-end p-4">
-    <div className="flex flex-col">
-      <img src={imageLink} className="w-8 h-8" alt={title} />
-      <p className=" text-nrvGreyBlack md:text-md text-xs mt-4">
-        {title}
-      </p>
-      {isMetric ? (
-        <p className="font-semibold text-nrvGreyBlack md:text-md text-sm">{number}</p>
-      ) : null}
-    </div>
-  </div>
+  const router = useRouter();
   
+  const handleClick = () => {
+    if (link) {
+      router.push(link);
+    }
+  };
+
+  return (
+    <div
+      className="w-full md:h-32 h-32 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden flex flex-col justify-end p-4"
+      onClick={handleClick}
+    >
+      <div className="flex flex-col">
+        <img src={imageLink} className="w-8 h-8" alt={title} />
+        <p className="text-nrvGreyBlack md:text-md text-xs mt-4">{title}</p>
+        {isMetric ? (
+          <p className="font-semibold text-nrvGreyBlack md:text-md text-sm">
+            {number}
+          </p>
+        ) : null}
+      </div>
+    </div>
   );
 };
 

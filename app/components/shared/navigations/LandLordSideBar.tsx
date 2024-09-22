@@ -130,9 +130,6 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
         </div>
       )}
 
-      {/* <ul className="mt-16 ml-4">
-  
-      </ul> */}
     </div>
   );
 };

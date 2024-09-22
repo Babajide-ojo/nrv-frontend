@@ -155,18 +155,21 @@ export const tenantDashboardMetrics = [
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
     title: "Rented Apartments",
     number: 1,
+    link: '/dashboard/tenant/rented-properties'
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
     title: "Property Applications",
     number: 20,
+    link: '/dashboard/tenant/properties/applications'
   },
   {
     imageLink:
       "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
     title: "Maintenance Issued",
     number: 20,
+    link: '/dashboard/tenant/properties/maintenance'
   },
 ];
 

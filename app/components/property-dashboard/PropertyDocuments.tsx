@@ -4,11 +4,14 @@ import Button from "../shared/buttons/Button";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SlCloudUpload } from "react-icons/sl";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineDeleteOutline } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
-import { getPropertyById, updateProperty } from "../../../redux/slices/propertySlice";
+import {
+  getPropertyById,
+  updateProperty,
+} from "../../../redux/slices/propertySlice";
 import dynamic from "next/dynamic";
 import { deleteDocumentById } from "../../../redux/slices/propertySlice";
 
@@ -112,7 +115,6 @@ const PropertyDocuments = () => {
     }
   };
 
-
   const viewDocument = (item: string) => {
     const fileType = getFileExtension(item);
     if (
@@ -166,18 +168,18 @@ const PropertyDocuments = () => {
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">
             <div>
-              <div className="font-semibold text-nrvDarkBlue">
+              <div className="font-medium text-nrvDarkBlue">
                 Rental Settings
               </div>
-              <div className="text-start flex mx-auto mt-2 text-nrvLightGrey font-medium text-sm">
+              <div className="text-start flex mx-auto mt-2 text-nrvLightGrey font-light text-sm">
                 Keep track of all the documents related to this property in one
                 place. This documents are not shared with your tenants.
               </div>
             </div>
             <div>
               <Button
-                size="normal"
-                className=" p-2 border  mt-2  mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                size="small"
+                className=" p-0.5 border  hover:text-white hover:bg-nrvDarkBlue"
                 variant="mediumGrey"
                 showIcon={false}
               >
@@ -200,16 +202,18 @@ const PropertyDocuments = () => {
                   landlordInsuranceFiles.map((file: any, index: any) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                      className="m-2 flex items-center justify-between py-1.5 px-2 bg-white border-b rounded-md border-gray-200 transition-all duration-200 hover:bg-gray-100"
                     >
-                      <span>{file.name}</span>
+                      <span className="text-nrvLightGrey font-light text-xs">
+                        {file.name}
+                      </span>
                       <button
-                        className="text-red-500"
+                        className="text-red-500 hover:text-red-700 transition duration-200"
                         onClick={() =>
                           handleRemoveFile(index, setLandlordInsuranceFiles)
                         }
                       >
-                        <MdDelete />
+                        <MdDelete size={20} />
                       </button>
                     </div>
                   ))
@@ -235,7 +239,7 @@ const PropertyDocuments = () => {
                 htmlFor="landlordInsurancePolicy"
                 className="cursor-pointer rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-3 mb-3"
               >
-                <div className="pt-5 pb-5Explore Properties">
+                <div className="pt-5 pb-5">
                   {landlordInsuranceFiles.length > 0
                     ? "Add more files"
                     : "Click to upload"}
@@ -262,16 +266,18 @@ const PropertyDocuments = () => {
                   utilityMaintenanceFiles.map((file: any, index: any) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                      className="m-2 flex items-center justify-between py-1.5 px-2 bg-white border-b rounded-md border-gray-200 transition-all duration-200 hover:bg-gray-100"
                     >
-                      <span>{file.name}</span>
+                      <span className="text-nrvLightGrey font-light text-xs">
+                        {file.name}
+                      </span>
                       <button
-                        className="text-red-500"
+                        className="text-red-500 hover:text-red-700 transition duration-200"
                         onClick={() =>
-                          handleRemoveFile(index, setUtilityMaintenanceFiles)
+                          handleRemoveFile(index, setLandlordInsuranceFiles)
                         }
                       >
-                        <MdDelete />
+                        <MdDelete size={20} />
                       </button>
                     </div>
                   ))
@@ -323,16 +329,18 @@ const PropertyDocuments = () => {
                   otherDocumentFiles.map((file: any, index: any) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between py-1 px-4 text-sm text-nrvLightGrey"
+                      className="m-2 flex items-center justify-between py-1.5 px-2 bg-white border-b rounded-md border-gray-200 transition-all duration-200 hover:bg-gray-100"
                     >
-                      <span>{file.name}</span>
+                      <span className="text-nrvLightGrey font-light text-xs">
+                        {file.name}
+                      </span>
                       <button
-                        className="text-red-500"
+                        className="text-red-500 hover:text-red-700 transition duration-200"
                         onClick={() =>
-                          handleRemoveFile(index, setOtherDocumentFiles)
+                          handleRemoveFile(index, setLandlordInsuranceFiles)
                         }
                       >
-                        <MdDelete />
+                        <MdDelete size={20} />
                       </button>
                     </div>
                   ))
@@ -402,7 +410,7 @@ const PropertyDocuments = () => {
                 data?.data?.landlordInsurancePolicy.map(
                   (item: any, index: any) => (
                     <div className="w-full mt-6" key={index}>
-                      <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
                           onClick={() => viewDocument(item)}
@@ -411,7 +419,7 @@ const PropertyDocuments = () => {
                           Docs ({index})
                         </div>{" "}
                         <div
-                          className="text-red-300 cursor-pointer"
+                          className="text-red-500 cursor-pointer"
                           onClick={() => {
                             openDeleteConfirmation(item);
                             //deleteDocument(item);
@@ -440,7 +448,7 @@ const PropertyDocuments = () => {
                 data?.data?.utilityAndMaintenance.map(
                   (item: any, index: any) => (
                     <div className="w-full mt-6" key={index}>
-                      <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
                           onClick={() => viewDocument(item)}
@@ -449,7 +457,7 @@ const PropertyDocuments = () => {
                           Docs ({index})
                         </div>{" "}
                         <div
-                          className="text-red-300 cursor-pointer"
+                          className="text-red-500 cursor-pointer"
                           onClick={() => {
                             openDeleteConfirmation(item);
                             // deleteDocument(item);
@@ -477,7 +485,7 @@ const PropertyDocuments = () => {
               {data?.data?.otherDocuments &&
                 data?.data?.otherDocuments.map((item: any, index: any) => (
                   <div className="w-full mt-6" key={index}>
-                    <div className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                    <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
                       <div
                         className="underline text-xs cursor-pointer"
                         onClick={() => viewDocument(item)}
@@ -486,7 +494,7 @@ const PropertyDocuments = () => {
                         Docs ({index})
                       </div>{" "}
                       <div
-                        className="text-red-300 cursor-pointer"
+                        className="text-red-500 cursor-pointer"
                         onClick={() => {
                           openDeleteConfirmation(item);
                           //  deleteDocument(item);
@@ -556,22 +564,28 @@ const PropertyDocuments = () => {
       {showDeleteConfirmation && (
         <div
           id="overlay"
-          className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+          className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center"
         >
-          <div className="bg-white p-8 rounded shadow-md text-center">
-            <p>Are you sure you want to delete this item?</p>
-            <div className="mt-4 flex justify-center space-x-4">
-              <button
-                onClick={deleteDocument}
-                className="bg-red-500 text-white px-4 py-2 rounded"
-              >
-                Yes
-              </button>
+          <div className="bg-white p-8 rounded-[1.2rem] shadow-md text-center w-[30rem] m-4">
+            <p className="pb-2 text-red-700 flex justify-center items-center text-[1.25rem] font-medium w-full mx-auto">
+              <MdOutlineDeleteOutline color="#ef5e5e" size={40} />
+            </p>
+
+            <p className="text-red-700 text-sm mb-4">
+              This action can't be undone!!!
+            </p>
+            <div className="mt-8 flex justify-between ">
               <button
                 onClick={closeDeleteConfirmation}
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-gray-200 text-sm text-nrvDarkBlue px-6 py-1.5 rounded w-[48%]"
               >
                 No
+              </button>
+              <button
+                onClick={deleteDocument}
+                className="bg-red-200 text-red-600 px-6 py-1.5 rounded w-[48%]"
+              >
+                Yes
               </button>
             </div>
           </div>

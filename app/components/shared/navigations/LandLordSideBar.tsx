@@ -46,10 +46,10 @@ const links = [
   //   name: "Messages",
   //   route: "/dashboard/landlord",
   // },
-  // {
-  //   name: "Settings",
-  //   route: "/dashboard/landlord",
-  // },
+  {
+    name: "Settings",
+    route: "/dashboard/landlord/settings",
+  },
 ];
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {

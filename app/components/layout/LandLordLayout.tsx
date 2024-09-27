@@ -16,25 +16,18 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
 
-  // Function to toggle sidebar state
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+ 
 
-  // Close sidebar on component mount for mobile screens and on screen resize
   useEffect(() => {
     const handleResize = () => {
       const screenWidth = window.innerWidth;
-      setIsSidebarOpen(screenWidth > 1110); // Show sidebar if screen width > 768px
+      setIsSidebarOpen(screenWidth > 1110); 
     };
 
-    // Initial check on mount
+   
     handleResize();
 
-    // Listen for resize events
     window.addEventListener("resize", handleResize);
-
-    // Cleanup function to remove event listener
     return () => {
       window.removeEventListener("resize", handleResize);
     };

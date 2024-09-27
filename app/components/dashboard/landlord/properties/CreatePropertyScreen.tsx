@@ -72,9 +72,7 @@ const CreatePropertyScreen = () => {
     if (!propertyData.zipCode.trim()) {
       errors.zipCode = "Zip code is required";
     }
-    // if (!propertyData.propertyType.trim()) {
-    //   errors.propertyType = "Zip code is required";
-    // }
+
 
     setErrors(errors);
     return Object.keys(errors).length === 0;

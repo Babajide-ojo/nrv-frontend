@@ -6,7 +6,7 @@ import { BsDownload } from 'react-icons/bs';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary' | 'roundedRec';
-  size?: 'small' | 'normal' | 'large' | 'smaller';
+  size?: 'small' | 'normal' | 'large' | 'smaller' | 'minLarge';
   pill?: boolean;
   icon?: IconType | ReactElement; // Allowing IconType or JSX elements
   showIcon?: boolean;
@@ -20,6 +20,7 @@ const classes = {
     smaller:'px-1.5 py-1 text-xs',
     small: 'px-3.5 py-1.5 text-sm',
     normal: 'px-3.5 py-1.5 text-sm',
+    minLarge: 'px-5 py-2.5 text-[15px] font-lighter',
     large: 'px-5 py-2.5 text-lg'
   },
   variant: {
@@ -32,7 +33,7 @@ const classes = {
     bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
     lightGrey: 'rounded rounded-2xl text-nrvDarkBlue bg-nrvLightGreyBg border border-[#153969] hover:bg-nrvDarkBlue hover:text-white',
     mediumGrey: 'rounded-2xl  bg-nrvLightGreyBg border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
-    ordinary: ' rounded-2xl',
+    ordinary: ' rounded-xl text-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
     roundedRec: 'font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvDarkBlue'
   }
 };
@@ -77,7 +78,6 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <div className="flex items-center justify-center">
         <span>{children}</span>
-          {/* {showIcon && !isHovered && typeof Icon === 'function' && <Icon className="ml-2" />} */}
         </div>
       </button>
     );

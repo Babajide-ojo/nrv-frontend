@@ -74,6 +74,8 @@ interface PropertyData {
 const SinglePropertyScreen = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
+  console.log({id});
+  
   const router = useRouter();
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -225,20 +227,20 @@ const SinglePropertyScreen = () => {
     }
   };
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      const properties = dispatch(
-        getPropertyByUserId(user?.user?._id) as any
-      ).unwrap();
-      setProperties(properties?.data);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+  //     setUser(user?.user);
+  //     const properties = dispatch(
+  //       getPropertyByUserId(user?.user?._id) as any
+  //     ).unwrap();
+  //     setProperties(properties?.data);
+  //     const timer = setTimeout(() => {
+  //       setIsLoading(false);
+  //     }, 2000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, []);
 
   const openDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);

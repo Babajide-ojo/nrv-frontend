@@ -37,6 +37,8 @@ const PropertiesScreen = () => {
 
     try {
       const response = await dispatch(getPropertyByUserId(formData) as any); // Pass page parameter
+      console.log("here");
+      
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
@@ -232,36 +234,7 @@ const PropertiesScreen = () => {
                 {singleProperty.streetAddress}
               </p>
 
-              {/* <ul className="list-disc pl-6">
-                <li className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
-                    Property Type:{" "}
-                    <span className="text-nrvLightGrey">
-                      {singleProperty.propertyType}
-                    </span>
-                  </div>
-                </li>
-           
-                <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
-                    {" "}
-                    Rent Amount:{" "}
-                    <span className="text-nrvLightGrey">
-                      {" "}
-                      ₦600,000 per month
-                    </span>
-                  </div>
-                </li>
-                <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
-                    Security Deposit:{" "}
-                    <span className="text-nrvLightGrey"> ₦100,000</span>
-                  </div>
-                </li>
-              </ul> */}
+    
               <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                 <Button
                   size="small"

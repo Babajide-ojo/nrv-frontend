@@ -38,7 +38,7 @@ const PropertyMaintenance = () => {
             <div className="font-light text-nrvDarkBlue">
               Ongoing Maintenance: 0
             </div>
-            <div>
+            {/* <div>
               <Button
                 size="normal"
                 className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
@@ -49,7 +49,7 @@ const PropertyMaintenance = () => {
                   Create Request
                 </div>
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="text-center flex mx-auto mt-2 text-nrvGrayText font-light text-[13px]">
             Instead of being spread across text/emails/voicemails you now have a

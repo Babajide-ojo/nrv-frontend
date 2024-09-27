@@ -572,7 +572,7 @@ const PropertyDocuments = () => {
             </p>
 
             <p className="text-red-700 text-sm mb-4">
-              This action can't be undone!!!
+              This action can&#39;t be undone!!!
             </p>
             <div className="mt-8 flex justify-between ">
               <button

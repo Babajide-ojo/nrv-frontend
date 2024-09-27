@@ -275,7 +275,7 @@ const SinglePropertyScreen = () => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
   return (
     <div>

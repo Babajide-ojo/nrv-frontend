@@ -41,10 +41,10 @@ const links = [
     route: "/dashboard/tenant/properties/maintenance",
   },
 
-  // {
-  //   name: "Settings",
-  //   route: "/dashboard/tenant",
-  // },
+  {
+    name: "Settings",
+    route: "/dashboard/tenant/settings",
+  },
 ];
 
 const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {

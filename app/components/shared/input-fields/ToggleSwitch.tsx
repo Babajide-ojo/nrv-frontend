@@ -27,12 +27,12 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
     <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
       <div
         onClick={handleToggle}
-        className={`flex items-center cursor-pointer w-12 h-6 rounded-full transition-all ${
+        className={`flex items-center cursor-pointer w-10 h-5 rounded-full transition-all ${
           checked ? 'bg-nrvDarkBlue' : 'bg-gray-300'
         }`}
       >
         <div
-          className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform ${
+          className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
             checked ? 'translate-x-6' : 'translate-x-0'
           }`}
         />

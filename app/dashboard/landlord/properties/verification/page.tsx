@@ -117,7 +117,8 @@ const VerificationScreen = () => {
         <ProtectedRoute>
           <ToastContainer />
           <LandLordLayout>
-            <div className="container mx-auto p-8 rounded-lg w-full md:flex block md:gap-8 justify-center">
+           
+            <div className="container mx-auto p-8 rounded-lg w-full block md:gap-8 justify-center">
               {view === "form" ? (
                 <div className="md:w-1/2 w-full md:p-8">
                   <Formik
@@ -157,29 +158,29 @@ const VerificationScreen = () => {
                   </Formik>
                 </div>
               ) : (
-                <div className="mt-8 w-full md:flex">
+             <>
+                <p className="font-semibold text-nrvGreyBlack text-lg  whitespace-nowrap mt-4">
+                Tenant Screening Report
+              </p>
+                <div className="mt-8 w-full md:flex bg-white p-4">
                   <div className="md:w-2/5 w-full">
                     <div className="mb-8">
-                      <p className="text-md font-medium text-nrvDarkBlue">
-                        Applicant Personal Information
-                      </p>
-                      <p className="text-xs mt-2 text-nrvGrayText text-light">
+                      <p className="font-semibold text-nrvDarkBlue text-lg  whitespace-nowrap">
                         {tenantHistory[0].applicant.firstName}{" "}
                         {tenantHistory[0].applicant.lastName}
                       </p>
-                      <p className="text-xs mt-2 text-nrvGrayText text-light">
+
+                      <p className="text-sm mt-2 text-nrvGrayText text-light">
                         {tenantHistory[0].applicant.email}{" "}
                         {tenantHistory[0].applicant?.phoneNumber || " "}
                       </p>
-                      <p className="text-xs mt-2 text-nrvGrayText text-light">
-                       National Identification Number : {tenantHistory[0].applicant.nin}
+                      <p className="text-sm mt-2 text-nrvGrayText text-light">
+                        National Identification Number :{" "}
+                       <span className="text-nrvDarkBlue font-medium">{tenantHistory[0].applicant.nin}</span> 
                       </p>
                     </div>
                   </div>
                   <div className="md:w-4/5 w-full">
-                    {/* <p className="text-md font-medium mb-4 text-nrvDarkBlue">
-                      Applicant Rental History
-                    </p> */}
                     {tenantHistory.length > 0 ? (
                       tenantHistory.map((item) => (
                         <div
@@ -187,14 +188,15 @@ const VerificationScreen = () => {
                           className=" p-4 mb-4 rounded-lg bg-white "
                         >
                           <div>
-                            <div className="text-[14px] font-light text-nrvGrayText mb-4 text-center">
-                            <FaHouse className="text-nrvDarkBlue" />  {item.propertyId.propertyId.streetAddress},{" "}
+                            <div className="text-[14px] font-medium text-nrvGrayText mb-4 text-center">
+                              <FaHouse className="text-nrvDarkBlue font-medium" />{" "}
+                              {item.propertyId.propertyId.streetAddress},{" "}
                               {item.propertyId.propertyId.city},{" "}
                               {item.propertyId.propertyId.state}
                             </div>
                             <div className="relative flex items-center justify-between">
                               <div className="date-section text-center flex-grow">
-                                <p className="text-xs text-nrvDarkBlue font-medium">
+                                <p className="text-sm text-nrvDarkBlue font-medium">
                                   Rent Start Date
                                 </p>
                                 {/* <hr className="my-2 border-t-2 border-gray-300" /> */}
@@ -206,7 +208,7 @@ const VerificationScreen = () => {
                                 <div className="arrow"></div>
                               </div>
                               <div className="date-section text-center flex-grow">
-                                <p className="text-xs text-nrvDarkBlue  font-medium">
+                                <p className="text-sm text-red-500  font-medium">
                                   Rent End Date
                                 </p>
                                 {/* <hr className="my-2 border-t-2 border-gray-300" /> */}
@@ -217,32 +219,34 @@ const VerificationScreen = () => {
                             </div>
                             <div className="mt-4 text-xs text-nrvGrayText text-center font-light">
                               Rent Duration :{" "}
-                              {calculateDateDifference(
+                          <span className="font-medium">    {calculateDateDifference(
                                 item.rentStartDate,
                                 item.rentEndDate
-                              )}
+                              )}</span>
                             </div>
                           </div>
                           <div className="date-section text-center flex-grow mt-4">
                             <p className="text-xs text-nrvDarkBlue  font-medium">
                               Landlord Details
                             </p>
-                            <hr></hr>
+                       
                             <div className="text-xs text-nrvGrayText mt-2">
                               {item.ownerId.firstName} {item.ownerId.firstName}
                               <br></br>
                               {item.ownerId.email} | {item.ownerId.phoneNumber}
                             </div>
                           </div>
+                          <hr className="mt-4"></hr>
                         </div>
                       ))
                     ) : (
                       <p className="text-center text-gray-500 text-nrvDarkBlue">
-                        No tenant history available.
+                        No Tenant history Available.
                       </p>
                     )}
                   </div>
                 </div>
+             </>
               )}
             </div>
           </LandLordLayout>

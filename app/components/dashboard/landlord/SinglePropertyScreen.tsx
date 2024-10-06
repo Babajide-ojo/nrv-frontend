@@ -10,7 +10,7 @@ import PropertyOverview from "../../property-dashboard/PropertyOverview";
 import PropertyMarketing from "../../property-dashboard/PropertyMarketing";
 import PropertyMaintenance from "../../property-dashboard/PropertyMaintenance";
 import PropertyDocuments from "../../property-dashboard/PropertyDocuments";
-import PropertyExpenses from "../../property-dashboard/PropertyExpenses";
+import PropertyExpenses from "../../room-dashboard/PropertyExpenses";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useParams } from "next/navigation";

@@ -208,7 +208,7 @@ const CreateRoom = () => {
                   <ToastContainer />
 
                   <form onSubmit={handleSubmit}>
-                    <div className="w-full sm:w-1/2 p-8 justify-center mx-auto">
+                    <div className="max-w-2xl w-full mx-auto p-8 justify-center mx-auto">
                       <div>
                         <div className="text-2xl flex gap-3 ">
                           {" "}
@@ -222,7 +222,7 @@ const CreateRoom = () => {
                               className="mt-1 cursor-pointer"
                             />
                           </span>{" "}
-                          Add apartment 🏘️
+                          Add Apartment 🏘️
                         </div>
                         <p className="text-sm text-nrvLightGrey">
                           These details are used to help you identify the
@@ -230,178 +230,162 @@ const CreateRoom = () => {
                           Agreements.
                         </p>
 
-                        <div className="max-w-lg w-full mx-auto pt-8 ">
-                          <div className="w-full mt-4">
-                            <InputField
-                              css="bg-nrvLightGreyBg"
-                              label="Room Name"
-                              placeholder="Enter room name"
-                              inputType="text"
-                              value={roomData.name}
-                              name="name"
-                              onChange={(e) => handleInputChange(e)}
-                      
-                            />
-                          </div>
-                          <div className="w-full mt-4">
-                            <InputField
-                              css="bg-nrvLightGreyBg"
-                              label="Description"
-                              placeholder="Enter room name"
-                              inputType="text"
-                              value={roomData.description}
-                              name="description"
-                              onChange={(e) => handleInputChange(e)}
-                          
-                            />
-                          </div>
-                          <div className="w-full mt-4 flex gap-3">
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Target Rent"
-                                placeholder="100000"
-                                inputType="text"
-                                value={roomData.targetRent}
-                                name="targetRent"
-                                onChange={(e) => handleInputChange(e)}
-                              
-                              />
-                            </div>
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Target Deposit"
-                                value={roomData.targetDeposit}
-                                placeholder="100000"
-                                inputType="text"
-                                name="targetDeposit"
-                                onChange={(e) => handleInputChange(e)}
-                              
-                              />
-                            </div>
-                          </div>
-                          <div className="w-full mt-4 flex gap-3">
-                            <div className="w-1/2">
-                              <SelectField
-                                label="Rent Amount Metrics"
-                                name="rentAmountMetrics"
-                                value={selectedOption}
-                                onChange={handleChange}
-                                options={[
-                                  { value: "monthly", label: "Monthly" },
-                                  { value: "yearly", label: "Yearly" },
-                                ]}
-                                placeholder="Select amount metrics"
-                              />
-                            </div>
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Rent Amount"
-                                value={roomData.rentAmount}
-                                placeholder="100000"
-                                inputType="text"
-                                name="rentAmount"
-                                onChange={(e) => handleInputChange(e)}
-                                  
-                              />
-                            </div>
-                          </div>
-                          <div className="w-full mt-4 flex gap-3">
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Number of rooms"
-                                placeholder="1"
-                                inputType="text"
-                                value={roomData.noOfRooms}
-                                name="noOfRooms"
-                                onChange={(e) => handleInputChange(e)}
-                             
-                              />
-                            </div>
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Number of Bathroom/Toilet"
-                                value={roomData.noOfBaths}
-                                placeholder="1"
-                                inputType="text"
-                                name="noOfBaths"
-                                onChange={(e) => handleInputChange(e)}
-                         
-                              />
-                            </div>
-                          </div>
-                          <div className="w-full mt-4 flex gap-3">
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Number of pools"
-                                placeholder="1"
-                                inputType="text"
-                                value={roomData.noOfPools}
-                                name="noOfPools"
-                                onChange={(e) => handleInputChange(e)}
-                              
-                              />
-                            </div>
-                            <div className="w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Other Amenities"
-                                value={roomData.otherAmentities}
-                                placeholder="Gate post, garage"
-                                inputType="text"
-                                name="otherAmentities"
-                                onChange={(e) => handleInputChange(e)}
-                             
-                              />
-                            </div>
-                          </div>
+                        <div className="max-w-2xl w-full mx-auto pt-8">
+  <div className="w-full mt-4">
+    <InputField
+      css="bg-nrvLightGreyBg"
+      label="Room Name"
+      placeholder="Enter room name"
+      inputType="text"
+      value={roomData.name}
+      name="name"
+      onChange={(e) => handleInputChange(e)}
+    />
+  </div>
+  <div className="w-full mt-4">
+    <InputField
+      css="bg-nrvLightGreyBg"
+      label="Description"
+      placeholder="Enter room description"
+      inputType="text"
+      value={roomData.description}
+      name="description"
+      onChange={(e) => handleInputChange(e)}
+    />
+  </div>
+  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Target Rent"
+        placeholder="100000"
+        inputType="text"
+        value={roomData.targetRent}
+        name="targetRent"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Target Deposit"
+        value={roomData.targetDeposit}
+        placeholder="100000"
+        inputType="text"
+        name="targetDeposit"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+  </div>
+  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+    <div className="w-full md:w-1/2">
+      <SelectField
+        label="Rent Amount Metrics"
+        name="rentAmountMetrics"
+        value={selectedOption}
+        onChange={handleChange}
+        options={[
+          { value: "monthly", label: "Monthly" },
+          { value: "yearly", label: "Yearly" },
+        ]}
+        placeholder="Select amount metrics"
+      />
+    </div>
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Rent Amount"
+        value={roomData.rentAmount}
+        placeholder="100000"
+        inputType="text"
+        name="rentAmount"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+  </div>
+  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Number of rooms"
+        placeholder="1"
+        inputType="text"
+        value={roomData.noOfRooms}
+        name="noOfRooms"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Number of Bathroom/Toilet"
+        value={roomData.noOfBaths}
+        placeholder="1"
+        inputType="text"
+        name="noOfBaths"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+  </div>
+  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Number of pools"
+        placeholder="1"
+        inputType="text"
+        value={roomData.noOfPools}
+        name="noOfPools"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+    <div className="w-full md:w-1/2">
+      <InputField
+        css="bg-nrvLightGreyBg"
+        label="Other Amenities"
+        value={roomData.otherAmentities}
+        placeholder="Gate post, garage"
+        inputType="text"
+        name="otherAmentities"
+        onChange={(e) => handleInputChange(e)}
+      />
+    </div>
+  </div>
 
-                          <div className="w-full mt-4">
-                            <label className="text-nrvGreyBlack mb-2 text-sm ">
-                              Property Photo
-                            </label>
-                            <div
-                              className="text-center w-full mt-2"
-                              // onDrop={handleFileDrop}
-                              onDragOver={(e) => e.preventDefault()}
-                            >
-                              <div className="w-full border border-nrvLightGrey rounded-lg  pt-4 pb-4 text-swBlack">
-                                <input
-                                  type="file"
-                                  id="fileInput"
-                                  className="hidden"
-                                  accept=".png, .jpg , .jpeg"
-                                  onChange={handleFileInputChange}
-                                />
+  <div className="w-full mt-4">
+    <label className="text-nrvGreyBlack mb-2 text-sm">
+      Property Photo
+    </label>
+    <div
+      className="text-center w-full mt-2"
+      onDragOver={(e) => e.preventDefault()}
+    >
+      <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
+        <input
+          type="file"
+          id="fileInput"
+          className="hidden"
+          accept=".png, .jpg , .jpeg"
+          onChange={handleFileInputChange}
+        />
+        <label
+          htmlFor="fileInput"
+          className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
+        >
+          <div className="text-center flex justify-center">
+            {selectedFiles.length > 0 ? (
+              selectedFiles[0]?.name
+            ) : (
+              <SlCloudUpload size={30} fontWeight={900} />
+            )}
+          </div>
+          {selectedFiles.length > 0 ? "Change file" : "Click to upload"}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
 
-                                <label
-                                  htmlFor="fileInput"
-                                  className="cursor-pointer  p-2 rounded-md bg-swBlue text-nrvLightGrey font-light  mx-auto mt-5 mb-3"
-                                >
-                                  <div className="text-center flex justify-center">
-                                    {selectedFiles.length > 0 ? (
-                                      selectedFiles[0]?.name
-                                    ) : (
-                                      <SlCloudUpload
-                                        size={30}
-                                        fontWeight={900}
-                                      />
-                                    )}
-                                  </div>
-                                  {selectedFiles.length > 0
-                                    ? "Change file"
-                                    : "Click to upload"}
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                    
-                        </div>
 
                       
 

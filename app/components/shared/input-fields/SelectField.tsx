@@ -35,7 +35,7 @@ const formatOptionLabel = ({ label, isSelected }: { label: string; isSelected: b
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    height: "40px",
+    height: "42.5px",
     borderColor: state.isFocused
       ? "#999999"
       : "#999999",
@@ -44,6 +44,7 @@ const customStyles = {
     borderRadius: "10px",
     fontSize: "14px",
     colors: "#caced5",
+
 
   }),
 
@@ -58,7 +59,8 @@ const customStyles = {
       backgroundColor: "#f5f5f5",
     },
         fontSize: "12px",
-    colors: "#EEF0F2"
+    colors: "#EEF0F2",
+ 
   }),
 };
 
@@ -84,7 +86,7 @@ const SelectField: React.FC<Props> = ({
 
   return (
     <div>
-      <label className="block text-gray-700 text-sm mb-2">
+      <label className="block text-gray-700 text-sm mb-3">
         {label}
         {required && <span className="text-red-600 ml-1">*</span>}
       </label>

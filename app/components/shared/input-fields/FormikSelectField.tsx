@@ -68,7 +68,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps | any> = ({
   };
 
   return (
-    <div className="w-full mt-8">
+    <div className="w-full mt-4">
       <SelectField
         name={name}
         label={label}

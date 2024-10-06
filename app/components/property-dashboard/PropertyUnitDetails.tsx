@@ -36,24 +36,24 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
         <h2 className="text-md font-medium text-nrvGreyBlack">Property Specifics</h2>
         <div className="flex gap-5 mt-4">
           <Button
-            size="small"
-            className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+            size="smaller"
+            className="rounded-md rounded text-white bg-nrvDarkBlue"
             variant="ordinary"
             showIcon={false}
           >
             {data.noOfRooms} Bedrooms
           </Button>
           <Button
-            size="small"
-            className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+            size="smaller"
+            className="rounded-md rounded text-white bg-nrvDarkBlue"
             variant="ordinary"
             showIcon={false}
           >
             {data.noOfPools} Pools
           </Button>
           <Button
-            size="small"
-            className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
+            size="smaller"
+            className="rounded-md rounded text-white bg-nrvDarkBlue"
             variant="ordinary"
             showIcon={false}
           >

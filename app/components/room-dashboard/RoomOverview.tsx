@@ -106,30 +106,7 @@ const RoomOverview: React.FC<Data> = ({ data }) => {
             by you or your tenant.
           </div>
         </div>
-        <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
-          <div className="flex justify-between mb-4">
-            <div className="font-light text-nrvDarkBlue">
-              Ongoing Maintenance: 0
-            </div>
-            <div>
-              <Button
-                size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
-                variant="mediumGrey"
-                showIcon={false}
-              >
-                <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                  Create Request
-                </div>
-              </Button>
-            </div>
-          </div>
-          <div className="text-center flex mx-auto mt-2 text-nrvGrayText font-light text-[13px]">
-            Instead of being spread across text/emails/voicemails you now have a
-            centralized place to view, respond to, and track maintenance logged
-            by you or your tenant.
-          </div>
-        </div>
+  
       </div>
     <PropertyOptions data={data} />
     </div>

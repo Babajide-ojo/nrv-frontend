@@ -21,17 +21,22 @@ import { useRouter, useParams } from "next/navigation";
 import RoomOverview from "../../../../../components/room-dashboard/RoomOverview";
 import PropertyUnitDetails from "../../../../../components/property-dashboard/PropertyUnitDetails";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
-import { updateRoomStatus } from '../../../../../../redux/slices/propertySlice';
-import CurrentTenantDashboard from '../../../../../components/property-dashboard/CurrentTenantDashboard';
+import { updateRoomStatus } from "../../../../../../redux/slices/propertySlice";
+import CurrentTenantDashboard from "../../../../../components/property-dashboard/CurrentTenantDashboard";
+import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
 
 const propertyDashboardLinks: any = [
   {
     id: 1,
-    name: "Apartment Details",
+    name: "Apartment Info",
   },
   {
     id: 2,
     name: "Overview",
+  },
+  {
+    id: 5,
+    name: "Expenses",
   },
   {
     id: 3,
@@ -39,7 +44,7 @@ const propertyDashboardLinks: any = [
   },
   {
     id: 4,
-    name: "Tenant Details",
+    name: "Tenant",
   },
 ];
 
@@ -83,11 +88,13 @@ const SingleRoom = () => {
   const updateRoom = async () => {
     const payload = {
       id: id,
-      status: true
-    }
+      status: true,
+    };
     try {
       setIsLoading(true);
-      const properties = await dispatch(updateRoomStatus(payload) as any).unwrap();
+      const properties = await dispatch(
+        updateRoomStatus(payload) as any
+      ).unwrap();
       setRoomDetails(properties?.data);
     } catch (error) {
       toast.error("An error occured while performing update");
@@ -156,12 +163,12 @@ const SingleRoom = () => {
                   <div key={item.id}>
                     <Button
                       size="normal"
-                      className={` text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                      className={`text-[#153969] p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
                         currentState === item.id
-                          ? "bg-[#153969] text-white"
+                          ? "bg-nrvDarkBlue text-white"
                           : "bg-nrvGreyMediumBg"
                       }`}
-                      variant="ordinary"
+                      variant="lightGrey"
                       showIcon={false}
                       onClick={() => {
                         setCurrentState(item.id);
@@ -180,9 +187,10 @@ const SingleRoom = () => {
                 {currentState === 1 && (
                   <PropertyUnitDetails data={singleRoom} />
                 )}
-                   {currentState === 4 && (
+                {currentState === 4 && (
                   <CurrentTenantDashboard data={singleRoom} />
                 )}
+                {currentState === 5 && <PropertyExpenses />}
               </div>
             </div>
           </div>

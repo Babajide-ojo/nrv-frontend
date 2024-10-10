@@ -392,6 +392,44 @@ export const getRentedApartmentsForTenant = createAsyncThunk<any, {}>(
     }
 );
 
+export const getApartmentExpense = createAsyncThunk<any, {}>(
+    "expenses/get",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.get(`${API_URL}/expenses/room/${formData.id}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const createExpense = createAsyncThunk< FormData, {}>(
+    "expense/create",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            console.log({formData});
+            const response = await axios.post(`${API_URL}/expenses/create`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+
 export const tenantRentalHistory = createAsyncThunk<any, {}>(
     "tenant/history",
     async (formData: any, { rejectWithValue }) => {
@@ -598,6 +636,30 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getRentedApartmentsForTenant.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(createExpense.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(createExpense.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(createExpense.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getApartmentExpense.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getApartmentExpense.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getApartmentExpense.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

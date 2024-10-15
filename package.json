@@ -15,7 +15,6 @@
     "@mui/styled-engine-sc": "^6.1.0",
     "@mui/x-date-pickers": "^7.16.0",
     "@mui/x-date-pickers-pro": "^7.12.1",
-    "@next/swc-darwin-x64": "^14.2.15",
     "@reduxjs/toolkit": "^2.2.3",
     "@types/axios": "^0.14.0",
     "@types/form-data": "^2.5.0",

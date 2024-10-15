@@ -11,6 +11,10 @@ import ApplicantScreen from "../renters/ApplicantScreen";
 import BarChart from "../../charts/BarChart";
 import DoughnutChart from "../../charts/PieChart";
 import ApplicantScreenForDashboard from "../renters/ApplicantScreenForDashboard";
+import { IoPeopleCircleOutline } from "react-icons/io5";
+import { FaHouse, FaPeopleGroup } from "react-icons/fa6";
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { MdHomeFilled } from "react-icons/md";
 
 const DashboardScreen = () => {
   const dispatch = useDispatch();
@@ -25,8 +29,6 @@ const DashboardScreen = () => {
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    console.log({ user });
-
     setUser(user?.user);
     const formData = {
       id: user?.user?._id,
@@ -40,23 +42,22 @@ const DashboardScreen = () => {
   };
   const dashboardMetrics = [
     {
-      imageLink:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-      title: "Tenants",
-      number: count.totalActiveTenants,
+      imageLink: <FaPeopleGroup color="#004B95"  size={35} />,
+      title: "Applicants",
+      number: count.totalNew,
     },
     {
-      imageLink:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+      imageLink: <IoIosCheckmarkCircle color="#004B95"  size={35} />,
       title: "Leads",
       number: count.totalAccepted,
     },
     {
-      imageLink:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
-      title: "Applicants",
-      number: count.totalNew,
+      imageLink: <MdHomeFilled color="#004B95" size={35} />,
+      title: "Tenants",
+      number: count.totalActiveTenants,
     },
+
+
   ];
 
   const options = {
@@ -114,7 +115,7 @@ const DashboardScreen = () => {
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        Hey {user?.firstName || "Landlord"} 👋,
+        Hey {user?.firstName || "Landlord"} 👋
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
         <span className="">
@@ -144,7 +145,7 @@ const DashboardScreen = () => {
 
         <div className="md:w-1/2 w-full md:mt-0 mt-4">
           <div className="w-full bg-white rounded-xl p-3 flex justify-between">
-            <div className="pt-1 text-sm text-[8b1b1b] font-medium text-[#8b1b1b]">
+            <div className="pt-1 text-sm font-medium text-nrvDarkBlue">
               Ongoing Maintenance: 0
             </div>
             <div>
@@ -160,8 +161,8 @@ const DashboardScreen = () => {
           </div>
 
           <div className="mt-3 w-full bg-white rounded-xl p-3 flex justify-between mb-2">
-            <div className="pt-1 text-sm font-medium text-[#8b1b1b]">
-              Collect Rent Online
+            <div className="pt-1 text-sm font-medium text-nrvDarkBlue">
+              Tenant Verification
             </div>
             <div>
               <Button
@@ -170,7 +171,7 @@ const DashboardScreen = () => {
                 variant="lightGrey"
                 showIcon={false}
               >
-                View
+                Proceed
               </Button>
             </div>
           </div>

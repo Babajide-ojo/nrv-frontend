@@ -54,9 +54,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
             <IoMdHome size={24} color="white" />
             <span className="text-xs text-white">Properties</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/messages")}>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/renters")}>
             <FaMessage size={24} color="white" />
-            <span className="text-xs text-white">Messages</span>
+            <span className="text-xs text-white">Renters</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
             <IoPeopleOutline size={24} color="white" />
@@ -67,19 +67,19 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
         <>
           <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
             <IoPeopleOutline size={24} color="white" />
-            <span className="text-xs text-white">Less</span>
+            <span className="text-xs text-white">Go Back</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/renters")}>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/maintenance")}>
             <IoPeopleOutline size={24} color="white" />
-            <span className="text-xs text-white">Renters</span>
+            <span className="text-xs text-white">Maintenance</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center">
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/verification")}>
             <RxDashboard size={24} color="white" />
-            <span className="text-xs text-white">More</span>
+            <span className="text-xs text-white">Verification</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center">
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/maintenance")}>
             <RxDashboard size={24} color="white" />
-            <span className="text-xs text-white">More</span>
+            <span className="text-xs text-white">Message</span>
           </button>
         </>
       )}

@@ -28,7 +28,7 @@ import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
 const propertyDashboardLinks: any = [
   {
     id: 1,
-    name: "Apartment Info",
+    name: "Overview",
   },
   {
     id: 5,

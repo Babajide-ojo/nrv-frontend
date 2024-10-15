@@ -70,12 +70,12 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           </h2>
           <div className="text-xs text-nrvGreyBlack">₦ {formatNumber(data.rentAmount) }/{data.rentAmountMetrics}</div>
         </div>
-        <div className="mt-6">
+        {/* <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
          Target Deposit
           </h2>
           <div className="text-xs text-nrvGreyBlack">₦ { formatNumber(data.targetDeposit)}/{data.rentAmountMetrics}</div>
-        </div>
+        </div> */}
         <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
         Other Amenities

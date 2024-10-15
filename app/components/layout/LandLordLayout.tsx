@@ -16,6 +16,12 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
 
+  const [showMore, setShowMore] = useState(false);
+
+  const handleToggle = () => {
+    setShowMore(prev => !prev);
+  };
+
  
 
   useEffect(() => {
@@ -36,27 +42,34 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
   return (
     <div className="relative min-h-screen  bg-nrvLightGreyBg">
       <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
-        <div className="flex gap-4 space-between p-2">
-          <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/landlord")
-          }}>
+      <div className="flex gap-4 space-between p-2">
+      {/* Conditionally render buttons based on showMore state */}
+      {!showMore ? (
+        <>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord")}>
             <RxDashboard size={24} color="white" />
             <span className="text-xs text-white">Dashboard</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/landlord/properties")
-          }}>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties")}>
             <IoMdHome size={24} color="white" />
             <span className="text-xs text-white">Properties</span>
           </button>
-          <button className="py-3 w-full flex flex-col items-center">
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/messages")}>
             <FaMessage size={24} color="white" />
             <span className="text-xs text-white">Messages</span>
           </button>
- 
-          <button className="py-3 w-full flex flex-col items-center" onClick={() => {
-            router.push("/dashboard/landlord/properties/renters")
-          }}>
+          <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
+            <IoPeopleOutline size={24} color="white" />
+            <span className="text-xs text-white">More</span>
+          </button>
+        </>
+      ) : (
+        <>
+          <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
+            <IoPeopleOutline size={24} color="white" />
+            <span className="text-xs text-white">Less</span>
+          </button>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/renters")}>
             <IoPeopleOutline size={24} color="white" />
             <span className="text-xs text-white">Renters</span>
           </button>
@@ -64,7 +77,13 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
             <RxDashboard size={24} color="white" />
             <span className="text-xs text-white">More</span>
           </button>
-        </div>
+          <button className="py-3 w-full flex flex-col items-center">
+            <RxDashboard size={24} color="white" />
+            <span className="text-xs text-white">More</span>
+          </button>
+        </>
+      )}
+    </div>
       </div>
       <div className="flex w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "40px" }}>
         <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/10"}>

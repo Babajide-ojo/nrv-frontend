@@ -61,7 +61,7 @@ const Maintainance = () => {
                     Maintenance Requests
                   </div>
                 </div>
-                <Button
+                {/* <Button
                   onClick={() =>
                     router.push(
                       `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
@@ -71,7 +71,7 @@ const Maintainance = () => {
                   showIcon={false}
                 >
                   Create Request
-                </Button>
+                </Button> */}
               </div>
               {maintenance.length < 1 ? (
                 <div>
@@ -98,6 +98,7 @@ const Maintainance = () => {
                           dateLogged={item.createdAt}
                           status={item.status}
                           id={item._id}
+                          propertyId={item.roomId.roomId}
                         />
                       </div>
                     ))}

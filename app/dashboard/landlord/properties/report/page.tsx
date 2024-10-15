@@ -26,7 +26,7 @@ const MessageScreen = () => {
         <ProtectedRoute>
           <LandLordLayout>
             <div className="p-8 w-full">
-              <div className="text-2xl">Properties 🏘️,</div>
+              <div className="text-2xl">Properties 🏘️</div>
               <p className="text-sm text-nrvLightGrey">
                 Let’s add another property :)
               </p>

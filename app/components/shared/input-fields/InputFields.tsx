@@ -54,7 +54,7 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="">
       {label && (
-        <label htmlFor={name} className="text-nrvGreyBlack mb-2 text-sm">
+        <label htmlFor={name} className="text-nrvGreyBlack font-medium mb-2 text-sm">
           {label}
         </label>
       )}

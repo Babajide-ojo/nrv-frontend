@@ -40,3 +40,11 @@ export const formatDate = (inputDate: any) => {
   return formattedDate;
 };
 
+export const formatNumber = (num: string) => {
+  if (num === undefined || num === null) {
+    return '0'; // or any default value you prefer
+}
+
+return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+

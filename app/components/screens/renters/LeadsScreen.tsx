@@ -97,7 +97,7 @@ const LeadScreen = () => {
                 return (
                   <div key={index}>
                     <div
-                      className="flex gap-4 w-full md:w-2/5 bg-white max-w-full mt-4 mx-auto rounded rounded-2xl p-2"
+                      className="flex gap-4 w-full bg-white max-w-full mt-4 mx-auto rounded rounded-2xl p-2"
                       onClick={() => {
                         setApplication(item);
                         setCurrentStep(2);
@@ -132,7 +132,7 @@ const LeadScreen = () => {
                 {" "}
                 Your leads at your fingertips!
               </div>
-              <div className="text-center flex mx-auto w-2/5 mt-4 text-sm text-nrvGrayText font-light">
+              <div className="text-center flex mx-auto w-2/5 mt-4 text-md text-nrvGrayText font-light">
                 Easily manage all your leads as they automatically start coming
                 in.
               </div>

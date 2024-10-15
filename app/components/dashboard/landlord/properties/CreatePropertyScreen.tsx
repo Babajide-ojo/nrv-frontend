@@ -191,7 +191,7 @@ const CreatePropertyScreen = () => {
                   >
                     <div className="w-full sm:w-1/2 p-8 justify-center mx-auto">
                       <div>
-                        <div className="text-2xl">Properties 🏘️,</div>
+                        <div className="text-2xl">Properties 🏘️</div>
                         <p className="text-sm text-nrvLightGrey">
                           No worries, you can change the information later
                         </p>

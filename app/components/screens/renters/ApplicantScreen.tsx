@@ -101,37 +101,50 @@ const ApplicantScreen = () => {
       {currentStep === 1 && (
         <div>
           {properties && properties.length > 0 ? (
-            <div>
+                <div className="m-4 w-full mx-auto ">
               {properties?.map((item, index) => {
                 return (
                   <div key={index}>
-                    <div
-                      className="flex gap-4 w-full md:w-2/5 bg-white max-w-full mt-4 mx-auto rounded rounded-2xl p-2"
-                      onClick={() => {
-                        setApplication(item);
-                        setCurrentStep(2);
-                      }}
-                    >
-                      <div>
-                        <img
+                        <div
+                          className="flex bg-white mt-4 mrounded rounded-2xl p-4 cursor-pointer hover:bg-gray-50"
+                         onClick={() => {
+                          setCurrentStep(2)
+                         }}
+                        >
+                          <div className="w-1/5">
+                          <img
                           src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1718917936/image_17_1_y9aa8e.png"
                           alt="photos"
                         />
+                          </div>
+                          <div className="w-4/5">
+                            <div className="flex justify-between w-full">
+                              <div className="text-nrvDarkGrey font-light text-md w-1/2">
+                                {item?.applicant?.firstName}{" "}
+                                {item?.applicant?.lastName}
+                              </div>
+                              <div
+                                    className="cursor-pointer text-sm underline text-end w-1/2 text-end"
+                                    onClick={() =>
+                                      router.push(
+                                        `rooms/${item?.propertyId?._id}`
+                                      )
+                                    }
+                                  >
+                                   Aparment ID : {item?.propertyId?.roomId}
+                                  </div>
+                            </div>
+                            <div className="text-nrvDarkBlue text-sm mt-4">
+                              {item?.propertyId?.propertyId.streetAddress},{" "}
+                              {item?.propertyId?.propertyId.city} ,{" "}
+                              {item?.propertyId?.propertyId.state}
+                            </div>
+                            {/* <div className="text-nrvLightGrey text-sm underline mt-2 cursor-pointer">
+                              view property
+                            </div> */}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-nrvDarkBlue text-sm">
-                          {item?.applicant?.firstName}{" "}
-                          {item?.applicant?.lastName}
-                        </div>
-                        <div className="text-nrvDarkBlue text-xs">
-                          {item?.applicant?.homeAddress}
-                        </div>
-                        <div className="text-nrvLightGrey text-[12px]">
-                          Applied 2 days ago
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 );
               })}
             </div>

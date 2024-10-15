@@ -54,7 +54,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
         <div className="mb-4 font-light text-sm truncate mt-2">
           {description}
         </div>
-        <div className="mb-4 font-medium text-xs truncate mt-2 text-nrvDarkBlue">
+        <div className="mb-4 font-medium text-sm truncate mt-2 text-nrvDarkBlue">
           Property ID : {propertyId}
         </div>
         <div className="text-xs font-light text-nrvLightGrey text-end">

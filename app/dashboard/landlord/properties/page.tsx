@@ -37,8 +37,6 @@ const PropertiesScreen = () => {
 
     try {
       const response = await dispatch(getPropertyByUserId(formData) as any); // Pass page parameter
-      console.log("here");
-      
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
@@ -84,7 +82,7 @@ const PropertiesScreen = () => {
             )}
             {properties?.length < 1 ? (
               <div className="p-8 w-full">
-                <div className="text-2xl">Properties 🏘️,</div>
+                <div className="text-2xl">Properties 🏘️</div>
                 <p className="text-sm text-nrvLightGrey">
                   Let’s add another property :)
                 </p>
@@ -120,7 +118,7 @@ const PropertiesScreen = () => {
               <div className="max-w-2xl min-w-lg md:mx-auto mt-8 mx-4">
                 <div className="flex justify-between">
                   <div>
-                    <div className="text-2xl">Properties 🏘️,</div>
+                    <div className="text-2xl">Properties 🏘️</div>
                     <p className="text-sm text-nrvLightGrey">
                       Let’s add another property :)
                     </p>
@@ -183,7 +181,7 @@ const PropertiesScreen = () => {
                               JSON.stringify(property)
                             );
                             setSingleProperty(property);
-                            setIsOpen(true);
+                            router.push(`/dashboard/landlord/properties/${property._id}`)
                           }}
                         >
                           <p className="text-sm p-0.5">

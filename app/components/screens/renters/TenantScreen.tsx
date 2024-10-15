@@ -154,8 +154,6 @@ const TenantScreen = () => {
       const _response = await dispatch(
         getTenantsOnboardedByLandlord(formData) as any
       );
-      console.log({_response});
-      
       if (_response?.payload?.data) {
         setTenants(_response.payload.data);
       }
@@ -188,42 +186,19 @@ const TenantScreen = () => {
       <ToastContainer />
 
       <div className="">
-        {/* <div className=" w-full md:w-2/5  max-w-full mx-auto  flex justify-between gap-8 mt-4">
-          <Button
-            size="large"
-            className="font-light text-sm border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white w-1/2"
-            variant="ordinary"
-            showIcon={false}
-            onClick={() => {
-              setToggleTenantView("onboarded_tenant");
-            }}
-          >
-            Onboarded Tenants
-          </Button>
-          <Button
-            size="large"
-            className="font-light text-sm border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white w-1/2"
-            variant="ordinary"
-            showIcon={false}
-            onClick={() => {
-              setToggleTenantView("general_tenant");
-            }}
-          >
-            General Tenant
-          </Button>
-        </div> */}
 
-        <div className=" w-full md:w-2/5  max-w-full mx-auto  flex justify-end items-end mt-2">
+
+        <div className=" w-full max-w-full  flex justify-end items-end mt-2">
           <Button
             size="large"
-            className="font-light text-sm border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white"
+            className="font-medium text-nrvDarkBlue text-sm  border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white"
             variant="ordinary"
             showIcon={false}
             onClick={() => {
               setOpenAddTenantModal(true);
             }}
           >
-            <FaPlus />
+            Add Tenant
           </Button>
         </div>
         <div className="">
@@ -231,16 +206,13 @@ const TenantScreen = () => {
           {toggleTenantView === "onboarded_tenant" && (
             <div>
               {tenents && tenents.length > 0 ? (
-                <div className=" w-full md:w-2/5  max-w-full mx-auto ">
+                <div className=" w-full  mx-auto ">
                   {tenents?.map((item: any, index) => {
                     return (
                       <div key={index}>
                         <div
                           className="flex bg-white mt-4 mrounded rounded-2xl p-4"
-                          onClick={() => {
-                            // setApplication(item);
-                            // setCurrentStep(2);
-                          }}
+                      
                         >
                           <div className="w-1/5">
                             <img
@@ -270,9 +242,7 @@ const TenantScreen = () => {
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}
                             </div>
-                            {/* <div className="text-nrvLightGrey text-sm underline mt-2 cursor-pointer">
-                              view property
-                            </div> */}
+                         
                           </div>
                         </div>
                       </div>

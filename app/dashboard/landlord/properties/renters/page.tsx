@@ -70,7 +70,7 @@ const MessageScreen = () => {
           <LandLordLayout>
             {showEmptyState === true ? (
               <div className="p-8 w-full">
-                <div className="text-2xl">Properties 🏘️,</div>
+                <div className="text-2xl">Properties 🏘️</div>
                 <p className="text-sm text-nrvLightGrey">
                   Let’s add another property :)
                 </p>
@@ -124,7 +124,7 @@ const MessageScreen = () => {
                     </div>
                   ))}
                 </div>
-                <div className="p-3">
+                <div className="m-4 w-full md:w-2/5 mx-auto">
                   {currentState === 1 && <ApplicantScreen />}
                   {currentState === 2 && <LeadsScreen />}
                   {currentState === 3 && <TenantScreen />}

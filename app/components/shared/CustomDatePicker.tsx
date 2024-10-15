@@ -105,7 +105,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls })
 
   return (
     <div className="custom-date-picker mt-8" ref={calendarRef}>
-      {label && <label className="date-input-label">{label}</label>}
+      {label && <label className="date-input-label font-medium">{label}</label>}
       <div className="date-input-wrapper">
         <Field
           type="text"

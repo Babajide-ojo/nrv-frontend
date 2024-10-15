@@ -234,8 +234,8 @@ const CreateRoom = () => {
   <div className="w-full mt-4">
     <InputField
       css="bg-nrvLightGreyBg"
-      label="Room Name"
-      placeholder="Enter room name"
+      label="Apartment Nick Name"
+      placeholder="Enter apartment nick name"
       inputType="text"
       value={roomData.name}
       name="name"

@@ -34,21 +34,9 @@ const propertyDashboardLinks: any = [
     name: "Overview",
   },
   {
-    id: 2,
-    name: "Marketing",
-  },
-  {
-    id: 3,
-    name: "Maintenance",
-  },
-  {
     id: 4,
-    name: "Document",
-  },
-  {
-    id: 5,
-    name: "Expenses",
-  },
+    name: "Documents",
+  }
 ];
 
 interface Property {
@@ -74,13 +62,10 @@ interface PropertyData {
 const SinglePropertyScreen = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  console.log({id});
-  
   const router = useRouter();
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
-  const [properties, setProperties] = useState<Property[]>([]);
   const [singleProperty, setSingleProperty] = useState<any>({});
   const [showEditProperty, setShowEditProperty] = useState<boolean>(false);
   const [fileError, setFileError] = useState("");
@@ -227,21 +212,6 @@ const SinglePropertyScreen = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-  //     setUser(user?.user);
-  //     const properties = dispatch(
-  //       getPropertyByUserId(user?.user?._id) as any
-  //     ).unwrap();
-  //     setProperties(properties?.data);
-  //     const timer = setTimeout(() => {
-  //       setIsLoading(false);
-  //     }, 2000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, []);
-
   const openDeleteConfirmation = () => {
     setShowDeleteConfirmation(true);
     setShowEditProperty(false);
@@ -289,11 +259,7 @@ const SinglePropertyScreen = () => {
                   <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
                     <BsHouse color="white" size={35} />
                   </div>
-                  {/* <img
-                          src={property.file}
-                          className="h-16 w-16"
-                          alt="Property"
-                        /> */}
+              
                   <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
                     {singleProperty?.streetAddress}
                   </p>
@@ -334,11 +300,10 @@ const SinglePropertyScreen = () => {
               ))}
             </div>
 
-            <div className="px-4 py-12 md:px-24 md:py-12">
+            <div className="px-4 py-4 md:px-12 md:py-6">
               {currentState === 1 && singleProperty && (
                 <PropertyOverview data={singleProperty} />
               )}
-              {currentState === 2 && <PropertyMarketing data={SingleRoom} />}
               {currentState === 3 && <PropertyMaintenance />}
               {currentState === 4 && <PropertyDocuments />}
               {currentState === 5 && <PropertyExpenses />}

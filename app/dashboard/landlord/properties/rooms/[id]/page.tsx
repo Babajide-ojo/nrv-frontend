@@ -31,10 +31,6 @@ const propertyDashboardLinks: any = [
     name: "Apartment Info",
   },
   {
-    id: 2,
-    name: "Overview",
-  },
-  {
     id: 5,
     name: "Expenses",
   },
@@ -180,9 +176,7 @@ const SingleRoom = () => {
                 ))}
               </div>
               <div className="px-4 py-12 md:px-12 md:py-6">
-                {currentState === 2 && singleRoom && (
-                  <RoomOverview data={singleRoom} />
-                )}
+    
                 {currentState === 3 && <PropertyMarketing data={singleRoom} />}
                 {currentState === 1 && (
                   <PropertyUnitDetails data={singleRoom} />

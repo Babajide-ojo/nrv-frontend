@@ -44,7 +44,7 @@ const RoomOverview: React.FC<Data> = ({ data }) => {
   return (
     <div className="pb-12 md:pb-0 md:flex gap-6">
       <div className="md:w-1/2 w-full">
-        <div className="flex justify-between">
+      <div className=" grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
           {dashboardMetrics.map(({ title, imageLink, number }, index) => (
             <div key={index}>
               <DashboardNavigationCard

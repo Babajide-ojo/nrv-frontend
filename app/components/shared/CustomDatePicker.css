@@ -29,8 +29,9 @@
 .date-input-label {
   display: block;
   margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
+  font-weight: 500 !important;
 }
 
 .calendar-icon {

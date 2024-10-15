@@ -7,6 +7,10 @@ import { useState } from "react";
 import { getApplicationCount } from "@/redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
+import ApplicantScreen from "../renters/ApplicantScreen";
+import BarChart from "../../charts/BarChart";
+import DoughnutChart from "../../charts/PieChart";
+import ApplicantScreenForDashboard from "../renters/ApplicantScreenForDashboard";
 
 const DashboardScreen = () => {
   const dispatch = useDispatch();
@@ -18,12 +22,14 @@ const DashboardScreen = () => {
     setUser(user?.user);
     fetchData();
   }, []);
-  
+
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    console.log({ user });
+
     setUser(user?.user);
     const formData = {
-      id: user?._id,
+      id: user?.user?._id,
     };
     try {
       const response = await dispatch(getApplicationCount(formData) as any);
@@ -32,7 +38,7 @@ const DashboardScreen = () => {
     } finally {
     }
   };
-const dashboardMetrics = [
+  const dashboardMetrics = [
     {
       imageLink:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
@@ -43,31 +49,88 @@ const dashboardMetrics = [
       imageLink:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
       title: "Leads",
-      number:  count.totalAccepted,
+      number: count.totalAccepted,
     },
     {
       imageLink:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
       title: "Applicants",
-      number:  count.totalNew,
+      number: count.totalNew,
     },
   ];
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false, // Set to false to allow custom height
+    elements: {
+      line: {
+        tension: 0.5,
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: true,
+        },
+      },
+      y: {
+        grid: {
+          display: true,
+        },
+      },
+    },
+  };
+
+  const optionsForPiechart = {
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  const data = {
+    labels: ["Applicants", "Leads", "Tenants"],
+    datasets: [
+      {
+        label: "Applications",
+        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants],
+        backgroundColor: ["#004B95"],
+        borderColor: ["#153969", "#153969", "#153969", "#153969"],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const dataForPiechart = {
+    labels: ["Applicants", "Leads", "Tenants"],
+    datasets: [
+      {
+        label: "Applications",
+        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants],
+        backgroundColor: ["#004B95", "#C9190B", "#4CB140"],
+        hoverOffset: 4,
+      },
+    ],
+  };
 
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        Hey {user?.firstName || "Landlord" }  👋,
+        Hey {user?.firstName || "Landlord"} 👋,
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
         <span className="">
           Welcome to your dashboard, but let’s get you started.
         </span>
       </p>
-      <div className="flex-row md:flex gap-12">
+      <div className="flex-row md:flex gap-4">
         <div className="md:w-1/2 w-full">
           <div className=" grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
             {dashboardMetrics.map(({ title, imageLink, number }, index) => (
-              <div key={index} onClick={() => router.push('/dashboard/landlord/properties/renters')}>
+              <div
+                key={index}
+                onClick={() =>
+                  router.push("/dashboard/landlord/properties/renters")
+                }
+              >
                 <DashboardNavigationCard
                   title={title}
                   imageLink={imageLink}
@@ -77,8 +140,13 @@ const dashboardMetrics = [
               </div>
             ))}
           </div>
-          <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between">
-            <div className="pt-1 font-light">Ongoing Maintenance: 0</div>
+        </div>
+
+        <div className="md:w-1/2 w-full md:mt-0 mt-4">
+          <div className="w-full bg-white rounded-xl p-3 flex justify-between">
+            <div className="pt-1 text-sm text-[8b1b1b] font-medium text-[#8b1b1b]">
+              Ongoing Maintenance: 0
+            </div>
             <div>
               <Button
                 size="normal"
@@ -91,8 +159,10 @@ const dashboardMetrics = [
             </div>
           </div>
 
-          <div className="mt-8 w-full bg-white rounded-lg p-3 flex justify-between mb-4">
-            <div className="pt-1 font-light">Collect Rent Online</div>
+          <div className="mt-3 w-full bg-white rounded-xl p-3 flex justify-between mb-2">
+            <div className="pt-1 text-sm font-medium text-[#8b1b1b]">
+              Collect Rent Online
+            </div>
             <div>
               <Button
                 size="normal"
@@ -105,19 +175,35 @@ const dashboardMetrics = [
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex-row md:flex gap-4 mt-12">
+        <div className="md:w-1/2 w-full">
+          <div className="flex justify-between">
+            <h2>Rent Application Entries</h2>{" "}
+            <p
+              className="underline font-light text-nrvDarkBlue text-sm cursor-pointer hover:text-[16px]"
+              onClick={() => {
+                router.push("/dashboard/landlord/properties/renters");
+              }}
+            >
+              View All
+            </p>
+          </div>
+          <div>
+            <ApplicantScreenForDashboard />
+          </div>
+        </div>
 
         <div className="md:w-1/2 w-full">
-          <div className="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dashboardNavLinks.map(({ title, imageLink, number }, index) => (
-              <div key={index}>
-                <DashboardNavigationCard
-                  title={title}
-                  imageLink={imageLink}
-                  number={number}
-                  isMetric={false}
-                />
-              </div>
-            ))}
+          <div>Analytics</div>
+          <div>
+            <BarChart options={options} data={data} />
+          </div>
+          <div>
+            <DoughnutChart
+              options={optionsForPiechart}
+              data={dataForPiechart}
+            />
           </div>
         </div>
       </div>

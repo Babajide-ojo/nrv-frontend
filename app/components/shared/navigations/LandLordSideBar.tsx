@@ -5,6 +5,11 @@ import Image from "next/image";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
 import Button from "../buttons/Button";
+import { FaCheck, FaCpanel, FaDashcube } from "react-icons/fa";
+import { IoBatteryCharging, IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
+import { RxDashboard } from "react-icons/rx";
+import { IoMdHome } from "react-icons/io";
+import { FaPlug } from "react-icons/fa6";
 
 // Define the types for user data
 interface User {
@@ -21,22 +26,27 @@ const links = [
   {
     name: "Dashboard",
     route: "/dashboard/landlord",
+    icon: <RxDashboard  size={24} />
   },
   {
     name: "Properties",
     route: "/dashboard/landlord/properties",
+    icon: <IoMdHome  size={24}  />
   },
   {
     name: "Renters",
     route: "/dashboard/landlord/properties/renters",
+    icon: <IoPeopleCircleOutline size={24}    />
   },
   {
     name: "Maintenance",
     route: "/dashboard/landlord/properties/maintenance",
+    icon: <FaPlug  size={24}  />
   },
   {
     name: "Verification",
     route: "/dashboard/landlord/properties/verification",
+    icon: <FaCheck  size={24}  />
   },
   // {
   //   name: "Reports",
@@ -49,6 +59,7 @@ const links = [
   {
     name: "Settings",
     route: "/dashboard/landlord/settings",
+    icon: <IoSettings size={24}   />
   },
 ];
 
@@ -95,13 +106,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       
       <nav className="mt-5">
         <ul>
-          {links.map(({ name, route }, index) => (
+          {links.map(({ name, route,  icon }, index) => (
             <div key={index}>
               <li
-                className="px-6 py-3 text-nrvGrayText text-sm hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md"
+                className="w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-sm hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-medium"
                 onClick={() => router.push(route)}
               >
-                {name}
+               <span>{name}</span> <span>{icon}</span>
               </li>
             </div>
           ))}

@@ -10,6 +10,7 @@ import { IoBatteryCharging, IoPeopleCircleOutline, IoSettings } from "react-icon
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome } from "react-icons/io";
 import { FaPlug } from "react-icons/fa6";
+import { FcMenu } from "react-icons/fc";
 
 // Define the types for user data
 interface User {

@@ -15,6 +15,9 @@ import { IoPeopleCircleOutline } from "react-icons/io5";
 import { FaHouse, FaPeopleGroup } from "react-icons/fa6";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { MdHomeFilled } from "react-icons/md";
+import { FcComboChart } from "react-icons/fc";
+import { FcAcceptDatabase } from "react-icons/fc";
+import { FcHome } from "react-icons/fc";
 
 const DashboardScreen = () => {
   const dispatch = useDispatch();
@@ -42,17 +45,17 @@ const DashboardScreen = () => {
   };
   const dashboardMetrics = [
     {
-      imageLink: <FaPeopleGroup color="#004B95"  size={35} />,
+      imageLink: <FcComboChart color="#004B95"  size={35} />,
       title: "Applicants",
       number: count.totalNew,
     },
     {
-      imageLink: <IoIosCheckmarkCircle color="#004B95"  size={35} />,
+      imageLink: <FcAcceptDatabase color="#004B95"  size={35} />,
       title: "Leads",
       number: count.totalAccepted,
     },
     {
-      imageLink: <MdHomeFilled color="#004B95" size={35} />,
+      imageLink: <FcHome color="#004B95" size={35} />,
       title: "Tenants",
       number: count.totalActiveTenants,
     },

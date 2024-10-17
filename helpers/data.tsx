@@ -1,3 +1,10 @@
+import { FcAdvertising } from "react-icons/fc";
+import { GrInProgress } from "react-icons/gr";
+import { CiInboxIn } from "react-icons/ci";
+import { FaPeopleLine } from "react-icons/fa6";
+import { FcLineChart } from "react-icons/fc";
+import { FcFeedIn } from "react-icons/fc";
+
 const rentPayment = "../public/images/rentpayment.png";
 
 export const CardData = [
@@ -130,20 +137,17 @@ export const processData = [
 
 export const dashboardMetrics = [
   {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
+    imageLink: <FcAdvertising size={24} />,
     title: "Marketing",
     number: 0,
   },
   {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/m51bmb5onvp2rhdy97rm.png",
+    imageLink: <FcLineChart  size={24} />,
     title: "Leads",
     number: 0,
   },
   {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
+    imageLink: <FcFeedIn  size={24} />,
     title: "Applicants",
     number: 0,
   },

@@ -37,7 +37,7 @@ const ApplicantScreenForDashboard = () => {
 
     try {
       // Simulating a delay of 5 seconds for the preloader
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const response = await dispatch(
         getApplicationsByLandlordId(formData) as any
@@ -61,15 +61,15 @@ const ApplicantScreenForDashboard = () => {
       {/* Display dummy divs while loading */}
       {isLoading ? (
         <div className="w-full mx-auto">
-          {[...Array(6)].map((_, index) => (
+          {[...Array(2)].map((_, index) => (
             <div key={index} className="flex bg-gray-200 mt-4 rounded-2xl p-4">
               <div className="w-1/5">
                 <div className="h-20 bg-gray-300 rounded"></div> {/* Placeholder for image */}
               </div>
               <div className="w-4/5">
                 <div className="flex justify-between w-full">
-                  <div className="h-6 bg-gray-300 rounded w-1/2"></div> {/* Placeholder for name */}
-                  <div className="h-6 bg-gray-300 rounded w-1/2 text-right"></div> {/* Placeholder for apartment ID */}
+                  <div className="h-6 bg-gray-200 rounded w-1/2"></div> {/* Placeholder for name */}
+                  <div className="h-6 bg-gray-200 rounded w-1/2 text-right"></div> {/* Placeholder for apartment ID */}
                 </div>
                 <div className="h-4 bg-gray-300 rounded mt-4"></div> {/* Placeholder for address */}
               </div>

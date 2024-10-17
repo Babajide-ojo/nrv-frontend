@@ -183,7 +183,7 @@ const DashboardScreen = () => {
       <div className="flex-row md:flex gap-4 mt-12">
         <div className="md:w-1/2 w-full">
           <div className="flex justify-between">
-            <h2>Rent Application Entries</h2>{" "}
+            <h2>Recent Application Entries</h2>{" "}
             <p
               className="underline font-light text-nrvDarkBlue text-sm cursor-pointer hover:text-[16px]"
               onClick={() => {

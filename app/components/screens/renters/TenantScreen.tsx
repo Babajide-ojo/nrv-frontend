@@ -24,6 +24,7 @@ import {
 import { AnyAction, Dispatch, ThunkDispatch } from "@reduxjs/toolkit";
 import Modal from "../../shared/modals/Modal";
 import CustomDatePicker from "../../shared/CustomDatePicker";
+import { FcHome } from "react-icons/fc";
 
 const TenantScreen = () => {
   const dispatch = useDispatch();
@@ -214,11 +215,8 @@ const TenantScreen = () => {
                           className="flex bg-white mt-4 mrounded rounded-2xl p-4"
                       
                         >
-                          <div className="w-1/5">
-                            <img
-                              src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1718917936/image_17_1_y9aa8e.png"
-                              alt="photos"
-                            />
+                        <div className="w-1/5 flex justify-center items-center">
+                          <FcHome size={24} />
                           </div>
                           <div className="w-4/5">
                             <div className="flex justify-between w-full">
@@ -227,7 +225,7 @@ const TenantScreen = () => {
                                 {item?.applicant?.lastName}
                               </div>
                               <div
-                                    className="cursor-pointer text-sm underline text-end w-1/2 text-end"
+                                    className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
                                     onClick={() =>
                                       router.push(
                                         `rooms/${item?.propertyId?._id}`

@@ -80,7 +80,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/settings")}>
             <IoSettings size={24} color="white" />
-            <span className="text-xs text-white">Message</span>
+            <span className="text-xs text-white">Settings</span>
           </button>
         </>
       )}

@@ -1,9 +1,11 @@
-import { FcAdvertising } from "react-icons/fc";
+import { FcAdvertising, FcComboChart, FcHome, FcParallelTasks, FcSettings } from "react-icons/fc";
 import { GrInProgress } from "react-icons/gr";
 import { CiInboxIn } from "react-icons/ci";
 import { FaPeopleLine } from "react-icons/fa6";
 import { FcLineChart } from "react-icons/fc";
 import { FcFeedIn } from "react-icons/fc";
+import { IoMdHome } from "react-icons/io";
+import { IoSettings } from "react-icons/io5";
 
 const rentPayment = "../public/images/rentpayment.png";
 
@@ -156,22 +158,22 @@ export const dashboardMetrics = [
 export const tenantDashboardMetrics = [
   {
     imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/mn9p85chmr1up9gszsrj.jpg",
-    title: "Rented Apartments",
+    <FcHome color="#004B95"  size={35} />,
+    title: "Apartments",
     number: 1,
     link: '/dashboard/tenant/rented-properties'
   },
   {
     imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
-    title: "Property Applications",
+    <FcComboChart color="#004B95"  size={35} />,
+    title: "Applications",
     number: 20,
     link: '/dashboard/tenant/properties/applications'
   },
   {
     imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/wy4fq24vgn8tgfavcnsd.png",
-    title: "Maintenance Issued",
+    <FcParallelTasks color="#004B95"  size={35} />,
+    title: "Maintenance",
     number: 20,
     link: '/dashboard/tenant/properties/maintenance'
   },

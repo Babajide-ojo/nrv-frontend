@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 
 interface OnboardingCardProps {
-  imageLink: string;
+  imageLink: any;
   title: string;
   number: any;
   isMetric: boolean;
@@ -26,11 +26,11 @@ const TenantDashboardNavigationCard: React.FC<OnboardingCardProps> = ({
 
   return (
     <div
-      className="w-full md:h-32 h-32 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden flex flex-col justify-end p-4"
+      className="w-full md:h-32 h-32 bg-white border border-nrvLightGray rounded-2xl m-1 p-2 cursor-pointer relative overflow-hidden flex flex-col justify-center p-4"
       onClick={handleClick}
     >
       <div className="flex flex-col">
-        <img src={imageLink} className="w-8 h-8" alt={title} />
+       <div>{imageLink}</div>
         <p className="text-nrvGreyBlack md:text-md text-xs mt-4">{title}</p>
         {isMetric ? (
           <p className="font-semibold text-nrvGreyBlack md:text-md text-sm">

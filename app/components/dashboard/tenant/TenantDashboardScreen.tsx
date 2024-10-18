@@ -8,6 +8,8 @@ import Button from "../../shared/buttons/Button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TenantDashboardNavigationCard from "../../shared/cards/TenantDashboardNavigationCard";
+import RentedPropertiesScreen from "./RentedPropertiesScreen";
+//import RentedPropertiesScreen from "@/app/dashboard/tenant/rented-properties/page";
 
 const TenantDashboardScreen = () => {
   const [user, setUser] = useState<any>({});
@@ -64,8 +66,12 @@ const TenantDashboardScreen = () => {
               </Button>
             </div>
           </div>
+       
         </div>
       </div>
+      <div className="w-full md:w-3/5">
+            <RentedPropertiesScreen />
+          </div>
     </div>
   );
 };

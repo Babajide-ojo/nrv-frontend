@@ -6,12 +6,14 @@ import ToggleSwitch from "../../shared/input-fields/ToggleSwitch";
 import VerifyEmailScreen from "../sign-in/VerifyEmailScreen";
 import InputField from "../../shared/input-fields/InputFields";
 import { cls } from "../../../../helpers/utils";
+import { useRouter } from "next/navigation";
 
 const SettingsMainScreen = () => {
   const [notificationSettings, setNotificationSettings] = useState<any>(null);
-  const [mainToggle, setMainToggle] = useState<number>(0);
+  const [mainToggle, setMainToggle] = useState<number>(1);
   const [user, setUser] = useState<any>({});
-  const [notificationTab, setNotificationTab] = useState<any>(0);
+  const router = useRouter();
+  const [notificationTab, setNotificationTab] = useState<any>(1);
   const handleToggleChange = (checked: boolean) => {};
 
   useEffect(() => {
@@ -69,7 +71,7 @@ const SettingsMainScreen = () => {
 
       {mainToggle === 0 && (
         <div>
-          <div className="inline-flex gap-1 mt-4 p-1 bg-[#eef0f2] rounded-xl mx-6 ml-6 mx-auto">
+          {/* <div className="inline-flex gap-1 mt-4 p-1 bg-[#eef0f2] rounded-xl mx-6 ml-6 mx-auto">
             <Button
               className={`p-3 ${
                 notificationTab === 0 ? "bg-nrvDarkBlue text-white" : ""
@@ -103,7 +105,7 @@ const SettingsMainScreen = () => {
             >
               More
             </Button>
-          </div>
+          </div> */}
           <div className="mx-6 mt-2">
             {notificationTab === 0 && notificationSettings && (
               <div>
@@ -298,7 +300,19 @@ Be notified when you receive a new application and when a screening report is av
               disabled={true}
             />
           </div>
-          <div className="flex justify-end">
+          <div></div>
+          <div className="flex justify-between">
+            <Button
+              className="p-3 mt-8"
+              onClick={() => {
+                localStorage.removeItem("nrv-user");
+                router.push("/");
+              }}
+              variant="whitebg"
+              size="normal"
+            >
+              Logout
+            </Button>
             <Button
               className="p-3 mt-8"
               size="normal"

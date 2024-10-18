@@ -10,6 +10,7 @@ import { cls } from "../../../../helpers/utils";
 const SettingsMainScreen = () => {
   const [notificationSettings, setNotificationSettings] = useState<any>(null);
   const [mainToggle, setMainToggle] = useState<number>(0);
+  const [user, setUser] = useState<any>({});
   const [notificationTab, setNotificationTab] = useState<any>(0);
   const handleToggleChange = (checked: boolean) => {};
 
@@ -17,6 +18,7 @@ const SettingsMainScreen = () => {
     if (typeof window !== "undefined") {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
       setNotificationSettings(user.notificationSettings);
+      setUser(user.user);
     }
   }, []);
 
@@ -29,18 +31,7 @@ const SettingsMainScreen = () => {
         </p>
       </div>
 
-      <div className="flex justify-center gap-3 mt-8 bg-[#E0E1E2] p-2">
-        <Button
-             className={`p-3 ${
-              mainToggle === 0 ? "bg-nrvDarkBlue text-white" : ""
-            }`}
-          size="minLarge"
-          variant="ordinary"
-          showIcon={false}
-          onClick={() => setMainToggle(0)}
-        >
-          Notifications
-        </Button>
+      <div className="flex gap-3 mt-8 bg-[#E0E1E2] p-2 pl-6">
         <Button
           className={`p-3 ${
             mainToggle === 1 ? "bg-nrvDarkBlue text-white" : ""
@@ -50,13 +41,35 @@ const SettingsMainScreen = () => {
           showIcon={false}
           onClick={() => setMainToggle(1)}
         >
+          My Profile
+        </Button>
+        <Button
+          className={`p-3 ${
+            mainToggle === 0 ? "bg-nrvDarkBlue text-white" : ""
+          }`}
+          size="minLarge"
+          variant="ordinary"
+          showIcon={false}
+          onClick={() => setMainToggle(0)}
+        >
+          Notifications
+        </Button>
+        <Button
+          className={`p-3 ${
+            mainToggle === 2 ? "bg-nrvDarkBlue text-white" : ""
+          }`}
+          size="minLarge"
+          variant="ordinary"
+          showIcon={false}
+          onClick={() => setMainToggle(2)}
+        >
           Security
         </Button>
       </div>
 
       {mainToggle === 0 && (
         <div>
-          <div className="inline-flex gap-1 mt-4 p-1 bg-[#eef0f2] border border-[#153969] rounded-xl mx-6">
+          <div className="inline-flex gap-1 mt-4 p-1 bg-[#eef0f2] rounded-xl mx-6 ml-6 mx-auto">
             <Button
               className={`p-3 ${
                 notificationTab === 0 ? "bg-nrvDarkBlue text-white" : ""
@@ -220,6 +233,87 @@ Be notified when you receive a new application and when a screening report is av
 
       {mainToggle === 1 && (
         <div className="mt-2 md:w-1/3 w-full p-4">
+          <div className="mt-4 flex gap-4">
+            <div className="w-1/2">
+              <InputField
+                label="First Name"
+                placeholder="Enter Current Password"
+                inputType="email"
+                css="bg-nrvLightGreyBg"
+                name="email"
+                value={user.firstName}
+              />
+            </div>
+            <div className="w-1/2">
+              <InputField
+                label="Last Name"
+                placeholder="Enter Current Password"
+                inputType="email"
+                css="bg-nrvLightGreyBg"
+                name="email"
+                value={user.lastName}
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <InputField
+              label="Email"
+              placeholder="Enter New Password"
+              inputType="email"
+              css="bg-nrvLightGreyBg"
+              name="email"
+              value={user.email}
+              disabled={true}
+            />
+          </div>
+          <div className="mt-4">
+            <InputField
+              label="NIN"
+              placeholder="Confirm New Password"
+              inputType="email"
+              css="bg-nrvLightGreyBg "
+              name="email"
+              value={user.nin}
+              disabled={true}
+            />
+          </div>
+          <div className="mt-4">
+            <InputField
+              label="Account Type"
+              placeholder="Confirm New Password"
+              inputType="email"
+              css="bg-nrvLightGreyBg "
+              name="email"
+              value={user.accountType}
+              disabled={true}
+            />
+          </div>
+          <div className="mt-4">
+            <InputField
+              label="Home Address"
+              inputType="email"
+              css="bg-nrvLightGreyBg "
+              name="email"
+              value={user.homeAddress}
+              disabled={true}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button
+              className="p-3 mt-8"
+              size="normal"
+              variant="whitebg"
+              showIcon={false}
+              onClick={() => {}}
+            >
+              Update
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {mainToggle === 2 && (
+        <div className="mt-2 md:w-1/3 w-full p-4">
           <div className="mt-4">
             <InputField
               label="Current Password"
@@ -236,7 +330,6 @@ Be notified when you receive a new application and when a screening report is av
               inputType="email"
               css="bg-nrvLightGreyBg"
               name="email"
-         
             />
           </div>
           <div className="mt-4">

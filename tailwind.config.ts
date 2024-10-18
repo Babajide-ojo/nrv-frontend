@@ -16,14 +16,14 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors : {
-        nrvDarkBlue: "#153969",
+        nrvDarkBlue: "#044585",
         nrvGold: "#FFB94E",
         nrvGreyBlack: "#333333",
         nrvGrayText:'#6B6C6C',
         nrvLightGrey: "#999999",
         nrvLightGreyBg:"#EEF0F2", 
         nrvLightBlue: "#153969",
-        nrvGreyMediumBg: "#E0E1E2"
+        nrvGreyMediumBg: "#d7d9db"
 
       }
     },

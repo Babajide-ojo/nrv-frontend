@@ -28,7 +28,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
       <div
         onClick={handleToggle}
         className={`flex items-center cursor-pointer w-10 h-5 rounded-full transition-all ${
-          checked ? 'bg-nrvDarkBlue' : 'bg-gray-300'
+          checked ? 'bg-gray-400' : 'bg-gray-300'
         }`}
       >
         <div

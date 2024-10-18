@@ -191,11 +191,11 @@ const CreatePropertyScreen = () => {
                   >
                     <div className="w-full sm:w-1/2 p-8 justify-center mx-auto">
                       <div>
-                        <div className="text-2xl">Properties 🏘️</div>
+                        <div className="text-2xl">Add Property 🏘️</div>
                         <p className="text-sm text-nrvLightGrey">
                           No worries, you can change the information later
                         </p>
-                        <div className="max-w-md mx-auto pt-8 ">
+                        <div className="mx-auto pt-8 ">
                           <div className="w-full mt-4">
                             <SelectField
                               label="Property Type"
@@ -282,7 +282,7 @@ const CreatePropertyScreen = () => {
                               onDrop={handleFileDrop}
                               onDragOver={(e) => e.preventDefault()}
                             >
-                              <div className="w-full border border-nrvLightGrey rounded-lg  pt-4 pb-4 text-swBlack">
+                              <div className="w-full border border-nrvGreyMediumBg rounded-lg  pt-4 pb-4 text-swBlack">
                                 <input
                                   type="file"
                                   id="fileInput"
@@ -318,7 +318,7 @@ const CreatePropertyScreen = () => {
                           <Button
                             type="submit"
                             size="large"
-                            className="max-w-md w-full mb-8"
+                            className="w-full mb-8"
                             disabled={loading ? true : false}
                             variant="bluebg"
                             showIcon={false}

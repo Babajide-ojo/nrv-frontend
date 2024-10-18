@@ -37,14 +37,14 @@ const customStyles = {
     ...provided,
     height: "42.5px",
     borderColor: state.isFocused
-      ? "#999999"
-      : "#999999",
+      ? "#d7d9db"
+      : "#d7d9db",
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
     fontSize: "14px",
-    colors: "#caced5",
-
+    colors: "#6B6C6C",
+    
 
   }),
 
@@ -59,7 +59,7 @@ const customStyles = {
       backgroundColor: "#f5f5f5",
     },
         fontSize: "12px",
-    colors: "#EEF0F2",
+    colors: "#6B6C6C",
  
   }),
 };
@@ -86,7 +86,7 @@ const SelectField: React.FC<Props> = ({
 
   return (
     <div>
-      <label className="block text-gray-700 text-sm mb-3">
+      <label className="block text-nrvGreyBlack text-sm mb-3">
         {label}
         {required && <span className="text-red-600 ml-1">*</span>}
       </label>

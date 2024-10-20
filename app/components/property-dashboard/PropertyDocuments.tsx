@@ -168,22 +168,22 @@ const PropertyDocuments = () => {
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">
             <div>
-              <div className="font-medium text-nrvDarkBlue">
+              <div className="font-medium text-sm text-nrvDarkBlue">
                 Rental Settings
               </div>
-              <div className="text-start flex mx-auto mt-2 text-nrvLightGrey font-light text-sm">
+              <div className="text-start flex mx-auto mt-4 text-nrvLightGrey font-light text-xs">
                 Keep track of all the documents related to this property in one
                 place. This documents are not shared with your tenants.
               </div>
             </div>
             <div>
               <Button
-                size="small"
+                size="smaller"
                 className=" p-0.5 border  hover:text-white hover:bg-nrvDarkBlue"
-                variant="mediumGrey"
+                variant="whitebg"
                 showIcon={false}
               >
-                <div className="text-xs md:text-md p-2  flex gap-2">
+                <div className="text-[12px] md:text-md  flex gap-2">
                   Documents
                 </div>
               </Button>
@@ -192,7 +192,7 @@ const PropertyDocuments = () => {
         </div>
 
         <div className="w-full mt-4">
-          <label className="text-nrvGreyBlack mb-2 text-md">
+          <label className="text-nrvGreyBlack mb-2 text-sm">
             Landlord Insurance Policy
           </label>
           <div className="text-center w-full mt-2">
@@ -251,10 +251,10 @@ const PropertyDocuments = () => {
 
         {/* Utility & Maintenance Documents */}
         <div className="w-full mt-4">
-          <label className="text-nrvGreyBlack mb-2 text-md mb-2">
+          <label className="text-nrvGreyBlack mb-2 text-sm mb-2">
             Utility & Maintenance
           </label>
-          <p className="text-sm text-nrvLightGrey mt-2">
+          <p className="text-xs text-nrvLightGrey mt-2">
             Examples include: HOA, service contracts, appliance manuals,
             property assets, invoices, receipts
           </p>
@@ -315,10 +315,10 @@ const PropertyDocuments = () => {
 
         {/* Other Documents */}
         <div className="w-full mt-4">
-          <label className="text-nrvGreyBlack mb-2 text-md">
+          <label className="text-nrvGreyBlack mb-2 text-sm">
             Other Documents
           </label>
-          <p className="text-sm text-nrvLightGrey mt-2">
+          <p className="text-xs text-nrvLightGrey mt-2">
             Examples include: property policies, home inspection reports,
             notices, covenants, property-specific templates
           </p>
@@ -401,7 +401,7 @@ const PropertyDocuments = () => {
       </div>
       <div className="md:w-1/2 w-full md:mt-0 mt-4">
         <div className="bg-white rounded rounded-2xl p-4">
-          <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
+          <div className="text-start text-nrvDarkBlue text-[11px]">
             Uploaded Land Insurance Documents
           </div>
           {data?.data?.landlordInsurancePolicy?.length > 0 ? (
@@ -433,13 +433,13 @@ const PropertyDocuments = () => {
                 )}
             </div>
           ) : (
-            <div className="text-sm italics text-nrvLightGrey pt-3">
+            <div className="text-xs italics text-nrvLightGrey pt-3">
               {" "}
               No document uploaded yet
             </div>
           )}
 
-          <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
+          <div className="text-start text-nrvDarkBlue text-[11px] mt-8">
             Utility & Maintenanace Documents
           </div>
           {data?.data?.utilityAndMaintenance?.length > 0 ? (
@@ -471,13 +471,13 @@ const PropertyDocuments = () => {
                 )}
             </div>
           ) : (
-            <div className="text-sm italics text-nrvLightGrey pt-3">
+            <div className="text-xs italics text-nrvLightGrey pt-3">
               {" "}
               No document uploaded yet
             </div>
           )}
 
-          <div className="text-start text-nrvDarkBlue text-[13px] mt-8">
+          <div className="text-start text-nrvDarkBlue text-[11px] mt-8">
             Other Documents Uploaded
           </div>
           {data?.data?.otherDocuments?.length > 0 ? (
@@ -508,7 +508,7 @@ const PropertyDocuments = () => {
                 ))}
             </div>
           ) : (
-            <div className="text-sm italics text-nrvLightGrey pt-3">
+            <div className="text-xs italics text-nrvLightGrey pt-3">
               {" "}
               No document uploaded yet
             </div>

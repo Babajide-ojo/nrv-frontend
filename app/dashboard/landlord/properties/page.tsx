@@ -82,8 +82,8 @@ const PropertiesScreen = () => {
             )}
             {properties?.length < 1 ? (
               <div className="p-8 w-full">
-                <div className="text-2xl">Properties 🏘️</div>
-                <p className="text-sm text-nrvLightGrey">
+                <div className="text-xl">Properties 🏘️</div>
+                <p className="text-xs text-nrvLightGrey">
                   Let’s add another property :)
                 </p>
                 <p className="text-sm text-nrvLightGrey">
@@ -96,7 +96,7 @@ const PropertiesScreen = () => {
                       No property listed yet
                     </p>
                     <Button
-                      size="small"
+                      size="normal"
                       className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
                       variant="lightGrey"
                       showIcon={false}
@@ -107,7 +107,7 @@ const PropertiesScreen = () => {
                           router.push("/dashboard/landlord/properties/create");
                         }}
                       >
-                        <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
+                        {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
                         <p className="text-nrvDarkBlue">Add New</p>
                       </div>
                     </Button>
@@ -118,14 +118,14 @@ const PropertiesScreen = () => {
               <div className="max-w-2xl min-w-lg md:mx-auto mt-8 mx-4">
                 <div className="flex justify-between">
                   <div>
-                    <div className="text-2xl">Properties 🏘️</div>
-                    <p className="text-sm text-nrvLightGrey">
+                    <div className="text-xl">Properties 🏘️</div>
+                    <p className="text-xs text-nrvLightGrey">
                       Let’s add another property :)
                     </p>
              
                   </div>
                   <Button
-                    size="small"
+                    size="normal"
                     className="text-nrvDarkBlue p-3  border border-nrvDarkBlue mt-4 rounded-md hover:text-white"
                     variant="lightGrey"
                     showIcon={false}
@@ -136,13 +136,13 @@ const PropertiesScreen = () => {
                         router.push("/dashboard/landlord/properties/create");
                       }}
                     >
-                      <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
+                      {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
                       <p className="">Add New</p>
                     </div>
                   </Button>
 
                 </div>
-                <p className="text-sm text-nrvDarkBlue mt-4">
+                <p className="text-xs text-nrvDarkBlue mt-4">
                   After creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
                 </p>
                 {properties?.map((property: any) => (
@@ -156,12 +156,12 @@ const PropertiesScreen = () => {
                       <div className="md:w-1/5 w-2/5 ">
                       <img
                           src={property.file}
-                          className="h-20 w-20 rounded-md"
+                          className="h-16 w-16 rounded-md"
                           alt="Property"
                         />
                       </div>
                       
-                        <p className="md:w-4/5 w-3/5 md:text-sm text-xs text-nrvDarkGrey font-lighter">
+                        <p className="md:w-4/5 w-3/5 md:text-xs text-xs text-nrvDarkGrey font-lighter">
                           {property.streetAddress}
                         </p>
                       </div>
@@ -184,7 +184,7 @@ const PropertiesScreen = () => {
                             router.push(`/dashboard/landlord/properties/${property._id}`)
                           }}
                         >
-                          <p className="text-sm p-0.5">
+                          <p className="text-xs p-0.5">
                             View details
                           </p>
                         </div>

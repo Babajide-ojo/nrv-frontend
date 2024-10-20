@@ -84,7 +84,7 @@ const RoomOverview: React.FC<Data> = ({ data }) => {
         </div>
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
           <div className="flex justify-between mb-4">
-            <div className="font-light text-nrvDarkBlue">
+            <div className="font-light text-nrvDarkBlue text-xs">
               Ongoing Maintenance: 0
             </div>
             <div>

@@ -49,38 +49,38 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
         <>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord")}>
             <RxDashboard size={24} color="white" />
-            <span className="text-xs text-white">Dashboard</span>
+            <span className="text-[11px] text-white">Dashboard</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties")}>
             <IoMdHome size={24} color="white" />
-            <span className="text-xs text-white">Properties</span>
+            <span className="text-[11px] text-white">Properties</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/renters")}>
             <IoPeopleCircleOutline size={24} color="white" />
-            <span className="text-xs text-white">Renters</span>
+            <span className="text-[11px] text-white">Renters</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
             <IoMdMore size={24} color="white" />
-            <span className="text-xs text-white">More</span>
+            <span className="text-[11px] text-white">More</span>
           </button>
         </>
       ) : (
         <>
           <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
             <IoBackspace size={24} color="white" />
-            <span className="text-xs text-white">Go Back</span>
+            <span className="text-[11px] text-white">Go Back</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/maintenance")}>
             <IoSettings size={24} color="white" />
-            <span className="text-xs text-white">Maintenance</span>
+            <span className="text-[11px] text-white">Maintenance</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/verification")}>
             <FaCheck size={24} color="white" />
-            <span className="text-xs text-white">Verification</span>
+            <span className="text-[11px] text-white">Verification</span>
           </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/settings")}>
             <IoSettings size={24} color="white" />
-            <span className="text-xs text-white">Settings</span>
+            <span className="text-[11px] text-white">Settings</span>
           </button>
         </>
       )}

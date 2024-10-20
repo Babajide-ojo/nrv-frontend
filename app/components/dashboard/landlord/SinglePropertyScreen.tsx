@@ -253,14 +253,14 @@ const SinglePropertyScreen = () => {
         <LandLordLayout>
           <ToastContainer />
           <div>
-            <div className="flex justify-between px-4 py-12 md:px-24 md:py-12">
+            <div className="flex justify-between px-4 py-12 md:px-12 md:py-12">
               <div>
                 <div className="flex gap-2">
-                  <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
+                  <div className="h-12 w-12 bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
                     <BsHouse color="white" size={35} />
                   </div>
               
-                  <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
+                  <p className="text-sm font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
                     {singleProperty?.streetAddress}
                   </p>
                 </div>
@@ -278,12 +278,12 @@ const SinglePropertyScreen = () => {
                 </div>
               </div>
             </div>
-            <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-24 pl-4 overflow-scroll">
+            <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-12 pl-4 overflow-scroll">
               {propertyDashboardLinks.map((item: any) => (
                 <div key={item.id}>
                   <Button
-                    size="large"
-                    className={` text-nrvDarkBlue p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                    size="smaller"
+                    className={` text-nrvDarkBlue p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
                       currentState === item.id
                         ? "bg-nrvDarkBlue text-white"
                         : "bg-nrvGreyMediumBg"
@@ -294,7 +294,7 @@ const SinglePropertyScreen = () => {
                       setCurrentState(item.id);
                     }}
                   >
-                    <div className="text-xs  md:text-md p-2">{item.name}</div>
+                    <div className="text-[11px] p-2">{item.name}</div>
                   </Button>
                 </div>
               ))}

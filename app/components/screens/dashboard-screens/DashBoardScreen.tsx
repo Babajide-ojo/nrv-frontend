@@ -113,7 +113,7 @@ const DashboardScreen = () => {
 
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
-      <p className="text-2xl font-semibold text-swGray800 flex gap-2">
+      <p className="text-xl font-semibold text-swGray800 flex gap-2">
         Hey {user?.firstName || "Landlord"} 👋
       </p>
       <p className="mt-2 mb-8 text-[0.86rem] font-light mx-auto">
@@ -144,7 +144,7 @@ const DashboardScreen = () => {
 
         <div className="md:w-1/2 w-full md:mt-0 mt-4">
           <div className="w-full bg-white rounded-xl p-3 flex justify-between">
-            <div className="pt-1 text-sm font-medium text-nrvDarkBlue">
+            <div className="pt-1 text-xs font-medium text-nrvDarkBlue">
               Ongoing Maintenance: 0
             </div>
             <div>
@@ -160,7 +160,7 @@ const DashboardScreen = () => {
           </div>
 
           <div className="mt-3 w-full bg-white rounded-xl p-3 flex justify-between mb-2">
-            <div className="pt-1 text-sm font-medium text-nrvDarkBlue">
+            <div className="pt-1 text-xs font-medium text-nrvDarkBlue">
               Tenant Verification
             </div>
             <div>
@@ -179,7 +179,7 @@ const DashboardScreen = () => {
       <div className="flex-row md:flex gap-4 mt-12">
         <div className="md:w-1/2 w-full">
           <div className="flex justify-between">
-            <h2>Recent Application Entries</h2>{" "}
+            <h2 className="text-sm">Recent Application Entries</h2>{" "}
             <p
               className="underline font-light text-nrvDarkBlue text-sm cursor-pointer hover:text-[16px]"
               onClick={() => {
@@ -195,7 +195,7 @@ const DashboardScreen = () => {
         </div>
 
         <div className="md:w-1/2 w-full">
-          <div>Analytics</div>
+          <div className="text-sm">Analytics</div>
           <div>
             <BarChart options={options} data={data} />
           </div>

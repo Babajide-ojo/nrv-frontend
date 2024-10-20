@@ -102,14 +102,11 @@ const LoginScreen: React.FC = () => {
         }}
       >
         <div className="max-w-md mx-auto w-full">
-          <div className="text-2xl text-nrvGreyBlack font-semibold">
+          <div className="text-md text-nrvGreyBlack font-semibold">
             Welcome to NaijaRentVerify
           </div>
-          <div className="pt-2 text-nrvLightGrey text-md">
+          <div className="pt-2 text-nrvLightGrey text-sm font-light">
             Please enter your login to access your account.
-          </div>
-          <div className="pt-1 text-nrvLightGrey text-md flex gap-2">
-    
           </div>
     
           <div className="flex items-center w-full mt-6">
@@ -123,7 +120,7 @@ const LoginScreen: React.FC = () => {
               name="email"
               onChange={handleInputChange}
               error={errors.email}
-              icon={<MdOutlineMail size={20} color="#999999" />}
+              icon={<MdOutlineMail size={15} color="#999999" />}
             />
           </div>
           <div className="mt-4">
@@ -135,7 +132,7 @@ const LoginScreen: React.FC = () => {
               onChange={handleInputChange}
               error={errors.password}
               password={true}
-              icon={<MdOutlineKey size={20} color="#999999" />}
+              icon={<MdOutlineKey size={15} color="#999999" />}
             />
           </div>
       
@@ -153,7 +150,7 @@ const LoginScreen: React.FC = () => {
               {isLoading ? "Loading..." : "Login"}
             </Button>
             <div className="justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey">
+              <div className="text-sm text-nrvLightGrey font-light">
                 Do not have an account?
               </div>
               <Link

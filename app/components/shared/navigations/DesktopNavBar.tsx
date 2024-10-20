@@ -45,7 +45,7 @@ const DesktopNavBar: React.FC = () => {
         />
       </div>
       <div className="md:w-2/4 pt-2">
-        <nav className="flex justify-center gap-10">
+        <nav className="flex justify-center gap-12 text-sm">
           {navItems.map(({ text, route }, index) => (
             <div key={index}>
               <div>

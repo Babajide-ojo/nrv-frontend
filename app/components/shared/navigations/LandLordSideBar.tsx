@@ -110,7 +110,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           {links.map(({ name, route }, index) => (
             <div key={index}>
               <li
-                className="w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-sm hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-medium"
+                className="w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-xs hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-medium"
                 onClick={() => router.push(route)}
               >
                <span>{name}</span> 

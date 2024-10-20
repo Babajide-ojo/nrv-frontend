@@ -32,8 +32,8 @@ const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
           <div className="flex justify-center">
             <img src={imageUrl} alt="photo" className="w-12 h-12" />
           </div>
-          <h2 className="mt-4 text-xl">{title}</h2>
-          <p className="mt-4 text-sm font-light">{description}</p>
+          <h2 className="mt-4 text-md">{title}</h2>
+          <p className="mt-4 text-xs font-light">{description}</p>
         </div>
       </div>
     </div>
@@ -126,7 +126,7 @@ const FeatureSection: React.FC = () => {
     <div className="bg-nrvDarkBlue md:p-12 p-2">
       <div className="text-center text-white">
         <h2 className="uppercase text-2xl">Key Features</h2>
-        <p className="font-semibold text-3xl mt-2">
+        <p className="font-semibold text-2xl mt-2">
           Experience the Next Level: <br></br> NaijaRentVerify&#39;s Top
           Features at a Glance
         </p>
@@ -205,20 +205,20 @@ const GuideSection: React.FC = () => {
       description:
         "Provide transparency in the application process with a clear display of application status (Pending, Approved, Rejected) for both landlords and tenants.",
     },
-    {
-      imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716354779/image_10_3_agvsof.png",
-      title: "Step 10: Enjoy Stress-Free Tenant Screening",
-      description:
-        "Sit back, relax, and enjoy stress-free tenant screening. NaijaRentVerify simplifies the process, making renting a breeze.",
-    },
+    // {
+    //   imageUrl:
+    //     "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716354779/image_10_3_agvsof.png",
+    //   title: "Step 10: Enjoy Stress-Free Tenant Screening",
+    //   description:
+    //     "Sit back, relax, and enjoy stress-free tenant screening. NaijaRentVerify simplifies the process, making renting a breeze.",
+    // },
   ];
 
   return (
     <div className="bg-nrvLightGreyBg md:p-12 p-2">
       <div className="text-center">
         <h2 className="uppercase text-2xl">How It Works</h2>
-        <p className="font-semibold text-nrvDarkBlue md:text-4xl text-3xl mt-2">
+        <p className="font-semibold text-nrvDarkBlue md:text-2xl text-xl mt-2">
           Unlocking Seamless Tenant Management: <br></br> A Step-by-Step Guide
         </p>
       </div>
@@ -420,8 +420,8 @@ const Footer: React.FC = () => {
               </div>
 
               <div>
-                <a className="text-sm block mb-8">About us</a>
-                <a className="text-sm block mb-8">Contact us</a>
+                <a className="text-sm block mb-8 cursor-pointer">About us</a>
+                <a className="text-sm block mb-8 cursor-pointer">Contact us</a>
               </div>
             </div>
             <div>
@@ -430,9 +430,9 @@ const Footer: React.FC = () => {
               </div>
 
               <div>
-                <a className="text-sm block mb-8">Facebook</a>
-                <a className="text-sm block mb-8">Twitter</a>
-                <a className="text-sm block mb-8">LinkedIn</a>
+                <a className="text-sm block mb-8 cursor-pointer">Facebook</a>
+                <a className="text-sm block mb-8 cursor-pointer">Twitter</a>
+                <a className="text-sm block mb-8 cursor-pointer">LinkedIn</a>
               </div>
             </div>
             <div>
@@ -441,10 +441,10 @@ const Footer: React.FC = () => {
               </div>
 
               <div>
-                <a className="text-sm block mb-8">About us</a>
-                <a className="text-sm block mb-8">Privacy</a>
-                <a className="text-sm block mb-8">Cookies</a>
-                <a className="text-sm block mb-8">Licenses</a>
+                <a className="text-sm block mb-8 cursor-pointer">About us</a>
+                <a className="text-sm block mb-8 cursor-pointer">Privacy</a>
+                <a className="text-sm block mb-8 cursor-pointer">Cookies</a>
+                <a className="text-sm block mb-8 cursor-pointer">Licenses</a>
               </div>
             </div>
             <div>
@@ -517,12 +517,12 @@ const HeroSection = () => {
   const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="text-center md:pt-4 pt-16">
-        <div className="text-2xl sm:text-4xl text-nrvDarkBlue font-semibold">
+      <div className="text-center md:pt-4 pt-24">
+        <div className="text-xl sm:text-2xl text-nrvDarkBlue font-semibold">
           Streamline Your Rentals <br />
           with NaijaRentVerify: Secure, Simple, Smart.
         </div>
-        <div className="mt-4 text-xs sm:text-sm">
+        <div className="mt-8 text-md sm:text-md text-gray-500">
           Seamless Rentals, Smart Decisions: NaijaRentVerify - Your Secure,
           Simple, and Intelligent Property <br /> Management Solution.
         </div>
@@ -607,7 +607,7 @@ const HeroSection = () => {
             OUR PRODUCT
           </h2>
 
-          <p className="max-w-3xl mt-2 font-semibold text-md">
+          <p className="max-w-3xl mt-2 font-light text-md">
             Whether you&#39;re searching for a rental or planning to lease an
             apartment, NaijaRentVerify is your go-to destination.
           </p>
@@ -628,11 +628,11 @@ const HeroSection = () => {
                     alt="img"
                     className="h-12 w-12"
                   />{" "}
-                  <p className="text-md pt-2 font-semibold">
+                  <p className="text-md pt-2 font-medium">
                     Robust Tenant Screening Tools
                   </p>
                 </h2>
-                <p className="mt-4 text-md font-light">
+                <p className="mt-4 text-sm font-light">
                   Access to background checks and screening reports to assist in
                   thorough tenant evaluations.
                 </p>
@@ -663,11 +663,11 @@ const HeroSection = () => {
                     alt="img"
                     className="h-12 w-12"
                   />
-                  <p className="text-md pt-2 font-semibold">
+                  <p className="text-md pt-2 font-medium">
                     Property Management Features
                   </p>
                 </h2>
-                <p className="mt-4 text-md font-light">
+                <p className="mt-4 text-sm font-light">
                   Tools for effective property listing management, rental
                   payment handling, and occupancy tracking.
                 </p>
@@ -698,11 +698,11 @@ const HeroSection = () => {
                     alt="img"
                     className="h-12 w-12"
                   />
-                  <p className="text-md pt-2 font-semibold">
+                  <p className="text-md pt-2 font-medium">
                     Application Management
                   </p>
                 </h2>
-                <p className="mt-4 text-md font-light">
+                <p className="mt-4 text-sm font-light">
                   Efficient tools to manage tenant applications, review
                   submissions, and track application statuses.
                 </p>

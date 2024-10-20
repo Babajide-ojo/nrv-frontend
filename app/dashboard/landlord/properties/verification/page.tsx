@@ -131,7 +131,7 @@ const VerificationScreen = () => {
                     {({ isSubmitting, isValid, dirty }) => (
                       <Form>
                         <div className="text-center mb-8">
-                          <h1 className="text-lg font-semibold text-nrvDarkBlue">
+                          <h1 className="text-md font-semibold text-nrvDarkBlue">
                             Tenant Verification with NIN
                           </h1>
                         </div>

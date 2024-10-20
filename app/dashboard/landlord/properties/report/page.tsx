@@ -26,8 +26,8 @@ const MessageScreen = () => {
         <ProtectedRoute>
           <LandLordLayout>
             <div className="p-8 w-full">
-              <div className="text-2xl">Properties 🏘️</div>
-              <p className="text-sm text-nrvLightGrey">
+              <div className="text-xl">Properties 🏘️</div>
+              <p className="text-xs text-nrvLightGrey">
                 Let’s add another property :)
               </p>
               <div className="w-full h-screen flex justify-center items-center">
@@ -35,14 +35,14 @@ const MessageScreen = () => {
                   <EmptyState />
                   <p className="text-nrvLightGrey m-2">No property listed yet</p>
                   <Button
-                    size="small"
+                    size="normal"
                     className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                   >
     
                     <div className="flex gap-3 ">
-                      <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "}
+                      {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
                       <p className="text-nrvDarkBlue">Add New</p>
                     </div>
                   </Button>

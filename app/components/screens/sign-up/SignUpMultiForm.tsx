@@ -103,10 +103,10 @@ const SignUpMultiForm = () => {
           }}
         >
           <div className="max-w-md mx-auto pt-8 flex-grow w-full">
-            <div className="text-3xl text-nrvGreyBlack font-semibold">
+            <div className="text-xl text-nrvGreyBlack font-semibold">
               Welcome user 🚀
             </div>
-            <div className="pt-2 text-nrvLightGrey text-md">
+            <div className="pt-2 text-nrvLightGrey text-sm font-light">
               What will you be joining naijarentverify as?
             </div>
             <div

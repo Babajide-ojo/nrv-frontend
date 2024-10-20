@@ -20,10 +20,10 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
     <div className="pb-12 md:pb-0">
       <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl p-4">
         <div className="flex justify-between border-b border-b-1 mb-4">
-          <div className="font-medium text-nrvDarkBlue">Apartments</div>
+          <div className="font-medium text-nrvDarkBlue text-sm">Apartments</div>
           <div>
             <Button
-              size="normal"
+              size="small"
               className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
               variant="mediumGrey"
               showIcon={false}
@@ -31,7 +31,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                 router.push("/dashboard/landlord/properties/rooms/create");
               }}
             >
-              <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
+              <div className="text-xs md:text-md flex gap-2 font-medium">
                 <BsPlusCircleFill size={15} />
                 Add Apartment
               </div>
@@ -50,7 +50,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                   );
                 }}
               >
-                <div className="h-12 w-12 bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
+                <div className="h-10 w-10 text-sm bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
                   {item?.roomId}
                 </div>
               </div>
@@ -73,7 +73,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
 
       <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
         <div className="flex justify-between mb-4">
-          <div className="font-light text-nrvDarkBlue">
+          <div className="font-light text-nrvDarkBlue text-xs">
             Ongoing Maintenance: 0
           </div>
           <div>
@@ -89,7 +89,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
             </Button>
           </div>
         </div>
-        <div className="text-center flex mx-auto w-4/5 mt-4 text-nrvGrayText font-light">
+        <div className="text-center text-[13px] flex mx-auto w-4/5 mt-4 text-nrvGrayText font-light">
           Instead of being spread across text/emails/voicemails you now have a
           centralized place to view, respond to, and track maintenance logged by
           you or your tenant.

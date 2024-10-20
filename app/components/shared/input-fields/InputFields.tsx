@@ -54,15 +54,15 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="">
       {label && (
-        <label htmlFor={name} className={`${disabled === true ? "cursor-not-allowed": ""} text-nrvGreyBlack font-400 mb-2 text-sm`}>
+        <label htmlFor={name} className={`${disabled === true ? "cursor-not-allowed": ""} text-nrvGreyBlack font-400 mb-2 text-xs`}>
           {label}
         </label>
       )}
       <div
-        className={`relative border border-nrvGreyMediumBg pl-2 mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer `}
+        className={`relative border border-nrvGreyMediumBg pl-2 mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer`}
       >
         {icon && (
-          <div className="w-6 h-6 mr-2 flex items-center justify-center">
+          <div className="w-5 h-5 mr-2 flex items-center justify-center">
             {icon}
           </div>
         )}
@@ -71,7 +71,7 @@ const InputField: React.FC<InputFieldProps> = ({
           id={name}
           name={name}
           placeholder={placeholder}
-          className={`${css} ${disabled === true ? "cursor-not-allowed bg-nrvGreyMediumBg": ""}  bg-none font-light w-full h-10 py-2 text-nrvGrayText focus:outline-none`}
+          className={`${css} ${disabled === true ? "cursor-not-allowed bg-nrvGreyMediumBg": ""}  bg-none font-light w-full h-10 py-2 text-nrvGrayText focus:outline-none text-[13px]`}
           onChange={onChange}
           value={value}
           disabled={disabled}

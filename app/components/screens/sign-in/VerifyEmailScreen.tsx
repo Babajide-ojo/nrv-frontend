@@ -95,10 +95,10 @@ const VerifyEmailScreen: React.FC = () => {
         }}
       >
         <div className="max-w-md mx-auto w-full">
-          <div className="text-2xl text-nrvGreyBlack font-semibold">
+          <div className="text-md text-nrvGreyBlack font-semibold">
             Welcome to NaijaRentVerify
           </div>
-          <div className="pt-2 text-nrvLightGrey text-md">
+          <div className="pt-2 text-nrvLightGrey text-sm font-light">
             Please enter your login to access your account.
           </div>
           <div className="pt-1 text-nrvLightGrey text-md flex gap-2">
@@ -136,7 +136,7 @@ const VerifyEmailScreen: React.FC = () => {
               {isLoading ? "Loading..." : "Login"}
             </Button>
             <div className="justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey">
+              <div className="text-sm text-nrvLightGrey font-light">
                 Do not have an account?
               </div>
               <Link

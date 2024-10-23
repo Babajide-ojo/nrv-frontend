@@ -169,6 +169,9 @@ const DashboardScreen = () => {
                 className=""
                 variant="lightGrey"
                 showIcon={false}
+                onClick={() => {
+                  router.push('/dashboard/landlord/properties/verification')
+                }}
               >
                 Proceed
               </Button>

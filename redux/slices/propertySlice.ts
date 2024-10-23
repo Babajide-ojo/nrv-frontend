@@ -360,6 +360,22 @@ export const getApplicationCount = createAsyncThunk<any, {}>(
     }
 );
 
+export const getTenantMetrics = createAsyncThunk<any, {}>(
+    "tenant/merics",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/tenant-metrics?id=${formData.id}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
 export const getCurrentTenantForProperty = createAsyncThunk<UserId, {}>(
     "current-tenant/get",
     async (id: any, { rejectWithValue }) => {
@@ -660,6 +676,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getApartmentExpense.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getTenantMetrics.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getTenantMetrics.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getTenantMetrics.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

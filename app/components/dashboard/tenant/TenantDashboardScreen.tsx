@@ -9,15 +9,59 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import TenantDashboardNavigationCard from "../../shared/cards/TenantDashboardNavigationCard";
 import RentedPropertiesScreen from "./RentedPropertiesScreen";
+import { useDispatch } from "react-redux";
+import { getTenantMetrics } from "@/redux/slices/propertySlice";
+import { FcComboChart, FcHome, FcParallelTasks } from "react-icons/fc";
 //import RentedPropertiesScreen from "@/app/dashboard/tenant/rented-properties/page";
 
 const TenantDashboardScreen = () => {
   const [user, setUser] = useState<any>({});
+  const [count, setCount] = useState<any>({});
+  const dispatch = useDispatch();
   const router = useRouter()
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const formData = {
+      id: user?.user?._id,
+    };
+    try {
+      const response = await dispatch(getTenantMetrics(formData) as any);
+      setCount(response.payload.data);
+    } catch (error) {
+    } finally {
+    }
+  };
+
+   const tenantDashboardMetrics = [
+    {
+      imageLink:
+      <FcHome color="#004B95"  size={35} />,
+      title: "Apartments",
+      number: count.totalNew,
+      link: '/dashboard/tenant/rented-properties'
+    },
+    {
+      imageLink:
+      <FcComboChart color="#004B95"  size={35} />,
+      title: "Applications",
+      number: count.totalAccepted,
+      link: '/dashboard/tenant/properties/applications'
+    },
+    {
+      imageLink:
+      <FcParallelTasks color="#004B95"  size={35} />,
+      title: "Maintenance",
+      number: count.totalActiveTenants,
+      link: '/dashboard/tenant/properties/maintenance'
+    },
+  ];
   return (
     <div className="md:p-8 p-3 mb-16 md:mb-0">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">

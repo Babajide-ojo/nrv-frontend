@@ -47,7 +47,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-light w-full h-10 outline-none text-[12px] box-border",
+    "font-light w-full h-10 outline-none box-border",
     css,
     {
       "border-red-500": error,

@@ -111,7 +111,7 @@ const TenantApplications = () => {
                       className="flex gap-4 w-full md:w-2/5 bg-white max-w-full mt-4 mx-auto h-32 rounded rounded-2xl p-2"
                       onClick={() => {
                         setApplication(item);
-                        setCurrentStep(2);
+                       // setCurrentStep(2);
                       }}
                     >
                       <div>

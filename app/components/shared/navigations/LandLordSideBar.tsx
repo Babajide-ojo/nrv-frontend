@@ -110,7 +110,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           {links.map(({ name, route }, index) => (
             <div key={index}>
               <li
-                className="w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-xs hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-medium"
+                className="w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-xs hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-light"
                 onClick={() => router.push(route)}
               >
                <span>{name}</span> 
@@ -122,13 +122,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
        {/* User Info Section */}
        {user && (
-        <div className="px-6 py-4  border-gray-200 ml-6 mt-28">
-          <p className="text-sm font-semibold">{user.name}</p>
-          <p className="text-sm text-nrvDarkBlue mt-2">Account Type : {user.role}</p>
-          <p className="text-sm text-gray-500 mt-2">Current Time: {user.loggedInTime}</p>
+        <div className="px-6 py-4  border-gray-200 ml-6 mt-12">
+          <p className="text-xs font-semibold">{user.name}</p>
+          <p className="text-xs text-nrvDarkBlue mt-2">Account Type : {user.role}</p>
+          <p className="text-xs text-gray-500 mt-2">Current Time: {user.loggedInTime}</p>
      <div>
      <Button
-          className="cursor-pointer text-nrvGrayText text-sm mt-4"
+          className="cursor-pointer text-nrvGrayText text-xs mt-4"
           onClick={() => {
             localStorage.removeItem("nrv-user");
             router.push("/");

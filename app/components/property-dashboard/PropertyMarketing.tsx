@@ -67,8 +67,8 @@ const PropertyMarketing: React.FC<Data> = ({ data }) => {
                   />
                 </svg>
               </div>
-              <div className="text-2xl py-2 text-center">Marketing</div>
-              <div className="text-lg py-2 mb-4 text-center">
+              <div className="text-xl py-2 text-center">Marketing</div>
+              <div className="text-sm py-2 mb-4 text-center">
                 Easily find quality tenants
               </div>
               <div className="flex gap-3">
@@ -130,7 +130,7 @@ const PropertyMarketing: React.FC<Data> = ({ data }) => {
                 </div>
                 <div>
                   <h2 className="text-sm text-black">Post across the web</h2>
-                  <div className="text-start flex mx-auto mt-2 mb-12 text-sm text-nrvGrayText font-light">
+                  <div className="text-start flex mx-auto mt-2 mb-12 text-xs text-nrvGrayText font-light">
                     Add your property details and then post to different
                     platforms for free!
                   </div>
@@ -177,7 +177,7 @@ const PropertyMarketing: React.FC<Data> = ({ data }) => {
                 </div>
                 <div>
                   <h2 className="text-sm text-black">Manage your leads</h2>
-                  <div className="text-start flex mx-auto mb-12 text-sm text-nrvGrayText font-light">
+                  <div className="text-start flex mx-auto mb-12 text-xs text-nrvGrayText font-light">
                     Keep track of everyone that is interested in one place!
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const PropertyMarketing: React.FC<Data> = ({ data }) => {
                 </div>
                 <div>
                   <h2 className="text-sm text-black">Screen Tenants</h2>
-                  <div className="text-start flex mx-auto mb-12 text-sm text-nrvGrayText font-light">
+                  <div className="text-start flex mx-auto mb-12 text-xs text-nrvGrayText font-light">
                     Rent with confidence when you use our rental application and
                     credit, criminal, and eviction report.
                   </div>

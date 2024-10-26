@@ -132,7 +132,7 @@ const LeadScreen = () => {
                 {" "}
                 Your leads at your fingertips!
               </div>
-              <div className="text-center flex mx-auto w-2/5 mt-4 text-md text-nrvGrayText font-light">
+              <div className="text-center flex mx-auto w-2/5 mt-4 text-sm text-nrvGrayText font-light">
                 Easily manage all your leads as they automatically start coming
                 in.
               </div>

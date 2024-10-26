@@ -191,9 +191,9 @@ const TenantScreen = () => {
 
         <div className=" w-full max-w-full  flex justify-end items-end mt-2">
           <Button
-            size="large"
+            size="smaller"
             className="font-medium text-nrvDarkBlue text-sm  border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white"
-            variant="ordinary"
+            variant="mediumGrey"
             showIcon={false}
             onClick={() => {
               setOpenAddTenantModal(true);
@@ -220,7 +220,7 @@ const TenantScreen = () => {
                           </div>
                           <div className="w-4/5">
                             <div className="flex justify-between w-full">
-                              <div className="text-nrvDarkGrey font-light text-md w-1/2">
+                              <div className="text-nrvDarkGrey font-light text-sm w-1/2">
                                 {item?.applicant?.firstName}{" "}
                                 {item?.applicant?.lastName}
                               </div>
@@ -235,7 +235,7 @@ const TenantScreen = () => {
                                    Aparment ID : {item?.propertyId?.roomId}
                                   </div>
                             </div>
-                            <div className="text-nrvDarkBlue text-sm mt-2">
+                            <div className="text-nrvDarkBlue text-xs mt-2">
                               {item?.propertyId?.propertyId.streetAddress},{" "}
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}

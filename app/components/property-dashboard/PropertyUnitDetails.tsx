@@ -22,40 +22,40 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
              Name
           </h2>
-          <div className="text-md text-nrvGreyBlack">{data.name}</div>
+          <div className="text-xs text-nrvGreyBlack">{data.name}</div>
         </div>
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
             Description
           </h2>
-          <div className="text-sm text-nrvGreyBlack font-light">{data.description}</div>
+          <div className="text-xs leading-5 text-nrvGreyBlack font-light">{data.description}</div>
         </div>
         <div className="mt-6">
-        <h2 className="text-sm font-medium text-nrvGreyBlack">Property Specifics</h2>
+        <h2 className="text-xs font-medium text-nrvGreyBlack">Property Specifics</h2>
         <div className="flex gap-5 mt-4">
           <Button
             size="smaller"
-            className="rounded-md rounded text-white bg-nrvDarkBlue"
-            variant="ordinary"
+            className="rounded-md rounded bg-nrvDarkBlue"
+            variant="light"
             showIcon={false}
           >
             {data.noOfRooms} Bedrooms
           </Button>
           <Button
             size="smaller"
-            className="rounded-md rounded text-white bg-nrvDarkBlue"
-            variant="ordinary"
+            className="rounded-md rounded bg-nrvDarkBlue"
+            variant="light"
             showIcon={false}
           >
             {data.noOfPools} Pools
           </Button>
           <Button
             size="smaller"
-            className="rounded-md rounded text-white bg-nrvDarkBlue"
-            variant="ordinary"
+            className="rounded-md rounded bg-nrvDarkBlue"
+            variant="light"
             showIcon={false}
           >
             {data.noOfBaths} Baths
@@ -65,7 +65,7 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
     </div>
     <div className="flex gap-8">
     <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
             Rent Amount
           </h2>
           <div className="text-xs text-nrvGreyBlack">₦ {formatNumber(data.rentAmount) }/{data.rentAmountMetrics}</div>
@@ -77,7 +77,7 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           <div className="text-xs text-nrvGreyBlack">₦ { formatNumber(data.targetDeposit)}/{data.rentAmountMetrics}</div>
         </div> */}
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
         Other Amenities
           </h2>
           <div className="text-xs text-nrvGreyBlack">{data.otherAmentities}</div>

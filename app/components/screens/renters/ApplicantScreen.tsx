@@ -117,7 +117,7 @@ const ApplicantScreen = () => {
                           </div>
                           <div className="w-4/5">
                             <div className="flex justify-between w-full">
-                              <div className="text-nrvDarkGrey font-light text-md w-1/2">
+                              <div className="text-nrvDarkGrey font-light text-sm w-1/2">
                                 {item?.applicant?.firstName}{" "}
                                 {item?.applicant?.lastName}
                               </div>
@@ -132,7 +132,7 @@ const ApplicantScreen = () => {
                                    Apartment ID : {item?.propertyId?.roomId}
                                   </div>
                             </div>
-                            <div className="text-nrvDarkBlue text-sm mt-4">
+                            <div className="text-nrvDarkBlue text-xs mt-4">
                               {item?.propertyId?.propertyId.streetAddress},{" "}
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}

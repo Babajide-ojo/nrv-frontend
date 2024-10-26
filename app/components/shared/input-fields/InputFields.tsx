@@ -72,7 +72,7 @@ const InputField: React.FC<InputFieldProps> = ({
           name={name}
           placeholder={placeholder}
         
-          className={`${css} ${disabled === true ? "cursor-not-allowed bg-nrvGreyMediumBg": ""}  bg-none font-light w-full h-10 py-2 text-nrvGrayText focus:outline-none text-[0.75rem]`}
+          className={`${css} ${disabled === true ? "cursor-not-allowed bg-nrvGreyMediumBg": ""}  bg-none font-light w-full h-10 py-2 text-nrvGrayText focus:outline-none text-[0.85rem]`}
           onChange={onChange}
           value={value}
           disabled={disabled}

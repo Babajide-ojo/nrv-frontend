@@ -42,9 +42,8 @@ const customStyles = {
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
-    fontSize: "14px",
+    fontSize: "12px",
     colors: "#6B6C6C",
-    
 
   }),
 
@@ -59,8 +58,14 @@ const customStyles = {
       backgroundColor: "#f5f5f5",
     },
         fontSize: "12px",
-    colors: "#6B6C6C",
+    colors: "#000000",
  
+  }),
+
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "#9da3af", // Set placeholder color to red
+    fontWeight: "300"
   }),
 };
 

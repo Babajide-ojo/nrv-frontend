@@ -1,5 +1,4 @@
 import React, { ChangeEvent, FocusEvent, useState } from "react";
-import Image from "next/image"; // Note: Is this being used? If not, consider removing.
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import classNames from "classnames";
 
@@ -16,7 +15,7 @@ interface InputFieldProps {
   error?: string;
   ariaLabel?: string;
   onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
-  icon?: React.ReactNode; // Specify as ReactNode for better type safety
+  icon?: React.ReactNode;
   unit?: string;
   password?: boolean;
   required?: boolean;
@@ -48,7 +47,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-light w-full h-10 px-3 py-2 outline-none text-[12px]",
+    "font-light w-full h-10 px-3 py-2 outline-none text-[12px] box-border",
     css,
     {
       "border-red-500": error,
@@ -86,6 +85,7 @@ const InputField: React.FC<InputFieldProps> = ({
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           onBlur={onBlur}
+          style={{ width: '100%', fontSize: '16px' }} // Set width and font size
         />
         {password && (
           <div className="absolute right-2 cursor-pointer" onClick={togglePasswordVisibility}>

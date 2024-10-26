@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FocusEvent, useState } from "react";
-import Image from "next/image";
-import { IoEyeOutline } from "react-icons/io5";
-import { IoEyeOffOutline } from "react-icons/io5";
+import Image from "next/image"; // Note: Is this being used? If not, consider removing.
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
+import classNames from "classnames";
 
 interface InputFieldProps {
   css?: string;
@@ -16,7 +16,7 @@ interface InputFieldProps {
   error?: string;
   ariaLabel?: string;
   onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
-  icon?: any;
+  icon?: React.ReactNode; // Specify as ReactNode for better type safety
   unit?: string;
   password?: boolean;
   required?: boolean;
@@ -24,85 +24,77 @@ interface InputFieldProps {
 }
 
 const InputField: React.FC<InputFieldProps> = ({
-  css,
+  css = "",
   label,
   placeholder,
-  inputType,
+  inputType = "text",
   onChange,
   value,
   name,
-  disabled,
+  disabled = false,
   error,
   ariaLabel,
   onWheel,
   icon,
   unit,
-  password,
-  required,
+  password = false,
+  required = false,
   onBlur,
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    setShowPassword((prev) => !prev);
   };
 
-  const inputStyles = `font-light w-full h-10 px-3 py-2 ${css} ${
-    error ? "border-red-500" : "border-nrvLightGrey"
-  }`;
+  const inputClasses = classNames(
+    "font-light w-full h-10 px-3 py-2 outline-none text-[12px]",
+    css,
+    {
+      "border-red-500": error,
+      "border-nrvLightGrey": !error,
+      "cursor-not-allowed bg-nrvGreyMediumBg": disabled,
+    }
+  );
 
   return (
-    <div className="">
+    <div className="mb-4">
       {label && (
-        <label htmlFor={name} className={`${disabled === true ? "cursor-not-allowed": ""} text-nrvGreyBlack font-400 mb-2 text-xs`}>
+        <label
+          htmlFor={name}
+          className={classNames("text-nrvGreyBlack font-400 mb-2 text-xs", {
+            "cursor-not-allowed": disabled,
+          })}
+        >
           {label}
+          {required && <span className="text-red-500">*</span>}
         </label>
       )}
-      <div
-        className={`relative border border-nrvGreyMediumBg pl-2 mt-2 relative flex items-center cursor-pointer rounded-lg overflow-hidden  focus:outline-none cursor-pointer`}
-      >
-        {icon && (
-          <div className="w-5 h-5 mr-2 flex items-center justify-center">
-            {icon}
-          </div>
-        )}
+      <div className="relative border border-nrvGreyMediumBg pl-2 mt-2 flex items-center rounded-lg overflow-hidden">
+        {icon && <div className="w-5 h-5 mr-2 flex items-center justify-center">{icon}</div>}
         <input
           type={password ? (showPassword ? "text" : "password") : inputType}
           id={name}
           name={name}
           placeholder={placeholder}
-        
-          className={`${css} ${disabled === true ? "cursor-not-allowed bg-nrvGreyMediumBg": ""}  bg-none font-light w-full h-10 py-2 text-nrvGrayText focus:outline-none text-[0.85rem]`}
+          className={inputClasses}
           onChange={onChange}
           value={value}
           disabled={disabled}
           onWheel={onWheel}
           aria-label={ariaLabel}
+          aria-invalid={!!error}
+          aria-describedby={error ? `${name}-error` : undefined}
           onBlur={onBlur}
         />
         {password && (
-          <div
-            className="absolute right-2 cursor-pointer"
-            onClick={togglePasswordVisibility}
-          >
-            {showPassword ? (
-              <IoEyeOutline
-                height={24}
-                width={24}
-                style={{ width: "100%", height: "auto" }}
-              />
-            ) : (
-              <IoEyeOffOutline
-                height={24}
-                width={24}
-                style={{ width: "100%", height: "auto" }}
-              />
-            )}
+          <div className="absolute right-2 cursor-pointer" onClick={togglePasswordVisibility}>
+            {showPassword ? <IoEyeOutline /> : <IoEyeOffOutline />}
           </div>
         )}
         {unit && <span className="ml-2 text-gray-500">{unit}</span>}
       </div>
-      {error && <div className="text-red-500 font-light text-xs mt-1">{error}</div>}
+      {error && <div id={`${name}-error`} className="text-red-500 font-light text-xs mt-1">{error}</div>}
     </div>
   );
 };

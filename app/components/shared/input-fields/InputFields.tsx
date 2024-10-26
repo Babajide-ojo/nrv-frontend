@@ -47,7 +47,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-light text-sm w-full h-10 outline-none box-border",
+    "font-light w-full h-10 outline-none box-border",
     css,
     {
       "border-red-500": error,
@@ -85,7 +85,7 @@ const InputField: React.FC<InputFieldProps> = ({
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           onBlur={onBlur}
-    
+          style={{ width: '100%', transform: 'scale(0.75)',  transformOrigin: ' left' }} // Set width and font size
         />
         {password && (
           <div className="absolute right-2 cursor-pointer" onClick={togglePasswordVisibility}>

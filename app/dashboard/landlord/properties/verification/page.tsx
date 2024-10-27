@@ -13,7 +13,7 @@ import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaHouse } from "react-icons/fa6";
-import { FcHome } from "react-icons/fc";
+import { FcBusinessContact, FcCallback, FcContacts, FcHome, FcInvite, FcVoicemail } from "react-icons/fc";
 
 const VerificationScreen = () => {
   const dispatch = useDispatch();
@@ -118,7 +118,7 @@ const VerificationScreen = () => {
         <ProtectedRoute>
           <ToastContainer />
           <LandLordLayout>
-            <div className="container mx-auto p-8 rounded-lg w-full block md:gap-8 justify-center">
+            <div className="container mx-auto md:p-8 p-2 rounded-lg w-full block md:gap-8 justify-center">
               {view === "form" ? (
                 <div className="md:w-1/2 w-full md:p-8">
                   <Formik
@@ -159,12 +159,12 @@ const VerificationScreen = () => {
                 </div>
               ) : (
                 <>
-                  <p className="font-semibold text-nrvGreyBlack text-lg  whitespace-nowrap mt-4">
+            
+                  <div className="w-full">
+                  {/* <p className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap">
                     Tenant Screening Report
-                  </p>
-                  <div className="mt-8 w-full md:flex bg-white p-4">
-                    <div className="md:w-2/5 w-full p-2">
-                      <div className="mb-8">
+                  </p> */}
+                    <div className="mb-8 bg-white p-3">
                         <p className="font-semibold text-nrvDarkBlue text-sm whitespace-nowrap">
                           {tenantHistory[0].applicant.firstName}{" "}
                           {tenantHistory[0].applicant.lastName}
@@ -181,72 +181,57 @@ const VerificationScreen = () => {
                           </span>
                         </p>
                       </div>
-                    </div>
-                    <div className="md:w-4/5 w-full">
+                    <div className="w-full grid md:grid-cols-2 grid-cols-1 md:gap-8">
                       {tenantHistory.length > 0 ? (
                         tenantHistory.map((item) => (
                           <div
-                            key={item._id}
-                            className=" p-2 mb-4 rounded-lg bg-white"
-                          >
-                            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-                              <div className="text-[14px] font-medium text-nrvGrayText mb-4 text-center">
-                                <FcHome
-                                  className="text-nrvDarkBlue font-medium inline-block mb-1"
-                                  size={25}
-                                />
-                                <div className="text-xs font-light">
-                                  {item.propertyId.propertyId.streetAddress},{" "}
-                                  {item.propertyId.propertyId.city},{" "}
-                                  {item.propertyId.propertyId.state}
-                                </div>
+                          key={item._id}
+                          className="mx-auto p-4 mb-2  bg-white rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl w-full"
+                        >
+                          <div className="">
+             
+                              <h2 className="md:text-xs text-[10px] font-normal text-center text-gray-600">
+                                {item.propertyId.propertyId.streetAddress}, {item.propertyId.propertyId.city}, {item.propertyId.propertyId.state}
+                              </h2>
+                    
+                        
+                            <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
+                              <div className="text-center">
+                                <p className="text-xs text-gray-600">Rent Start Date</p>
+                                <p className="text-[10px] font-normal text-[#187bca]">{formatDateToWords(item.rentStartDate)}</p>
                               </div>
-
-                              <div className="relative flex items-center justify-between mb-4">
-                                <div className="date-section text-center flex-grow">
-                                  <p className="text-xs text-nrvDarkBlue font-medium">
-                                    Rent Start Date
-                                  </p>
-                                  <p className="text-[10px] text-nrvGrayText">
-                                    {formatDateToWords(item.rentStartDate)}
-                                  </p>
-                                </div>
-
-
-                                <div className="date-section text-center flex-grow">
-                                  <p className="text-xs text-red-500 font-medium">
-                                    Rent End Date
-                                  </p>
-                                  <p className="text-[11px] text-nrvGrayText">
-                                    {formatDateToWords(item.rentEndDate)}
-                                  </p>
-                                </div>
+                              <div className="text-center">
+                                <p className="text-xs text-gray-600">Rent End Date</p>
+                                <p className="text-[10px] font-normal text-[#187bca]">{formatDateToWords(item.rentEndDate)}</p>
                               </div>
-
-                              <div className="mt-4 text-xs text-nrvGrayText text-center font-light">
-                                Rent Duration:{" "}
-                                <span className="font-medium">
-                                  {calculateDateDifference(
-                                    item.rentStartDate,
-                                    item.rentEndDate
-                                  )}
-                                </span>
-                              </div>
-
-                              <div className="mt-4 text-center">
-                                <p className="text-xs text-nrvDarkBlue font-medium">
-                                  Landlord Details
-                                </p>
-                                <div className="text-[11px] font-light text-nrvGrayText mt-2">
-                                  {item.ownerId.firstName}{" "}
-                                  {item.ownerId.lastName}
-                                  <br />
-                                  {item.ownerId.email} |{" "}
-                                  {item.ownerId.phoneNumber}
+                            </div>
+                        
+                            <div className="mt-3 text-center">
+                              <p className="text-xs text-gray-600">Rent Duration</p>
+                              <p className="text-[10px] font-normal text-[#187bca]">
+                                {calculateDateDifference(item.rentStartDate, item.rentEndDate)}
+                              </p>
+                            </div>
+                        
+                            <div className="mt-3">
+                              <p className="text-xs text-gray-800 font-medium mb-2">Landlord Details</p>
+                              <div className="text-xs text-gray-800 mt-1">
+                                <div className="flex gap-1"><FcContacts size={16} /> {item.ownerId.firstName} {item.ownerId.lastName}</div>
+                             
+                              
+                                <div className="flex gap-4 mt-1">
+                                <div className="w-1/2 flex gap-1"> <FcInvite size={16} /> {item.ownerId.email} </div>
+                                <div className="w-1/2 flex gap-1 justify-end"> <FcCallback size={16} />  {item.ownerId.phoneNumber} </div>
                                 </div>
+                         
+                           
                               </div>
                             </div>
                           </div>
+                        </div>
+                        
+                        
+                        
                         ))
                       ) : (
                         <p className="text-center text-gray-500 text-nrvDarkBlue">

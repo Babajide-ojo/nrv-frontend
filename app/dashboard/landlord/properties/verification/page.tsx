@@ -13,6 +13,7 @@ import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaHouse } from "react-icons/fa6";
+import { FcHome } from "react-icons/fc";
 
 const VerificationScreen = () => {
   const dispatch = useDispatch();
@@ -117,7 +118,6 @@ const VerificationScreen = () => {
         <ProtectedRoute>
           <ToastContainer />
           <LandLordLayout>
-           
             <div className="container mx-auto p-8 rounded-lg w-full block md:gap-8 justify-center">
               {view === "form" ? (
                 <div className="md:w-1/2 w-full md:p-8">
@@ -158,95 +158,104 @@ const VerificationScreen = () => {
                   </Formik>
                 </div>
               ) : (
-             <>
-                <p className="font-semibold text-nrvGreyBlack text-lg  whitespace-nowrap mt-4">
-                Tenant Screening Report
-              </p>
-                <div className="mt-8 w-full md:flex bg-white p-4">
-                  <div className="md:w-2/5 w-full">
-                    <div className="mb-8">
-                      <p className="font-semibold text-nrvDarkBlue text-lg  whitespace-nowrap">
-                        {tenantHistory[0].applicant.firstName}{" "}
-                        {tenantHistory[0].applicant.lastName}
-                      </p>
+                <>
+                  <p className="font-semibold text-nrvGreyBlack text-lg  whitespace-nowrap mt-4">
+                    Tenant Screening Report
+                  </p>
+                  <div className="mt-8 w-full md:flex bg-white p-4">
+                    <div className="md:w-2/5 w-full p-2">
+                      <div className="mb-8">
+                        <p className="font-semibold text-nrvDarkBlue text-sm whitespace-nowrap">
+                          {tenantHistory[0].applicant.firstName}{" "}
+                          {tenantHistory[0].applicant.lastName}
+                        </p>
 
-                      <p className="text-sm mt-2 text-nrvGrayText text-light">
-                        {tenantHistory[0].applicant.email}{" "}
-                        {tenantHistory[0].applicant?.phoneNumber || " "}
-                      </p>
-                      <p className="text-sm mt-2 text-nrvGrayText text-light">
-                        National Identification Number :{" "}
-                       <span className="text-nrvDarkBlue font-medium">{tenantHistory[0].applicant.nin}</span> 
-                      </p>
+                        <p className="text-xs mt-2 text-nrvGrayText text-light">
+                          {tenantHistory[0].applicant.email}{" "}
+                          {tenantHistory[0].applicant?.phoneNumber || " "}
+                        </p>
+                        <p className="text-xs mt-2 text-nrvGrayText text-light">
+                          National Identification Number :{" "}
+                          <span className="text-nrvDarkBlue font-medium">
+                            {tenantHistory[0].applicant.nin}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="md:w-4/5 w-full">
+                      {tenantHistory.length > 0 ? (
+                        tenantHistory.map((item) => (
+                          <div
+                            key={item._id}
+                            className=" p-2 mb-4 rounded-lg bg-white"
+                          >
+                            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+                              <div className="text-[14px] font-medium text-nrvGrayText mb-4 text-center">
+                                <FcHome
+                                  className="text-nrvDarkBlue font-medium inline-block mb-1"
+                                  size={25}
+                                />
+                                <div className="text-xs font-light">
+                                  {item.propertyId.propertyId.streetAddress},{" "}
+                                  {item.propertyId.propertyId.city},{" "}
+                                  {item.propertyId.propertyId.state}
+                                </div>
+                              </div>
+
+                              <div className="relative flex items-center justify-between mb-4">
+                                <div className="date-section text-center flex-grow">
+                                  <p className="text-xs text-nrvDarkBlue font-medium">
+                                    Rent Start Date
+                                  </p>
+                                  <p className="text-[10px] text-nrvGrayText">
+                                    {formatDateToWords(item.rentStartDate)}
+                                  </p>
+                                </div>
+
+
+                                <div className="date-section text-center flex-grow">
+                                  <p className="text-xs text-red-500 font-medium">
+                                    Rent End Date
+                                  </p>
+                                  <p className="text-[11px] text-nrvGrayText">
+                                    {formatDateToWords(item.rentEndDate)}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 text-xs text-nrvGrayText text-center font-light">
+                                Rent Duration:{" "}
+                                <span className="font-medium">
+                                  {calculateDateDifference(
+                                    item.rentStartDate,
+                                    item.rentEndDate
+                                  )}
+                                </span>
+                              </div>
+
+                              <div className="mt-4 text-center">
+                                <p className="text-xs text-nrvDarkBlue font-medium">
+                                  Landlord Details
+                                </p>
+                                <div className="text-[11px] font-light text-nrvGrayText mt-2">
+                                  {item.ownerId.firstName}{" "}
+                                  {item.ownerId.lastName}
+                                  <br />
+                                  {item.ownerId.email} |{" "}
+                                  {item.ownerId.phoneNumber}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-center text-gray-500 text-nrvDarkBlue">
+                          No Tenant history Available.
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="md:w-4/5 w-full">
-                    {tenantHistory.length > 0 ? (
-                      tenantHistory.map((item) => (
-                        <div
-                          key={item._id}
-                          className=" p-4 mb-4 rounded-lg bg-white "
-                        >
-                          <div>
-                            <div className="text-[14px] font-medium text-nrvGrayText mb-4 text-center">
-                              <FaHouse className="text-nrvDarkBlue font-medium" />{" "}
-                              {item.propertyId.propertyId.streetAddress},{" "}
-                              {item.propertyId.propertyId.city},{" "}
-                              {item.propertyId.propertyId.state}
-                            </div>
-                            <div className="relative flex items-center justify-between">
-                              <div className="date-section text-center flex-grow">
-                                <p className="text-sm text-nrvDarkBlue font-medium">
-                                  Rent Start Date
-                                </p>
-                                {/* <hr className="my-2 border-t-2 border-gray-300" /> */}
-                                <p className="text-xs text-nrvGrayText">
-                                  {formatDateToWords(item.rentStartDate)}
-                                </p>
-                              </div>
-                              <div className="absolute inset-x-0 flex justify-center">
-                                <div className="arrow"></div>
-                              </div>
-                              <div className="date-section text-center flex-grow">
-                                <p className="text-sm text-red-500  font-medium">
-                                  Rent End Date
-                                </p>
-                                {/* <hr className="my-2 border-t-2 border-gray-300" /> */}
-                                <p className="text-xs text-nrvGrayText">
-                                  {formatDateToWords(item.rentEndDate)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="mt-4 text-xs text-nrvGrayText text-center font-light">
-                              Rent Duration :{" "}
-                          <span className="font-medium">    {calculateDateDifference(
-                                item.rentStartDate,
-                                item.rentEndDate
-                              )}</span>
-                            </div>
-                          </div>
-                          <div className="date-section text-center flex-grow mt-4">
-                            <p className="text-xs text-nrvDarkBlue  font-medium">
-                              Landlord Details
-                            </p>
-                       
-                            <div className="text-xs text-nrvGrayText mt-2">
-                              {item.ownerId.firstName} {item.ownerId.firstName}
-                              <br></br>
-                              {item.ownerId.email} | {item.ownerId.phoneNumber}
-                            </div>
-                          </div>
-                          <hr className="mt-4"></hr>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-center text-gray-500 text-nrvDarkBlue">
-                        No Tenant history Available.
-                      </p>
-                    )}
-                  </div>
-                </div>
-             </>
+                </>
               )}
             </div>
           </LandLordLayout>

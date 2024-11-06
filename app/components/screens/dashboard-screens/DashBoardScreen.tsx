@@ -11,7 +11,7 @@ import ApplicantScreen from "../renters/ApplicantScreen";
 import BarChart from "../../charts/BarChart";
 import DoughnutChart from "../../charts/PieChart";
 import ApplicantScreenForDashboard from "../renters/ApplicantScreenForDashboard";
-import { FcComboChart } from "react-icons/fc";
+import { FcApprove, FcComboChart } from "react-icons/fc";
 import { FcAcceptDatabase } from "react-icons/fc";
 import { FcHome } from "react-icons/fc";
 
@@ -51,11 +51,15 @@ const DashboardScreen = () => {
       number: count.totalAccepted,
     },
     {
-      imageLink: <FcHome color="#004B95" size={35} />,
+      imageLink: <FcApprove color="#004B95" size={35} />,
       title: "Tenants",
       number: count.totalActiveTenants,
     },
-
+    {
+      imageLink: <FcHome color="#004B95"  size={35} />,
+      title: "Properties",
+      number: count.totalProperties,
+    }
 
   ];
 
@@ -87,11 +91,11 @@ const DashboardScreen = () => {
   };
 
   const data = {
-    labels: ["Applicants", "Leads", "Tenants"],
+    labels: ["Applicants", "Leads", "Tenants", "Properties"],
     datasets: [
       {
         label: "Applications",
-        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants],
+        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants, count.totalProperties],
         backgroundColor: ["#004B95"],
         borderColor: ["#153969", "#153969", "#153969", "#153969"],
         borderWidth: 1,
@@ -100,12 +104,12 @@ const DashboardScreen = () => {
   };
 
   const dataForPiechart = {
-    labels: ["Applicants", "Leads", "Tenants"],
+    labels: ["Applicants", "Leads", "Tenants", "Properties"],
     datasets: [
       {
         label: "Applications",
-        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants],
-        backgroundColor: ["#004B95", "#C9190B", "#4CB140"],
+        data: [count.totalNew, count.totalAccepted, count.totalActiveTenants, count.totalProperties],
+        backgroundColor: ["#004B95", "#C9190B", "#4CB140", "FCB640"],
         hoverOffset: 4,
       },
     ],
@@ -123,7 +127,7 @@ const DashboardScreen = () => {
       </p>
       <div className="flex-row md:flex gap-4">
         <div className="md:w-1/2 w-full">
-          <div className=" grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
+          <div className=" grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-4 gap-3">
             {dashboardMetrics.map(({ title, imageLink, number }, index) => (
               <div
                 key={index}

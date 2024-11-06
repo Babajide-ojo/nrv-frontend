@@ -164,23 +164,7 @@ const VerificationScreen = () => {
                   {/* <p className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap">
                     Tenant Screening Report
                   </p> */}
-                    <div className="mb-8 bg-white p-3">
-                        <p className="font-semibold text-nrvDarkBlue text-sm whitespace-nowrap">
-                          {tenantHistory[0].applicant.firstName}{" "}
-                          {tenantHistory[0].applicant.lastName}
-                        </p>
-
-                        <p className="text-xs mt-2 text-nrvGrayText text-light">
-                          {tenantHistory[0].applicant.email}{" "}
-                          {tenantHistory[0].applicant?.phoneNumber || " "}
-                        </p>
-                        <p className="text-xs mt-2 text-nrvGrayText text-light">
-                          National Identification Number :{" "}
-                          <span className="text-nrvDarkBlue font-medium">
-                            {tenantHistory[0].applicant.nin}
-                          </span>
-                        </p>
-                      </div>
+                 
                     <div className="w-full grid md:grid-cols-2 grid-cols-1 md:gap-8">
                       {tenantHistory.length > 0 ? (
                         tenantHistory.map((item) => (

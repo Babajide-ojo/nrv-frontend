@@ -142,19 +142,33 @@ const SingleMaintainance = () => {
                           {maintenance.title}
                         </span>
                         <br></br>
-                        <div className="text-md text-nrvDarkGrey font-light">
+                        <div className="text-sm leading-10 text-nrvDarkGrey font-light">
                           {maintenance.description}
                         </div>
                      <div className="flex gap-5 mt-8">
                      <div>
                           {maintenance?.status != "Resolved" ? (
                             <p
-                              className="underline pt-2 text-nrvDarkGrey text-sm cursor-pointer"
+                              className="underline pt-2 text-blue-500 text-sm cursor-pointer"
                               onClick={() => {
                                 setIsOpen(!isOpen);
                               }}
                             >
-                              Accept Issue
+                              Acknowledge Issue
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                     <div>
+                          {maintenance?.status != "Resolved" ? (
+                            <p
+                              className="underline pt-2 text-green-600 text-sm cursor-pointer"
+                              onClick={() => {
+                                setIsOpen(!isOpen);
+                              }}
+                            >
+                              Mark As Resolved
                             </p>
                           ) : (
                             ""
@@ -174,6 +188,7 @@ const SingleMaintainance = () => {
                             ""
                           )}
                         </div>
+                    
                      </div>
                       </h3>
                     </div>

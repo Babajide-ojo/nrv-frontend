@@ -13,6 +13,7 @@ interface MaintenanceCardProps {
   id: string;
   type: string;
   propertyId?: string;
+  name?: string;
 }
 
 const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
@@ -22,7 +23,8 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
   status,
   type,
   id,
-  propertyId
+  propertyId,
+  name
 }) => {
   const router = useRouter();
   return (
@@ -30,7 +32,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
       <div className="flex gap-3 items-center">
         <div className="w-full flex gap-4 justify-between space-between">
           <div className="flex justify-between space-around text-nrvLightGrey">
-            <div className="text-md text-nrvDarkBlue">{title}</div>
+            <div className="text-sm text-nrvDarkBlue">{name}</div>
           </div>
           <div>
             <Button
@@ -50,16 +52,21 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
       </div>
 
       <div>
-        {/* <div className="mb-1 mt-4 text-sm font-medium">Description:</div> */}
-        <div className="mb-4 font-light text-sm truncate mt-2">
+
+        <div className="mb-2 font-light text-sm truncate mt-4">
+          {title}
+        </div>
+        <div className="mb-2 font-light text-xs truncate mt-2">
           {description}
         </div>
-        <div className="mb-4 font-medium text-sm truncate mt-2 text-nrvDarkBlue">
+     <div className="flex justify-between">
+     <div className="font-medium text-sm truncate text-nrvDarkBlue">
           Property ID : {propertyId}
         </div>
         <div className="text-xs font-light text-nrvLightGrey text-end">
           {formatDate(dateLogged.slice(0, 10))}
         </div>
+     </div>
         <div className="flex gap-4 w-full justify-center items-center mt-2">
           <Button
             size="small"

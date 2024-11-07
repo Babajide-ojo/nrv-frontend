@@ -99,6 +99,7 @@ const Maintainance = () => {
                           status={item.status}
                           id={item._id}
                           propertyId={item.roomId.roomId}
+                          name={item.createdBy.firstName + " " + item.createdBy.lastName }
                         />
                       </div>
                     ))}

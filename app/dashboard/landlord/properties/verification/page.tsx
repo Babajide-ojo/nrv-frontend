@@ -23,6 +23,7 @@ import {
 } from "react-icons/fc";
 import { formatDateToWords, calculateDateDifference } from "@/helpers/utils";
 import { AnyARecord } from "dns";
+import { FaArrowCircleLeft, FaArrowLeft } from "react-icons/fa";
 const VerificationScreen = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -63,21 +64,24 @@ const VerificationScreen = () => {
     }
   };
 
-  // const fetchVerifiedNin = async (values: Record<string, any>) => {
-  //   try {
-  //     const result: = await dispatch(tenantRentalHistory(values));
+  const fetchVerifiedNin = async (values: Record<string, any>) => {
+    try {
+      const result: any = await dispatch(tenantRentalHistory(values) as any);
+      console.log({ result });
 
-  //     if (result.error) {
-  //       toast.error(result.payload || "Failed to fetch tenant history. Please try again.");
-  //     } else {
-  //       toast.success("Tenant history retrieved successfully");
-  //       setTenantHistory(result.payload?.data || []); // Set tenant history data
-  //       setView("history"); // Switch to history view
-  //     }
-  //   } catch (error) {
-  //     toast.error("An unexpected error occurred. Please try again.");
-  //   }
-  // };
+      if (result.error) {
+        toast.error(
+          result.payload || "Failed to fetch tenant history. Please try again."
+        );
+      } else {
+        toast.success("Tenant history retrieved successfully");
+        setTenantHistory(result.payload?.data || []); // Set tenant history data
+        setView("history"); // Switch to history view
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    }
+  };
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -163,12 +167,20 @@ const VerificationScreen = () => {
                             <div className="">
                               <div className="flex justify-between">
                                 <h2 className="text-[12px] font-medium text-gray-700">
-                                  Date Verified : {item.timestamp.slice(0, 10) || "Timestamp not available"}
+                                  Date Verified :{" "}
+                                  {item.timestamp.slice(0, 10) ||
+                                    "Timestamp not available"}
                                 </h2>
-                                <p className="text-xs font-light text-gray-600 underline cursor-pointer" onClick={() => {
-                                  alert("I am clicked")
-                                }}>
-                                 {item.nin || "NIN not available"}
+                                <p
+                                  className="text-xs font-light text-gray-600 underline cursor-pointer"
+                                  onClick={() => {
+                                    fetchVerifiedNin({
+                                      nin: item.nin,
+                                      userId: user?._id,
+                                    });
+                                  }}
+                                >
+                                  {item.nin || "NIN not available"}
                                 </p>
                               </div>
                               <p className="text-[12px] font-normal text-gray-600 mt-4">
@@ -188,9 +200,12 @@ const VerificationScreen = () => {
               ) : (
                 <>
                   <div className="w-full">
-                    <p className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap mb-4">
-                      Tenant Screening Report
-                    </p>
+                    <div className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap mb-4 flex gap-4">
+                      <p>
+                        <FaArrowLeft color="red" size={15} className="cursor-pointer mt-1" />
+                      </p>
+                      <p> Tenant Screening Report</p>
+                    </div>
 
                     <div className="w-full grid md:grid-cols-2 grid-cols-1 md:gap-8">
                       {tenantHistory.length > 0 ? (

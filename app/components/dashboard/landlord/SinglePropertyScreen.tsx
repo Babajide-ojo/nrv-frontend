@@ -157,7 +157,7 @@ const SinglePropertyScreen = () => {
     const { name, value } = e.target;
     setPropertyData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value,dispatch
     }));
 
     setErrors((prevErrors) => ({

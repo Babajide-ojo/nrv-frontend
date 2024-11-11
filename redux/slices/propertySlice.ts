@@ -451,7 +451,7 @@ export const tenantRentalHistory = createAsyncThunk<any, {}>(
     async (formData: any, { rejectWithValue }) => {
      
         try {
-            const response: any = await axios.get(`${API_URL}/properties/tenant-history?nin=${formData.nin}`);
+            const response: any = await axios.get(`${API_URL}/properties/tenant-history?nin=${formData.nin}&userId=${formData.userId}`);
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

@@ -48,3 +48,43 @@ export const formatNumber = (num: string) => {
 return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+
+ export const formatDateToWords = (dateString: any) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  };
+
+  export const calculateDateDifference = (
+    startDateString: string,
+    endDateString: string
+  ) => {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+
+    if (endDate < startDate) {
+      throw new Error("End date must be after start date.");
+    }
+
+    let years = endDate.getFullYear() - startDate.getFullYear();
+    let months = endDate.getMonth() - startDate.getMonth();
+    let days = endDate.getDate() - startDate.getDate();
+
+    if (days < 0) {
+      months--;
+      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    return `${years} year${years !== 1 ? "s" : ""}, ${months} month${
+      months !== 1 ? "s" : ""
+    }, and ${days} day${days !== 1 ? "s" : ""}`;
+  };

@@ -112,8 +112,8 @@ const VerificationScreen = () => {
           <LandLordLayout>
             <div className="container mx-auto md:p-8 p-2 rounded-lg w-full block md:gap-8 justify-center">
               {view === "form" ? (
-                <div className="w-full md:p-8 flex gap-8">
-                  <div className="w-1/2 md:w-full">
+                <div className="w-full md:p-8 block md:flex gap-8">
+                  <div className="md:w-1/2 w-full p-2">
                     <Formik
                       initialValues={{ nin: "", userId: user?._id }}
                       validationSchema={validationSchema}
@@ -124,7 +124,7 @@ const VerificationScreen = () => {
                       {({ isSubmitting, isValid, dirty }) => (
                         <Form>
                           <div className="mb-8">
-                            <h1 className="text-md font-semibold text-nrvDarkBlue">
+                            <h1 className="text-sm text-center font-medium">
                               Tenant Verification with NIN
                             </h1>
                           </div>
@@ -150,7 +150,7 @@ const VerificationScreen = () => {
                       )}
                     </Formik>
                   </div>
-                  <div className="w-1/2 md:w-full">
+                  <div className="md:w-1/2 w-full mt-4 md:mt-0">
                     <div className="text-sm text-center">
                       {" "}
                       Tenant Verification History

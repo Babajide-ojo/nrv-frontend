@@ -67,8 +67,6 @@ const VerificationScreen = () => {
   const fetchVerifiedNin = async (values: Record<string, any>) => {
     try {
       const result: any = await dispatch(tenantRentalHistory(values) as any);
-      console.log({ result });
-
       if (result.error) {
         toast.error(
           result.payload || "Failed to fetch tenant history. Please try again."
@@ -202,7 +200,9 @@ const VerificationScreen = () => {
                   <div className="w-full">
                     <div className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap mb-4 flex gap-4">
                       <p>
-                        <FaArrowLeft color="red" size={15} className="cursor-pointer mt-1" />
+                        <FaArrowLeft color="red" size={15} className="cursor-pointer mt-1" onClick={() => {
+                          setView("form")
+                        }} />
                       </p>
                       <p> Tenant Screening Report</p>
                     </div>

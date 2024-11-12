@@ -15,13 +15,8 @@ const SignUpVerifyAccount: React.FC = () => {
   const { error } = useSelector((state: any) => state.user);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   if (error) {
-  //     toast.error(error);
-  //   }
-  // }, [error]);
 
-  const handleSubmit = async () => {
+  const   handleSubmit = async () => {
     const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
     const payload = {
       email: user?.data?.email,
@@ -45,7 +40,7 @@ const SignUpVerifyAccount: React.FC = () => {
         userAccountType === "landlord" &&
         _formattedUser.user.isOnboarded === false
       ) {
-        router.push("/onboard/landlord");
+        router.push("/dashboard/landlord");
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }

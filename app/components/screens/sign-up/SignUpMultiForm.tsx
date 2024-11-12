@@ -116,6 +116,7 @@ const SignUpMultiForm = () => {
               onClick={() => {
                 handleItemClick(0);
                 handleAccountType("landlord");
+                setCurrentStep(2)
               }}
             >
               <div className="flex items-center justify-center">
@@ -142,6 +143,7 @@ const SignUpMultiForm = () => {
               onClick={() => {
                 handleItemClick(1);
                 handleAccountType("tenant");
+                setCurrentStep(2)
               }}
             >
               <div className="flex items-center justify-center">
@@ -173,7 +175,7 @@ const SignUpMultiForm = () => {
               </Link>
             </div>
           </div>
-          <div className="flex justify-center max-w-lg mx-auto w-full">
+          {/* <div className="flex justify-center max-w-lg mx-auto w-full">
             <Button
               disabled={!accountType}
               size="large"
@@ -184,7 +186,7 @@ const SignUpMultiForm = () => {
             >
               Next
             </Button>
-          </div>
+          </div> */}
         </div>
       )}
       {currentStep === 2 && (
@@ -194,7 +196,7 @@ const SignUpMultiForm = () => {
               <span>
                 <IoIosArrowBack
                   className="mt-1 hover:cursor-pointer"
-                  onClick={() => router.push("/")}
+                  onClick={() => setCurrentStep(1)}
                 />
               </span>{" "}
               Sign up as a {accountType} 🚀

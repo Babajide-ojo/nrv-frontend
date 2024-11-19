@@ -7,10 +7,11 @@ import '../shared/CustomDatePicker.css'
 interface CustomDatePickerProps {
   label?: string;
   name: string;
-  cls?: any
+  cls?: any;
+  errorMessage?: string
 }
 
-const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls }) => {
+const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, errorMessage }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<'day' | 'month' | 'year'>('day');

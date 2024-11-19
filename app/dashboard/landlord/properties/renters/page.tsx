@@ -124,7 +124,7 @@ const MessageScreen = () => {
                     </div>
                   ))}
                 </div>
-                <div className="m-4 w-full md:w-2/5 mx-auto">
+                <div className="m-4 w-full mx-auto">
                   {currentState === 1 && <ApplicantScreen />}
                   {currentState === 2 && <LeadsScreen />}
                   {currentState === 3 && <TenantScreen />}

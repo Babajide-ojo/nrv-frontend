@@ -102,14 +102,15 @@ const ApplicantScreen = () => {
       {currentStep === 1 && (
         <div>
           {properties && properties.length > 0 ? (
-                <div className="m-4 w-full mx-auto ">
+                <div className="m-4 w-full md:w-2/5 mx-auto ">
               {properties?.map((item, index) => {
                 return (
                   <div key={index}>
                         <div
                           className="flex bg-white mt-4 mrounded rounded-2xl p-4 cursor-pointer hover:bg-gray-50"
                          onClick={() => {
-                          setCurrentStep(2)
+                          setApplication(item);
+                          setCurrentStep(2);
                          }}
                         >
                           <div className="w-1/5 flex justify-center items-center">
@@ -119,7 +120,7 @@ const ApplicantScreen = () => {
                             <div className="flex justify-between w-full">
                               <div className="text-nrvDarkGrey font-light text-sm w-1/2">
                                 {item?.applicant?.firstName}{" "}
-                                {item?.applicant?.lastName}
+                                {item?.applicant?.lastName} 
                               </div>
                               <div
                                     className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
@@ -230,14 +231,14 @@ const ApplicantScreen = () => {
                   </span>{" "}
                   {application?.applicant?.homeAddress}
                 </div>
-                <div className="mt-3 text-sm font-light">
+                {/* <div className="mt-3 text-sm font-light">
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Date Of Birth{" "}
                   </span>{" "}
                   January 1, 1990{" "}
-                </div>
+                </div> */}
               </div>
-              <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
+              {/* <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
                 <div className="mt-4 font-medium text-md text-nrvGreyBlack">
                   {" "}
                   Employment Information
@@ -260,8 +261,8 @@ const ApplicantScreen = () => {
                   </span>{" "}
                   {application?.monthlyIncome}{" "} Naira
                 </div>
-              </div>
-              <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
+              </div> */}
+              {/* <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
                 <div className="mt-4 font-medium text-md text-nrvGreyBlack">
                   {" "}
                   Rental History
@@ -284,7 +285,7 @@ const ApplicantScreen = () => {
                   </span>{" "}
                   {application?.reasonForLeaving}{" "}
                 </div>
-              </div>
+              </div> */}
               <div className="mb-4 pb-4 px-2 md:mr-20 mr-3">
                 <div className="mt-4 font-medium text-md text-nrvGreyBlack">
                   {" "}

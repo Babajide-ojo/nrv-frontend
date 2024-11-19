@@ -1,27 +1,37 @@
-"use client";
-import { dashboardMetrics } from "../../../helpers/data";
-import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
 import Button from "../shared/buttons/Button";
-import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { getCurrentTenantForProperty } from "../../../redux/slices/propertySlice";
-import { IoAddCircleOutline, IoEye, IoEyeOff } from "react-icons/io5";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { Form, Formik, FormikHelpers } from "formik";
+import Modal from "../shared/modals/Modal";
+import CustomDatePicker from "../shared/CustomDatePicker";
+import { createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import CenterModal from "../shared/modals/CenterModal";
 
 interface Data {
   data: any;
 }
 
+type AddTenantFunction = (
+  values: any,
+  formikHelpers: FormikHelpers<any>,
+  dispatch: ThunkDispatch<any, any, AnyAction>
+) => Promise<void>;
+
 const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
-  const router = useRouter();
   const { id } = useParams();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [tenantDetails, setTenantDetails] = useState<any>({});
   const [isVisible, setIsVisible] = useState(false);
-
+  const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
@@ -87,182 +97,345 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     }, and ${days} day${days !== 1 ? "s" : ""}`;
   };
 
+  const extendTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(extendTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const endTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(endTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to end tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to end tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant ended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenTenancyModal(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  const validate = (values: any) => {
+    const errors: { rentEndDate?: string } = {};
+    if (tenantDetails?.data?.rentEndDate) {
+      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
+      const newEndDate = new Date(values.rentEndDate);
+      if (newEndDate <= currentEndDate) {
+        errors.rentEndDate = "End date must be later than current rent end date.";
+      }
+    }
+    return errors;
+  };
+
   return (
     <div className="pb-4 md:pb-0">
-      {tenantDetails.data != null ? (
-        <div>
-          <div className="w-full rounded rounded-2xl p-4">
-            <div className="md:flex md:gap-8">
-              <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3">
-                <div className="mb-2 text-md text-nrvDarkBlue font-medium">
-                  Tenant Personal Information
+      <ToastContainer />
+      <div>
+        {tenantDetails.data != null ? (
+          <div>
+            <div className="w-full rounded rounded-2xl p-4">
+              <div className="md:flex md:gap-8">
+                <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3">
+                  <div className="mb-2 text-md text-nrvDarkBlue font-medium">
+                    Tenant Personal Information
+                  </div>
+                  <div className="mb-2">
+                    <p className="text-sm text-nrvGreyBlack">
+                      {tenantDetails?.data?.applicant?.firstName}{" "}
+                      {tenantDetails?.data?.applicant?.lastName}
+                    </p>
+                  </div>
+                  <div className="mb-2">
+                    <p className="text-sm text-nrvDarkBlue underline">
+                      {tenantDetails?.data?.applicant?.email}
+                    </p>
+                  </div>
+                  <div className="mb-2">
+                    <p className="text-sm text-nrvGreyBlack">
+                      {tenantDetails?.data?.applicant?.phoneNumber ||
+                        "No phone number provided yet"}
+                    </p>
+                  </div>
+                  <div className="mb-4">
+                    <h2 className="text-sm font-medium text-nrvDarkBlue">
+                      NIN
+                    </h2>
+                    <div className="flex items-center gap-3">
+                      <span className="text-md text-nrvGreyBlack">
+                        {isVisible
+                          ? tenantDetails?.data?.applicant?.nin
+                          : "****************"}
+                      </span>
+                      <button
+                        onClick={toggleVisibility}
+                        className="text-blue-500"
+                      >
+                        {isVisible ? (
+                          <IoEyeOff className="w-5 h-5 text-nrvDarkBlue" />
+                        ) : (
+                          <IoEye className="w-5 h-5 text-nrvDarkBlue" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="mb-2">
-                  <p className="text-sm text-nrvGreyBlack">
-                    {tenantDetails?.data?.applicant?.firstName}{" "}
-                    {tenantDetails?.data?.applicant?.lastName}
-                  </p>
+                <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3 relative">
+                  <div className="mb-8 text-md text-nrvDarkBlue font-medium">
+                    Rent Tenure
+                  </div>
+                  {tenantDetails?.data?.rentStartDate ? (
+                    <div>
+                      <div className="relative flex items-center justify-between">
+                        <div className="date-section text-center flex-grow">
+                          <p className="text-xs font-medium">Rent Start Date</p>
+                          <hr className="my-2 border-t-2 border-gray-300" />
+                          <p className="text-xs text-nrvGreyBlack">
+                            {formatDateToWords(
+                              tenantDetails?.data?.rentStartDate
+                            )}
+                          </p>
+                        </div>
+                        <div className="absolute inset-x-0 flex justify-center">
+                          <div className="arrow"></div>
+                        </div>
+                        <div className="date-section text-center flex-grow">
+                          <p className="text-xs font-medium">Rent End Date</p>
+                          <hr className="my-2 border-t-2 border-gray-300" />
+                          <p className="text-xs text-red-500">
+                            {formatDateToWords(
+                              tenantDetails?.data?.rentEndDate
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
+                        {calculateDateDifference(
+                          tenantDetails?.data?.rentStartDate,
+                          tenantDetails?.data?.rentEndDate
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="">
+                      <div className="text-red-600 text-sm underline text-center">
+                        Click here to set up the rent period for this tenant
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="mb-2">
-                  <p className="text-sm text-nrvDarkBlue underline">
-                    {tenantDetails?.data?.applicant?.email}
-                  </p>
-                </div>
-                <div className="mb-2">
-                  <p className="text-sm text-nrvGreyBlack">
-                    {tenantDetails?.data?.applicant?.phoneNumber ||
-                      "No phone number provided yet"}
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <h2 className="text-sm font-medium text-nrvDarkBlue">NIN</h2>
-                  <div className="flex items-center gap-3">
-                    <span className="text-md text-nrvGreyBlack">
-                      {isVisible
-                        ? tenantDetails?.data?.applicant?.nin
-                        : "****************"}
-                    </span>
-                    <button
-                      onClick={toggleVisibility}
-                      className="text-blue-500"
+
+                <div className="md:w-1/3 w-full bg-white shadow-lg rounded-lg p-6">
+                  <div className="flex flex-col gap-4">
+                    <div
+                      onClick={() => setOpenAddTenantModal(true)}
+                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
                     >
-                      {isVisible ? (
-                        <IoEyeOff className="w-5 h-5 text-nrvDarkBlue" />
-                      ) : (
-                        <IoEye className="w-5 h-5 text-nrvDarkBlue" />
-                      )}
-                    </button>
+                      <span className="text-xs font-medium text-nrvGreyBlack">
+                        Extend Rent Tenure
+                      </span>
+                      <span className="text-blue-500 hover:underline text-sm">
+                        click here
+                      </span>
+                    </div>
+                    <div
+                      onClick={() => setOpenTenancyModal(true)}
+                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
+                    >
+                      <span className="text-xs font-medium text-nrvGreyBlack">
+                        End Rent Tenure
+                      </span>
+                      <span className="text-blue-500 hover:underline text-sm ">
+                        click here
+                      </span>
+                    </div>
+
+                    <div
+                      onClick={() => alert("Upload Agreement Documents")}
+                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
+                    >
+                      <span className="text-xs font-medium text-nrvGreyBlack">
+                        Upload Agreement Documents
+                      </span>
+                      <span className="text-blue-500 text-sm  hover:underline">
+                        click here
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3 relative">
-                <div className="mb-8 text-md text-nrvDarkBlue font-medium">
-                  Rent Tenure
-                </div>
-                {tenantDetails?.data?.rentStartDate ? (
-                  <div>
-                    <div className="relative flex items-center justify-between">
-                      <div className="date-section text-center flex-grow">
-                        <p className="text-xs font-medium">Rent Start Date</p>
-                        <hr className="my-2 border-t-2 border-gray-300" />
-                        <p className="text-xs text-nrvGreyBlack">
-                          {formatDateToWords(
-                            tenantDetails?.data?.rentStartDate
-                          )}
-                        </p>
-                      </div>
-                      <div className="absolute inset-x-0 flex justify-center">
-                        <div className="arrow"></div>
-                      </div>
-                      <div className="date-section text-center flex-grow">
-                        <p className="text-xs font-medium">Rent End Date</p>
-                        <hr className="my-2 border-t-2 border-gray-300" />
-                        <p className="text-xs text-red-500">
-                          {formatDateToWords(tenantDetails?.data?.rentEndDate)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
-                      {calculateDateDifference(
-                        tenantDetails?.data?.rentStartDate,
-                        tenantDetails?.data?.rentEndDate
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="">
-                    <div className="text-red-600 text-sm underline text-center">
-          Click here to set up the rent period for this tenant
-                    </div>
-                 
-                  </div>
-                )}
-              </div>
-
-              <div className="md:w-1/3 w-full bg-white shadow-lg rounded-lg p-6">
-                <div className="flex flex-col gap-4">
-                  <div
-                    onClick={() => alert("Extend Rent Tenure")}
-                    className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                  >
-                    <span className="text-xs font-medium text-nrvGreyBlack">
-                      Extend Rent Tenure
-                    </span>
-                    <span className="text-blue-500 hover:underline text-sm">
-                      click here
-                    </span>
-                  </div>
-                  <div
-                    onClick={() => alert("End Rent Tenure")}
-                    className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                  >
-                    <span className="text-xs font-medium text-nrvGreyBlack">
-                      End Rent Tenure
-                    </span>
-                    <span className="text-blue-500 hover:underline text-sm ">
-                      click here
-                    </span>
-                  </div>
-
-                  <div
-                    onClick={() => alert("Upload Agreement Documents")}
-                    className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                  >
-                    <span className="text-xs font-medium text-nrvGreyBlack">
-                      Upload Agreement Documents
-                    </span>
-                    <span className="text-blue-500 text-sm  hover:underline">
-                      click here
-                    </span>
-                  </div>
-                </div>
-              </div>
-              {/* <div className="md:w-1/2 w-full">
-                <div className="">
-                  <h2 className="mb-2 text-nrvGreyBlack font-medium text-md">
-                    Current Employer
-                  </h2>
-                  <div className="text-sm text-nrvGreyBlack">
-                    {tenantDetails?.data?.currentEmployer},{" "}
-                    {tenantDetails?.data?.jobTitle}
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <h2 className="mb-2 text-nrvGreyBlack font-medium text-md">
-                    Employer's Address
-                  </h2>
-
-                  <p className="text-sm text-nrvGreyBlack font-light">
-                    {tenantDetails?.data?.currentAddress}
-                  </p>
-                </div>
-                <div className="mt-6">
-                  <h2 className="mb-2 text-nrvGreyBlack font-medium text-md">
-                    Monthly Income:
-                  </h2>
-                  <div className="text-sm text-nrvGreyBlack font-light">
-                    {tenantDetails?.data?.monthlyIncome} naira only
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <h2 className="mb-2 text-nrvGreyBlack font-medium text-md">
-                    Phone Number:
-                  </h2>
-                  <div className="text-sm text-nrvGreyBlack font-light">
-                    {tenantDetails?.data?.applicant?.phoneNumber}
-                  </div>
-                </div>
-              </div> */}
             </div>
           </div>
+        ) : (
+          <div className="flex justify-center">No Active Tenancy</div>
+        )}
+      </div>
+
+      <Modal
+        isOpen={openAddTenantModal}
+        onClose={() => {
+          setOpenAddTenantModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+            Extend Tenant Tenure
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will extend the tenancy tenure
+          </p>
+          <Formik
+            initialValues={{
+              id: tenantDetails?.data?._id,
+              rentEndDate: "",
+            }}
+            validate={validate}
+            onSubmit={(values, formikHelpers) =>
+              extendTenancy(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors }) => (
+              <Form>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div className="w-full md:flex flex-row gap-3">
+         
+                    <CustomDatePicker
+                      label="Rent End Date"
+                      name="rentEndDate"
+                      errorMessage={errors.rentEndDate}
+                    />
+                  </div>
+                </div>
+                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      resetForm();
+                      setOpenAddTenantModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
-      ) : (
-        <div className="flex justify-center">No Active Tenancy</div>
-      )}
+      </Modal>
+
+      <CenterModal
+        isOpen={openEndTenancyModal}
+        onClose={() => {
+          setOpenTenancyModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-red-500 font-semibold text-2xl">
+            End Tenancy Tenure
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will end the tenancy tenure
+          </p>
+          <Formik
+            initialValues={{
+              id: tenantDetails?.data?._id
+            }}
+            onSubmit={(values, formikHelpers) =>
+              endTenancy(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors }) => (
+              <Form>
+          
+                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      resetForm();
+                      setOpenTenancyModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </CenterModal>
     </div>
   );
 };
+
 export default CurrentTenantDashboard;

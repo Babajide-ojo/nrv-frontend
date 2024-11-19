@@ -233,6 +233,49 @@ export const resetPassword = createAsyncThunk<UserToken, resetPassword, {}>(
         }
     }
 );
+
+export const endTenancyTenure = createAsyncThunk<UserToken, FormData, {}>(
+    "tenancy/end",
+    async (formData: any, { rejectWithValue }) => {
+        const { id } = formData;
+        try {
+            const response: any = await axios.put(`${API_URL}/rooms/${id}/end-tenure`, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const extendTenancyTenure = createAsyncThunk<UserToken, FormData, {}>(
+    "tenancy/update",
+    async (formData: any, { rejectWithValue }) => {
+        const { id, rentEndDate } = formData;
+        try {
+            const response: any = await axios.put(`${API_URL}/rooms/${id}/extend-tenancy`, {rentEndDate}, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 // Create user slice
 const userSlice = createSlice({
     name: "user",

@@ -207,7 +207,7 @@ const TenantScreen = () => {
           {toggleTenantView === "onboarded_tenant" && (
             <div>
               {tenents && tenents.length > 0 ? (
-                <div className=" w-full  mx-auto ">
+                <div className=" w-full md:w-2/5 mx-auto ">
                   {tenents?.map((item: any, index) => {
                     return (
                       <div key={index}>

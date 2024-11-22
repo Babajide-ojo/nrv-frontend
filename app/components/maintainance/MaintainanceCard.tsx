@@ -24,15 +24,17 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
   type,
   id,
   propertyId,
-  name
+  name,
 }) => {
   const router = useRouter();
   return (
     <div className="md:w-4/5 w-full rounded-lg border border-nrvGreyMediumBg bg-white p-5 mb-8 h-50">
       <div className="flex gap-3 items-center">
         <div className="w-full flex gap-4 justify-between space-between">
-          <div className="flex justify-between space-around text-nrvLightGrey">
-            <div className="text-sm text-nrvDarkBlue">{name}</div>
+          <div className="flex justify-between space-around">
+            <div className="text-sm font-medium text-nrvDarkBlue">
+              {name} (Property ID - {propertyId})
+            </div>
           </div>
           <div>
             <Button
@@ -42,7 +44,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
                   : "bg-nrvDarkBlue text-white"
               }`}
               variant="ordinary"
-              size="small"
+              size="large"
               showIcon={false}
             >
               {status}
@@ -52,24 +54,18 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
       </div>
 
       <div>
-
-        <div className="mb-2 font-light text-sm truncate mt-4">
-          {title}
-        </div>
-        <div className="mb-2 font-light text-xs truncate mt-2">
+        <div className="mb-2 font-medium text-sm truncate mt-4">{title}</div>
+        <div className="mb-2 font-light text-sm truncate mt-2">
           {description}
         </div>
-     <div className="flex justify-between">
-     <div className="font-medium text-sm truncate text-nrvDarkBlue">
-          Property ID : {propertyId}
+        <div className="flex justify-between">
+          <div className="text-sm font-normal text-nrvLightGrey text-end">
+            {formatDate(dateLogged.slice(0, 10))}
+          </div>
         </div>
-        <div className="text-xs font-light text-nrvLightGrey text-end">
-          {formatDate(dateLogged.slice(0, 10))}
-        </div>
-     </div>
-        <div className="flex gap-4 w-full justify-center items-center mt-2">
+        <div className="flex gap-4 w-full justify-center items-center mt-4">
           <Button
-            size="small"
+            size="large"
             className="px-5"
             variant="whitebg"
             showIcon={false}

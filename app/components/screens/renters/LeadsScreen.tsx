@@ -8,6 +8,7 @@ import { getApplicationsByLandlordId, updateApplicationStatus } from "../../../.
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CenterModal from "../../shared/modals/CenterModal";
+import { FcHome } from "react-icons/fc";
 
 const LeadScreen = () => {
   const dispatch = useDispatch();
@@ -90,44 +91,50 @@ const LeadScreen = () => {
     <div>
       <ToastContainer />
       {currentStep === 1 && (
-        <div>
+        <div className="w-full md:w-2/5 mx-auto">
           {properties && properties.length > 0 ? (
             <div>
               {properties?.map((item, index) => {
-                return (
-                  <div key={index}>
-                    <div
-                      className="flex gap-4 w-full bg-white max-w-full mt-4 mx-auto rounded rounded-2xl p-2"
-                      onClick={() => {
-                        setApplication(item);
-                        setCurrentStep(2);
-                      }}
-                    >
-                      <div>
-                        <img
-                          src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1718917936/image_17_1_y9aa8e.png"
-                          alt="photos"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-nrvDarkBlue text-sm">
-                          {item?.applicant?.firstName}{" "}
-                          {item?.applicant?.lastName}
+                  return (
+                    <div key={index}>
+                      <div
+                        className="flex bg-white mt-4 mrounded rounded-2xl p-4"
+                    
+                      >
+                      <div className="w-1/5 flex justify-center items-center">
+                        <FcHome size={24} />
                         </div>
-                        <div className="text-nrvDarkBlue text-xs">
-                          {item?.applicant?.homeAddress}
-                        </div>
-                        <div className="text-nrvLightGrey text-[12px]">
-                          Applied 2 days ago
+                        <div className="w-4/5">
+                          <div className="flex justify-between w-full">
+                            <div className="text-nrvDarkGrey font-light text-sm w-1/2">
+                              {item?.applicant?.firstName}{" "}
+                              {item?.applicant?.lastName}
+                            </div>
+                            <div
+                                  className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
+                                  onClick={() =>
+                                    router.push(
+                                      `rooms/${item?.propertyId?._id}`
+                                    )
+                                  }
+                                >
+                                 Aparment ID : {item?.propertyId?.roomId}
+                                </div>
+                          </div>
+                          <div className="text-nrvDarkBlue text-sm mt-2">
+                            {item?.propertyId?.propertyId.streetAddress},{" "}
+                            {item?.propertyId?.propertyId.city} ,{" "}
+                            {item?.propertyId?.propertyId.state}
+                          </div>
+                       
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
+                  );
               })}
             </div>
           ) : (
-            <div className="max-w-full w-120 rounded rounded-2xl p-4 mt-8 text-center">
+            <div className="rounded rounded-2xl p-4 mt-8 text-center">
               <div className="text-md py-2">
                 {" "}
                 Your leads at your fingertips!

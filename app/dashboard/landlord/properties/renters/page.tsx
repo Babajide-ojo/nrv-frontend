@@ -105,13 +105,13 @@ const MessageScreen = () => {
                   {propertyDashboardLinks.map((item: any) => (
                     <div key={item.id}>
                       <Button
-                        size="small"
-                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-md mb-2 font-light text-md ${
+                        size="large"
+                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-md mb-2 font-medium text-md ${
                           currentState === item.id
                             ? "bg-nrvDarkBlue text-white"
                             : "bg-nrvGreyMediumBg"
                         }`}
-                        variant="ordinary"
+                        variant="lightGrey"
                         showIcon={false}
                         onClick={() => {
                           setCurrentState(item.id);

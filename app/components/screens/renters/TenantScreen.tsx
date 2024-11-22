@@ -185,13 +185,10 @@ const TenantScreen = () => {
   return (
     <div>
       <ToastContainer />
-
       <div className="">
-
-
-        <div className=" w-full max-w-full  flex justify-end items-end mt-2">
+        <div className="w-full md:w-2/5 mx-auto flex justify-end items-end mt-2">
           <Button
-            size="smaller"
+            size="large"
             className="font-medium text-nrvDarkBlue text-sm  border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white"
             variant="mediumGrey"
             showIcon={false}
@@ -207,7 +204,7 @@ const TenantScreen = () => {
           {toggleTenantView === "onboarded_tenant" && (
             <div>
               {tenents && tenents.length > 0 ? (
-                <div className=" w-full md:w-2/5 mx-auto ">
+                <div className="w-full md:w-2/5 mx-auto">
                   {tenents?.map((item: any, index) => {
                     return (
                       <div key={index}>
@@ -235,7 +232,7 @@ const TenantScreen = () => {
                                    Aparment ID : {item?.propertyId?.roomId}
                                   </div>
                             </div>
-                            <div className="text-nrvDarkBlue text-xs mt-2">
+                            <div className="text-nrvDarkBlue text-sm mt-2">
                               {item?.propertyId?.propertyId.streetAddress},{" "}
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}

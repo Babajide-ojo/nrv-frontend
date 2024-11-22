@@ -7,7 +7,7 @@ import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Form, Formik, FormikHelpers } from "formik";
 import Modal from "../shared/modals/Modal";
 import CustomDatePicker from "../shared/CustomDatePicker";
-import { createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
+import { assignDateTenancyTenure, createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
@@ -31,6 +31,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const [tenantDetails, setTenantDetails] = useState<any>({});
   const [isVisible, setIsVisible] = useState(false);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -115,6 +116,37 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       } else {
         toast.success("Tenant tenure extended successfully");
         resetForm();
+        fetchData();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const assignDateToTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+        fetchData();
       }
     } catch (error: any) {
       toast.error(
@@ -170,6 +202,31 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     }
     return errors;
   };
+
+  const validateTenancyDateAssignment = (values: any) => {
+    const errors: { rentEndDate?: string; rentStartDate?: string } = {};
+  
+    if (tenantDetails?.data?.rentEndDate) {
+      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
+      const newEndDate = new Date(values.rentEndDate);
+  
+      if (newEndDate <= currentEndDate) {
+        errors.rentEndDate = "End date must be later than the current rent end date.";
+      }
+    }
+  
+    const newStartDate = new Date(values.rentStartDate);
+    const newEndDate = new Date(values.rentEndDate);
+  
+    if (newStartDate && newEndDate && newStartDate >= newEndDate) {
+      errors.rentStartDate = "Start date must be earlier than the end date.";
+      errors.rentEndDate = "End date must be later than the start date.";
+    }
+  
+    return errors;
+  };
+  
+
 
   return (
     <div className="pb-4 md:pb-0">
@@ -260,7 +317,9 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="">
+                    <div className="" onClick={() => {
+                      setOpenAssignDateModal(true)
+                    }}>
                       <div className="text-red-600 text-sm underline text-center">
                         Click here to set up the rent period for this tenant
                       </div>
@@ -339,6 +398,83 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           >
             {({ isSubmitting, resetForm, values, errors }) => (
               <Form>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div className="w-full md:flex flex-row gap-3">
+         
+                    <CustomDatePicker
+                      label="Rent End Date"
+                      name="rentEndDate"
+                      errorMessage={errors.rentEndDate}
+                    />
+                  </div>
+                </div>
+                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      resetForm();
+                      setOpenAddTenantModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={openAssignDateModal}
+        onClose={() => {
+          setOpenAssignDateModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+           Assign Rent Start and End Date
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will assign a tenancy date frame to this tenant.
+          </p>
+          <Formik
+            initialValues={{
+              id: tenantDetails?.data?._id,
+              rentStartDate: "",
+              rentEndDate: "",
+            }}
+            validate={validateTenancyDateAssignment}
+            onSubmit={(values, formikHelpers) =>
+              assignDateToTenancy(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors }) => (
+              <Form>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div className="w-full md:flex flex-row gap-3">
+         
+                    <CustomDatePicker
+                      label="Rent Start Date"
+                      name="rentStartDate"
+                      errorMessage={errors.rentStartDate}
+                    />
+                  </div>
+                </div>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div className="w-full md:flex flex-row gap-3">
          

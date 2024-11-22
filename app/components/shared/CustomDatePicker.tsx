@@ -126,23 +126,41 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, e
         />
       {showCalendar && (
         <div className="calendar" aria-expanded={showCalendar}>
-          {currentView === 'day' && (
-            <>
-              <div className="calendar-header">
-                <button className="calendar-nav-button" onClick={() => setCurrentMonth(prev => (prev + 11) % 12)} aria-label="Previous Month">
-                  <FaChevronLeft />
-                </button>
-                <span className="calendar-month-year">{months[currentMonth]} {currentYear}</span>
-                <button className="calendar-nav-button" onClick={() => setCurrentMonth(prev => (prev + 1) % 12)} aria-label="Next Month">
-                  <FaChevronRight />
-                </button>
-              </div>
-              <div className="calendar-body">
-                {generateCalendarDays()}
-              </div>
-              <button className="calendar-back-button" onClick={() => setCurrentView('month')} aria-label="Back to Months">Back to Months</button>
-            </>
-          )}
+      {currentView === 'day' && (
+  <>
+    <div className="calendar-header">
+      <button
+        type="button"
+        className="calendar-nav-button"
+        onClick={() => setCurrentMonth(prev => (prev + 11) % 12)}
+        aria-label="Previous Month"
+      >
+        <FaChevronLeft />
+      </button>
+      <span className="calendar-month-year">{months[currentMonth]} {currentYear}</span>
+      <button
+        type="button"
+        className="calendar-nav-button"
+        onClick={() => setCurrentMonth(prev => (prev + 1) % 12)}
+        aria-label="Next Month"
+      >
+        <FaChevronRight />
+      </button>
+    </div>
+    <div className="calendar-body">
+      {generateCalendarDays()}
+    </div>
+    <button
+      type="button"
+      className="calendar-back-button"
+      onClick={() => setCurrentView('month')}
+      aria-label="Back to Months"
+    >
+      Back to Months
+    </button>
+  </>
+)}
+
           {currentView === 'month' && (
             <>
               <div className="calendar-header">

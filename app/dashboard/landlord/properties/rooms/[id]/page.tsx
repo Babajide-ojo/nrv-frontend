@@ -63,9 +63,11 @@ const SingleRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [singleRoom, setRoomDetails] = useState<any>({});
+
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2000);
@@ -77,9 +79,22 @@ const SingleRoom = () => {
 
     return () => clearTimeout(timer);
   };
+
   useEffect(() => {
+    // Fetch data on mount
     fetchData();
+
+    // Retrieve currentState from localStorage if it exists
+    const savedState = localStorage.getItem("currentRoomState");
+    if (savedState) {
+      setCurrentState(parseInt(savedState, 10));
+    }
   }, []);
+
+  const handleTabChange = (newState: number) => {
+    setCurrentState(newState);
+    localStorage.setItem("currentRoomState", newState.toString()); // Save current state
+  };
 
   const updateRoom = async () => {
     const payload = {
@@ -93,7 +108,7 @@ const SingleRoom = () => {
       ).unwrap();
       setRoomDetails(properties?.data);
     } catch (error) {
-      toast.error("An error occured while performing update");
+      toast.error("An error occurred while performing update");
     } finally {
       setIsLoading(false);
       setIsOpen(false);
@@ -166,17 +181,14 @@ const SingleRoom = () => {
                       }`}
                       variant="lightGrey"
                       showIcon={false}
-                      onClick={() => {
-                        setCurrentState(item.id);
-                      }}
+                      onClick={() => handleTabChange(item.id)}
                     >
-                      <div className="text-xs  md:text-md p-2">{item.name}</div>
+                      <div className="text-xs md:text-md p-2">{item.name}</div>
                     </Button>
                   </div>
                 ))}
               </div>
               <div className="px-4 py-12 md:px-12 md:py-6">
-    
                 {currentState === 3 && <PropertyMarketing data={singleRoom} />}
                 {currentState === 1 && (
                   <PropertyUnitDetails data={singleRoom} />

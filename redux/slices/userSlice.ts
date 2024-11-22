@@ -276,6 +276,27 @@ export const extendTenancyTenure = createAsyncThunk<UserToken, FormData, {}>(
     }
 );
 
+export const assignDateTenancyTenure = createAsyncThunk<UserToken, FormData, {}>(
+    "tenancy/assign-date",
+    async (formData: any, { rejectWithValue }) => {
+        const { id, rentEndDate, rentStartDate } = formData;
+        try {
+            const response: any = await axios.put(`${API_URL}/rooms/${id}/assign-tenancy-date`, {rentEndDate, rentStartDate}, {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
 // Create user slice
 const userSlice = createSlice({
     name: "user",

@@ -61,14 +61,17 @@ return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
   export const calculateDateDifference = (
     startDateString: string,
-    endDateString: string
+    endDateString: string,
+    isSubmitRequest?: boolean
   ) => {
-    const startDate = new Date(startDateString);
-    const endDate = new Date(endDateString);
+    const startDate: any = new Date(startDateString);
+    const endDate : any= new Date(endDateString);
 
-    if (endDate < startDate) {
-      throw new Error("End date must be after start date.");
-    }
+    // if(isSubmitRequest === true)
+
+    // if (endDate < startDate) {
+    //   alert("End date must be after start date.");
+    // }
 
     let years = endDate.getFullYear() - startDate.getFullYear();
     let months = endDate.getMonth() - startDate.getMonth();
@@ -88,3 +91,5 @@ return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       months !== 1 ? "s" : ""
     }, and ${days} day${days !== 1 ? "s" : ""}`;
   };
+
+  

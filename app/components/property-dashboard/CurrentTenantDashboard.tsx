@@ -2,16 +2,21 @@ import Button from "../shared/buttons/Button";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getCurrentTenantForProperty } from "../../../redux/slices/propertySlice";
+import { createUploadAgreement, getCurrentTenantForProperty } from "../../../redux/slices/propertySlice";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Form, Formik, FormikHelpers } from "formik";
 import Modal from "../shared/modals/Modal";
 import CustomDatePicker from "../shared/CustomDatePicker";
-import { assignDateTenancyTenure, createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
+import {
+  assignDateTenancyTenure,
+  endTenancyTenure,
+  extendTenancyTenure,
+} from "@/redux/slices/userSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import CenterModal from "../shared/modals/CenterModal";
+import FileUploader from "../shared/upload/FileUploader";
 
 interface Data {
   data: any;
@@ -32,7 +37,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
+  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
+    useState(false);
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
+  const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
@@ -158,6 +166,36 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     }
   };
 
+  const uploadTenantAgreement: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(createUploadAgreement(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to upload agreement documents. Please try again."
+          );
+        } else {
+          toast.error("Failed to upload agreement documents. Please try again.");
+        }
+      } else {
+        toast.success("Agreement document uploaded successfully");
+        resetForm();
+        fetchData();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
   const endTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
@@ -187,17 +225,28 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     }
   };
 
+  const handleFileChange = (files: File[]) => {
+    setUnsignedDocuments(files);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setUnsignedDocuments((prevFiles) =>
+      prevFiles.filter((_, i) => i !== index)
+    );
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
 
   const validate = (values: any) => {
     const errors: { rentEndDate?: string } = {};
-    if (tenantDetails?.data?.rentEndDate) {
-      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
+    if (tenantDetails?.data?.activeTenant?.rentEndDate) {
+      const currentEndDate = new Date(tenantDetails?.data?.activeTenant?.rentEndDate);
       const newEndDate = new Date(values.rentEndDate);
       if (newEndDate <= currentEndDate) {
-        errors.rentEndDate = "End date must be later than current rent end date.";
+        errors.rentEndDate =
+          "End date must be later than current rent end date.";
       }
     }
     return errors;
@@ -205,28 +254,27 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
 
   const validateTenancyDateAssignment = (values: any) => {
     const errors: { rentEndDate?: string; rentStartDate?: string } = {};
-  
-    if (tenantDetails?.data?.rentEndDate) {
-      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
+
+    if (tenantDetails?.data?.activeTenant?.rentEndDate) {
+      const currentEndDate = new Date(tenantDetails?.data?.activeTenant?.rentEndDate);
       const newEndDate = new Date(values.rentEndDate);
-  
+
       if (newEndDate <= currentEndDate) {
-        errors.rentEndDate = "End date must be later than the current rent end date.";
+        errors.rentEndDate =
+          "End date must be later than the current rent end date.";
       }
     }
-  
+
     const newStartDate = new Date(values.rentStartDate);
     const newEndDate = new Date(values.rentEndDate);
-  
+
     if (newStartDate && newEndDate && newStartDate >= newEndDate) {
       errors.rentStartDate = "Start date must be earlier than the end date.";
       errors.rentEndDate = "End date must be later than the start date.";
     }
-  
+
     return errors;
   };
-  
-
 
   return (
     <div className="pb-4 md:pb-0">
@@ -242,18 +290,18 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.applicant?.firstName}{" "}
-                      {tenantDetails?.data?.applicant?.lastName}
+                      {tenantDetails?.data?.activeTenant?.applicant?.firstName}{" "}
+                      {tenantDetails?.data?.activeTenant?.applicant?.lastName}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvDarkBlue underline">
-                      {tenantDetails?.data?.applicant?.email}
+                      {tenantDetails?.data?.activeTenant?.applicant?.email}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.applicant?.phoneNumber ||
+                      {tenantDetails?.data?.activeTenant?.applicant?.phoneNumber ||
                         "No phone number provided yet"}
                     </p>
                   </div>
@@ -264,7 +312,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <div className="flex items-center gap-3">
                       <span className="text-md text-nrvGreyBlack">
                         {isVisible
-                          ? tenantDetails?.data?.applicant?.nin
+                          ? tenantDetails?.data?.activeTenant?.applicant?.nin
                           : "****************"}
                       </span>
                       <button
@@ -284,7 +332,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   <div className="mb-8 text-md text-nrvDarkBlue font-medium">
                     Rent Tenure
                   </div>
-                  {tenantDetails?.data?.rentStartDate ? (
+                  {tenantDetails?.data?.activeTenant?.rentStartDate ? (
                     <div>
                       <div className="relative flex items-center justify-between">
                         <div className="date-section text-center flex-grow">
@@ -292,7 +340,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-nrvGreyBlack">
                             {formatDateToWords(
-                              tenantDetails?.data?.rentStartDate
+                              tenantDetails?.data?.activeTenant.rentStartDate
                             )}
                           </p>
                         </div>
@@ -304,22 +352,25 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-red-500">
                             {formatDateToWords(
-                              tenantDetails?.data?.rentEndDate
+                              tenantDetails?.data?.activeTenant?.rentEndDate
                             )}
                           </p>
                         </div>
                       </div>
                       <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
                         {calculateDateDifference(
-                          tenantDetails?.data?.rentStartDate,
-                          tenantDetails?.data?.rentEndDate
+                          tenantDetails?.data?.activeTenant?.rentStartDate,
+                          tenantDetails?.data?.activeTenant?.rentEndDate
                         )}
                       </div>
                     </div>
                   ) : (
-                    <div className="" onClick={() => {
-                      setOpenAssignDateModal(true)
-                    }}>
+                    <div
+                      className=""
+                      onClick={() => {
+                        setOpenAssignDateModal(true);
+                      }}
+                    >
                       <div className="text-red-600 text-sm underline text-center">
                         Click here to set up the rent period for this tenant
                       </div>
@@ -351,9 +402,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                         click here
                       </span>
                     </div>
-
-                    <div
-                      onClick={() => alert("Upload Agreement Documents")}
+                    {
+                      tenantDetails?.data?.activeTenant.agreementDocument === null ?
+                      <div
+                      onClick={() => setOpenUploadAgreementDocsModal(true)}
                       className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
                     >
                       <span className="text-xs font-medium text-nrvGreyBlack">
@@ -362,7 +414,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       <span className="text-blue-500 text-sm  hover:underline">
                         click here
                       </span>
-                    </div>
+                    </div>: "Agreement document uploaded"
+                    }
+
+        
                   </div>
                 </div>
               </div>
@@ -388,7 +443,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?._id,
+              id: tenantDetails?.data?.activeTenant._id,
               rentEndDate: "",
             }}
             validate={validate}
@@ -400,7 +455,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
               <Form>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div className="w-full md:flex flex-row gap-3">
-         
                     <CustomDatePicker
                       label="Rent End Date"
                       name="rentEndDate"
@@ -447,14 +501,15 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       >
         <div className="mx-auto md:p-16 p-8 w-full h-full">
           <h2 className="text-nrvDarkBlue font-semibold text-2xl">
-           Assign Rent Start and End Date
+            Assign Rent Start and End Date
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-            Performing this action will assign a tenancy date frame to this tenant.
+            Performing this action will assign a tenancy date frame to this
+            tenant.
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?._id,
+              id: tenantDetails?.data?.activeTenant._id,
               rentStartDate: "",
               rentEndDate: "",
             }}
@@ -467,7 +522,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
               <Form>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div className="w-full md:flex flex-row gap-3">
-         
                     <CustomDatePicker
                       label="Rent Start Date"
                       name="rentStartDate"
@@ -477,7 +531,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div className="w-full md:flex flex-row gap-3">
-         
                     <CustomDatePicker
                       label="Rent End Date"
                       name="rentEndDate"
@@ -516,6 +569,95 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         </div>
       </Modal>
 
+      <Modal
+        isOpen={openUploadAgreementDocsModal}
+        onClose={() => {
+          setOpenUploadAgreementDocsModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+            Upload Agreement Document
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will assign a tenancy date frame to this
+            tenant.
+          </p>
+          <Formik
+            initialValues={{
+              ownerId: tenantDetails?.data?.activeTenant.ownerId,
+              propertyId: tenantDetails?.data?.activeTenant.propertyId?._id,
+              applicant: tenantDetails?.data?.activeTenant.applicant?._id,
+              unsignedDocument:null,
+            }}
+            validate={(values) => {
+              const errors: any = validateTenancyDateAssignment(values);
+
+              if (!values.unsignedDocument ) {
+                errors.unsignedDocument =
+                  "Please upload at least one document.";
+              }
+
+              return errors;
+            }}
+            onSubmit={
+              (values, formikHelpers) => {
+                console.log({ values });
+                uploadTenantAgreement(values, formikHelpers, dispatch)
+              }
+
+
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors, setFieldValue }) => (
+              <Form>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <FileUploader
+                    file={values.unsignedDocument} // Single file
+                    onFileChange={(newFile) =>
+                      setFieldValue("unsignedDocument", newFile)
+                    } 
+                    label="Upload your document"
+                  />
+
+                  {errors.unsignedDocument && (
+                    <div className="text-red-500 text-sm mt-2">
+                      {errors.unsignedDocument}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      resetForm();
+                      setOpenUploadAgreementDocsModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
+
       <CenterModal
         isOpen={openEndTenancyModal}
         onClose={() => {
@@ -531,7 +673,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?._id
+              id: tenantDetails?.data?.activeTenant?._id,
             }}
             onSubmit={(values, formikHelpers) =>
               endTenancy(values, formikHelpers, dispatch)
@@ -539,7 +681,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           >
             {({ isSubmitting, resetForm, values, errors }) => (
               <Form>
-          
                 <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
                   <Button
                     type="button"

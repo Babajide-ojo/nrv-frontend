@@ -47,7 +47,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-light w-full h-10 outline-none box-border",
+    "font-normal w-full h-10 outline-none box-border text-nrvGrayText",
     css,
     {
       "border-red-500": error,
@@ -61,7 +61,7 @@ const InputField: React.FC<InputFieldProps> = ({
       {label && (
         <label
           htmlFor={name}
-          className={classNames("text-nrvGreyBlack font-400 mb-2 text-xs", {
+          className={classNames("text-nrvGreyBlack font-medium mb-2 text-sm", {
             "cursor-not-allowed": disabled,
           })}
         >
@@ -85,7 +85,7 @@ const InputField: React.FC<InputFieldProps> = ({
           aria-invalid={!!error}
           aria-describedby={error ? `${name}-error` : undefined}
           onBlur={onBlur}
-          style={{ width: '100%', transform: 'scale(0.85)',  transformOrigin: ' left' }} // Set width and font size
+          style={{ width: '100%', transform: 'scale(0.85)',  transformOrigin: ' left', fontWeight:600 }} // Set width and font size
         />
         {password && (
           <div className="absolute right-2 cursor-pointer" onClick={togglePasswordVisibility}>

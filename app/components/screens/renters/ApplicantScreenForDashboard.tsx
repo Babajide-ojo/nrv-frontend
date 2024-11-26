@@ -58,8 +58,6 @@ const ApplicantScreenForDashboard = () => {
   return (
     <div>
       <ToastContainer />
-
-      {/* Display dummy divs while loading */}
       {isLoading ? (
         <div className="w-full mx-auto">
           {[...Array(2)].map((_, index) => (

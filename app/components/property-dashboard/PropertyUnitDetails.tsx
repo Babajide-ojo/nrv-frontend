@@ -22,19 +22,19 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
              Name
           </h2>
-          <div className="text-xs text-nrvGreyBlack">{data.name}</div>
+          <div className="text-sm text-nrvGreyBlack">{data.name}</div>
         </div>
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
             Description
           </h2>
-          <div className="text-xs leading-5 text-nrvGreyBlack font-light">{data.description}</div>
+          <div className="text-[14px] leading-8 text-nrvGreyBlack font-light">{data.description}</div>
         </div>
         <div className="mt-6">
-        <h2 className="text-xs font-medium text-nrvGreyBlack">Property Specifics</h2>
+        <h2 className="text-sm font-medium text-nrvGreyBlack">Property Specifics</h2>
         <div className="flex gap-5 mt-4">
           <Button
             size="smaller"
@@ -65,10 +65,10 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
     </div>
     <div className="flex gap-8">
     <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
             Rent Amount
           </h2>
-          <div className="text-xs text-nrvGreyBlack">₦ {formatNumber(data.rentAmount) }/{data.rentAmountMetrics}</div>
+          <div className="text-sm text-nrvGreyBlack">₦ {formatNumber(data.rentAmount) }/{data.rentAmountMetrics}</div>
         </div>
         {/* <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
@@ -77,10 +77,10 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           <div className="text-xs text-nrvGreyBlack">₦ { formatNumber(data.targetDeposit)}/{data.rentAmountMetrics}</div>
         </div> */}
         <div className="mt-6">
-          <h2 className="mb-2 text-nrvGreyBlack font-medium text-xs">
+          <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
         Other Amenities
           </h2>
-          <div className="text-xs text-nrvGreyBlack">{data.otherAmentities}</div>
+          <div className="text-sm text-nrvGreyBlack">{data.otherAmentities}</div>
         </div>
     </div>
 

@@ -142,9 +142,9 @@ const VerificationScreen = () => {
                             className="w-full"
                             variant="lightGrey"
                             showIcon={false}
-                            disabled={isSubmitting || !isValid || !dirty}
+                            disabled={isSubmitting || true || false}
                           >
-                            {isSubmitting ? "Loading..." : "Submit"}
+                          Submit
                           </Button>
                         </Form>
                       )}

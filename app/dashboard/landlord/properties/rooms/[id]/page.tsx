@@ -148,7 +148,7 @@ const SingleRoom = () => {
                       className="text-nrvDarkBlue font-medium border border-nrvDarkBlue mt-2 rounded-md"
                       variant="primary"
                       showIcon={false}
-                      disabled={singleRoom.listRoom === false ? false : true}
+                    //  disabled={singleRoom.listRoom === false ? false : true}
                       onClick={() => {
                         setIsOpen(true);
                       }}

@@ -428,7 +428,6 @@ export const createExpense = createAsyncThunk< FormData, {}>(
     "expense/create",
     async (formData: any, { rejectWithValue }) => {
         try {
-            console.log({formData});
             const response = await axios.post(`${API_URL}/expenses/create`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -452,6 +451,26 @@ export const tenantRentalHistory = createAsyncThunk<any, {}>(
      
         try {
             const response: any = await axios.get(`${API_URL}/properties/tenant-history?nin=${formData.nin}&userId=${formData.userId}`);
+            return response.data;
+        } catch (error: any) {
+            if (error.response.data.message) {
+                return rejectWithValue(error.response.data.message);
+            } else {
+                return rejectWithValue("An error occurred, please try again later");
+            }
+        }
+    }
+);
+
+export const createUploadAgreement = createAsyncThunk< FormData, {}>(
+    "upload/agreement",
+    async (formData: any, { rejectWithValue }) => {
+        try {
+            const response = await axios.post(`${API_URL}/properties/upload-agreement-document`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -694,6 +713,5 @@ const propertySlice = createSlice({
     },
 });
 
-// Export actions and reducer
 export const { clearPropertyData } = propertySlice.actions;
 export default propertySlice.reducer;

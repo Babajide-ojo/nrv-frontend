@@ -59,7 +59,6 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
             className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
             variant="mediumGrey"
             showIcon={false}
-            disabled={data.listRoom === false ? false : true}
             onClick={() => {
               setIsOpen(true);
             }}

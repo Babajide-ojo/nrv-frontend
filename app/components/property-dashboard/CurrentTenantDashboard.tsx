@@ -17,6 +17,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import CenterModal from "../shared/modals/CenterModal";
 import FileUploader from "../shared/upload/FileUploader";
+import Viewer from "react-viewer";
+import { getFileExtension } from "@/helpers/utils";
+
 
 interface Data {
   data: any;
@@ -32,18 +35,19 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
+  const [viewDocs, setViewDocs] = useState<boolean>(false);
   const [user, setUser] = useState<any>({});
+  const [fileUrl, setFileUrl] = useState<string>("");
   const [tenantDetails, setTenantDetails] = useState<any>({});
+  const [viewerVisible, setViewerVisible] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
+  const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
-  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
-    useState(false);
+  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] = useState(false);
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
+  const toggleVisibility = () => {setIsVisible(!isVisible)};
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -79,10 +83,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
 
-    // Ensure the end date is after the start date
-    if (endDate < startDate) {
-      throw new Error("End date must be after start date.");
-    }
+    // // Ensure the end date is after the start date
+    // if (endDate < startDate) {
+    //   throw new Error("End date must be after start date.");
+    // }
 
     // Calculate difference
     let years = endDate.getFullYear() - startDate.getFullYear();
@@ -196,6 +200,30 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
     }
   };
 
+  const viewDocument = (item: string) => {
+    const fileType = getFileExtension(item);
+    if (
+      fileType === "jpg" ||
+      fileType === "jpeg" ||
+      fileType === "png" ||
+      fileType === "gif"
+    ) {
+      setPdf("image");
+    } else if (fileType === "pdf") {
+      setPdf("pdf");
+    }
+    setFileUrl(item);
+    setViewDocs(true);
+    setViewerVisible(true); // Ensure viewer is visible when a document is viewed
+  };
+
+  const closeViewer = () => {
+    setViewerVisible(false);
+    setViewDocs(false);
+    setFileUrl(""); // Reset fileUrl
+    setPdf(""); // Reset pdf state
+  };
+
   const endTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
@@ -240,9 +268,11 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   }, []);
 
   const validate = (values: any) => {
+    console.log({values});
+    
     const errors: { rentEndDate?: string } = {};
-    if (tenantDetails?.data?.activeTenant?.rentEndDate) {
-      const currentEndDate = new Date(tenantDetails?.data?.activeTenant?.rentEndDate);
+    if (tenantDetails?.data?.rentEndDate) {
+      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
       const newEndDate = new Date(values.rentEndDate);
       if (newEndDate <= currentEndDate) {
         errors.rentEndDate =
@@ -290,18 +320,18 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.activeTenant?.applicant?.firstName}{" "}
-                      {tenantDetails?.data?.activeTenant?.applicant?.lastName}
+                      {tenantDetails?.data?.applicant?.firstName}{" "}
+                      {tenantDetails?.data?.applicant?.lastName}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvDarkBlue underline">
-                      {tenantDetails?.data?.activeTenant?.applicant?.email}
+                      {tenantDetails?.data?.applicant?.email}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.activeTenant?.applicant?.phoneNumber ||
+                      {tenantDetails?.data?.applicant?.phoneNumber ||
                         "No phone number provided yet"}
                     </p>
                   </div>
@@ -312,7 +342,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <div className="flex items-center gap-3">
                       <span className="text-md text-nrvGreyBlack">
                         {isVisible
-                          ? tenantDetails?.data?.activeTenant?.applicant?.nin
+                          ? tenantDetails?.data?.applicant?.nin
                           : "****************"}
                       </span>
                       <button
@@ -332,7 +362,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   <div className="mb-8 text-md text-nrvDarkBlue font-medium">
                     Rent Tenure
                   </div>
-                  {tenantDetails?.data?.activeTenant?.rentStartDate ? (
+                  {tenantDetails?.data?.rentStartDate ? (
                     <div>
                       <div className="relative flex items-center justify-between">
                         <div className="date-section text-center flex-grow">
@@ -340,7 +370,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-nrvGreyBlack">
                             {formatDateToWords(
-                              tenantDetails?.data?.activeTenant.rentStartDate
+                              tenantDetails?.data?.rentStartDate
                             )}
                           </p>
                         </div>
@@ -352,15 +382,15 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-red-500">
                             {formatDateToWords(
-                              tenantDetails?.data?.activeTenant?.rentEndDate
+                              tenantDetails?.data?.rentEndDate
                             )}
                           </p>
                         </div>
                       </div>
                       <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
                         {calculateDateDifference(
-                          tenantDetails?.data?.activeTenant?.rentStartDate,
-                          tenantDetails?.data?.activeTenant?.rentEndDate
+                          tenantDetails?.data?.rentStartDate,
+                          tenantDetails?.data?.rentEndDate
                         )}
                       </div>
                     </div>
@@ -403,7 +433,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       </span>
                     </div>
                     {
-                      tenantDetails?.data?.activeTenant.agreementDocument === null ?
+                      tenantDetails?.data?.agreementDocument === null ?
                       <div
                       onClick={() => setOpenUploadAgreementDocsModal(true)}
                       className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
@@ -414,7 +444,16 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       <span className="text-blue-500 text-sm  hover:underline">
                         click here
                       </span>
-                    </div>: "Agreement document uploaded"
+                    </div>:  <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                        <div
+                          className="underline text-xs cursor-pointer"
+                          onClick={() => viewDocument(tenantDetails?.data?.agreementDocument?.unsignedDocument)}
+                        >
+                          {" "}
+                       View Unsigned Agreement
+                        </div>{" "}
+                
+                      </div>
                     }
 
         
@@ -443,7 +482,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?.activeTenant._id,
+              id: tenantDetails?.data?._id,
               rentEndDate: "",
             }}
             validate={validate}
@@ -509,7 +548,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?.activeTenant._id,
+              id: tenantDetails?.data?._id,
               rentStartDate: "",
               rentEndDate: "",
             }}
@@ -585,12 +624,14 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              ownerId: tenantDetails?.data?.activeTenant.ownerId,
-              propertyId: tenantDetails?.data?.activeTenant.propertyId?._id,
-              applicant: tenantDetails?.data?.activeTenant.applicant?._id,
+              ownerId: tenantDetails?.data?.ownerId,
+              propertyId: tenantDetails?.data?.propertyId?._id,
+              applicant: tenantDetails?.data?.applicant?._id,
               unsignedDocument:null,
             }}
             validate={(values) => {
+              console.log({values});
+              
               const errors: any = validateTenancyDateAssignment(values);
 
               if (!values.unsignedDocument ) {
@@ -711,6 +752,43 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </Formik>
         </div>
       </CenterModal>
+
+      {viewDocs === true ? (
+        <div>
+          {pdf === "image" && (
+            <>
+              <Viewer
+                visible={viewerVisible}
+                onClose={closeViewer}
+                images={[{ src: fileUrl, alt: "Image" }]}
+              />
+            </>
+          )}
+          {pdf === "pdf" && (
+            <div
+              id="overlay"
+              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+            >
+              <div className="overflow-y-scroll bg-white p-4 relative">
+                <button
+                  onClick={closeViewer}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-4 py-2"
+                >
+                  X
+                </button>
+                <div>
+                  <iframe
+                    src={fileUrl}
+                    height="600"
+                    width="600"
+                    title="PDF Viewer"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };

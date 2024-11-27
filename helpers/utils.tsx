@@ -92,4 +92,18 @@ return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }, and ${days} day${days !== 1 ? "s" : ""}`;
   };
 
+
+  export  const getFileExtension = (filename: string) => {
+    if (filename) {
+      const parts = filename.split(".");
+      if (parts.length > 1) {
+        return parts.pop()?.toLowerCase() || null;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  };
+
   

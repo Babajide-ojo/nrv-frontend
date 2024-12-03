@@ -19,6 +19,8 @@ import { IoIosSend } from "react-icons/io";
 import { RiGitPullRequestFill } from "react-icons/ri";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 import Button from "@/app/components/shared/buttons/Button";
+import AgreementDocumentScreen from "@/app/components/dashboard/tenant/AgreementDocumentScreen";
+import Modal from "@/app/components/shared/modals/Modal";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +28,7 @@ const RentedPropertiesScreen = () => {
   const [isPageLoading, setIsPageLoading] = useState(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isLandLordOpen, setIsLandLordOpen] = useState<boolean>(false);
+  const [isUploadSignedDocsOpen, setIsUploadSignedDocsOpen] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -112,15 +115,13 @@ const RentedPropertiesScreen = () => {
                     <div
                       className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
                       onClick={() => {
-                        router.push(
-                          `/dashboard/tenant/rented-properties/documents/${property.property._id}`
-                        );
+                        setIsUploadSignedDocsOpen(true);
                       }}
                     >
                       <IoIosSend color="#153969" size={40} />
 
                       <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Email your landlord
+                       Agreement Documents
                       </p>
                     </div>
                   </div>
@@ -307,6 +308,30 @@ const RentedPropertiesScreen = () => {
                 </div>
               </div>
             </CenterModal>
+            <Modal
+              isOpen={isUploadSignedDocsOpen}
+              onClose={() => {
+                setIsUploadSignedDocsOpen(false);
+              }}
+            >
+              <div className="mx-auto text-center p-4">
+             
+           <AgreementDocumentScreen data={property} />
+                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="text-nrvDarkBlue  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      setIsUploadSignedDocsOpen(false);
+                    }}
+                  >
+                    <div className="flex gap-3">Close</div>
+                  </Button>
+                </div>
+              </div>
+            </Modal>
           </TenantLayout>
         </ProtectedRoute>
       )}

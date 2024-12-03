@@ -2,7 +2,10 @@ import Button from "../shared/buttons/Button";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { createUploadAgreement, getCurrentTenantForProperty } from "../../../redux/slices/propertySlice";
+import {
+  createUploadAgreement,
+  getCurrentTenantForProperty,
+} from "../../../redux/slices/propertySlice";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Form, Formik, FormikHelpers } from "formik";
 import Modal from "../shared/modals/Modal";
@@ -19,7 +22,6 @@ import CenterModal from "../shared/modals/CenterModal";
 import FileUploader from "../shared/upload/FileUploader";
 import Viewer from "react-viewer";
 import { getFileExtension } from "@/helpers/utils";
-
 
 interface Data {
   data: any;
@@ -44,10 +46,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
-  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] = useState(false);
+  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
+    useState(false);
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
-  const toggleVisibility = () => {setIsVisible(!isVisible)};
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -180,10 +185,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       if (result.error) {
         if (result.error.message === "Rejected") {
           toast.error(
-            result.payload || "Failed to upload agreement documents. Please try again."
+            result.payload ||
+              "Failed to upload agreement documents. Please try again."
           );
         } else {
-          toast.error("Failed to upload agreement documents. Please try again.");
+          toast.error(
+            "Failed to upload agreement documents. Please try again."
+          );
         }
       } else {
         toast.success("Agreement document uploaded successfully");
@@ -268,11 +276,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   }, []);
 
   const validate = (values: any) => {
-    console.log({values});
-    
+    console.log({ values });
+
     const errors: { rentEndDate?: string } = {};
-    if (tenantDetails?.data?.rentEndDate) {
-      const currentEndDate = new Date(tenantDetails?.data?.rentEndDate);
+    if (tenantDetails?.data?.finalResult?.rentEndDate) {
+      const currentEndDate = new Date(
+        tenantDetails?.data?.finalResult?.rentEndDate
+      );
       const newEndDate = new Date(values.rentEndDate);
       if (newEndDate <= currentEndDate) {
         errors.rentEndDate =
@@ -285,8 +295,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const validateTenancyDateAssignment = (values: any) => {
     const errors: { rentEndDate?: string; rentStartDate?: string } = {};
 
-    if (tenantDetails?.data?.activeTenant?.rentEndDate) {
-      const currentEndDate = new Date(tenantDetails?.data?.activeTenant?.rentEndDate);
+    if (tenantDetails?.data?.finalResult?.rentEndDate) {
+      const currentEndDate = new Date(
+        tenantDetails?.data?.finalResult?.rentEndDate
+      );
       const newEndDate = new Date(values.rentEndDate);
 
       if (newEndDate <= currentEndDate) {
@@ -320,19 +332,19 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.applicant?.firstName}{" "}
-                      {tenantDetails?.data?.applicant?.lastName}
+                      {tenantDetails?.data?.finalResult?.applicant?.firstName}{" "}
+                      {tenantDetails?.data?.finalResult?.applicant?.lastName}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvDarkBlue underline">
-                      {tenantDetails?.data?.applicant?.email}
+                      {tenantDetails?.data?.finalResult?.applicant?.email}
                     </p>
                   </div>
                   <div className="mb-2">
                     <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.applicant?.phoneNumber ||
-                        "No phone number provided yet"}
+                      {tenantDetails?.data?.finalResult?.applicant
+                        ?.phoneNumber || "No phone number provided yet"}
                     </p>
                   </div>
                   <div className="mb-4">
@@ -342,7 +354,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <div className="flex items-center gap-3">
                       <span className="text-md text-nrvGreyBlack">
                         {isVisible
-                          ? tenantDetails?.data?.applicant?.nin
+                          ? tenantDetails?.data?.finalResult?.applicant?.nin
                           : "****************"}
                       </span>
                       <button
@@ -362,7 +374,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                   <div className="mb-8 text-md text-nrvDarkBlue font-medium">
                     Rent Tenure
                   </div>
-                  {tenantDetails?.data?.rentStartDate ? (
+                  {tenantDetails?.data?.finalResult?.rentStartDate ? (
                     <div>
                       <div className="relative flex items-center justify-between">
                         <div className="date-section text-center flex-grow">
@@ -370,7 +382,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-nrvGreyBlack">
                             {formatDateToWords(
-                              tenantDetails?.data?.rentStartDate
+                              tenantDetails?.data?.finalResult?.rentStartDate
                             )}
                           </p>
                         </div>
@@ -382,15 +394,15 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           <hr className="my-2 border-t-2 border-gray-300" />
                           <p className="text-xs text-red-500">
                             {formatDateToWords(
-                              tenantDetails?.data?.rentEndDate
+                              tenantDetails?.data?.finalResult?.rentEndDate
                             )}
                           </p>
                         </div>
                       </div>
                       <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
                         {calculateDateDifference(
-                          tenantDetails?.data?.rentStartDate,
-                          tenantDetails?.data?.rentEndDate
+                          tenantDetails?.data?.finalResult?.rentStartDate,
+                          tenantDetails?.data?.finalResult?.rentEndDate
                         )}
                       </div>
                     </div>
@@ -432,31 +444,34 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                         click here
                       </span>
                     </div>
-                    {
-                      tenantDetails?.data?.agreementDocument === null ?
+                    {tenantDetails?.data?.agreementDocument === null ? (
                       <div
-                      onClick={() => setOpenUploadAgreementDocsModal(true)}
-                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                    >
-                      <span className="text-xs font-medium text-nrvGreyBlack">
-                        Upload Agreement Documents
-                      </span>
-                      <span className="text-blue-500 text-sm  hover:underline">
-                        click here
-                      </span>
-                    </div>:  <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                        onClick={() => setOpenUploadAgreementDocsModal(true)}
+                        className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
+                      >
+                        <span className="text-xs font-medium text-nrvGreyBlack">
+                          Upload Agreement Documents
+                        </span>
+                        <span className="text-blue-500 text-sm  hover:underline">
+                          click here
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
-                          onClick={() => viewDocument(tenantDetails?.data?.agreementDocument?.unsignedDocument)}
+                          onClick={() =>
+                            viewDocument(
+                              tenantDetails?.data?.agreementDocument
+                                ?.unsignedDocument
+                            )
+                          }
                         >
                           {" "}
-                       View Unsigned Agreement
-                        </div>{" "}
-                
+                          View Unsigned Agreement
+                        </div>
                       </div>
-                    }
-
-        
+                    )}
                   </div>
                 </div>
               </div>
@@ -482,7 +497,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?._id,
+              id: tenantDetails?.data?.finalResult?._id,
               rentEndDate: "",
             }}
             validate={validate}
@@ -548,7 +563,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?._id,
+              id: tenantDetails?.data?.finalResult?._id,
               rentStartDate: "",
               rentEndDate: "",
             }}
@@ -624,31 +639,27 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              ownerId: tenantDetails?.data?.ownerId,
-              propertyId: tenantDetails?.data?.propertyId?._id,
-              applicant: tenantDetails?.data?.applicant?._id,
-              unsignedDocument:null,
+              ownerId: tenantDetails?.data?.finalResult?.ownerId,
+              propertyId: tenantDetails?.data?.finalResult?.propertyId?._id,
+              applicant: tenantDetails?.data?.finalResult?.applicant?._id,
+              unsignedDocument: null,
             }}
             validate={(values) => {
-              console.log({values});
-              
+              console.log({ values: tenantDetails?.data });
+
               const errors: any = validateTenancyDateAssignment(values);
 
-              if (!values.unsignedDocument ) {
+              if (!values.unsignedDocument) {
                 errors.unsignedDocument =
                   "Please upload at least one document.";
               }
 
               return errors;
             }}
-            onSubmit={
-              (values, formikHelpers) => {
-                console.log({ values });
-                uploadTenantAgreement(values, formikHelpers, dispatch)
-              }
-
-
-            }
+            onSubmit={(values, formikHelpers) => {
+              console.log({ values });
+              uploadTenantAgreement(values, formikHelpers, dispatch);
+            }}
           >
             {({ isSubmitting, resetForm, values, errors, setFieldValue }) => (
               <Form>
@@ -657,7 +668,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     file={values.unsignedDocument} // Single file
                     onFileChange={(newFile) =>
                       setFieldValue("unsignedDocument", newFile)
-                    } 
+                    }
                     label="Upload your document"
                   />
 
@@ -714,7 +725,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </p>
           <Formik
             initialValues={{
-              id: tenantDetails?.data?.activeTenant?._id,
+              id: tenantDetails?.data?.finalResult?._id,
             }}
             onSubmit={(values, formikHelpers) =>
               endTenancy(values, formikHelpers, dispatch)

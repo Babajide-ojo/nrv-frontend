@@ -95,7 +95,7 @@ const ApplicantScreenForDashboard = () => {
                             <div
                               className="cursor-pointer text-xs text-nrvGrayText underline text-end w-1/2"
                               onClick={() =>
-                                router.push(`rooms/${item?.propertyId?._id}`)
+                                router.push(`landlord/properties/rooms/${item?.propertyId?._id}`)
                               }
                             >
                               Apartment ID: {item?.propertyId?.roomId}

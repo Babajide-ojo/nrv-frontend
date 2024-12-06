@@ -78,7 +78,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         <div className="flex items-center justify-center">
-          {disabled ? (
+          {isLoading ? (
             <FaSpinner className="animate-spin m-2" /> // Spinner icon with animation
           ) : (
             <span>{children}</span>

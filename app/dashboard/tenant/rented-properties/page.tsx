@@ -150,7 +150,7 @@ const RentedPropertiesScreen = () => {
                     variant="lightGrey"
                     showIcon={false}
                     onClick={handlePrevPage}
-                    disabled={page === 1}
+                   // disabled={page === 1}
                   >
                     Previous
                   </Button>

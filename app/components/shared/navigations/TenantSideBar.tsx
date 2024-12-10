@@ -40,7 +40,10 @@ const links = [
     name: "Maintenance",
     route: "/dashboard/tenant/properties/maintenance",
   },
-
+  {
+    name: "Messages",
+    route: "/dashboard/tenant/messages",
+  },
   {
     name: "Settings",
     route: "/dashboard/tenant/settings",

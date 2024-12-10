@@ -71,6 +71,10 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
                 <IoSettings size={24} color="white" />
                 <span className="text-xs text-white">Settings</span>
               </button>
+              <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/tenant/messages")}>
+                <FaMessage size={24} color="white" />
+                <span className="text-xs text-white">Messages</span>
+              </button>
             </>
           )}
         </div>

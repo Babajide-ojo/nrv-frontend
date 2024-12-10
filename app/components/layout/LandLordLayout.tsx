@@ -59,6 +59,10 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
             <IoPeopleCircleOutline size={24} color="white" />
             <span className="text-[11px] text-white">Renters</span>
           </button>
+          <button className="py-3 w-full flex flex-col items-center" onClick={() => router.push("/dashboard/landlord/properties/renters")}>
+            <IoPeopleCircleOutline size={24} color="white" />
+            <span className="text-[11px] text-white">Messages</span>
+          </button>
           <button className="py-3 w-full flex flex-col items-center" onClick={handleToggle}>
             <IoMdMore size={24} color="white" />
             <span className="text-[11px] text-white">More</span>

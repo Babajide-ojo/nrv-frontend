@@ -31,6 +31,7 @@ const links = [
   { name: "Maintenance", route: "/dashboard/landlord/properties/maintenance" },
   { name: "Verification", route: "/dashboard/landlord/properties/verification" },
   { name: "Settings", route: "/dashboard/landlord/settings" },
+  { name: "Messages", route: "/dashboard/landlord/messages" },
 ];
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {

@@ -8,6 +8,9 @@ import { getConversation, sendMessage } from "@/redux/slices/messageSlice";
 import { useParams } from "next/navigation";
 import { FaPlusCircle, FaTimesCircle } from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
+import { MessageBox } from "react-chat-elements";
+import "react-chat-elements/dist/main.css"
+import { AiOutlineCheck } from "react-icons/ai"; // Install react-icons if not already installed
 
 const RandomColorCircle = ({ firstName, lastName }: any) => {
   const getRandomColor = () => {
@@ -52,6 +55,21 @@ const RentersListScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+   // Define types for message and user
+   interface Message {
+    _id: string;
+    content: string;
+    createdAt: string;
+    sender: { _id: string };
+    files?: string[]; // Array of file URLs
+  }
+  
+  interface User {
+    user?: {
+      _id: string;
+    };
+  }
+
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
@@ -92,7 +110,7 @@ const RentersListScreen = () => {
 
     try {
       // Assuming you have a sendMessage action to handle the form submission
-       await dispatch(sendMessage(formData) as any);
+      await dispatch(sendMessage(formData) as any);
       setMessageContent(""); // Clear input field after sending
       setFiles([]); // Clear files after sending
       fetchData(); // Refresh conversation list
@@ -101,38 +119,143 @@ const RentersListScreen = () => {
     }
   };
 
-  const renderMessage = (message: any) => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    const isSender: any = message.sender._id === user?.user?._id;
 
+ 
+  
+
+  const renderMessage = (messages: Message[]) => {
+    // Get the user object from localStorage
+    const user: User | null = JSON.parse(
+      localStorage.getItem("nrv-user") as string
+    );
+  
+    // Helper to check if the date has changed
+    const isNewDay = (current: string, previous: string | null): boolean => {
+      if (!previous) return true;
+      const currentDate = new Date(current).toDateString();
+      const previousDate = new Date(previous).toDateString();
+      return currentDate !== previousDate;
+    };
+  
+    let lastDate: string | null = null;
+  
     return (
-      <div
-        key={message._id}
-        className={`flex gap-2 mb-3 ${isSender ? "justify-end" : ""}`}
-      >
-        <div
-          className={`w-6/7 p-3 rounded-lg ${
-            isSender ? "bg-nrvDarkBlue text-white" : "bg-gray-200 text-black"
-          }`}
-        >
-          <p className="text-xs">{message.content}</p>
-
-          {message.files && message.files.length > 0 && (
-            <div className="mt-2">
-              {message.files.map((file: any, index: any) => (
-                <img
-                  key={index}
-                  src={file}
-                  alt={`file-${index}`}
-                  className="w-60 h-32 object-cover rounded-lg"
-                />
-              ))}
+      <div>
+        {messages.map((message) => {
+          const isSender = message.sender._id === user?.user?._id;
+          const showDateHeader = isNewDay(message.createdAt, lastDate);
+          lastDate = message.createdAt;
+  
+          return (
+            <div key={message._id}>
+              {/* Date Header */}
+              {showDateHeader && (
+                <div className="text-center text-sm text-gray-500 my-4">
+                  {new Date(message.createdAt).toLocaleDateString([], {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </div>
+              )}
+  
+              {/* Message Bubble */}
+              <div
+                className={`flex ${
+                  isSender ? "justify-end" : "justify-start"
+                } mb-3`}
+              >
+                <div
+                  className={`p-3 rounded-lg w-fit max-w-xs ${
+                    isSender
+                      ? "bg-nrvDarkBlue text-white"
+                      : "bg-gray-200 text-black"
+                  }`}
+                  style={{
+                    borderRadius: isSender
+                      ? "18px 18px 0 18px" // Rounded for sent
+                      : "18px 18px 18px 0", // Rounded for received
+                  }}
+                >
+                  {/* Text Content */}
+                  <p className="text-xs">{message.content}</p>
+  
+                  {/* File Attachments */}
+                  {message.files && message.files.length > 0 && (
+                    <div className="mt-2 grid gap-2">
+                      {message.files.map((file, index) => {
+                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(file);
+                        const isPDF = /\.pdf$/i.test(file);
+  
+                        return (
+                          <div key={index} className="flex flex-col items-start">
+                            {/* Render Images */}
+                            {isImage && (
+                              <img
+                                src={file}
+                                alt={`file-${index}`}
+                                className="w-60 h-32 object-cover rounded-lg"
+                              />
+                            )}
+  
+                            {/* Render PDF */}
+                            {isPDF && (
+                              <>
+                                <a
+                                  href={file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 underline text-sm"
+                                >
+                                  Open PDF
+                                </a>
+                                <iframe
+                                  src={file}
+                                  title={`PDF-${index}`}
+                                  className="w-60 h-32 border rounded-lg mt-2"
+                                ></iframe>
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+  
+                  {/* Time Display */}
+                  <div className="flex items-center justify-between mt-2">
+                    <p
+                      className={`text-[10px] ${
+                        isSender ? "text-gray-300" : "text-gray-500"
+                      }`}
+                    >
+                      {new Date(message.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    {isSender && (
+                      <span className="ml-2 flex items-center text-gray-300 text-[10px]">
+                   
+                          <AiOutlineCheck />
+                  
+                        
+                        
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          );
+        })}
       </div>
     );
   };
+  
+  
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
@@ -219,7 +342,7 @@ const RentersListScreen = () => {
               </div>
             </div>
           ) : (
-            <div className="md:mx-auto mx-4">
+            <div className="md:mx-auto mx-4 scrollbar-hide">
               <div className="container">
                 <div
                   key={conversation[0]._id}
@@ -230,7 +353,7 @@ const RentersListScreen = () => {
                     );
                   }}
                 >
-                  <div className="w-full">
+                  <div className="w-full scrollbar-hide">
                     <div className="flex gap-2">
                       <div className="w-1/7">
                         <RandomColorCircle
@@ -247,46 +370,64 @@ const RentersListScreen = () => {
                   </div>
                 </div>
 
-                <div
-                  className="messages p-4 overflow-y-auto"
-                  style={{ maxHeight: "600px" }}
-                >
-                  {conversation.map((message) => renderMessage(message))}
-                </div>
+                <div className="flex flex-col scrollbar-hide">
+                  {/* Messages Section */}
+                  <div
+                    className="flex-grow md:p-4 p-0 overflow-y-auto scrollbar-hide"
+                    style={{
+                      maxHeight: "calc(100vh - 200px)", // Default for larger screens
+                    }}
+                  >
+                    <div
+                      className="md:hidden" // Visible only on small/mobile screens
+                      style={{
+                        maxHeight: "calc(100vh - 250px)", // Custom height for mobile
+                      }}
+                    >
+                      {renderMessage(conversation)}
+                    </div>
+                    <div className="hidden md:block">
+                      {renderMessage(conversation)}
+                    </div>
+                  </div>
 
-                <div className="p-4 bg-gray-100">
-                  {/* File Previews */}
-                  {renderFilePreviews()}
+                  {/* Input Section */}
+                  <div className="md:p-4 p-0 bg-gray-100 sticky bottom-0 z-10">
+                    {/* File Previews */}
+                    {renderFilePreviews()}
 
-                  <div className="flex items-center gap-4">
-                    {/* File Upload Trigger */}
-                    <FaPlusCircle
-                      size={25}
-                      className="cursor-pointer text-blue-500"
-                      onClick={() =>
-                        document.getElementById("file-input")?.click()
-                      }
-                    />
-                    <input
-                      id="file-input"
-                      type="file"
-                      multiple
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
+                    <div className="flex items-center gap-4">
+                      {/* File Upload Trigger */}
+                      <FaPlusCircle
+                        size={25}
+                        className="cursor-pointer text-nrvDarkBlue"
+                        onClick={() =>
+                          document.getElementById("file-input")?.click()
+                        }
+                      />
+                      <input
+                        id="file-input"
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
 
-                    {/* Text Input */}
-                    <textarea
-                      className="w-full p-2 rounded-lg border border-gray-300"
-                      placeholder="Type your message..."
-                      value={messageContent}
-                      onChange={(e) => setMessageContent(e.target.value)}
-                    />
-                    {/* Send Button */}
-                    <IoSend
-                      onClick={handleSendMessage}
-                      className=""
-                    />
+                      {/* Text Input */}
+                      <textarea
+                        className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                        placeholder="Type your message..."
+                        value={messageContent}
+                        onChange={(e) => setMessageContent(e.target.value)}
+                      />
+
+                      {/* Send Button */}
+                      <IoSend
+                        onClick={handleSendMessage}
+                        size={25}
+                        className="cursor-pointer text-nrvDarkBlue"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

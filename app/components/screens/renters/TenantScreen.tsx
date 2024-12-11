@@ -67,10 +67,6 @@ const TenantScreen = () => {
         getAllLandlordApartment(formData) as any
       );
 
-      console.log({x :_response?.payload?.data});
-      
-
-
       const formattedOptions: any = _response?.payload?.data.map(
         (item: any) => ({
           value: item._id,
@@ -83,6 +79,29 @@ const TenantScreen = () => {
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
+    }
+  };
+
+  const fetchSelfOnboardedTenantData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
+    const currentUser = user?.user;
+    const formData = {
+      page: page, // Ensure 'page' is defined or passed as a parameter
+      id: currentUser?._id,
+    };
+
+    try {
+      const _response = await dispatch(
+        getTenantsOnboardedByLandlord(formData) as any
+      );
+      if (_response?.payload?.data) {
+        setTenants(_response.payload.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch tenants:", error);
+    } finally {
+      setIsLoading(false);
+      setIsPageLoading(false);
     }
   };
 
@@ -143,28 +162,7 @@ const TenantScreen = () => {
     }
   };
 
-  const fetchSelfOnboardedTenantData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
-    const currentUser = user?.user;
-    const formData = {
-      page: page, // Ensure 'page' is defined or passed as a parameter
-      id: currentUser?._id,
-    };
 
-    try {
-      const _response = await dispatch(
-        getTenantsOnboardedByLandlord(formData) as any
-      );
-      if (_response?.payload?.data) {
-        setTenants(_response.payload.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch tenants:", error);
-    } finally {
-      setIsLoading(false);
-      setIsPageLoading(false);
-    }
-  };
 
   const validationSchema = yup.object({
     firstName: yup.string().required("First Name is required"),

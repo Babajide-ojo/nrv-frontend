@@ -60,19 +60,9 @@ const TenantScreen = () => {
       status: "activeTenant",
     };
     try {
-      const response = await dispatch(
-        getApplicationsByLandlordId(formData) as any
-      );
       const _response = await dispatch(
         getAllLandlordApartment(formData) as any
       );
-
-      const formattedOptions: any = _response?.payload?.data.map(
-        (item: any) => ({
-          value: item._id,
-          label: item.propertyId.streetAddress
-    }))
-      setLandlordProperties(formattedOptions);
       setProperties(_response?.payload?.data);
       setTotalPages(_response?.totalPages);
     } catch (error) {
@@ -161,8 +151,6 @@ const TenantScreen = () => {
       setSubmitting(false); // Reset submitting state
     }
   };
-
-
 
   const validationSchema = yup.object({
     firstName: yup.string().required("First Name is required"),

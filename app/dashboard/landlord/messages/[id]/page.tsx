@@ -3,9 +3,8 @@
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import TenantLayout from "@/app/components/layout/TenantLayout";
-import RentersListScreen from "@/app/components/dashboard/tenant/RentersListScreen";
 import MessagingDetailsScreen from "@/app/components/dashboard/tenant/MessagingDetailsScreen";
+import LandLordLayout from "@/app/components/layout/LandLordLayout";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +22,9 @@ const Page = () => {
         <LoadingPage />
       ) : (
         <ProtectedRoute>
-          <TenantLayout>
+          <LandLordLayout>
            <MessagingDetailsScreen />
-          </TenantLayout>
+          </LandLordLayout>
         </ProtectedRoute>
       )}
     </div>

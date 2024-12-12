@@ -4,11 +4,7 @@ import LoadingPage from "../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
-import EmptyState from "../../../components/screens/empty-state/EmptyState";
-import Button from "../../../components/shared/buttons/Button";
-import { IoAddCircle } from "react-icons/io5";
-import TenantLayout from "@/app/components/layout/TenantLayout";
-import RentersListScreen from "@/app/components/dashboard/tenant/RentersListScreen";
+import RentersListForLandlordScreen from "@/app/components/dashboard/tenant/RentersListForLandlordScreen";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +23,7 @@ const Page = () => {
       ) : (
         <ProtectedRoute>
           <LandLordLayout>
-            <RentersListScreen />
+         <RentersListForLandlordScreen />
           </LandLordLayout>
         </ProtectedRoute>
       )}

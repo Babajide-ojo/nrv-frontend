@@ -7,9 +7,9 @@ import { FaPencil } from "react-icons/fa6";
 import { getConversation, sendMessage } from "@/redux/slices/messageSlice";
 import { useParams } from "next/navigation";
 import { FaPlusCircle, FaTimesCircle } from "react-icons/fa";
-import { IoSend } from "react-icons/io5";
+import { IoArrowBack, IoSend } from "react-icons/io5";
 import { MessageBox } from "react-chat-elements";
-import "react-chat-elements/dist/main.css"
+import "react-chat-elements/dist/main.css";
 import { AiOutlineCheck } from "react-icons/ai"; // Install react-icons if not already installed
 
 const RandomColorCircle = ({ firstName, lastName }: any) => {
@@ -22,7 +22,7 @@ const RandomColorCircle = ({ firstName, lastName }: any) => {
     return color;
   };
 
-  const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`;
+  const initials = `${firstName?.charAt(0)}${lastName?.charAt(0)}`;
 
   const circleStyle = {
     backgroundColor: getRandomColor(),
@@ -55,15 +55,15 @@ const RentersListScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-   // Define types for message and user
-   interface Message {
+  // Define types for message and user
+  interface Message {
     _id: string;
     content: string;
     createdAt: string;
     sender: { _id: string };
     files?: string[]; // Array of file URLs
   }
-  
+
   interface User {
     user?: {
       _id: string;
@@ -77,7 +77,6 @@ const RentersListScreen = () => {
       senderId: user?.user?._id,
       recipientId: id,
     };
-
     try {
       const response = await dispatch(getConversation(formData) as any);
       setConversation(response?.payload?.data);
@@ -109,43 +108,36 @@ const RentersListScreen = () => {
     });
 
     try {
-      // Assuming you have a sendMessage action to handle the form submission
       await dispatch(sendMessage(formData) as any);
-      setMessageContent(""); // Clear input field after sending
-      setFiles([]); // Clear files after sending
-      fetchData(); // Refresh conversation list
+      setMessageContent("");
+      setFiles([]);
+      fetchData();
     } catch (error) {
       alert("Error sending message");
     }
   };
 
-
- 
-  
-
   const renderMessage = (messages: Message[]) => {
-    // Get the user object from localStorage
     const user: User | null = JSON.parse(
       localStorage.getItem("nrv-user") as string
     );
-  
-    // Helper to check if the date has changed
+
     const isNewDay = (current: string, previous: string | null): boolean => {
       if (!previous) return true;
       const currentDate = new Date(current).toDateString();
       const previousDate = new Date(previous).toDateString();
       return currentDate !== previousDate;
     };
-  
+
     let lastDate: string | null = null;
-  
+
     return (
       <div>
         {messages.map((message) => {
           const isSender = message.sender._id === user?.user?._id;
           const showDateHeader = isNewDay(message.createdAt, lastDate);
           lastDate = message.createdAt;
-  
+
           return (
             <div key={message._id}>
               {/* Date Header */}
@@ -159,7 +151,7 @@ const RentersListScreen = () => {
                   })}
                 </div>
               )}
-  
+
               {/* Message Bubble */}
               <div
                 className={`flex ${
@@ -180,16 +172,19 @@ const RentersListScreen = () => {
                 >
                   {/* Text Content */}
                   <p className="text-xs">{message.content}</p>
-  
+
                   {/* File Attachments */}
                   {message.files && message.files.length > 0 && (
                     <div className="mt-2 grid gap-2">
                       {message.files.map((file, index) => {
                         const isImage = /\.(jpeg|jpg|png|gif)$/i.test(file);
                         const isPDF = /\.pdf$/i.test(file);
-  
+
                         return (
-                          <div key={index} className="flex flex-col items-start">
+                          <div
+                            key={index}
+                            className="flex flex-col items-start"
+                          >
                             {/* Render Images */}
                             {isImage && (
                               <img
@@ -198,7 +193,7 @@ const RentersListScreen = () => {
                                 className="w-60 h-32 object-cover rounded-lg"
                               />
                             )}
-  
+
                             {/* Render PDF */}
                             {isPDF && (
                               <>
@@ -222,7 +217,7 @@ const RentersListScreen = () => {
                       })}
                     </div>
                   )}
-  
+
                   {/* Time Display */}
                   <div className="flex items-center justify-between mt-2">
                     <p
@@ -237,11 +232,7 @@ const RentersListScreen = () => {
                     </p>
                     {isSender && (
                       <span className="ml-2 flex items-center text-gray-300 text-[10px]">
-                   
-                          <AiOutlineCheck />
-                  
-                        
-                        
+                        <AiOutlineCheck />
                       </span>
                     )}
                   </div>
@@ -253,9 +244,6 @@ const RentersListScreen = () => {
       </div>
     );
   };
-  
-  
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
@@ -335,100 +323,199 @@ const RentersListScreen = () => {
       ) : (
         <div>
           {conversation?.length < 1 ? (
-            <div className="flex justify-center items-center">
-              <div>
-                <EmptyState />
-                <p className="text-nrvLightGrey m-2">No Tenant Yet</p>
-              </div>
-            </div>
-          ) : (
-            <div className="md:mx-auto mx-4 scrollbar-hide">
-              <div className="container">
-                <div
-                  key={conversation[0]._id}
-                  className="p-2 rounded-lg w-full flex justify-between sticky top-0 bg-white z-10"
-                  onClick={() => {
-                    router.push(
-                      `/dashboard/tenant/messages/${conversation[0].applicant._id}`
-                    );
-                  }}
-                >
-                  <div className="w-full scrollbar-hide">
-                    <div className="flex gap-2">
-                      <div className="w-1/7">
-                        <RandomColorCircle
-                          firstName={conversation[0].recipient?.firstName}
-                          lastName={conversation[0].recipient?.lastName}
-                        />
-                      </div>
+            <div className="h-screen flex flex-col">
+              <div className="container flex-grow flex flex-col">
+                {/* Header Section with Back Icon */}
+                <div className="p-2 rounded-lg w-full flex items-center justify-around sticky top-0 bg-white z-10">
+                  {/* Back Icon */}
+                  <div
+                    className="flex items-center cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    <IoArrowBack size={24} className="text-nrvDarkGrey" />
+                  </div>
 
-                      <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
-                        {conversation[0].recipient?.firstName}{" "}
-                        {conversation[0].recipient?.lastName}
-                      </p>
+                  {/* Conversation Header */}
+                  <div
+                    className="flex-1 flex justify-between"
+                    onClick={() => {
+                      router.push(
+                        `/dashboard/tenant/messages/${conversation[0]?.applicant?._id}`
+                      );
+                    }}
+                  >
+                    <div className="w-full scrollbar-hide">
+                      <div className="flex gap-2">
+                        <div className="w-1/7">
+                          <RandomColorCircle
+                            firstName={conversation[0]?.recipient?.firstName}
+                            lastName={conversation[0]?.recipient?.lastName}
+                          />
+                        </div>
+
+                        <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                          {conversation[0]?.recipient?.firstName}{" "}
+                          {conversation[0]?.recipient?.lastName}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col scrollbar-hide">
-                  {/* Messages Section */}
+                <div
+                  className="flex-grow md:p-4 p-0 overflow-y-auto scrollbar-hide"
+                  style={{
+                    maxHeight: "calc(100vh - 200px)",
+                  }}
+                >
                   <div
-                    className="flex-grow md:p-4 p-0 overflow-y-auto scrollbar-hide"
+                    className="md:hidden"
                     style={{
-                      maxHeight: "calc(100vh - 200px)", // Default for larger screens
+                      maxHeight: "calc(100vh - 250px)",
                     }}
                   >
-                    <div
-                      className="md:hidden" // Visible only on small/mobile screens
-                      style={{
-                        maxHeight: "calc(100vh - 250px)", // Custom height for mobile
-                      }}
-                    >
-                      {renderMessage(conversation)}
-                    </div>
-                    <div className="hidden md:block">
-                      {renderMessage(conversation)}
-                    </div>
+                    {renderMessage(conversation)}
+                  </div>
+                  <div className="hidden md:block">
+                    {renderMessage(conversation)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-grow flex justify-center items-center">
+                <div>
+                  <EmptyState />
+                  <p className="text-nrvLightGrey m-2">No Conversation Yet</p>
+                </div>
+              </div>
+
+              <div className="p-4 bg-gray-100 sticky bottom-0 z-10">
+                {renderFilePreviews && renderFilePreviews()}
+
+                <div className="flex items-center gap-4">
+                  <FaPlusCircle
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                    onClick={() =>
+                      document.getElementById("file-input")?.click()
+                    }
+                  />
+                  <input
+                    id="file-input"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                  <textarea
+                    className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                    placeholder="Type your message..."
+                    value={messageContent}
+                    onChange={(e) => setMessageContent(e.target.value)}
+                  />
+                  <IoSend
+                    onClick={handleSendMessage}
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-screen flex flex-col md:mx-auto mx-4 scrollbar-hide">
+              <div className="container flex-grow flex flex-col">
+                <div className="p-2 rounded-lg w-full flex items-center justify-between sticky top-0 bg-white z-10">
+                  <div
+                    className="flex items-center cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    <IoArrowBack size={24} className="text-nrvDarkGrey" />
                   </div>
 
-                  {/* Input Section */}
-                  <div className="md:p-4 p-0 bg-gray-100 sticky bottom-0 z-10">
-                    {/* File Previews */}
-                    {renderFilePreviews()}
+                  {/* Conversation Header */}
+                  <div
+                    className="flex-1 flex justify-between"
+                    onClick={() => {
+                      router.push(
+                        `/dashboard/tenant/messages/${conversation[0]?.applicant?._id}`
+                      );
+                    }}
+                  >
+                    <div className="w-full scrollbar-hide">
+                      <div className="flex gap-2">
+                        <div className="w-1/7">
+                          <RandomColorCircle
+                            firstName={conversation[0]?.recipient?.firstName}
+                            lastName={conversation[0]?.recipient?.lastName}
+                          />
+                        </div>
 
-                    <div className="flex items-center gap-4">
-                      {/* File Upload Trigger */}
-                      <FaPlusCircle
-                        size={25}
-                        className="cursor-pointer text-nrvDarkBlue"
-                        onClick={() =>
-                          document.getElementById("file-input")?.click()
-                        }
-                      />
-                      <input
-                        id="file-input"
-                        type="file"
-                        multiple
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-
-                      {/* Text Input */}
-                      <textarea
-                        className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
-                        placeholder="Type your message..."
-                        value={messageContent}
-                        onChange={(e) => setMessageContent(e.target.value)}
-                      />
-
-                      {/* Send Button */}
-                      <IoSend
-                        onClick={handleSendMessage}
-                        size={25}
-                        className="cursor-pointer text-nrvDarkBlue"
-                      />
+                        <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                          {conversation[0]?.recipient?.firstName}{" "}
+                          {conversation[0]?.recipient?.lastName}
+                        </p>
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Messages Section */}
+                <div
+                  className="flex-grow md:p-4 p-0 overflow-y-auto scrollbar-hide"
+                  style={{
+                    maxHeight: "calc(100vh - 200px)", // Adjusts height dynamically
+                  }}
+                >
+                  <div
+                    className="md:hidden" // Visible only on small/mobile screens
+                    style={{
+                      maxHeight: "calc(100vh - 250px)", // Custom height for mobile
+                    }}
+                  >
+                    {renderMessage(conversation)}
+                  </div>
+                  <div className="hidden md:block">
+                    {renderMessage(conversation)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Input Section */}
+              <div className="md:p-4 p-0 bg-gray-100 z-10 md:mb-0 mb-24">
+                {/* File Previews */}
+                {renderFilePreviews()}
+
+                <div className="flex items-center gap-4">
+                  {/* File Upload Trigger */}
+                  <FaPlusCircle
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                    onClick={() =>
+                      document.getElementById("file-input")?.click()
+                    }
+                  />
+                  <input
+                    id="file-input"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+
+                  {/* Text Input */}
+                  <textarea
+                    className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                    placeholder="Type your message..."
+                    value={messageContent}
+                    onChange={(e) => setMessageContent(e.target.value)}
+                  />
+
+                  {/* Send Button */}
+                  <IoSend
+                    onClick={handleSendMessage}
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                  />
                 </div>
               </div>
             </div>

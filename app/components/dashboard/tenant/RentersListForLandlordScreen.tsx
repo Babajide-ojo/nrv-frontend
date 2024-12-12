@@ -1,25 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import LoadingPage from "../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../components/layout/LandLordLayout";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
-import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getPropertyByUserId,
-  getRentedApartmentsForTenant,
-} from "../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CenterModal from "@/app/components/shared/modals/CenterModal";
-import TenantLayout from "@/app/components/layout/TenantLayout";
-import { FcHome } from "react-icons/fc";
-import { FaPen } from "react-icons/fa";
 import { FaPencil } from "react-icons/fa6";
+import { getTenantsOnboardedByLandlord } from "@/redux/slices/userSlice";
+import { getAllLandlordApartment, getApplicationsByLandlordId } from "@/redux/slices/propertySlice";
 
 const RandomColorCircle = ({ firstName, lastName }: any) => {
   // Function to generate random color
@@ -56,66 +45,71 @@ const RandomColorCircle = ({ firstName, lastName }: any) => {
   );
 };
 
-const RentersListScreen = () => {
+const RentersListForLandlordScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [properties, setProperties] = useState<any[]>([]);
   const [page, setPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
   const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
-
+  const [tenants, setTenants] = useState<any[]>([]);
+  const [landlordProperties, setLandlordProperties] = useState<any>([]);
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const fetchData = async () => {
+  const fetchCombinedData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
+  
     const formData = {
-      id: user?.user?._id,
       page: page,
+      id: user?.user?._id,
+      status: "activeTenant",
     };
-
+  
     try {
-      const response = await dispatch(
-        getRentedApartmentsForTenant(formData) as any
-      ); 
-      // console.log({reponse: response?.payload?.data});
-      const uniqueOwners: any = new Map(); // Use a Map to ensure uniqueness by ownerId
 
-      response?.payload?.data.forEach((item: any) => {
-          if (!uniqueOwners.has(item.ownerId)) {
-              uniqueOwners.set(item.ownerId, item);
-          }
+      const [applicationsResponse, tenantsResponse] = await Promise.all([
+        dispatch(getApplicationsByLandlordId(formData) as any),
+        dispatch(getTenantsOnboardedByLandlord(formData) as any),
+      ]);
+  
+
+      const combinedData = [
+        ...(applicationsResponse?.payload?.data || []),
+        ...(tenantsResponse?.payload?.data || []),
+      ];
+  
+      const uniqueOwners: any = new Map();
+      combinedData.forEach((item: any) => {
+        if (!uniqueOwners.has(item.ownerId)) {
+          uniqueOwners.set(item.ownerId, item);
+        }
       });
-      
+  
       const uniqueOwnerArray = Array.from(uniqueOwners.values());
-      setProperties(uniqueOwnerArray);
-      setTotalPages(response?.totalPages);
+      const formattedOptions: any = uniqueOwnerArray.map((item: any) => ({
+        value: item._id,
+        label: item.propertyId.streetAddress,
+      }));
+  
+      setLandlordProperties(formattedOptions);
+      setTenants(uniqueOwnerArray);
+      setTotalPages(tenantsResponse?.totalPages);
     } catch (error) {
-      console.error("Error fetching properties:", error);
+      console.error("Error fetching combined data:", error);
     } finally {
       setIsLoading(false);
-      setIsPageLoading(false); // Stop page loading after fetch
+      setIsPageLoading(false);
     }
   };
-
+  
   useEffect(() => {
-    fetchData();
+    fetchCombinedData();
   }, [page]); // Reload properties when page changes
+  
 
-  const handleNextPage = () => {
-    if (page) {
-      setIsPageLoading(true);
-      setPage(page + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setIsPageLoading(true);
-      setPage(page - 1);
-    }
-  };
+ 
 
   return (
     <div className="p-4 w-full">
@@ -144,7 +138,7 @@ const RentersListScreen = () => {
         </div>
       ) : (
         <div>
-          {properties?.length < 1 ? (
+          {tenants?.length < 1 ? (
             <div className="">
               <div className="flex justify-center items-center">
                 <div className="">
@@ -155,13 +149,13 @@ const RentersListScreen = () => {
             </div>
           ) : (
             <div className="md:mx-auto mt-8 mx-4 ">
-              {properties?.map((property: any) => (
+              {tenants?.map((property: any) => (
                 <div
                   key={property.id}
                   className="p-2 rounded rounded-lg w-full mt-8 flex justify-between"
                   onClick={() => {
                     router.push(
-                      `/dashboard/tenant/messages/${property.ownerId}`
+                      `/dashboard/landlord/messages/${property.applicant._id}`
                     );
                   }}
                 >
@@ -197,4 +191,4 @@ const RentersListScreen = () => {
   );
 };
 
-export default RentersListScreen;
+export default RentersListForLandlordScreen;

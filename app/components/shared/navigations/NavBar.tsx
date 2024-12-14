@@ -2,8 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import Logo from "../../../../public/images/nrv-logo.png";
 import DesktopNavBar from "./DesktopNavBar";
 import MobileNavBar from "./MobileNavBar";
 

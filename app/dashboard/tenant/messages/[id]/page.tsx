@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import RentersListScreen from "@/app/components/dashboard/tenant/RentersListScreen";
-import MessagingDetailsScreen from "@/app/components/dashboard/tenant/MessagingDetailsScreen";
+import MessagingDetailsScreen from "@/app/components/screens/message/MessagingDetailsScreen";
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(true);

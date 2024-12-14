@@ -3,7 +3,7 @@
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import MessagingDetailsScreen from "@/app/components/dashboard/tenant/MessagingDetailsScreen";
+import MessagingDetailsScreen from "@/app/components/screens/message/MessagingDetailsScreen";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 
 const Page = () => {

@@ -124,7 +124,7 @@ const VerificationScreen = () => {
                       {({ isSubmitting, isValid, dirty }) => (
                         <Form>
                           <div className="mb-8">
-                            <h1 className="text-sm text-center font-medium">
+                            <h1 className="md:text-2xl text-sm text-center font-medium">
                               Tenant Verification with NIN
                             </h1>
                           </div>
@@ -140,7 +140,7 @@ const VerificationScreen = () => {
                             type="submit"
                             size="large"
                             className="w-full"
-                            variant="lightGrey"
+                            variant="lightGrey" 
                             showIcon={false}
                             disabled={isSubmitting || true || false}
                           >
@@ -151,7 +151,7 @@ const VerificationScreen = () => {
                     </Formik>
                   </div>
                   <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                    <div className="text-sm text-center">
+                    <div className="md:text-lg text-sm text-center">
                       {" "}
                       Tenant Verification History
                     </div>
@@ -164,13 +164,13 @@ const VerificationScreen = () => {
                           >
                             <div className="">
                               <div className="flex justify-between">
-                                <h2 className="text-[12px] font-medium text-gray-700">
+                                <h2 className="text-[14px] font-medium text-gray-700">
                                   Date Verified :{" "}
                                   {item.timestamp.slice(0, 10) ||
                                     "Timestamp not available"}
                                 </h2>
                                 <p
-                                  className="text-xs font-light text-gray-600 underline cursor-pointer"
+                                  className="text-[14px] font-light text-gray-600 underline cursor-pointer"
                                   onClick={() => {
                                     fetchVerifiedNin({
                                       nin: item.nin,
@@ -181,7 +181,7 @@ const VerificationScreen = () => {
                                   {item.nin || "NIN not available"}
                                 </p>
                               </div>
-                              <p className="text-[12px] font-normal text-gray-600 mt-4">
+                              <p className="text-[14px] font-normal text-gray-600 mt-4">
                                 {item.details || "No additional details"}
                               </p>
                             </div>

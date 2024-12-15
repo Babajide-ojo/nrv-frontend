@@ -83,9 +83,9 @@ const PropertiesScreen = () => {
             {properties?.length < 1 ? (
               <div className="p-8 w-full">
                 <div className="text-xl">Properties 🏘️</div>
-                <p className="text-xs text-nrvLightGrey">
+                {/* <p className="text-sm text-nrvLightGrey">
                   Let’s add another property :)
-                </p>
+                </p> */}
                 <p className="text-sm text-nrvLightGrey">
                   Afer creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
                 </p>
@@ -119,7 +119,7 @@ const PropertiesScreen = () => {
                 <div className="flex justify-between">
                   <div>
                     <div className="text-xl">Properties 🏘️</div>
-                    <p className="text-xs text-nrvLightGrey">
+                    <p className="text-md text-nrvLightGrey">
                       Let’s add another property :)
                     </p>
              
@@ -142,7 +142,7 @@ const PropertiesScreen = () => {
                   </Button>
 
                 </div>
-                <p className="text-xs text-nrvDarkBlue mt-4">
+                <p className="text-md text-nrvDarkBlue mt-4">
                   After creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
                 </p>
                 {properties?.map((property: any) => (
@@ -161,7 +161,7 @@ const PropertiesScreen = () => {
                         />
                       </div>
                       
-                        <p className="md:w-4/5 w-3/5 md:text-xs text-xs text-nrvDarkGrey font-lighter">
+                        <p className="md:w-4/5 w-3/5 md:text-sm text-md text-nrvDarkGrey font-lighter">
                           {property.streetAddress}
                         </p>
                       </div>
@@ -228,7 +228,7 @@ const PropertiesScreen = () => {
               <p className="text-nrvLightGrey text-sm">
                 View your property full details
               </p>
-              <p className="text-nrvLightGrey underline mt-4 text-sm">
+              <p className="text-nrvLightGrey underline mt-4 text-md">
                 {singleProperty.streetAddress}
               </p>
 

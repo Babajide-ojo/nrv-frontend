@@ -5,15 +5,7 @@ import Image from "next/image";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
 import Button from "../buttons/Button";
-// Importing icons (you can add icons to links later if needed)
-import { FaCheck, FaCpanel, FaDashcube } from "react-icons/fa";
-import { IoBatteryCharging, IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
-import { RxDashboard } from "react-icons/rx";
-import { IoMdHome } from "react-icons/io";
-import { FaPlug } from "react-icons/fa6";
-import { FcMenu } from "react-icons/fc";
 
-// Define the types for user data
 interface User {
   name: string;
   role: string;
@@ -40,13 +32,10 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
   const [activeLink, setActiveLink] = useState<string>("");
 
   useEffect(() => {
-    // Retrieve the active link from localStorage and set the state
-    const storedActiveLink = localStorage.getItem("activeLink");
-    if (storedActiveLink) {
-      setActiveLink(storedActiveLink);
-    }
+    // Set active link based on the current URL path
+    const currentPath = window.location.pathname;
+    setActiveLink(currentPath);
 
-    // Fetch or retrieve user information
     const fetchUserInfo = () => {
       const storedUser = localStorage.getItem("nrv-user");
       if (storedUser) {
@@ -62,10 +51,8 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
     fetchUserInfo();
   }, []);
 
-  // Handle link click and set active link
   const handleLinkClick = (route: string) => {
-    setActiveLink(route);
-    localStorage.setItem("activeLink", route); // Store active link in localStorage
+    setActiveLink(route); // Update active link
     router.push(route); // Navigate to the clicked route
   };
 
@@ -76,7 +63,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       }`}
     >
       {/* Logo Section */}
-      <div className="mt-10" onClick={() => router.push('/')}>
+      <div className="mt-10" onClick={() => router.push("/")}>
         <Image
           src={Logo}
           width={200}
@@ -90,16 +77,17 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       <nav className="mt-5">
         <ul>
           {links.map(({ name, route }, index) => (
-            <div key={index}>
-              <li
-                className={`w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-nrvGrayText text-sm hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md font-light ${
-                  activeLink === route ? "bg-nrvDarkBlue text-white" : ""
-                }`}
-                onClick={() => handleLinkClick(route)}
-              >
-                <span>{name}</span>
-              </li>
-            </div>
+            <li
+              key={index}
+              className={`w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light rounded-md m-4 ${
+                activeLink === route
+                  ? "bg-nrvDarkBlue text-white"
+                  : "text-nrvGrayText hover:bg-nrvDarkBlue hover:text-white"
+              }`}
+              onClick={() => handleLinkClick(route)}
+            >
+              {name}
+            </li>
           ))}
         </ul>
       </nav>

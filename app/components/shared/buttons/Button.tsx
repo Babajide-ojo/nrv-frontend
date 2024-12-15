@@ -1,11 +1,12 @@
-"use client"
-import React, { forwardRef, ButtonHTMLAttributes, useState, ReactElement } from 'react';
+"use client";
+import React, { forwardRef, useState, ReactElement } from 'react';
 import { cls } from '../../../../helpers/utils';
-import { IconType } from 'react-icons'; 
+import { IconType } from 'react-icons';
 import { BsDownload } from 'react-icons/bs';
 import { FaSpinner } from 'react-icons/fa'; // Import spinner icon
+import { FaCircleNotch } from "react-icons/fa6";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary' | 'roundedRec';
   size?: 'small' | 'normal' | 'large' | 'smaller' | 'minLarge';
   pill?: boolean;
@@ -16,13 +17,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const classes = {
   base: 'focus:outline-none transition ease-in-out duration-300',
-  disabled: 'opacity-50 cursor-not-allowed',
+  disabled: 'border-2 border-nrvDarkBlue bg-white cursor-not-allowed',
   pill: 'rounded',
   size: {
     smaller: 'px-3 py-1.5 text-xs',
     small: 'px-3.5 py-1.5 text-[10px]',
     normal: 'px-3.5 py-1.5 text-xs',
-    minLarge: 'px-5 py-2.5 text-[13px] font-lighter',
+    minLarge: 'px-5 py-3 text-[16px] font-lighter',
     large: 'px-4 py-2 text-sm'
   },
   variant: {
@@ -79,16 +80,18 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <div className="flex items-center justify-center">
           {isLoading ? (
-            <FaSpinner className="animate-spin m-2" /> // Spinner icon with animation
+            <FaCircleNotch className="h-[35px] w-[35px] animate-spin text-nrvDarkBlue" /> // Show the Spinner component
           ) : (
-            <span>{children}</span>
+            <>
+              <span>{children}</span>
+            </>
           )}
-
         </div>
       </button>
     );
   }
 );
 
-Button.displayName = 'Button'; 
+Button.displayName = 'Button';
+
 export default Button;

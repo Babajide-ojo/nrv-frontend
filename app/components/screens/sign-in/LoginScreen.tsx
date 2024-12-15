@@ -140,12 +140,13 @@ const LoginScreen: React.FC = () => {
         <div>
           <div className="max-w-md w-full flex-grow mx-auto mt-4">
             <Button
-              size="large"
+              size="minLarge"
               className="block w-full"
               variant="bluebg"
               showIcon={false}
               onClick={handleSubmit}
               disabled={isLoading}
+              isLoading={isLoading}
             >
               {isLoading ? "Loading..." : "Login"}
             </Button>

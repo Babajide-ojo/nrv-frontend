@@ -26,12 +26,10 @@ const links = [
     name: "Properties",
     route: "/dashboard/tenant/properties",
   },
-
   {
     name: "Applications",
     route: "/dashboard/tenant/properties/applications",
   },
-
   {
     name: "Rented Apartments",
     route: "/dashboard/tenant/rented-properties",
@@ -52,10 +50,14 @@ const links = [
 
 const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   const router = useRouter();
+  const [currentPath, setCurrentPath] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    // Set the current path from the router
+    setCurrentPath(window.location.pathname);
 
+    // Fetch user info from localStorage
     const fetchUserInfo = () => {
       const storedUser = localStorage.getItem("nrv-user");
       if (storedUser) {
@@ -78,7 +80,6 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
- 
       <div
         className="mt-10"
         onClick={() => {
@@ -96,23 +97,23 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
       <nav className="mt-5">
         <ul>
           {links.map(({ name, route }, index) => (
-            <div key={index}>
-              <li
-                className="px-6 py-3 text-nrvGrayText text-sm hover:bg-nrvDarkBlue hover:text-white m-6 hover:rounded-md"
-                onClick={() => {
-                  router.push(route);
-                }}
-              >
-                {name}
-              </li>
-            </div>
+            <li
+              key={index}
+              className={`px-6 py-3 text-nrvGrayText text-sm m-6 hover:bg-nrvDarkBlue hover:text-white hover:rounded-md ${
+                currentPath === route ? "bg-nrvDarkBlue text-white rounded-md" : ""
+              }`}
+              onClick={() => {
+                router.push(route);
+              }}
+            >
+              {name}
+            </li>
           ))}
         </ul>
       </nav>
 
-   
       {user && (
-        <div className="px-6 py-4  border-gray-200 ml-6 mt-24">
+        <div className="px-6 py-4 border-gray-200 ml-6 mt-24">
           <p className="text-sm font-semibold">{user.name}</p>
           <p className="text-sm text-nrvDarkBlue mt-2">
             Account Type : {user.role.toUpperCase()}

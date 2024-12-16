@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import Select,  { GroupBase } from "react-select";
+import Select, { GroupBase } from "react-select";
 import { colors } from "react-select/dist/declarations/src/theme";
 
 interface Option {
@@ -14,19 +14,23 @@ interface Props {
   placeholder?: string;
   isSearchable?: boolean;
   noOptionsMessage?: () => string;
-  options?: any
+  options?: any;
   onChange?: any;
   value: any;
   disabled?: boolean;
   setValue?: any;
-  onBlur?: any
+  onBlur?: any;
 }
 
-const _options: Option[] = [
+const _options: Option[] = [];
 
-];
-
-const formatOptionLabel = ({ label, isSelected }: { label: string; isSelected: boolean }) => (
+const formatOptionLabel = ({
+  label,
+  isSelected,
+}: {
+  label: string;
+  isSelected: boolean;
+}) => (
   <div className="flex">
     <div style={{ display: isSelected ? "none" : "block" }}>{label}</div>
   </div>
@@ -36,15 +40,13 @@ const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
     height: "42.5px",
-    borderColor: state.isFocused
-      ? "#d7d9db"
-      : "#d7d9db",
+    borderColor: state.isFocused ? "#d7d9db" : "#d7d9db",
+    border: "0px",
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
-    fontSize: "12px",
+    fontSize: "13px",
     colors: "#6B6C6C",
-
   }),
 
   option: (provided: any, state: any) => ({
@@ -54,18 +56,15 @@ const customStyles = {
     borderRadius: "5px",
     margin: "5px",
     cursor: "pointer",
-    "&:hover": {
-      backgroundColor: "#f5f5f5",
-    },
-        fontSize: "12px",
     colors: "#000000",
- 
   }),
 
   placeholder: (provided: any) => ({
     ...provided,
-    color: "#9da3af", // Set placeholder color to red
-    fontWeight: "300"
+    color: "#9da3af",
+    fontWeight: "400",
+    fontSize: "13px",
+    padding: "Opx",
   }),
 };
 
@@ -90,13 +89,13 @@ const SelectField: React.FC<Props> = ({
   };
 
   return (
-    <div>
-      <label className="block text-nrvGreyBlack text-sm mb-3">
+    <div className="border border-[#a9b0ba] p-4 bg-white rounded-md">
+      <label className="block text-[11.52px] md:text-sm font-medium  w-full text-nrvDarkBlue">
         {label}
         {required && <span className="text-red-600 ml-1">*</span>}
       </label>
       <Select
-      //  setValue={setValue}
+        //  setValue={setValue}
         name={name}
         isDisabled={disabled}
         styles={customStyles}

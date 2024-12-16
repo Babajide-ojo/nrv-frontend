@@ -18,16 +18,13 @@
   animation: zoom 2s infinite alternate;
 }
 
-
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
 
-
 .animate-spin-slow {
   animation: spin-slow 3s linear infinite;
 }
-
 
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out forwards;
@@ -48,10 +45,9 @@ fieldset.MuiOutlinedInput-notchedOutline {
   color: transparent !important;
 }
 
-
 .css-z3c6am-MuiFormControl-root-MuiTextField-root {
   width: 100%;
-  border:1px solid#5a5a5a !important;
+  border: 1px solid#5a5a5a !important;
   height: 40px !important;
   border-radius: 10px;
   font-size: 12px;
@@ -59,10 +55,10 @@ fieldset.MuiOutlinedInput-notchedOutline {
   box-shadow: none !important;
 }
 
-.css-z3c6am-MuiFormControl-root-MuiTextField-root:focus, 
+.css-z3c6am-MuiFormControl-root-MuiTextField-root:focus,
 .css-z3c6am-MuiFormControl-root-MuiTextField-root:active {
   width: 100%;
-  border:1px solid#5a5a5a !important;
+  border: 1px solid#5a5a5a !important;
   height: 40px !important;
   border-radius: 10px;
   font-size: 12px;
@@ -70,4 +66,6 @@ fieldset.MuiOutlinedInput-notchedOutline {
   box-shadow: none !important;
 }
 
-
+.css-hlgwow {
+  padding: 0px !important;
+}

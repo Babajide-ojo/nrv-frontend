@@ -41,8 +41,7 @@ const CreatePropertyScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedOption, setSelectedOption] = useState<any>(null);
 
-  
-  const handleChange = (selectedOption : any) => {
+  const handleChange = (selectedOption: any) => {
     setSelectedOption(selectedOption);
   };
 
@@ -72,7 +71,6 @@ const CreatePropertyScreen = () => {
     if (!propertyData.zipCode.trim()) {
       errors.zipCode = "Zip code is required";
     }
-
 
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -273,16 +271,16 @@ const CreatePropertyScreen = () => {
                               error={errors.zipCode} // Corrected error prop name
                             />
                           </div>
-                          <div className="w-full mt-4">
-                            <label className="text-nrvGreyBlack mb-2 text-sm ">
+                          <div className="w-full mt-4 bg-white p-4 rounded-md border border-[#a9b0ba]">
+                            <label className="block text-[11.52px] md:text-sm font-medium  w-full text-nrvDarkBlue">
                               Property Photo
                             </label>
                             <div
-                              className="text-center w-full mt-2"
+                              className="text-center w-full mt-2 p-2"
                               onDrop={handleFileDrop}
                               onDragOver={(e) => e.preventDefault()}
                             >
-                              <div className="w-full border border-nrvGreyMediumBg rounded-lg  pt-4 pb-4 text-swBlack">
+                              <div className="w-full rounded-lg  pt-4 pb-4 text-swBlack">
                                 <input
                                   type="file"
                                   id="fileInput"
@@ -293,7 +291,7 @@ const CreatePropertyScreen = () => {
 
                                 <label
                                   htmlFor="fileInput"
-                                  className="cursor-pointer  p-2 rounded-md bg-swBlue text-nrvLightGrey font-light  mx-auto mt-5 mb-3"
+                                  className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light  mx-auto mt-5 mb-3"
                                 >
                                   <div className="text-center flex justify-center">
                                     {selectedFiles.length > 0 ? (
@@ -314,13 +312,13 @@ const CreatePropertyScreen = () => {
                           </div>
                         </div>
 
-                        <div className="flex justify-center mt-20">
+                        <div className="flex justify-center mt-8">
                           <Button
                             type="submit"
-                            size="large"
+                            size="minLarge"
                             className="w-full mb-8"
                             disabled={loading ? true : false}
-                            variant="bluebg"
+                            variant="darkPrimary"
                             showIcon={false}
                             // onClick={handleNextAndVerify}
                           >

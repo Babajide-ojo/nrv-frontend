@@ -17,7 +17,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const classes = {
   base: 'focus:outline-none transition ease-in-out duration-300',
-  disabled: 'border-2 border-nrvDarkBlue bg-white cursor-not-allowed',
+  disabled: 'cursor-not-allowed',
   pill: 'rounded',
   size: {
     smaller: 'px-3 py-1.5 text-xs',
@@ -28,7 +28,7 @@ const classes = {
   },
   variant: {
     primary: 'rounded-2xl hover:text-white hover:bg-nrvDarkBlue border border-nrvDarkBlue outline-none text-nrvDarkBlue bg-white',
-    darkPrimary: 'rounded-2xl outline-none bg-nrvDarkBlue text-white',
+    darkPrimary: 'rounded-xl outline-none bg-nrvDarkBlue text-white',
     light: 'rounded-2xl bg-white text-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
     lightPrimary: 'rounded-2xl text-white border border-white bg-nrvDarkBlue',
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
@@ -80,7 +80,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       >
         <div className="flex items-center justify-center">
           {isLoading ? (
-            <FaCircleNotch className="h-[35px] w-[35px] animate-spin text-nrvDarkBlue" /> // Show the Spinner component
+            <FaCircleNotch color='#ffffff' className="h-[25px] w-[25px] animate-spin" /> // Show the Spinner component
           ) : (
             <>
               <span>{children}</span>

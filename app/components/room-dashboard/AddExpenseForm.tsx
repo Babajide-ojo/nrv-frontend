@@ -193,11 +193,11 @@ const AddExpense: React.FC = () => {
                   Property Photo
                 </label>
                 <div
-                  className="text-center w-full mt-2"
+                  className="text-center w-full mt-2 bg-white"
                   onDrop={handleFileDrop}
                   onDragOver={(e) => e.preventDefault()}
                 >
-                  <div className="w-full border border-nrvLightGrey rounded-lg  pt-4 pb-4 text-swBlack">
+                  <div className="w-full  border border-nrvLightGrey rounded-lg  pt-4 pb-4 text-swBlack">
                     <input
                       type="file"
                       id="fileInput"
@@ -227,9 +227,9 @@ const AddExpense: React.FC = () => {
               <div className="mt-4 max-w-lg mx-auto w-full">
                 <Button
                   type="submit"
-                  size="large"
+                  size="minLarge"
                   className="block w-full"
-                  variant="bluebg"
+                  variant="darkPrimary"
                   showIcon={false}
                   disabled={isSubmitting}
                 >

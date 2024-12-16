@@ -18,20 +18,8 @@ import PropertySuccess from "../../../../../components/loaders/PropertySuccess";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { SlCloudUpload } from "react-icons/sl";
+import { preventNonNumeric } from "@/helpers/utils";
 
-interface RoomData {
-  name: string;
-  description: string;
-  targetAudience: string;
-  targetDeposit: string;
-  rentAmountMetrics: string;
-  rentAmount: string;
-  noOfRooms: string;
-  noOfBaths: string;
-  noOfPools: string;
-  otherAmentities: string;
-  propertyId: any;
-}
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -89,57 +77,16 @@ const CreateRoom = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
     setRoomData((prevData: any) => ({
       ...prevData,
-      [name]: value,
+      [name]:
+        name === "noOfRooms" || name === "noOfBaths" || name === "targetRent" || name === "targetDeposit"
+          ? value.replace(/\D/g, "") // Remove non-numeric characters for numeric fields
+          : value,
     }));
-  }
-
-  const validateForm = () => {
-    let errors: any = {};
   
-    // Check for required fields
-    if (!roomData.name.trim()) {
-      errors.name = "Name is required";
-    }
-    if (!roomData.targetDeposit.trim()) {
-      errors.targetDeposit = "Target deposit is required";
-    }
-    if (!roomData.description.trim()) {
-      errors.description = "Description is required";
-    }
-    if (!roomData.targetRent.trim()) {
-      errors.targetRent = "Target rent is required";
-    }
-    if (!roomData.rentAmountMetrics.trim()) {
-      errors.rentAmountMetrics = "Rent amount metrics are required";
-    }
-    if (!roomData.rentAmount.trim()) {
-      errors.rentAmount = "Rent amount is required";
-    }
-    if (!roomData.noOfRooms) { // Assuming noOfRooms can be 0, so just check for falsy value
-      errors.noOfRooms = "Number of rooms is required";
-    }
-    if (!roomData.noOfBaths.trim()) {
-      errors.noOfBaths = "Number of baths is required";
-    }
-    if (!roomData.noOfPools.trim()) {
-      errors.noOfPools = "Number of pools is required";
-    }
-    if (!roomData.otherAmentities.trim()) {
-      errors.otherAmentities = "Other amenities are required";
-    }
-    if (!roomData.file) {
-      errors.file = "File is required";
-    }
-  
-    // Set errors state (assuming setErrors is a function to update state)
-    setErrors(errors);
-  
-    // Check if there are no errors
-    return Object.keys(errors).length === 0;
   };
-  
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -148,9 +95,12 @@ const CreateRoom = () => {
 
     formData.append("name", roomData.name);
     formData.append("description", roomData.description);
-    formData.append("propertyId",  typeof window !== "undefined"
-    ? JSON.parse(localStorage.getItem("property") as any)._id
-    : "",);
+    formData.append(
+      "propertyId",
+      typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("property") as any)._id
+        : ""
+    );
     formData.append("targetDeposit", roomData.targetDeposit);
     formData.append("targetRent", roomData.targetRent);
     formData.append("rentAmountMetrics", selectedOption?.value);
@@ -160,7 +110,6 @@ const CreateRoom = () => {
     formData.append("noOfPools", roomData.noOfPools);
     formData.append("otherAmentities", roomData.otherAmentities);
     formData.append("file", selectedFiles[0]);
-   
 
     try {
       setLoading(true);
@@ -176,7 +125,6 @@ const CreateRoom = () => {
       setLoading(false);
       toast.error(error);
     } finally {
-  
     }
   };
 
@@ -231,171 +179,181 @@ const CreateRoom = () => {
                         </p>
 
                         <div className="max-w-2xl w-full mx-auto pt-8">
-  <div className="w-full mt-4">
-    <InputField
-      css="bg-nrvLightGreyBg"
-      label="Apartment Nick Name"
-      placeholder="Enter apartment nick name"
-      inputType="text"
-      value={roomData.name}
-      name="name"
-      onChange={(e) => handleInputChange(e)}
-    />
-  </div>
-  <div className="w-full mt-4">
-    <InputField
-      css="bg-nrvLightGreyBg"
-      label="Description"
-      placeholder="Enter room description"
-      inputType="text"
-      value={roomData.description}
-      name="description"
-      onChange={(e) => handleInputChange(e)}
-    />
-  </div>
-  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Target Rent"
-        placeholder="100000"
-        inputType="text"
-        value={roomData.targetRent}
-        name="targetRent"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Target Deposit"
-        value={roomData.targetDeposit}
-        placeholder="100000"
-        inputType="text"
-        name="targetDeposit"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-  </div>
-  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
-    <div className="w-full md:w-1/2">
-      <SelectField
-        label="Rent Amount Metrics"
-        name="rentAmountMetrics"
-        value={selectedOption}
-        onChange={handleChange}
-        options={[
-          { value: "monthly", label: "Monthly" },
-          { value: "yearly", label: "Yearly" },
-        ]}
-        placeholder="Select amount metrics"
-      />
-    </div>
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Rent Amount"
-        value={roomData.rentAmount}
-        placeholder="100000"
-        inputType="text"
-        name="rentAmount"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-  </div>
-  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Number of rooms"
-        placeholder="1"
-        inputType="text"
-        value={roomData.noOfRooms}
-        name="noOfRooms"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Number of Bathroom/Toilet"
-        value={roomData.noOfBaths}
-        placeholder="1"
-        inputType="text"
-        name="noOfBaths"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-  </div>
-  <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Number of pools"
-        placeholder="1"
-        inputType="text"
-        value={roomData.noOfPools}
-        name="noOfPools"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-    <div className="w-full md:w-1/2">
-      <InputField
-        css="bg-nrvLightGreyBg"
-        label="Other Amenities"
-        value={roomData.otherAmentities}
-        placeholder="Gate post, garage"
-        inputType="text"
-        name="otherAmentities"
-        onChange={(e) => handleInputChange(e)}
-      />
-    </div>
-  </div>
+                          <div className="w-full mt-4">
+                            <InputField
+                              css="bg-nrvLightGreyBg"
+                              label="Apartment Nick Name"
+                              placeholder="Enter apartment nick name"
+                              inputType="text"
+                              value={roomData.name}
+                              name="name"
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <div className="w-full mt-4">
+                            <InputField
+                              css="bg-nrvLightGreyBg"
+                              label="Description"
+                              placeholder="Enter room description"
+                              inputType="text"
+                              value={roomData.description}
+                              name="description"
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Target Rent"
+                                placeholder="100000"
+                                inputType="text"
+                                value={Number(
+                                  roomData.targetRent
+                                )?.toLocaleString()}
+                                name="targetRent"
+                                // onKeyDown={preventNonNumeric}
+                                // onChange={(e) => handleInputChange(e, 5000000)}
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Target Deposit"
+                                value={Number(
+                                  roomData.targetDeposit
+                                )?.toLocaleString()}
+                                placeholder="100000"
+                                inputType="text"
+                                name="targetDeposit"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+                            <div className="w-full md:w-1/2">
+                              <SelectField
+                                label="Rent Amount Metrics"
+                                name="rentAmountMetrics"
+                                value={selectedOption}
+                                onChange={handleChange}
+                                options={[
+                                  { value: "monthly", label: "Monthly" },
+                                  { value: "yearly", label: "Yearly" },
+                                ]}
+                                placeholder="Select amount metrics"
+                              />
+                            </div>
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Rent Amount"
+                                value={Number(
+                                  roomData.rentAmount
+                                )?.toLocaleString()}
+                                placeholder="100000"
+                                inputType="text"
+                                name="rentAmount"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Number of rooms"
+                                placeholder="1"
+                                inputType="text"
+                                value={roomData.noOfRooms}
+                                name="noOfRooms"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Number of Bathroom/Toilet"
+                                value={roomData.noOfBaths}
+                                placeholder="1"
+                                inputType="text"
+                                name="noOfBaths"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Number of pools"
+                                placeholder="1"
+                                inputType="text"
+                                value={roomData.noOfPools}
+                                name="noOfPools"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                            <div className="w-full md:w-1/2">
+                              <InputField
+                                css="bg-nrvLightGreyBg"
+                                label="Other Amenities"
+                                value={roomData.otherAmentities}
+                                placeholder="Gate post, garage"
+                                inputType="text"
+                                name="otherAmentities"
+                                onChange={handleInputChange}
+                              />
+                            </div>
+                          </div>
 
-  <div className="w-full mt-4">
-    <label className="text-nrvGreyBlack mb-2 text-sm">
-      Property Photo
-    </label>
-    <div
-      className="text-center w-full mt-2"
-      onDragOver={(e) => e.preventDefault()}
-    >
-      <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
-        <input
-          type="file"
-          id="fileInput"
-          className="hidden"
-          accept=".png, .jpg , .jpeg"
-          onChange={handleFileInputChange}
-        />
-        <label
-          htmlFor="fileInput"
-          className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
-        >
-          <div className="text-center flex justify-center">
-            {selectedFiles.length > 0 ? (
-              selectedFiles[0]?.name
-            ) : (
-              <SlCloudUpload size={30} fontWeight={900} />
-            )}
-          </div>
-          {selectedFiles.length > 0 ? "Change file" : "Click to upload"}
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
+                          <div className="w-full mt-4">
+                            <label className="text-nrvGreyBlack mb-2 text-sm">
+                              Property Photo
+                            </label>
+                            <div
+                              className="text-center w-full mt-2"
+                              onDragOver={(e) => e.preventDefault()}
+                            >
+                              <div className="w-full border border-nrvLightGrey bg-white rounded-lg pt-4 pb-4 text-swBlack">
+                                <input
+                                  type="file"
+                                  id="fileInput"
+                                  className="hidden"
+                                  accept=".png, .jpg , .jpeg"
+                                  onChange={handleFileInputChange}
+                                />
+                                <label
+                                  htmlFor="fileInput"
+                                  className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
+                                >
+                                  <div className="text-center flex justify-center">
+                                    {selectedFiles.length > 0 ? (
+                                      selectedFiles[0]?.name
+                                    ) : (
+                                      <SlCloudUpload
+                                        size={30}
+                                        fontWeight={900}
+                                      />
+                                    )}
+                                  </div>
+                                  {selectedFiles.length > 0
+                                    ? "Change file"
+                                    : "Click to upload"}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
-
-                      
-
-                        <div className="flex justify-center mt-20">
+                        <div className="flex justify-center mt-8">
                           <Button
                             type="submit"
-                            size="large"
-                            className="max-w-md w-full mb-8"
+                            size="minLarge"
+                            className="w-full mb-8"
                             disabled={loading ? true : false}
-                            variant="bluebg"
+                            variant="darkPrimary"
                             showIcon={false}
                           >
                             {loading ? "Submitting" : "Continue"}

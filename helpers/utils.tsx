@@ -106,4 +106,15 @@ return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
   };
 
+  export const preventNonNumeric = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+  
+    if (allowedKeys.includes(e.key)) {
+      return;
+    }
+  
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
   

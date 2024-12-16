@@ -47,7 +47,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-normal w-full h-10 outline-none box-border text-nrvGrayText",
+    "font-normal w-full h-10 outline-none box-border text-nrvGrayText bg-white",
     css,
     {
       "border-red-500": error,
@@ -57,44 +57,53 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 
   return (
-    <div className="mb-4">
-      {label && (
+    <div className="mb-4 relative">
+      <div
+        className="border border-[#a9b0ba] p-4 bg-white rounded-md relative"
+      >
         <label
           htmlFor={name}
-          className={classNames("text-nrvGreyBlack font-medium mb-2 text-sm", {
-            "cursor-not-allowed": disabled,
-          })}
+          className="block text-[11.52px] md:text-sm font-medium w-full text-nrvDarkBlue"
         >
           {label}
-          {required && <span className="text-red-500">*</span>}
         </label>
-      )}
-      <div className="relative border border-nrvGreyMediumBg pl-2 mt-2 flex items-center rounded-lg overflow-hidden">
-        {icon && <div className="w-5 h-5 mr-2 flex items-center justify-center">{icon}</div>}
-        <input
-          type={password ? (showPassword ? "text" : "password") : inputType}
-          id={name}
-          name={name}
-          placeholder={placeholder}
-          className={inputClasses}
-          onChange={onChange}
-          value={value}
-          disabled={disabled}
-          onWheel={onWheel}
-          aria-label={ariaLabel}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${name}-error` : undefined}
-          onBlur={onBlur}
-          style={{ width: '100%', transform: 'scale(0.85)',  transformOrigin: ' left', fontWeight:600 }} // Set width and font size
-        />
-        {password && (
-          <div className="absolute right-2 cursor-pointer" onClick={togglePasswordVisibility}>
-            {showPassword ? <IoEyeOutline /> : <IoEyeOffOutline />}
-          </div>
-        )}
-        {unit && <span className="ml-2 text-gray-500">{unit}</span>}
+        <div className="flex items-center relative">
+          <input
+            type={password ? (showPassword ? "text" : "password") : inputType}
+            id={name}
+            name={name}
+            placeholder={placeholder}
+            className={`w-full focus:outline-none text-black text-base ${inputClasses}`}
+            onChange={onChange}
+            value={value}
+            disabled={disabled}
+            onWheel={onWheel}
+            aria-label={ariaLabel}
+            aria-invalid={!!error}
+            aria-describedby={error ? `${name}-error` : undefined}
+            onBlur={onBlur}
+            style={{
+              width: "100%",
+              transform: "scale(0.85)",
+              transformOrigin: "left",
+              fontWeight: 600,
+            }}
+          />
+          {password && (
+            <div
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <IoEyeOutline className="text-nrvDarkBlue text-xl" />
+              ) : (
+                <IoEyeOffOutline className="text-nrvDarkBlue text-xl" />
+              )}
+            </div>
+          )}
+        </div>
+        {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
       </div>
-      {error && <div id={`${name}-error`} className="text-red-500 font-light text-xs mt-1">{error}</div>}
     </div>
   );
 };

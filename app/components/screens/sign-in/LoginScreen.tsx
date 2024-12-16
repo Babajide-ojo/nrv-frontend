@@ -142,7 +142,7 @@ const LoginScreen: React.FC = () => {
             <Button
               size="minLarge"
               className="block w-full"
-              variant="bluebg"
+              variant="darkPrimary"
               showIcon={false}
               onClick={handleSubmit}
               disabled={isLoading}

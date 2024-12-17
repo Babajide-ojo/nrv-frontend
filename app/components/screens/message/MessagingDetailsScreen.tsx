@@ -300,7 +300,7 @@ const RentersListScreen = () => {
             <div className="h-screen flex flex-col md:mx-auto mx-4">
             <div className="container flex-grow flex flex-col">
               {/* Header Section */}
-              <div className="p-2 rounded-lg w-full flex items-center justify-between sticky top-0 bg-white z-10">
+              <div className="p-2 rounded-lg w-full flex items-center justify-between fixed top-0 bg-white z-10">
                 <div
                   className="flex items-center cursor-pointer"
                   onClick={() => router.back()}

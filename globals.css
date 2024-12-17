@@ -69,3 +69,14 @@ fieldset.MuiOutlinedInput-notchedOutline {
 .css-hlgwow {
   padding: 0px !important;
 }
+
+/* Hide scrollbar for all browsers */
+.custom-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+

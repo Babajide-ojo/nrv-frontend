@@ -297,7 +297,7 @@ const RentersListScreen = () => {
               </div>
             </div>
           ) : (
-            <div className="h-7/12 flex flex-col md:mx-auto mx-4 scrollbar-hide">
+            <div className="h-screen flex flex-col md:mx-auto mx-4 scrollbar-hide">
               <div className="container flex-grow flex flex-col">
                 <div className="p-2 rounded-lg w-full flex items-center justify-between sticky top-0 bg-white z-10">
                   <div

@@ -79,7 +79,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           {links.map(({ name, route }, index) => (
             <li
               key={index}
-              className={`w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light rounded-md m-4 ${
+              className={`w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-base font-light rounded-md m-4 ${
                 activeLink === route
                   ? "bg-nrvDarkBlue text-white"
                   : "text-nrvGrayText hover:bg-nrvDarkBlue hover:text-white"

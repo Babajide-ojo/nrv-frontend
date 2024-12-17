@@ -283,7 +283,7 @@ const RentersListScreen = () => {
                     className="hidden"
                   />
                   <textarea
-                    className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                    className="w-full p-2 text-black text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
                     placeholder="Type your message..."
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
@@ -380,7 +380,7 @@ const RentersListScreen = () => {
 
                   {/* Text Input */}
                   <textarea
-                    className="w-full p-2 text-sm text-gray-500 rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                    className="w-full p-2  text-black text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
                     placeholder="Type your message..."
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}

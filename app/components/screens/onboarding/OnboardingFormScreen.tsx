@@ -155,13 +155,13 @@ const OnboardingFormScreen: React.FC = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <div className="max-w-lg mx-auto pt-8 flex-grow">
+                  <div className="max-w-2xl mx-auto pt-8 flex-grow">
                     <div className="text-2xl text-nrvGreyBlack font-semibold">
                       Where would you like to start? 🙂
                     </div>
-                    <div className="pt-1 text-nrvLightGrey text-md font-light">
+                    {/* <div className="pt-1 text-nrvLightGrey text-md font-light">
                       What will you be joining naijarentverify as?
-                    </div>
+                    </div> */}
 
                     <div className="flex flex-wrap gap-1 justify-center">
                       {onboardingOptions.map(
@@ -177,23 +177,23 @@ const OnboardingFormScreen: React.FC = () => {
                         )
                       )}
                     </div>
-                    <div className="flex justify-center">
+                    {/* <div className="flex justify-center">
                       <Button
-                        size="large"
-                        className="w-72"
-                        variant="lightGrey"
+                        size="minLarge"
+                        className="w-full"
+                        variant="bluebg"
                         showIcon={false}
                         onClick={handleNext}
                       >
                         Select All
                       </Button>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="flex justify-center">
                     <Button
-                      size="large"
-                      className="w-96 mb-8"
+                      size="minLarge"
+                      className="w-full mb-8"
                       variant="bluebg"
                       showIcon={false}
                       onClick={handleNext}
@@ -219,7 +219,7 @@ const OnboardingFormScreen: React.FC = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <div className="max-w-lg mx-auto pt-8 flex-grow">
+                  <div className="max-w-2xl mx-auto pt-8 flex-grow">
                     <p className="text-2xl font-semibold text-swGray800 flex gap-2">
                       <span>
                         {" "}
@@ -265,8 +265,8 @@ const OnboardingFormScreen: React.FC = () => {
 
                   <div className="flex justify-center">
                     <Button
-                      size="large"
-                      className="w-96 mb-8"
+                      size="minLarge"
+                      className="w-full mb-8"
                       variant="bluebg"
                       showIcon={false}
                       onClick={handleNext}
@@ -289,7 +289,7 @@ const OnboardingFormScreen: React.FC = () => {
                     flexDirection: "column",
                   }}
                 >
-                  <div className="max-w-lg mx-auto pt-8 flex-grow">
+                  <div className="max-w-2xl mx-auto pt-8 flex-grow">
                     <p className="text-2xl font-semibold text-swGray800 flex gap-2">
                       <span>
                         {" "}
@@ -333,8 +333,8 @@ const OnboardingFormScreen: React.FC = () => {
 
                   <div className="flex justify-center">
                     <Button
-                      size="large"
-                      className="w-96 mb-8"
+                      size="minLarge"
+                      className="w-full mb-8"
                       variant="bluebg"
                       showIcon={false}
                       onClick={handleSubmit}

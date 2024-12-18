@@ -1,11 +1,7 @@
 import { FcAdvertising, FcComboChart, FcHome, FcParallelTasks, FcSettings } from "react-icons/fc";
-import { GrInProgress } from "react-icons/gr";
-import { CiInboxIn } from "react-icons/ci";
-import { FaPeopleLine } from "react-icons/fa6";
 import { FcLineChart } from "react-icons/fc";
 import { FcFeedIn } from "react-icons/fc";
-import { IoMdHome } from "react-icons/io";
-import { IoSettings } from "react-icons/io5";
+
 
 const rentPayment = "../public/images/rentpayment.png";
 
@@ -87,14 +83,7 @@ export const onboardingOptions = [
     title: "Rent Collection",
     description:
       "Make rent collection effortless and convenient for all parties involved, ensuring a smooth process.",
-  },
-  {
-    imageLink:
-      "https://res.cloudinary.com/dzv98o7ds/image/upload/v1714472980/k5gcjotzj3fu1yjxjgp3.png",
-    title: "Lease Agreement",
-    description:
-      "Access a customizable lease agreement tailored to your state's specific requirements.",
-  },
+  }
 ];
 
 export const enquiryData = [

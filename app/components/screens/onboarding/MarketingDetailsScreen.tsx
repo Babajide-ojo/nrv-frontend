@@ -2,8 +2,8 @@ const MarketingDetailsScreen = () => {
   return (
     <div className="w-full md:w-1/2 lg:w-1/2 py-8 px-12 hidden md:flex lg:flex items-center justify-center bg-nrvDarkBlue rounded-2xl m-8">
       <div className="w-full text-center text-nrvLightGreyBg max-w-sm">
-        <p className="text-sm mb-2">Marketing</p>
-        <p className="text-xs">Easily Find Quality Tenants</p>
+        {/* <p className="text-sm mb-2">Marketing</p>
+        <p className="text-xs">Easily Find Quality Tenants</p> */}
 
         <div className="">
           <div className="mt-8 text-start">

@@ -146,12 +146,12 @@ const PropertiesScreen = () => {
                   apartments, sections or offices available on that property and
                   enjoy our seamless property management app
                 </p> */}
-                {properties && properties?.length > 0 ? (
+                {properties ? (
                   <div>
-                    {properties?.map((property: any) => (
-                      <div>
+                    {properties?.map((property: any, index: any) => (
+                 
                         <div
-                          key={property.id}
+                          key={index}
                           className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
                         >
                           <div className="w-3/5">
@@ -194,7 +194,10 @@ const PropertiesScreen = () => {
                             </Button>
                           </div>
                         </div>
-                        <div className="flex justify-between mt-4">
+                       
+                 
+                    ))}
+                     <div className="flex justify-between mt-4">
                           <Button
                             size="small"
                             className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
@@ -216,14 +219,12 @@ const PropertiesScreen = () => {
                             Next
                           </Button>
                         </div>
-                      </div>
-                    ))}
                   </div>
                 ) : (
                   <div className="flex justify-center items-center mt-24">
                   <div className="">
                     <EmptyState />
-                    <p className="text-nrvLightGrey m-2">No Property Yet</p>
+                    <p className="text-nrvLightGrey m-2">No Property Onboarded Yet</p>
                   </div>
                 </div>
                 )}

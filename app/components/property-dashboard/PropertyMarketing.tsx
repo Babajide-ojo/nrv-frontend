@@ -68,7 +68,7 @@ const PropertyMarketing: React.FC<Data> = ({ data }) => {
                 </svg>
               </div>
               <div className="text-xl py-2 text-center">Marketing</div>
-              <div className="text-[16px] py-2 mb-4 text-center">
+              <div className="text-xl py-2 mb-4 text-center">
                 Easily find quality tenants
               </div>
               <div className="flex gap-3">

@@ -40,7 +40,9 @@ const validationSchema = yup.object({
 });
 
 // Custom InputField component
-const CustomInputField = ({ name , ...props }: any) => {
+const CustomInputField = ({ name , type,  ...props }: any) => {
+  console.log({type});
+  
   const { setFieldValue, setFieldTouched } = useFormikContext();
 
   const handleChange = (event: any) => {
@@ -59,6 +61,7 @@ const CustomInputField = ({ name , ...props }: any) => {
         name={name}
         onChange={handleChange}
         onBlur={handleBlur}
+        inputType={type}
         {...props}
       />
       <ErrorMessage
@@ -103,10 +106,10 @@ const SignUpMultiForm = () => {
           }}
         >
           <div className="max-w-md mx-auto pt-8 flex-grow w-full">
-            <div className="text-xl text-nrvGreyBlack font-semibold">
+            <div className="text-2xl text-nrvGreyBlack font-semibold">
               Welcome user 🚀
             </div>
-            <div className="pt-2 text-nrvLightGrey text-sm font-light">
+            <div className="pt-2 text-nrvGrayText text-md font-light">
               What will you be joining naijarentverify as?
             </div>
             <div
@@ -123,10 +126,10 @@ const SignUpMultiForm = () => {
                 <IoPersonCircleSharp color="#153969" size={40} />
               </div>
               <div className="p-1.5">
-                <div className="text-nrvGreyBlack text-sm font-medium pb-2">
+                <div className="text-nrvGreyBlack text-lg font-medium pb-2">
                   Sign up as a landlord
                 </div>
-                <div className="text-nrvLightGrey text-xs font-light">
+                <div className="text-nrvGreyBlack text-md font-medium">
                   Explore our powerful tools for thorough tenant screening.
                 </div>
               </div>
@@ -150,10 +153,10 @@ const SignUpMultiForm = () => {
                 <IoPersonCircleSharp color="#153969" size={40} />
               </div>
               <div className="p-2">
-                <div className="text-nrvGreyBlack text-md font-medium pb-2">
+                <div className="text-nrvGreyBlack text-lg font-medium pb-2">
                   Sign up as a tenant
                 </div>
-                <div className="text-nrvLightGrey text-xs font-light">
+                <div className="text-nrvGreyBlack text-md font-medium">
                   Explore our powerful tools for thorough tenant screening.
                 </div>
               </div>
@@ -230,14 +233,14 @@ const SignUpMultiForm = () => {
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="firstName"
-                            placeholder="Enter First Name"
+                           // placeholder="Enter First Name"
                             label="Enter first name"
                           />
                         </div>
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="lastName"
-                            placeholder="Enter Last Name"
+                         //   placeholder="Enter Last Name"
                             label="Enter Last Name"
                           />
                         </div>
@@ -246,14 +249,14 @@ const SignUpMultiForm = () => {
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="email"
-                            placeholder="Enter Email Address"
+                         //   placeholder="Enter Email Address"
                             label="Enter Email Address"
                           />
                         </div>
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="nin"
-                            placeholder="Enter NIN"
+                           // placeholder="Enter NIN"
                             label="Enter NIN"
                           />
                         </div>
@@ -261,7 +264,7 @@ const SignUpMultiForm = () => {
                       <div className="w-full mt-4">
                         <CustomInputField
                           name="homeAddress"
-                          placeholder="Enter Home Address"
+                         // placeholder="Enter Home Address"
                           label="Enter Home Address"
                         />
                       </div>
@@ -269,14 +272,14 @@ const SignUpMultiForm = () => {
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="phoneNumber"
-                            placeholder="Enter Phone Number"
+                           // placeholder="Enter Phone Number"
                             label="Enter Phone Number"
                           />
                         </div>
                         <div className="md:w-1/2 w-full mt-4 md:mt-0">
                           <CustomInputField
                             name="password"
-                            placeholder="Enter Password"
+                          //  placeholder="Enter Password"
                             label="Enter Password"
                             type="password"
                           />
@@ -293,13 +296,14 @@ const SignUpMultiForm = () => {
                     </div>
                     <Button
                       type="submit"
-                      size="large"
+                      size="minLarge"
                       className="block w-full"
                       variant="bluebg"
                       showIcon={false}
                       disabled={isSubmitting}
+                      isLoading={isSubmitting ? true : false}
                     >
-                      {isSubmitting ? "Loading..." : "Continue"}
+                      {isSubmitting ? "Loading..." : "Submit"}
                     </Button>
                   </div>
                 </Form>

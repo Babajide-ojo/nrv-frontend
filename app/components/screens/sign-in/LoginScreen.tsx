@@ -86,7 +86,7 @@ const LoginScreen: React.FC = () => {
 
   return (
     <div
-      className="flex justify-center h-screen"
+      className="flex justify-center h-screen bg-['#e5f0fa']"
       style={{
         minHeight: "85vh",
       }}
@@ -102,12 +102,12 @@ const LoginScreen: React.FC = () => {
         }}
       >
         <div className="max-w-md mx-auto w-full">
-          <div className="text-md text-nrvGreyBlack font-semibold">
+          <div className="text-3xl text-nrvGreyBlack font-semibold">
             Welcome to NaijaRentVerify
           </div>
-          <div className="pt-2 text-nrvLightGrey text-sm font-light">
+          {/* <div className="pt-2 text-nrvLightGrey text-md font-light">
             Please enter your login to access your account.
-          </div>
+          </div> */}
     
           <div className="flex items-center w-full mt-6">
 
@@ -115,7 +115,7 @@ const LoginScreen: React.FC = () => {
           <div className="mt-2">
             <InputField
               label="Email Address"
-              placeholder="Enter your email address"
+      
               inputType="email"
               name="email"
               onChange={handleInputChange}
@@ -126,7 +126,7 @@ const LoginScreen: React.FC = () => {
           <div className="mt-4">
             <InputField
               label="Password"
-              placeholder="Enter your password"
+    
               inputType={showPassword ? "text" : "password"}
               name="password"
               onChange={handleInputChange}

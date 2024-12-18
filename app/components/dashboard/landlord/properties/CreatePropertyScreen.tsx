@@ -205,14 +205,14 @@ const CreatePropertyScreen = () => {
                                 { value: "duplex", label: "Duplex" },
                                 { value: "flat", label: "Flat" },
                               ]}
-                              placeholder="Select Property Type"
+                             // placeholder="Select Property Type"
                             />
                           </div>
                           <div className="w-full mt-4">
                             <InputField
                               css="bg-nrvLightGreyBg"
                               label="Street Address"
-                              placeholder="Enter Street Address"
+                             // placeholder="Enter Street Address"
                               inputType="text"
                               name="streetAddress"
                               value={propertyData.streetAddress}
@@ -224,7 +224,7 @@ const CreatePropertyScreen = () => {
                             <InputField
                               css="bg-nrvLightGreyBg"
                               label="Unit (Optional)"
-                              placeholder="Enter Unit"
+                            //  placeholder="Enter Unit"
                               inputType="text"
                               name="unit"
                               value={propertyData.unit}
@@ -238,7 +238,7 @@ const CreatePropertyScreen = () => {
                               <InputField
                                 css="bg-nrvLightGreyBg"
                                 label="City"
-                                placeholder="Enter City"
+                              //  placeholder="Enter City"
                                 inputType="text"
                                 name="city"
                                 value={propertyData.city}
@@ -250,7 +250,7 @@ const CreatePropertyScreen = () => {
                               <InputField
                                 css="bg-nrvLightGreyBg"
                                 label="State"
-                                placeholder="Enter State"
+                              //  placeholder="Enter State"
                                 inputType="text"
                                 name="state"
                                 value={propertyData.state}
@@ -263,7 +263,7 @@ const CreatePropertyScreen = () => {
                             <InputField
                               css="bg-nrvLightGreyBg"
                               label="Zip Code"
-                              placeholder="Enter Zip Code"
+                             // placeholder="Enter Zip Code"
                               inputType="text"
                               name="zipCode"
                               value={propertyData.zipCode}

@@ -34,10 +34,7 @@ const InputField: React.FC<InputFieldProps> = ({
   error,
   ariaLabel,
   onWheel,
-  icon,
-  unit,
   password = false,
-  required = false,
   onBlur,
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -47,7 +44,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-normal w-full h-10 outline-none box-border text-nrvGrayText bg-white",
+    "font-normal w-full h-10 outline-none box-border bg-white",
     css,
     {
       "border-red-500": error,
@@ -59,11 +56,11 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="mb-4 relative">
       <div
-        className="border border-[#a9b0ba] p-4 bg-white rounded-md relative"
+        className="border border-[#a9b0ba] p-3 bg-white rounded-md relative"
       >
         <label
           htmlFor={name}
-          className="block text-[11.52px] md:text-sm font-medium w-full text-nrvDarkBlue"
+          className="block text-[11.52px] md:text-sm font-medium w-full text-nrvGrayText"
         >
           {label}
         </label>
@@ -73,7 +70,7 @@ const InputField: React.FC<InputFieldProps> = ({
             id={name}
             name={name}
             placeholder={placeholder}
-            className={`w-full focus:outline-none text-black text-base ${inputClasses}`}
+            className={`w-full focus:outline-none text-black font-bold text-base ${inputClasses}`}
             onChange={onChange}
             value={value}
             disabled={disabled}
@@ -84,14 +81,12 @@ const InputField: React.FC<InputFieldProps> = ({
             onBlur={onBlur}
             style={{
               width: "100%",
-              transform: "scale(0.85)",
-              transformOrigin: "left",
-              fontWeight: 600,
+              transformOrigin: "left"
             }}
           />
-          {password && (
+          {inputType == "password" && (
             <div
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 cursor-pointer"
               onClick={togglePasswordVisibility}
             >
               {showPassword ? (
@@ -102,8 +97,9 @@ const InputField: React.FC<InputFieldProps> = ({
             </div>
           )}
         </div>
-        {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+
       </div>
+      {error && <p className="text-red-500 text-[13px] mt-2">{error}</p>}
     </div>
   );
 };

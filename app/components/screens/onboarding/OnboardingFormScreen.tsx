@@ -159,7 +159,7 @@ const OnboardingFormScreen: React.FC = () => {
                     <div className="text-2xl text-nrvGreyBlack font-semibold">
                       Where would you like to start? 🙂
                     </div>
-                    <div className="pt-1 text-nrvLightGrey text-sm font-light">
+                    <div className="pt-1 text-nrvLightGrey text-md font-light">
                       What will you be joining naijarentverify as?
                     </div>
 
@@ -197,6 +197,7 @@ const OnboardingFormScreen: React.FC = () => {
                       variant="bluebg"
                       showIcon={false}
                       onClick={handleNext}
+                      
                     >
                       Continue
                     </Button>
@@ -337,8 +338,9 @@ const OnboardingFormScreen: React.FC = () => {
                       variant="bluebg"
                       showIcon={false}
                       onClick={handleSubmit}
+                      isLoading={isLoading? true: false}
                     >
-                      Continue
+                      Login
                     </Button>
                   </div>
                 </div>

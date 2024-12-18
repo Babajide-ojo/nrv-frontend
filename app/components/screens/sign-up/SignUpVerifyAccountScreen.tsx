@@ -94,11 +94,12 @@ const SignUpVerifyAccount: React.FC = () => {
         <div className="mt-24">
           <Button
             onClick={handleSubmit}
-            size="large"
+            size="minLarge"
             className="block w-full"
-            variant="lightGrey"
+            variant="bluebg"
             showIcon={false}
             disabled={otp.length !== 6 || isLoading}
+            isLoading= {isLoading ? true : false}
           >
             {isLoading ? "Loading..." : "Confirm"}
           </Button>

@@ -40,7 +40,6 @@ const PropertiesScreen = () => {
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
     } catch (error) {
-
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
@@ -87,7 +86,9 @@ const PropertiesScreen = () => {
                   Let’s add another property :)
                 </p> */}
                 <p className="text-sm text-nrvLightGrey">
-                  Afer creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
+                  Afer creating a property, kindly proceed to enlist all
+                  apartments, sections or offices available on that property and
+                  enjoy our seamless property management app
                 </p>
                 <div className="w-full h-screen flex justify-center items-center">
                   <div className="">
@@ -122,7 +123,6 @@ const PropertiesScreen = () => {
                     <p className="text-md text-nrvLightGrey">
                       Let’s add another property :)
                     </p>
-             
                   </div>
                   <Button
                     size="normal"
@@ -140,80 +140,93 @@ const PropertiesScreen = () => {
                       <p className="">Add New</p>
                     </div>
                   </Button>
-
                 </div>
-                <p className="text-md text-nrvDarkBlue mt-4">
-                  After creating a property, kindly proceed to enlist all apartments, sections or offices available on that property and enjoy our seamless property management app
-                </p>
-                {properties?.map((property: any) => (
-                  <div
-                    key={property.id}
-                    className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
-                  >
-                    <div className="w-3/5">
-                      <div className="flex gap-2 ">
-                     
-                      <div className="md:w-1/5 w-2/5 ">
-                      <img
-                          src={property.file}
-                          className="h-16 w-16 rounded-md"
-                          alt="Property"
-                        />
-                      </div>
-                      
-                        <p className="md:w-4/5 w-3/5 md:text-sm text-md text-nrvDarkGrey font-lighter">
-                          {property.streetAddress}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="w-2/5 text-end">
-                      <Button
-                        size="small"
-                        className="text-nrvDarkBlue text-xs rounded border border-nrvDarkBlue mt-8"
-                        variant="lightGrey"
-                        showIcon={false}
-                      >
+                {/* <p className="text-md text-nrvDarkBlue mt-4">
+                  After creating a property, kindly proceed to enlist all
+                  apartments, sections or offices available on that property and
+                  enjoy our seamless property management app
+                </p> */}
+                {properties && properties?.length > 0 ? (
+                  <div>
+                    {properties?.map((property: any) => (
+                      <div>
                         <div
-                          className="flex gap-3"
-                          onClick={() => {
-                            localStorage.setItem(
-                              "property",
-                              JSON.stringify(property)
-                            );
-                            setSingleProperty(property);
-                            router.push(`/dashboard/landlord/properties/${property._id}`)
-                          }}
+                          key={property.id}
+                          className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
                         >
-                          <p className="text-xs p-0.5">
-                            View details
-                          </p>
+                          <div className="w-3/5">
+                            <div className="flex gap-2 ">
+                              <div className="md:w-1/5 w-2/5 ">
+                                <img
+                                  src={property.file}
+                                  className="h-16 w-16 rounded-md"
+                                  alt="Property"
+                                />
+                              </div>
+
+                              <p className="md:w-4/5 w-3/5 md:text-sm text-md text-nrvDarkGrey font-lighter">
+                                {property.streetAddress}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="w-2/5 text-end">
+                            <Button
+                              size="small"
+                              className="text-nrvDarkBlue text-xs rounded border border-nrvDarkBlue mt-8"
+                              variant="lightGrey"
+                              showIcon={false}
+                            >
+                              <div
+                                className="flex gap-3"
+                                onClick={() => {
+                                  localStorage.setItem(
+                                    "property",
+                                    JSON.stringify(property)
+                                  );
+                                  setSingleProperty(property);
+                                  router.push(
+                                    `/dashboard/landlord/properties/${property._id}`
+                                  );
+                                }}
+                              >
+                                <p className="text-xs p-0.5">View details</p>
+                              </div>
+                            </Button>
+                          </div>
                         </div>
-                      </Button>
-                    </div>
+                        <div className="flex justify-between mt-4">
+                          <Button
+                            size="small"
+                            className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                            variant="lightGrey"
+                            showIcon={false}
+                            onClick={handlePrevPage}
+                            disabled={page === 1}
+                          >
+                            Previous
+                          </Button>
+                          <Button
+                            size="small"
+                            className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                            variant="lightGrey"
+                            showIcon={false}
+                            onClick={handleNextPage}
+                            disabled={page === totalPages}
+                          >
+                            Next
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-                <div className="flex justify-between mt-4">
-                  <Button
-                    size="small"
-                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={handlePrevPage}
-                    disabled={page === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    size="small"
-                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={handleNextPage}
-                    disabled={page === totalPages}
-                  >
-                    Next
-                  </Button>
+                ) : (
+                  <div className="flex justify-center items-center mt-24">
+                  <div className="">
+                    <EmptyState />
+                    <p className="text-nrvLightGrey m-2">No Property Yet</p>
+                  </div>
                 </div>
+                )}
               </div>
             )}
           </LandLordLayout>
@@ -224,7 +237,9 @@ const PropertiesScreen = () => {
             }}
           >
             <div className="mx-auto text-center p-4">
-              <h2 className="text-nrvDarkBlue font-semibold text-xl">Contact Info</h2>
+              <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                Contact Info
+              </h2>
               <p className="text-nrvLightGrey text-sm">
                 View your property full details
               </p>
@@ -232,7 +247,6 @@ const PropertiesScreen = () => {
                 {singleProperty.streetAddress}
               </p>
 
-    
               <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                 <Button
                   size="small"
@@ -240,15 +254,12 @@ const PropertiesScreen = () => {
                   variant="bluebg"
                   showIcon={false}
                   onClick={() => {
-        
                     router.push(
                       `/dashboard/landlord/properties/${singleProperty._id}`
                     );
                   }}
                 >
-              
-                    View full details
-             
+                  View full details
                 </Button>
                 <Button
                   size="small"

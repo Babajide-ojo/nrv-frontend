@@ -24,7 +24,7 @@ const Page = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-           <MessagingDetailsScreen />
+           <MessagingDetailsScreen source="sender" />
           </TenantLayout>
         </ProtectedRoute>
       )}

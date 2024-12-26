@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AiOutlineCheck } from "react-icons/ai";
 
 interface Message {
@@ -28,6 +28,8 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
     localStorage.getItem("nrv-user") as string
   );
 
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
   const isNewDay = (current: string, previous: string | null): boolean => {
     if (!previous) return true;
     const currentDate = new Date(current).toDateString();
@@ -42,6 +44,14 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
   }, [messages]); // Trigger scrolling whenever messages change
 
   let lastDate: string | null = null;
+
+  const handleImageClick = (imageUrl: string) => {
+    setPreviewImage(imageUrl);
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
+  };
 
   return (
     <div>
@@ -103,7 +113,8 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
                               <img
                                 src={file}
                                 alt={`file-${index}`}
-                                className="w-60 h-32 object-cover rounded-lg"
+                                className="w-60 h-32 object-cover rounded-lg cursor-pointer"
+                                onClick={() => handleImageClick(file)} // Click to preview
                               />
                             )}
 
@@ -156,6 +167,21 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
         })}
       {/* Dummy div for scrolling */}
       <div ref={messageEndRef} />
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+          onClick={closePreview}
+        >
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="max-w-full max-h-full object-contain"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+          />
+        </div>
+      )}
     </div>
   );
 };

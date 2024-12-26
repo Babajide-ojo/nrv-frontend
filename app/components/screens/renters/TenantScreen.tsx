@@ -37,7 +37,6 @@ const TenantScreen = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState<number>(1);
   const [isOpen, setIsOpen] = useState(false);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [landlordProperties, setLandlordProperties] = useState<any>([]);
@@ -50,27 +49,49 @@ const TenantScreen = () => {
     formikHelpers: FormikHelpers<any>,
     dispatch: ThunkDispatch<any, any, AnyAction>
   ) => Promise<void>;
-
   const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const formData = {
-      page: page,
-      id: user?.user?._id,
-      status: "activeTenant",
-    };
     try {
-      const _response = await dispatch(
-        getAllLandlordApartment(formData) as any
-      );
-      setProperties(_response?.payload?.data);
-      setTotalPages(_response?.totalPages);
+      const storedUser = localStorage.getItem("nrv-user");
+      const user = storedUser ? JSON.parse(storedUser) : null;
+  
+      if (!user?.user?._id) {
+        console.error("Invalid user data or user not logged in");
+        setIsLoading(false);
+        setIsPageLoading(false);
+        return;
+      }
+  
+      setUser(user.user);
+  
+      const formData = {
+        page,
+        id: user.user._id,
+        status: "activeTenant",
+      };
+  
+      const _response = await dispatch(getAllLandlordApartment(formData) as any);
+      if (_response?.payload?.data) {
+        const properties = _response.payload.data;
+        setProperties(properties);
+        const landlordProperties = properties.map((item: any) => ({
+          label: <div className="text-xs">{item.propertyId?.streetAddress} | Property ID - {item?.roomId}</div>,
+          value: item._id,
+        }));
+        setLandlordProperties(landlordProperties);
+        setTotalPages(_response?.totalPages || 1);
+      } else {
+        setProperties([]);
+        setLandlordProperties([]);
+        setTotalPages(1);
+      }
     } catch (error) {
+      console.error("Error fetching landlord apartments:", error);
     } finally {
       setIsLoading(false);
       setIsPageLoading(false); // Stop page loading after fetch
     }
   };
+  
 
   const fetchSelfOnboardedTenantData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
@@ -175,8 +196,8 @@ const TenantScreen = () => {
         <div className="w-full md:w-2/5 mx-auto flex justify-end items-end mt-2">
           <Button
             size="large"
-            className="font-medium text-nrvDarkBlue text-sm  border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white"
-            variant="mediumGrey"
+            className="font-medium text-nrvDarkBlue text-sm  border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white rounded rounded-full"
+            variant="lightGrey"
             showIcon={false}
             onClick={() => {
               setOpenAddTenantModal(true);
@@ -186,7 +207,6 @@ const TenantScreen = () => {
           </Button>
         </div>
         <div className="">
-
           {toggleTenantView === "onboarded_tenant" && (
             <div>
               {tenents && tenents.length > 0 ? (
@@ -194,12 +214,9 @@ const TenantScreen = () => {
                   {tenents?.map((item: any, index) => {
                     return (
                       <div key={index}>
-                        <div
-                          className="flex bg-white mt-4 mrounded rounded-2xl p-4"
-                      
-                        >
-                        <div className="w-1/5 flex justify-center items-center">
-                          <FcHome size={24} />
+                        <div className="flex bg-white mt-4 mrounded rounded-2xl p-4">
+                          <div className="w-1/5 flex justify-center items-center">
+                            <FcHome size={24} />
                           </div>
                           <div className="w-4/5">
                             <div className="flex justify-between w-full">
@@ -208,22 +225,19 @@ const TenantScreen = () => {
                                 {item?.applicant?.lastName}
                               </div>
                               <div
-                                    className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
-                                    onClick={() =>
-                                      router.push(
-                                        `rooms/${item?.propertyId?._id}`
-                                      )
-                                    }
-                                  >
-                                   Aparment ID : {item?.propertyId?.roomId}
-                                  </div>
+                                className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
+                                onClick={() =>
+                                  router.push(`rooms/${item?.propertyId?._id}`)
+                                }
+                              >
+                                Aparment ID : {item?.propertyId?.roomId}
+                              </div>
                             </div>
                             <div className="text-nrvDarkBlue text-sm mt-2">
                               {item?.propertyId?.propertyId.streetAddress},{" "}
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}
                             </div>
-                         
                           </div>
                         </div>
                       </div>

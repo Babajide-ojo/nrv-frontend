@@ -23,7 +23,7 @@ const Page = () => {
       ) : (
         <ProtectedRoute>
           <LandLordLayout>
-           <MessagingDetailsScreen />
+           <MessagingDetailsScreen source="recipent" />
           </LandLordLayout>
         </ProtectedRoute>
       )}

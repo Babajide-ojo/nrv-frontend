@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
-import Button from "../buttons/Button";
+import { CiLogout } from "react-icons/ci";
 
 interface User {
   name: string;
@@ -21,9 +21,12 @@ const links = [
   { name: "Properties", route: "/dashboard/landlord/properties" },
   { name: "Renters", route: "/dashboard/landlord/properties/renters" },
   { name: "Maintenance", route: "/dashboard/landlord/properties/maintenance" },
-  { name: "Verification", route: "/dashboard/landlord/properties/verification" },
-  { name: "Settings", route: "/dashboard/landlord/settings" },
+  {
+    name: "Verification",
+    route: "/dashboard/landlord/properties/verification",
+  },
   { name: "Messages", route: "/dashboard/landlord/messages" },
+  { name: "Settings", route: "/dashboard/landlord/settings" },
 ];
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
@@ -41,9 +44,10 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       if (storedUser) {
         const userInfo = JSON.parse(storedUser);
         setUser({
-          name: userInfo?.user?.firstName || userInfo?.firstName || "User",
+          name: userInfo?.user?.firstName + " " + userInfo?.user?.lastName  || userInfo?.firstName + " " + userInfo?.lastName  || "User",
           role: userInfo?.user?.accountType || userInfo?.accountType || "Role",
-          loggedInTime: new Date(Date.now()).toLocaleString() || "Not available",
+          loggedInTime:
+            new Date(Date.now()).toLocaleString() || "Not available",
         });
       }
     };
@@ -60,7 +64,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
     <div
       className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      } flex flex-col`}
     >
       {/* Logo Section */}
       <div className="mt-10" onClick={() => router.push("/")}>
@@ -74,15 +78,15 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       </div>
 
       {/* Navigation Links */}
-      <nav className="mt-5">
+      <nav className="mt-5 flex-1">
         <ul>
           {links.map(({ name, route }, index) => (
             <li
               key={index}
-              className={`w-4/5 mx-auto cursor-pointer px-6 py-3 flex justify-between text-base font-light rounded-md m-4 ${
+              className={`w-4/5 rounded-full mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light m-4 ${
                 activeLink === route
                   ? "bg-nrvDarkBlue text-white"
-                  : "text-nrvGrayText hover:bg-nrvDarkBlue hover:text-white"
+                  : "text-black"
               }`}
               onClick={() => handleLinkClick(route)}
             >
@@ -95,24 +99,27 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       {/* User Info Section */}
       {user && (
         <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
-          <p className="text-xs font-semibold">{user.name}</p>
-          <p className="text-xs text-nrvDarkBlue mt-2">Account Type : {user.role}</p>
-          <p className="text-xs text-gray-500 mt-2">Current Time: {user.loggedInTime}</p>
-          <div>
-            <Button
-              className="cursor-pointer text-nrvGrayText text-xs mt-4"
-              onClick={() => {
-                localStorage.removeItem("nrv-user");
-                router.push("/");
-              }}
-              variant="whitebg"
-              size="small"
-            >
-              Sign Out
-            </Button>
-          </div>
+          <p className="text-sm font-semibold">{user.name}</p>
+          <p className="text-sm text-nrvDarkBlue mt-2">
+            Account Type : {user.role}
+          </p>
+   
         </div>
       )}
+
+      {/* Logout Button at the Bottom */}
+      <div className="mt-auto mb-12 ml-12">
+        <button
+          className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer bg-white text-nrvDarkBlue border text-center"
+          onClick={() => {
+            localStorage.removeItem("nrv-user");
+            router.push("/");
+          }}
+        >
+          <CiLogout className="h-[18.5px] w-[18.5px] text-cwMidGray" />
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

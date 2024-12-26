@@ -87,26 +87,6 @@ const OnboardingFormScreen: React.FC = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
 
-  const handleNextAndVerify = () => {
-    if (!validateForm()) {
-      return;
-    }
-    setCurrentStep(3);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
-    }));
-  };
-
   const handleSubmit = async () => {
     setIsLoading(true);
 

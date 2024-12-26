@@ -161,7 +161,7 @@ const RentersListScreen = () => {
                   className="p-2 rounded rounded-lg w-full mt-8 flex justify-between"
                   onClick={() => {
                     router.push(
-                      `/dashboard/tenant/messages/${property.ownerId}`
+                      `/dashboard/tenant/messages/${property.ownerId._id}`
                     );
                   }}
                 >
@@ -169,14 +169,14 @@ const RentersListScreen = () => {
                     <div className="flex gap-2 ">
                       <div className="w-1/7">
                         <RandomColorCircle
-                          firstName={property.applicant?.firstName}
-                          lastName={property.applicant?.lastName}
+                          firstName={property.ownerId?.firstName}
+                          lastName={property.ownerId?.lastName}
                         />
                       </div>
 
                       <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
-                        {property.applicant?.firstName}{" "}
-                        {property.applicant?.lastName}
+                        {property.ownerId?.firstName}{" "}
+                        {property.ownerId?.lastName}
                       </p>
                     </div>
                   </div>

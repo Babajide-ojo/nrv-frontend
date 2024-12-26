@@ -16,7 +16,7 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors : {
-        nrvDarkBlue: "#153969",
+        nrvDarkBlue: "#234e87",
         nrvGold: "#FFB94E",
         nrvGreyBlack: "#333333",
         nrvGrayText:'#7d7d7d',

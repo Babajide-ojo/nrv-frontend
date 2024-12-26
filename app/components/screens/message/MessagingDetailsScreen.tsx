@@ -45,7 +45,7 @@ const RandomColorCircle = ({ firstName, lastName }: any) => {
   );
 };
 
-const RentersListScreen = () => {
+const MessagingDetailsScreen = ({source}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [conversation, setConversation] = useState<any[]>([]);
@@ -88,7 +88,6 @@ const RentersListScreen = () => {
       setIsLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -200,7 +199,6 @@ const RentersListScreen = () => {
           {conversation?.length < 1 ? (
             <div className="h-screen flex flex-col">
               <div className="container flex-grow flex flex-col">
-                {/* Header Section with Back Icon */}
                 <div className="p-2 w-full flex items-center justify-around sticky top-0 bg-white z-10">
                   {/* Back Icon */}
                   <div
@@ -219,21 +217,41 @@ const RentersListScreen = () => {
                       );
                     }}
                   >
-                    <div className="w-full scrollbar-hide">
-                      <div className="flex gap-2">
-                        <div className="w-1/7">
-                          <RandomColorCircle
-                            firstName={conversation[0]?.recipient?.firstName}
-                            lastName={conversation[0]?.recipient?.lastName}
-                          />
-                        </div>
+                    {source === "recipent" && (
+                      <div className="w-full scrollbar-hide">
+                        <div className="flex gap-2">
+                          <div className="w-1/7">
+                            <RandomColorCircle
+                              firstName={conversation[0]?.recipient?.firstName}
+                              lastName={conversation[0]?.recipient?.lastName}
+                            />
+                          </div>
 
-                        <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
-                          {conversation[0]?.recipient?.firstName}{" "}
-                          {conversation[0]?.recipient?.lastName}
-                        </p>
+                          <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                            {conversation[0]?.recipient?.firstName}{" "}
+                            {conversation[0]?.recipient?.lastName}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    )}
+
+                    {source === "sender" && (
+                      <div className="w-full scrollbar-hide">
+                        <div className="flex gap-2">
+                          <div className="w-1/7">
+                            <RandomColorCircle
+                              firstName={conversation[0]?.sender?.firstName}
+                              lastName={conversation[0]?.sender?.lastName}
+                            />
+                          </div>
+
+                          <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                            {conversation[0]?.sender?.firstName}{" "}
+                            {conversation[0]?.sender?.lastName}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -249,10 +267,10 @@ const RentersListScreen = () => {
                       maxHeight: "calc(100vh - 250px)",
                     }}
                   >
-                  <ConversationDetailsScreen messages={conversation}/>
+                    <ConversationDetailsScreen messages={conversation} />
                   </div>
                   <div className="hidden md:block">
-                  <ConversationDetailsScreen messages={conversation}/>
+                    <ConversationDetailsScreen messages={conversation} />
                   </div>
                 </div>
               </div>
@@ -298,102 +316,123 @@ const RentersListScreen = () => {
             </div>
           ) : (
             <div className="h-screen flex flex-col md:mx-auto">
-            <div className="container flex-grow flex flex-col">
-              {/* Header Section */}
-              <div className="p-2 rounded-lg w-full flex items-center justify-between fixed top-0 bg-white z-10">
-                <div
-                  className="flex items-center cursor-pointer"
-                  onClick={() => router.back()}
-                >
-                  <IoArrowBack size={24} className="text-nrvDarkGrey" />
-                </div>
-          
-                {/* Conversation Header */}
-                <div
-                  className="flex-1 flex justify-between"
-                  onClick={() =>
-                    router.push(`/dashboard/tenant/messages/${conversation[0]?.applicant?._id}`)
-                  }
-                >
-                  <div className="w-full">
-                    <div className="flex gap-2">
-                      <div className="w-1/7">
-                        <RandomColorCircle
-                          firstName={conversation[0]?.recipient?.firstName}
-                          lastName={conversation[0]?.recipient?.lastName}
-                        />
+              <div className="container flex-grow flex flex-col">
+                {/* Header Section */}
+                <div className="p-2 rounded-lg w-full flex items-center justify-between fixed top-0 bg-white z-10">
+                  <div
+                    className="flex items-center cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    <IoArrowBack size={24} className="text-nrvDarkGrey" />
+                  </div>
+
+                  {/* Conversation Header */}
+                  <div
+                    className="flex-1 flex justify-between"
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/tenant/messages/${conversation[0]?.applicant?._id}`
+                      )
+                    }
+                  >
+                     {source === "recipent" && (
+                      <div className="w-full scrollbar-hide">
+                        <div className="flex gap-2">
+                          <div className="w-1/7">
+                            <RandomColorCircle
+                              firstName={conversation[0]?.recipient?.firstName}
+                              lastName={conversation[0]?.recipient?.lastName}
+                            />
+                          </div>
+
+                          <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                            {conversation[0]?.recipient?.firstName}{" "}
+                            {conversation[0]?.recipient?.lastName}
+                          </p>
+                        </div>
                       </div>
-          
-                      <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
-                        {conversation[0]?.recipient?.firstName}{" "}
-                        {conversation[0]?.recipient?.lastName}
-                      </p>
-                    </div>
+                    )}
+
+                    {source === "sender" && (
+                      <div className="w-full scrollbar-hide">
+                        <div className="flex gap-2">
+                          <div className="w-1/7">
+                            <RandomColorCircle
+                              firstName={conversation[0]?.sender?.firstName}
+                              lastName={conversation[0]?.sender?.lastName}
+                            />
+                          </div>
+
+                          <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                            {conversation[0]?.sender?.firstName}{" "}
+                            {conversation[0]?.sender?.lastName}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Messages Section */}
+                <div
+                  className="flex-grow md:p-4 p-0 overflow-y-auto custom-scrollbar"
+                  style={{
+                    maxHeight: "calc(100vh - 200px)", // Adjusts height dynamically
+                  }}
+                >
+                  <div
+                    className="md:hidden"
+                    style={{
+                      maxHeight: "calc(100vh - 250px)", // Custom height for mobile
+                    }}
+                  >
+                    <ConversationDetailsScreen messages={conversation} />
+                  </div>
+                  <div className="hidden md:block">
+                    <ConversationDetailsScreen messages={conversation} />
                   </div>
                 </div>
               </div>
-          
-              {/* Messages Section */}
-              <div
-                className="flex-grow md:p-4 p-0 overflow-y-auto custom-scrollbar"
-                style={{
-                  maxHeight: "calc(100vh - 200px)", // Adjusts height dynamically
-                }}
-              >
-                <div
-                  className="md:hidden"
-                  style={{
-                    maxHeight: "calc(100vh - 250px)", // Custom height for mobile
-                  }}
-                >
-                  <ConversationDetailsScreen messages={conversation} />
-                </div>
-                <div className="hidden md:block">
-                  <ConversationDetailsScreen messages={conversation} />
+
+              {/* Input Section */}
+              <div className="md:p-4 p-0 bg-gray-100 z-10 md:mb-0 mb-24">
+                {/* File Previews */}
+                {renderFilePreviews()}
+
+                <div className="flex items-center gap-4">
+                  {/* File Upload Trigger */}
+                  <FaPlusCircle
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                    onClick={() =>
+                      document.getElementById("file-input")?.click()
+                    }
+                  />
+                  <input
+                    id="file-input"
+                    type="file"
+                    multiple
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+
+                  {/* Text Input */}
+                  <textarea
+                    className="w-full p-2 text-black text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
+                    placeholder="Type your message..."
+                    value={messageContent}
+                    onChange={(e) => setMessageContent(e.target.value)}
+                  />
+
+                  {/* Send Button */}
+                  <IoSend
+                    onClick={handleSendMessage}
+                    size={25}
+                    className="cursor-pointer text-nrvDarkBlue"
+                  />
                 </div>
               </div>
             </div>
-          
-            {/* Input Section */}
-            <div className="md:p-4 p-0 bg-gray-100 z-10 md:mb-0 mb-24">
-              {/* File Previews */}
-              {renderFilePreviews()}
-          
-              <div className="flex items-center gap-4">
-                {/* File Upload Trigger */}
-                <FaPlusCircle
-                  size={25}
-                  className="cursor-pointer text-nrvDarkBlue"
-                  onClick={() =>
-                    document.getElementById("file-input")?.click()
-                  }
-                />
-                <input
-                  id="file-input"
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-          
-                {/* Text Input */}
-                <textarea
-                  className="w-full p-2 text-black text-base rounded-lg border border-gray-300 focus:outline-none focus:ring-0"
-                  placeholder="Type your message..."
-                  value={messageContent}
-                  onChange={(e) => setMessageContent(e.target.value)}
-                />
-          
-                {/* Send Button */}
-                <IoSend
-                  onClick={handleSendMessage}
-                  size={25}
-                  className="cursor-pointer text-nrvDarkBlue"
-                />
-              </div>
-            </div>
-          </div>
-          
           )}
         </div>
       )}
@@ -401,4 +440,4 @@ const RentersListScreen = () => {
   );
 };
 
-export default RentersListScreen;
+export default MessagingDetailsScreen;

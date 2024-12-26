@@ -44,7 +44,7 @@ const InputField: React.FC<InputFieldProps> = ({
   };
 
   const inputClasses = classNames(
-    "font-normal w-full h-10 outline-none box-border bg-white",
+    "font-normal w-full h-9 outline-none box-border bg-white",
     css,
     {
       "border-red-500": error,
@@ -60,7 +60,7 @@ const InputField: React.FC<InputFieldProps> = ({
       >
         <label
           htmlFor={name}
-          className="block text-[11.52px] md:text-sm font-medium w-full text-nrvGrayText"
+          className="block text-[10px] md:text-sm font-medium w-full text-nrvGreyBlack"
         >
           {label}
         </label>
@@ -70,7 +70,7 @@ const InputField: React.FC<InputFieldProps> = ({
             id={name}
             name={name}
             placeholder={placeholder}
-            className={`w-full focus:outline-none text-black font-bold text-base ${inputClasses}`}
+            className={`w-full focus:outline-none text-nrvGrayText font-normal text-sm transform scale-85 ${inputClasses}`}
             onChange={onChange}
             value={value}
             disabled={disabled}

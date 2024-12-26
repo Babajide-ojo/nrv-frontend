@@ -106,7 +106,7 @@ const MessageScreen = () => {
                     <div key={item.id}>
                       <Button
                         size="large"
-                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-md mb-2 font-medium text-md ${
+                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-full mb-2 font-medium text-md ${
                           currentState === item.id
                             ? "bg-nrvDarkBlue text-white"
                             : "bg-nrvGreyMediumBg"

@@ -124,11 +124,11 @@ const ApplicantScreen = () => {
                               </div>
                               <div
                                     className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
-                                    onClick={() =>
-                                      router.push(
-                                        `rooms/${item?.propertyId?._id}`
-                                      )
-                                    }
+                                    // onClick={() =>
+                                    //   router.push(
+                                    //     `rooms/${item?.propertyId?._id}`
+                                    //   )
+                                    // }
                                   >
                                    Apartment ID : {item?.propertyId?.roomId}
                                   </div>
@@ -138,9 +138,7 @@ const ApplicantScreen = () => {
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}
                             </div>
-                            {/* <div className="text-nrvLightGrey text-sm underline mt-2 cursor-pointer">
-                              view property
-                            </div> */}
+                      
                           </div>
                         </div>
                       </div>

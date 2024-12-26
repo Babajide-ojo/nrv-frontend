@@ -35,33 +35,33 @@ const SettingsMainScreen = () => {
 
       <div className="flex gap-3 mt-8 bg-[#E0E1E2] p-2 pl-6">
         <Button
-          className={`p-3 ${
+          className={`p-3 rounded-full border-nrvGreyMediumBg ${
             mainToggle === 1 ? "bg-nrvDarkBlue text-white" : ""
           }`}
-          size="minLarge"
-          variant="ordinary"
+          size="large"
+          variant="lightGrey"
           showIcon={false}
           onClick={() => setMainToggle(1)}
         >
           My Profile
         </Button>
         <Button
-          className={`p-3 ${
+          className={`p-3 rounded-full border-nrvGreyMediumBg ${
             mainToggle === 0 ? "bg-nrvDarkBlue text-white" : ""
           }`}
-          size="minLarge"
-          variant="ordinary"
+          size="large"
+          variant="lightGrey"
           showIcon={false}
           onClick={() => setMainToggle(0)}
         >
           Notifications
         </Button>
         <Button
-          className={`p-3 ${
+          className={`p-3 rounded-full border-nrvGreyMediumBg ${
             mainToggle === 2 ? "bg-nrvDarkBlue text-white" : ""
           }`}
-          size="minLarge"
-          variant="ordinary"
+          size="large"
+          variant="lightGrey"
           showIcon={false}
           onClick={() => setMainToggle(2)}
         >
@@ -303,20 +303,20 @@ Be notified when you receive a new application and when a screening report is av
           <div></div>
           <div className="flex justify-between">
             <Button
-              className="p-3 mt-8"
+              className="p-3 mt-8 rounded-full border-nrvGreyMediumBg"
               onClick={() => {
                 localStorage.removeItem("nrv-user");
                 router.push("/");
               }}
-              variant="whitebg"
-              size="normal"
+              variant="lightGrey"
+              size="large"
             >
               Logout
             </Button>
             <Button
-              className="p-3 mt-8"
-              size="normal"
-              variant="whitebg"
+              className="p-3 mt-8 rounded-full border-nrvGreyMediumBg"
+              size="large"
+              variant="lightGrey"
               showIcon={false}
               onClick={() => {}}
             >

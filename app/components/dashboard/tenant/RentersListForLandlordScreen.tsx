@@ -48,7 +48,6 @@ const RandomColorCircle = ({ firstName, lastName }: any) => {
 const RentersListForLandlordScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
-  const [properties, setProperties] = useState<any[]>([]);
   const [page, setPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
   const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
@@ -82,8 +81,8 @@ const RentersListForLandlordScreen = () => {
   
       const uniqueOwners: any = new Map();
       combinedData.forEach((item: any) => {
-        if (!uniqueOwners.has(item.ownerId)) {
-          uniqueOwners.set(item.ownerId, item);
+        if (!uniqueOwners.has(item.ownerId._id)) {
+          uniqueOwners.set(item.ownerId._id, item);
         }
       });
   

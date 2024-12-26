@@ -69,20 +69,7 @@ const LeadScreen = () => {
     }
   };
 
-  const handleInvitation = async () => {
-    // const payload = {
-    //   name: applicantDetails.fullName,
-    //   email: applicantDetails.email,
-    // };
-    // try {
-    //   setIsLoading(true);
-    //   await dispatch(inviteApplicant(payload) as any).unwrap();
-    //   toast.success("Invitation sent successfully");
-    //   setIsOpen(false);
-    // } catch (error: any) {
-    //   toast.error(error);
-    // }
-  };
+
 
   useEffect(() => {
     fetchData();
@@ -99,7 +86,10 @@ const LeadScreen = () => {
                     <div key={index}>
                       <div
                         className="flex bg-white mt-4 mrounded rounded-2xl p-4"
-                    
+                        onClick={() => {
+                          setApplication(item);
+                          setCurrentStep(2);
+                         }}
                       >
                       <div className="w-1/5 flex justify-center items-center">
                         <FcHome size={24} />
@@ -112,11 +102,11 @@ const LeadScreen = () => {
                             </div>
                             <div
                                   className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
-                                  onClick={() =>
-                                    router.push(
-                                      `rooms/${item?.propertyId?._id}`
-                                    )
-                                  }
+                                  // onClick={() =>
+                                  //   router.push(
+                                  //     `rooms/${item?.propertyId?._id}`
+                                  //   )
+                                  // }
                                 >
                                  Aparment ID : {item?.propertyId?.roomId}
                                 </div>

@@ -42,6 +42,7 @@ const FormikSelectField: React.FC<FormikSelectFieldProps | any> = ({
 
   const value = values[name] || null;
 
+
   const customStyles: any = {
     control: (provided: any, state: any) => ({
       ...provided,

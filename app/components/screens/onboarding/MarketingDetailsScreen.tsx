@@ -26,6 +26,8 @@ const MarketingDetailsScreen = () => {
               credit, criminal, and eviction report.
             </p>
           </div>
+ 
+          
         </div>
       </div>
     </div>

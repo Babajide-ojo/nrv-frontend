@@ -12,8 +12,6 @@ import PropertyMarketing from "../../../../../components/property-dashboard/Prop
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  getPropertyById,
-  getPropertyByUserId,
   getRoomById,
 } from "../../../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
@@ -24,6 +22,8 @@ import CenterModal from "@/app/components/shared/modals/CenterModal";
 import { updateRoomStatus } from "../../../../../../redux/slices/propertySlice";
 import CurrentTenantDashboard from "../../../../../components/property-dashboard/CurrentTenantDashboard";
 import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
+import copy from "copy-to-clipboard";
+import { FaCheckCircle } from "react-icons/fa";
 
 const propertyDashboardLinks: any = [
   {
@@ -59,6 +59,7 @@ const SingleRoom = () => {
   const { id } = useParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+ // const [isOpen, setIsOpen] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -115,9 +116,33 @@ const SingleRoom = () => {
     }
   };
 
+  const copyToClipboard = (text: any) => {
+    let copyText = text;
+    let isCopy = copy(copyText);
+    if (isCopy) {
+      toast.success(
+        "Link copied, you can share this on your social media handle.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          style: {
+            background: "#ffffff",
+            color: "#153969",
+          },
+          progressStyle: {
+            background: "#153969",
+          },
+          icon: <FaCheckCircle size={25} style={{ color: "#153969" }} />,
+        }
+      );
+    }
+  };
+
   return (
     <div>
       <ProtectedRoute>
+      <ToastContainer />
         <LandLordLayout>
           <div className="">
             <div>
@@ -241,6 +266,7 @@ const SingleRoom = () => {
             </div>
           </div>
         </CenterModal>
+
       </ProtectedRoute>
     </div>
   );

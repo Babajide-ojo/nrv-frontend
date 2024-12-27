@@ -5,6 +5,7 @@ import Image from "next/image";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
 import Button from "../buttons/Button";
+import { CiLogout } from "react-icons/ci";
 
 // Define the types for user data
 interface User {
@@ -76,11 +77,12 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform ${
+      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform flex-col flex justify-between ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
-      <div
+    <div>
+    <div
         className="mt-10"
         onClick={() => {
           router.push("/");
@@ -99,8 +101,10 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
           {links.map(({ name, route }, index) => (
             <li
               key={index}
-              className={`px-6 py-3 text-nrvGrayText text-sm m-6 hover:bg-nrvDarkBlue hover:text-white hover:rounded-md ${
-                currentPath === route ? "bg-nrvDarkBlue text-white rounded-md" : ""
+              className={`w-4/5 rounded-full mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light m-4 ${
+                currentPath === route
+                  ? "bg-nrvDarkBlue text-white"
+                  : "text-black"
               }`}
               onClick={() => {
                 router.push(route);
@@ -112,42 +116,32 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </ul>
       </nav>
 
-      {user && (
-        <div className="px-6 py-4 border-gray-200 ml-6 mt-24">
-          <p className="text-sm font-semibold">{user.name}</p>
-          <p className="text-sm text-nrvDarkBlue mt-2">
-            Account Type : {user.role.toUpperCase()}
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Current Time: {user.loggedInTime}
-          </p>
-          <div>
-            <Button
-              className="cursor-pointer text-nrvGrayText text-sm mt-4"
-              onClick={() => {
-                localStorage.removeItem("nrv-user");
-                router.push("/");
-              }}
-              variant="whitebg"
-              size="small"
-            >
-              Logout
-            </Button>
+    </div>
+      <div>
+        {/* User Info Section */}
+        {user && (
+          <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
+            <p className="text-sm font-semibold">{user.name}</p>
+            <p className="text-sm text-nrvDarkBlue mt-2">
+              Account Type : {user.role}
+            </p>
           </div>
-        </div>
-      )}
+        )}
 
-      <ul className="mt-32">
-        <li
-          className="px-6 py-3 cursor-pointer text-nrvGrayText text-sm m-6"
-          onClick={() => {
-            localStorage.removeItem("nrv-user");
-            router.push("/");
-          }}
-        >
-          Logout
-        </li>
-      </ul>
+        {/* Logout Button at the Bottom */}
+        <div className="mt-auto mb-12 ml-12">
+          <button
+            className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer bg-white text-nrvDarkBlue border text-center hover:bg-nrvDarkBlue hover:text-white"
+            onClick={() => {
+              localStorage.removeItem("nrv-user");
+              router.push("/");
+            }}
+          >
+            <CiLogout className="h-[18.5px] w-[18.5px] text-cwMidGray" />
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

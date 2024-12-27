@@ -62,12 +62,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
   return (
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform ${
+      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform flex-col flex justify-between ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } flex flex-col`}
     >
-      {/* Logo Section */}
-      <div className="mt-10" onClick={() => router.push("/")}>
+   <div className="">
+       {/* Logo Section */}
+       <div className="mt-10" onClick={() => router.push("/")}>
         <Image
           src={Logo}
           width={200}
@@ -95,9 +96,11 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           ))}
         </ul>
       </nav>
+   </div>
 
-      {/* User Info Section */}
-      {user && (
+  <div>
+        {/* User Info Section */}
+        {user && (
         <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
           <p className="text-sm font-semibold">{user.name}</p>
           <p className="text-sm text-nrvDarkBlue mt-2">
@@ -110,7 +113,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       {/* Logout Button at the Bottom */}
       <div className="mt-auto mb-12 ml-12">
         <button
-          className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer bg-white text-nrvDarkBlue border text-center"
+          className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer text-white bg-nrvDarkBlue border text-center"
           onClick={() => {
             localStorage.removeItem("nrv-user");
             router.push("/");
@@ -120,6 +123,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
           Logout
         </button>
       </div>
+  </div>
     </div>
   );
 };

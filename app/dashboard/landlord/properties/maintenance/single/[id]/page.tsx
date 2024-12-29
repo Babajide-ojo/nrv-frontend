@@ -16,6 +16,7 @@ import Image from "next/image";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
 import Button from "@/app/components/shared/buttons/Button";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
+import LandLordLayout from "@/app/components/layout/LandLordLayout";
 
 const SingleMaintainance = () => {
   const router = useRouter();
@@ -63,7 +64,7 @@ const SingleMaintainance = () => {
         <LoadingPage />
       ) : (
         <ProtectedRoute>
-          <TenantLayout>
+          <LandLordLayout>
             <ToastContainer />
             <div className="md:py-10 md:px-20 p-5">
               <div className="mb-8">
@@ -328,7 +329,7 @@ const SingleMaintainance = () => {
                 </div>
               </div>
             </CenterModal>
-          </TenantLayout>
+          </LandLordLayout>
         </ProtectedRoute>
       )}
     </div>

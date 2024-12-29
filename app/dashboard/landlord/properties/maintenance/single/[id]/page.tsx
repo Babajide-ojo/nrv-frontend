@@ -23,43 +23,33 @@ const SingleMaintainance = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpenAcknowledge, setIsOpenOpenAcknowledge] =
+    useState<boolean>(false);
+  const [isOpenDecline, setIsOpenOpenDecline] = useState<boolean>(false);
   const [maintenance, setMaintenance] = useState<any>([]);
 
+  // Fetch maintenance data
   const fetchData = async () => {
-    const formData = {
-      id: id,
-    };
-
+    const formData = { id };
     try {
       const response = await dispatch(getMaintenanceById(formData) as any); // Pass page parameter
       setMaintenance(response?.payload?.data);
     } catch (error) {
+      toast.error("Failed to fetch maintenance data.");
     } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleSubmit = async () => {
-    const payload = {
-      id: id,
-    };
-
+  // Handle submit for resolving or acknowledging
+  const handleSubmit = async (status: string) => {
+    const payload = { id, status };
     try {
-      setIsLoading(true);
       const data = await dispatch(markIssueAsResolved(payload) as any).unwrap();
-      if (data.response.statusCode === 400) {
-        toast.error(data.response.message);
-      }
-      setMaintenance(data?.payload?.data);
-      router.push(
-        `/dashboard/tenant/rented-properties/maintenance/single/${id}`
-      );
-      setIsLoading(false);
+      window.location.reload();
     } catch (error: any) {
-      toast.error(error);
-      setIsLoading(false);
+      toast.error("An error occurred.");
     } finally {
-      setIsLoading(false);
-      setIsOpen(false);
     }
   };
 
@@ -67,9 +57,6 @@ const SingleMaintainance = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
   return (
     <div>
       {isLoading ? (
@@ -78,9 +65,8 @@ const SingleMaintainance = () => {
         <ProtectedRoute>
           <TenantLayout>
             <ToastContainer />
-
             <div className="md:py-10 md:px-20 p-5">
-              <div className=" mb-8">
+              <div className="mb-8">
                 <div className="flex justify-between space-between">
                   <div className="text-nrvGreyBlack mb-4 flex gap-3">
                     <BackIcon />
@@ -89,28 +75,35 @@ const SingleMaintainance = () => {
                     </div>
                   </div>
                   <div>
-                    <Button
-                      className={`text-white text-md ${
-                        maintenance.status === "Resolved"
-                          ? "bg-[#107E4B]"
-                          : "bg-nrvDarkBlue"
-                      }`}
-                      variant="ordinary"
-                      size="small"
-                      showIcon={false}
-                    >
-                      {maintenance?.status}
-                    </Button>
-                  </div>
+  <Button
+    className={`text-white text-md ${
+      maintenance?.status === "Resolved"
+        ? "bg-[#107E4B]" // Green for Resolved
+        : maintenance?.status === "New"
+        ? "bg-blue-500" // Blue for New
+        : maintenance?.status === "Acknowleged"
+        ? "bg-yellow-500" // Yellow for Acknowleged
+        : maintenance?.status === "Declined"
+        ? "bg-red-500" // Red for Declined
+        : "bg-nrvDarkBlue" // Default color if none match
+    }`}
+    variant="ordinary"
+    size="small"
+    showIcon={false}
+  >
+    {maintenance?.status}
+  </Button>
+</div>
+
                 </div>
 
                 <div className="flex pb-3 space-between justify-between">
                   <div>
-                    <h3 className="">
+                    <h3>
                       <span className="font-medium mb-2 text-md text-nrvDarkGrey">
                         Tenant Name
                       </span>{" "}
-                      <br></br>{" "}
+                      <br />
                       <span className="font-light mb-2 text-md text-nrvDarkGrey">
                         {maintenance?.createdBy?.firstName}{" "}
                         {maintenance?.createdBy?.lastName}
@@ -122,74 +115,67 @@ const SingleMaintainance = () => {
                       <span className="font-medium mb-2 text-md text-nrvDarkGrey">
                         Contact Details
                       </span>{" "}
-                      <br></br>{" "}
+                      <br />
                       <span className="font-light mb-2 text-md text-nrvDarkGrey">
                         {maintenance?.createdBy?.phoneNumber}
                       </span>
-                      <br></br>{" "}
+                      <br />
                       <span className="font-light mb-2 text-md text-nrvDarkGrey">
                         {maintenance?.createdBy?.email}
                       </span>
                     </h3>
                   </div>
                 </div>
+
                 <div>
                   <div className="md:flex block justify-between md:gap-8">
                     <div className="md:w-1/2 w-full">
-                      <h3 className="">
-                        <br></br>{" "}
+                      <h3>
+                        <br />
                         <span className="font-medium mb-2 text-md text-nrvDarkGrey">
-                          {maintenance.title}
+                          {maintenance?.title}
                         </span>
-                        <br></br>
+                        <br />
                         <div className="text-sm leading-10 text-nrvDarkGrey font-light">
-                          {maintenance.description}
+                          {maintenance?.description}
                         </div>
-                     <div className="flex gap-5 mt-8">
-                     <div>
-                          {maintenance?.status != "Resolved" ? (
+                        <div className="flex gap-4">
+                          {maintenance?.status === "New" && (
                             <p
                               className="underline pt-2 text-blue-500 text-sm cursor-pointer"
                               onClick={() => {
-                                setIsOpen(!isOpen);
+                                setIsOpenOpenAcknowledge(!isOpenAcknowledge);
                               }}
                             >
                               Acknowledge Issue
                             </p>
-                          ) : (
-                            ""
                           )}
                         </div>
-                     <div>
-                          {maintenance?.status != "Resolved" ? (
+                        <div>
+                          {maintenance?.status === "Acknowleged" && (
                             <p
                               className="underline pt-2 text-green-600 text-sm cursor-pointer"
                               onClick={() => {
-                                setIsOpen(!isOpen);
+                                setIsOpen(true);
                               }}
                             >
                               Mark As Resolved
                             </p>
-                          ) : (
-                            ""
                           )}
                         </div>
                         <div>
-                          {maintenance?.status != "Resolved" ? (
+                          {(maintenance?.status === "New" ||
+                            maintenance?.status === "Acknowleged") && (
                             <p
                               className="underline pt-2 text-red-500 text-sm cursor-pointer"
                               onClick={() => {
-                                setIsOpen(!isOpen);
+                                setIsOpenOpenDecline(true);
                               }}
                             >
                               Decline Issue
                             </p>
-                          ) : (
-                            ""
                           )}
                         </div>
-                    
-                     </div>
                       </h3>
                     </div>
 
@@ -206,6 +192,7 @@ const SingleMaintainance = () => {
               </div>
             </div>
 
+            {/* Modal for Resolved */}
             <CenterModal
               isOpen={isOpen}
               onClose={() => {
@@ -218,7 +205,7 @@ const SingleMaintainance = () => {
                 </h2>
                 <p className="text-nrvLightGrey text-sm mb-4 mt-4">
                   Performing this action will mark this issue as resolved and
-                  close the issue
+                  close the issue.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
@@ -227,29 +214,116 @@ const SingleMaintainance = () => {
                     className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
                     variant="bluebg"
                     showIcon={false}
-                     disabled={isLoading === false ? false : true}
+                    disabled={isLoading}
+                    onClick={() => {
+                      handleSubmit("Resolved");
+                    }}
                   >
-                    <div
-                      className="flex gap-3"
-                      onClick={() => {
-                        handleSubmit();
-                      }}
-                    >
-                      Submit
-                    </div>
+                    Submit
                   </Button>
                 </div>
                 <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
                     size="small"
-                    className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                    className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2 hover:text-white hover:bg-nrvDarkBlue"
                     variant="mediumGrey"
                     showIcon={false}
                     onClick={() => {
                       setIsOpen(false);
                     }}
                   >
-                    <div className="flex gap-2">Close</div>
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </CenterModal>
+
+            {/* Modal for Acknowledgement */}
+            <CenterModal
+              isOpen={isOpenAcknowledge}
+              onClose={() => {
+                setIsOpenOpenAcknowledge(false);
+              }}
+            >
+              <div className="mx-auto text-center p-4 w-full md:w-4/5">
+                <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                  Acknowledge Complaint/Issue
+                </h2>
+                <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+                  Performing this action will mark this issue as Acknowleged.
+                  This means the issue resolution has commenced.
+                </p>
+
+                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    variant="bluebg"
+                    showIcon={false}
+                    disabled={isLoading}
+                    onClick={() => {
+                      handleSubmit("Acknowleged");
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </div>
+                <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2 hover:text-white hover:bg-nrvDarkBlue"
+                    variant="mediumGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      setIsOpenOpenAcknowledge(false);
+                    }}
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </CenterModal>
+
+            {/* Modal for Decline */}
+            <CenterModal
+              isOpen={isOpenDecline}
+              onClose={() => {
+                setIsOpenOpenDecline(false);
+              }}
+            >
+              <div className="mx-auto text-center p-4 w-full md:w-4/5">
+                <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                  Decline Complaint/Issue
+                </h2>
+                <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+                  Performing this action will mark this issue as declined
+                </p>
+
+                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    variant="bluebg"
+                    showIcon={false}
+                    disabled={isLoading}
+                    onClick={() => {
+                      handleSubmit("Declined");
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </div>
+                <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
+                  <Button
+                    size="small"
+                    className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2 hover:text-white hover:bg-nrvDarkBlue"
+                    variant="mediumGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      setIsOpenOpenDecline(false);
+                    }}
+                  >
+                    Close
                   </Button>
                 </div>
               </div>

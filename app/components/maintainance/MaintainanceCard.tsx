@@ -38,13 +38,19 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
           </div>
           <div>
             <Button
-              className={`w-full  text-md ${
-                status === "Resolved"
-                  ? "bg-[#107E4B] text-white"
-                  : "bg-nrvDarkBlue text-white"
+              className={`w-full text-md ${
+                status === "Resolved" 
+                  ? "font-medium border border-[#107E4B] hover:bg-[#107E4B] hover:text-white text-green-500 bg-white"
+                  : status === "New"
+                  ? "font-medium border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500 bg-white"
+                  : status === "Acknowleged"
+                  ? "font-medium border border-yellow-500 hover:bg-yellow-500 hover:text-white text-yellow-500 bg-white"
+                  : status === "Declined"
+                  ? "font-medium border border-red-500 hover:bg-red-500 hover:text-white text-red-500 bg-white"
+                  : "font-medium border border-gray-500 hover:bg-gray-500 hover:text-white text-gray-500 bg-white" // Default case
               }`}
               variant="ordinary"
-              size="large"
+              size="small"
               showIcon={false}
             >
               {status}
@@ -65,8 +71,8 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
         </div>
         <div className="flex gap-4 w-full justify-center items-center mt-4">
           <Button
-            size="large"
-            className="px-5"
+            size="small"
+            className="px-5 text-xs"
             variant="whitebg"
             showIcon={false}
             onClick={() => {

@@ -114,7 +114,7 @@ export const markIssueAsResolved = createAsyncThunk<any, {}>(
   "maintenance/resolve",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/maintenance/resolve/${formData.id}`);
+      const response = await axios.get(`${API_URL}/maintenance/resolve/${formData.status}/${formData.id}`);
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {

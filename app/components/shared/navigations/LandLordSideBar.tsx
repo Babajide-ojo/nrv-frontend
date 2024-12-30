@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
-import { CiLogout } from "react-icons/ci";
+import { BiLogOut } from "react-icons/bi";
 
 interface User {
   name: string;
@@ -102,8 +102,8 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
         {/* User Info Section */}
         {user && (
         <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
-          <p className="text-sm font-semibold">{user.name}</p>
-          <p className="text-sm text-nrvDarkBlue mt-2">
+          <p className="text-sm font-semibold uppercase">{user.name}</p>
+          <p className="text-sm text-nrvDarkBlue mt-2 uppercase">
             Account Type : {user.role}
           </p>
    
@@ -113,13 +113,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       {/* Logout Button at the Bottom */}
       <div className="mt-auto mb-12 ml-12">
         <button
-          className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer text-white bg-nrvDarkBlue border text-center"
+          className="w-[208px] rounded-full flex gap-2 py-3 hover:px-5 cursor-pointer hover:text-white hover:bg-nrvDarkBlue bg-white text-nrvDarkBlue font-medium"
           onClick={() => {
             localStorage.removeItem("nrv-user");
             router.push("/");
           }}
         >
-          <CiLogout className="h-[18.5px] w-[18.5px] text-cwMidGray" />
+          <BiLogOut className="font-bold h-[20.5px] w-[20.5px] text-cwMidGray pt-1" />
           Logout
         </button>
       </div>

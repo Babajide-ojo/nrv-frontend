@@ -6,6 +6,7 @@ import Logo from "../../../../public/images/nrv-logo.png";
 import { useRouter } from "next/navigation";
 import Button from "../buttons/Button";
 import { CiLogout } from "react-icons/ci";
+import { BiLogOut } from "react-icons/bi";
 
 // Define the types for user data
 interface User {
@@ -131,13 +132,13 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         {/* Logout Button at the Bottom */}
         <div className="mt-auto mb-12 ml-12">
           <button
-            className="w-[208px] rounded-full flex items-center justify-center gap-2 py-3 px-5 cursor-pointer bg-white text-nrvDarkBlue border text-center hover:bg-nrvDarkBlue hover:text-white"
+          className="w-[208px] rounded-full flex gap-2 py-3 hover:px-5 cursor-pointer hover:text-white hover:bg-nrvDarkBlue bg-white text-nrvDarkBlue font-medium"
             onClick={() => {
               localStorage.removeItem("nrv-user");
               router.push("/");
             }}
           >
-            <CiLogout className="h-[18.5px] w-[18.5px] text-cwMidGray" />
+          <BiLogOut className="font-bold h-[20.5px] w-[20.5px] text-cwMidGray pt-1" />
             Logout
           </button>
         </div>

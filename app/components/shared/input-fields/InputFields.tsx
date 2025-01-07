@@ -70,7 +70,7 @@ const InputField: React.FC<InputFieldProps> = ({
             id={name}
             name={name}
             placeholder={placeholder}
-            className={`w-full focus:outline-none text-nrvGrayText font-normal text-[16px] ${inputClasses}`}
+            className={`w-full focus:outline-none text-nrvGreyBlack font-normal text-[16px] ${inputClasses} placeholder:text-nrvLightGrey placeholder:text-[13px]`} // Custom placeholder style here
             onChange={onChange}
             value={value}
             disabled={disabled}
@@ -103,5 +103,6 @@ const InputField: React.FC<InputFieldProps> = ({
     </div>
   );
 };
+
 
 export default InputField;

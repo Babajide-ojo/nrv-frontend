@@ -68,15 +68,17 @@ const PropertyExpenses = () => {
           <div>
             <div className="flex justify-end">
               <Button
-                size="small"
-                className="px-5 py-2 rounded-md border border-gray-300 text-nrvDarkBlue bg-white hover:bg-gray-100 transition"
-                variant="primary"
-                showIcon={false}
+                 size="normal"
+                 className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                 variant="mediumGrey"
+                 showIcon={false}
                 onClick={() => {
                   setCurrentStep(2);
                 }}
               >
-                Record Expense
+                <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
+                  Record Expense
+                </div>
               </Button>
             </div>
             <div className="mt-8 mx-auto grid gap-6 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -93,7 +95,6 @@ const PropertyExpenses = () => {
                     >
                       <div className="flex justify-between mb-4">
                         <div className="mb-2 text-sm font-semibold text-gray-800">
-                         
                           <span className="text-green-600">
                             {item.amount.toLocaleString()} NGN
                           </span>

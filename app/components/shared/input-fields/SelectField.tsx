@@ -39,14 +39,15 @@ const formatOptionLabel = ({
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    height: "42.5px",
+    height: "37px",
     borderColor: state.isFocused ? "#d7d9db" : "#d7d9db",
     border: "0px",
     boxShadow: state.isFocused ? "none" : "none",
     backgroundColor: "transparent",
     borderRadius: "10px",
-    fontSize: "13px",
-    colors: "#6B6C6C",
+    fontSize: "16px",
+    fontWeight: "400",
+    colors: "#7d7d7d",
   }),
 
   option: (provided: any, state: any) => ({
@@ -56,13 +57,13 @@ const customStyles = {
     borderRadius: "5px",
     margin: "5px",
     cursor: "pointer",
-    colors: "#000000",
+    colors: "#7d7d7d",
   }),
 
   placeholder: (provided: any) => ({
     ...provided,
-    color: "#9da3af",
-    fontWeight: "400",
+    color: "#999999",
+   // fontWeight: "400",
     fontSize: "13px",
     padding: "Opx",
   }),
@@ -89,8 +90,8 @@ const SelectField: React.FC<Props> = ({
   };
 
   return (
-    <div className="border border-[#a9b0ba] p-4 bg-white rounded-md">
-      <label className="block text-[11.52px] md:text-sm font-medium  w-full text-nrvDarkBlue">
+    <div className="border border-[#a9b0ba] p-3 bg-white rounded-md">
+      <label className="block text-[10px] md:text-sm font-medium  w-full text-nrvGreyBlack">
         {label}
         {required && <span className="text-red-600 ml-1">*</span>}
       </label>

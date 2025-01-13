@@ -18,12 +18,10 @@ import PropertySuccess from "../../../../../components/loaders/PropertySuccess";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { SlCloudUpload } from "react-icons/sl";
-import { preventNonNumeric } from "@/helpers/utils";
-
+import { propertyTypeData, rentMetricsData } from "@/helpers/data";
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState<any>([]);
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [properties, setProperties] = useState([]);
@@ -32,18 +30,13 @@ const CreateRoom = () => {
   const [fileError, setFileError] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<any>([]);
 
-  const handleChange = (selectedOption: any) => {
-    setSelectedOption(selectedOption);
-  };
-
   const dispatch = useDispatch();
   const router = useRouter();
+
   const [roomData, setRoomData] = useState<any>({
-    name: "",
-    targetDeposit: "",
     description: "",
-    targetRent: "",
     rentAmountMetrics: "",
+    propertyType: "",
     rentAmount: "",
     noOfRooms: "",
     noOfBaths: "",
@@ -61,7 +54,6 @@ const CreateRoom = () => {
     const files: any = Array.from(e.target.files);
     if (e.target.id === "profilePicture" && e.target.files.length > 0) {
       const fileExtension = files[0].name.split(".").pop().toLowerCase();
-
       const allowedExtensions = ["jpg", "jpeg", "png"];
       if (!allowedExtensions.includes(fileExtension)) {
         setFileError(
@@ -81,50 +73,87 @@ const CreateRoom = () => {
     setRoomData((prevData: any) => ({
       ...prevData,
       [name]:
-        name === "noOfRooms" || name === "noOfBaths" || name === "targetRent" || name === "targetDeposit"
+        name === "noOfRooms" ||
+        name === "propertyType" ||
+        name === "rentAmount" ||
+        name === "noOfBaths" ||
+        name === "targetRent" ||
+        name === "targetDeposit"
           ? value.replace(/\D/g, "") // Remove non-numeric characters for numeric fields
           : value,
     }));
-  
   };
 
-  const handleSubmit = async (e: any) => {
+  const getPropertyFromLocalStorage = () => {
+    if (typeof window === "undefined") return null;
+    const property = localStorage.getItem("property");
+    return property ? JSON.parse(property) : null;
+  };
+
+  const handleChange = (selectedOption: any, name: string) => {
+    setRoomData((prev: any) => ({
+      ...prev,
+      [name]: selectedOption ? selectedOption.value : "", // Default to empty if no selection
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const formData = new FormData();
+    const property = getPropertyFromLocalStorage();
+    if (!property) {
+      toast.error("Property data not found.");
+      return;
+    }
 
-    formData.append("name", roomData.name);
-    formData.append("description", roomData.description);
-    formData.append(
-      "propertyId",
-      typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("property") as any)._id
-        : ""
-    );
-    formData.append("targetDeposit", roomData.targetDeposit);
-    formData.append("targetRent", roomData.targetRent);
-    formData.append("rentAmountMetrics", selectedOption?.value);
-    formData.append("rentAmount", roomData.rentAmount);
-    formData.append("noOfRooms", roomData.noOfRooms);
-    formData.append("noOfBaths", roomData.noOfBaths);
-    formData.append("noOfPools", roomData.noOfPools);
-    formData.append("otherAmentities", roomData.otherAmentities);
+    const {
+      description,
+      rentAmount,
+      noOfRooms,
+      noOfBaths,
+      noOfPools,
+      otherAmentities,
+    } = roomData;
+
+    // Validate required fields
+    if (
+      !description ||
+      !rentAmount ||
+      !noOfRooms ||
+      !noOfBaths ||
+      !selectedFiles[0]
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+    console.log({ roomData });
+
+    const formData = new FormData();
+    formData.append("description", description);
+    formData.append("propertyId", property._id);
+    formData.append("propertyType", roomData.propertyType);
+    formData.append("rentAmountMetrics", roomData.rentAmountMetrics);
+    formData.append("rentAmount", rentAmount);
+    formData.append("noOfRooms", noOfRooms);
+    formData.append("noOfBaths", noOfBaths);
+    formData.append("noOfPools", noOfPools);
+    formData.append("otherAmentities", otherAmentities);
     formData.append("file", selectedFiles[0]);
 
     try {
       setLoading(true);
-      const userData = await dispatch(createRooms(formData) as any).unwrap();
+      const userData: any = await dispatch(
+        createRooms(formData) as any
+      ).unwrap();
       toast.success("Room added successfully");
-      setLoading(false);
-      router.push(
-        `/dashboard/landlord/properties/${
-          JSON.parse(localStorage.getItem("property") as any)._id
-        }`
-      );
+      router.push(`/dashboard/landlord/properties/${property._id}`);
     } catch (error: any) {
-      setLoading(false);
-      toast.error(error);
+      const errorMessage =
+        error?.message ||
+        "An unexpected error occurred. Please try again later.";
+      toast.error(errorMessage);
     } finally {
+      setLoading(false);
     }
   };
 
@@ -154,12 +183,10 @@ const CreateRoom = () => {
               <ProtectedRoute>
                 <LandLordLayout>
                   <ToastContainer />
-
                   <form onSubmit={handleSubmit}>
                     <div className="max-w-2xl w-full mx-auto p-8 justify-center mx-auto">
                       <div>
-                        <div className="text-2xl flex gap-3 ">
-                          {" "}
+                        <div className="text-2xl flex gap-3">
                           <span
                             onClick={() => {
                               router.push("/dashboard/landlord/properties");
@@ -180,14 +207,18 @@ const CreateRoom = () => {
 
                         <div className="max-w-2xl w-full mx-auto pt-8">
                           <div className="w-full mt-4">
-                            <InputField
-                              css="bg-nrvLightGreyBg"
-                              label="Apartment Nick Name"
-                              placeholder="Enter apartment nick name"
-                              inputType="text"
-                              value={roomData.name}
-                              name="name"
-                              onChange={handleInputChange}
+                            <SelectField
+                              label="Property Type"
+                              name="propertyType"
+                              value={propertyTypeData.find(
+                                (option) =>
+                                  option.value === roomData.propertyType
+                              )}
+                              onChange={(selectedOption: any) =>
+                                handleChange(selectedOption, "propertyType")
+                              }
+                              options={propertyTypeData}
+                              placeholder="Select Property Type"
                             />
                           </div>
                           <div className="w-full mt-4">
@@ -203,41 +234,19 @@ const CreateRoom = () => {
                           </div>
                           <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
                             <div className="w-full md:w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Target Rent"
-                                placeholder="100000"
-                                inputType="text"
-                                value={Number(
-                                  roomData.targetRent
-                                )?.toLocaleString()}
-                                name="targetRent"
-                                // onKeyDown={preventNonNumeric}
-                                // onChange={(e) => handleInputChange(e, 5000000)}
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                            <div className="w-full md:w-1/2">
-                              <InputField
-                                css="bg-nrvLightGreyBg"
-                                label="Target Deposit"
-                                value={Number(
-                                  roomData.targetDeposit
-                                )?.toLocaleString()}
-                                placeholder="100000"
-                                inputType="text"
-                                name="targetDeposit"
-                                onChange={handleInputChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="w-full mt-4 flex flex-col md:flex-row gap-3">
-                            <div className="w-full md:w-1/2">
                               <SelectField
-                                label="Rent Amount Metrics"
+                                label="Rent Cycle"
                                 name="rentAmountMetrics"
-                                value={selectedOption}
-                                onChange={handleChange}
+                                value={rentMetricsData.find(
+                                  (option) =>
+                                    option.value === roomData.propertyType
+                                )}
+                                onChange={(selectedOption: any) =>
+                                  handleChange(
+                                    selectedOption,
+                                    "rentAmountMetrics"
+                                  )
+                                }
                                 options={[
                                   { value: "monthly", label: "Monthly" },
                                   { value: "yearly", label: "Yearly" },
@@ -309,9 +318,33 @@ const CreateRoom = () => {
                           </div>
 
                           <div className="w-full mt-4">
-                            <label className="text-nrvGreyBlack mb-2 text-sm">
+                            <label className="text-nrvGreyBlack mb-2 text-sm font-medium">
                               Property Photo
                             </label>
+
+                            {/* Image Preview Section */}
+                            {selectedFiles.length > 0 && (
+        <div className="mb-4 flex justify-between items-center">
+          {/* Image Icon */}
+          <div className="flex items-center">
+            <img
+              src={URL.createObjectURL(selectedFiles[0])}
+              alt="Property preview"
+              className="w-20 h-20 object-cover rounded-full border-2 border-nrvLightGrey mr-2" // Small icon style
+            />
+            {/* Link to preview the image */}
+            <a
+              href={URL.createObjectURL(selectedFiles[0])}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 text-sm underline"
+            >
+              Preview Image
+            </a>
+          </div>
+        </div>
+      )}
+
                             <div
                               className="text-center w-full mt-2"
                               onDragOver={(e) => e.preventDefault()}

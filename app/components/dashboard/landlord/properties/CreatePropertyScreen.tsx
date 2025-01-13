@@ -22,11 +22,9 @@ import SelectField from "@/app/components/shared/input-fields/SelectField";
 
 interface PropertyData {
   streetAddress: string;
-  unit: string;
   city: string;
   state: string;
   zipCode: string;
-  propertyType: string;
 }
 
 const CreatePropertyScreen = () => {
@@ -49,11 +47,9 @@ const CreatePropertyScreen = () => {
   const router = useRouter();
   const [propertyData, setPropertyData] = useState<PropertyData>({
     streetAddress: "",
-    unit: "",
     city: "",
     state: "",
     zipCode: "",
-    propertyType: "",
   });
 
   const validateForm = () => {
@@ -84,11 +80,9 @@ const CreatePropertyScreen = () => {
 
     const formData = new FormData();
     formData.append("streetAddress", propertyData.streetAddress);
-    formData.append("unit", propertyData.unit);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
-    formData.append("propertyType", selectedOption?.value);
     formData.append("file", selectedFiles[0]);
     formData.append("createdBy", user?._id);
 
@@ -97,11 +91,9 @@ const CreatePropertyScreen = () => {
       const userData = await dispatch(createProperty(formData) as any).unwrap();
       setPropertyData({
         streetAddress: "",
-        unit: "",
         city: "",
         state: "",
         zipCode: "",
-        propertyType: "",
       });
       setLoading(false);
       setCurrentStep(1);
@@ -194,7 +186,7 @@ const CreatePropertyScreen = () => {
                           No worries, you can change the information later
                         </p>
                         <div className="mx-auto pt-8 ">
-                          <div className="w-full mt-4">
+                          {/* <div className="w-full mt-4">
                             <SelectField
                               label="Property Type"
                               name="propertyType"
@@ -207,7 +199,7 @@ const CreatePropertyScreen = () => {
                               ]}
                              // placeholder="Select Property Type"
                             />
-                          </div>
+                          </div> */}
                           <div className="w-full mt-4">
                             <InputField
                               css="bg-nrvLightGreyBg"
@@ -220,7 +212,7 @@ const CreatePropertyScreen = () => {
                               error={errors.streetAddress} // Corrected error prop name
                             />
                           </div>
-                          <div className="w-full mt-4">
+                          {/* <div className="w-full mt-4">
                             <InputField
                               css="bg-nrvLightGreyBg"
                               label="Unit (Optional)"
@@ -231,7 +223,7 @@ const CreatePropertyScreen = () => {
                               onChange={handleInputChange}
                               error={errors.unit} // Corrected error prop name
                             />
-                          </div>
+                          </div> */}
 
                           <div className="w-full mt-4 flex gap-3">
                             <div className="w-1/2">

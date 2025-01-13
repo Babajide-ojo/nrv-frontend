@@ -55,9 +55,9 @@ const customStyles = {
     backgroundColor: state.isFocused ? "#f5f5f5" : "white",
     color: state.isFocused ? "" : "#000000",
     borderRadius: "5px",
-    margin: "5px",
     cursor: "pointer",
     colors: "#7d7d7d",
+    fontSize: "13px",
   }),
 
   placeholder: (provided: any) => ({
@@ -85,7 +85,7 @@ const SelectField: React.FC<Props> = ({
 }) => {
   const handleSelectChange = (selectedOption: any) => {
     if (onChange) {
-      onChange(selectedOption);
+      onChange(selectedOption); // Pass the whole selected option (not just value)
     }
   };
 
@@ -96,22 +96,22 @@ const SelectField: React.FC<Props> = ({
         {required && <span className="text-red-600 ml-1">*</span>}
       </label>
       <Select
-        //  setValue={setValue}
         name={name}
         isDisabled={disabled}
         styles={customStyles}
-        isSearchable={true}
+        isSearchable={isSearchable}
         isClearable={true}
         options={options || _options}
         placeholder={placeholder}
-        value={value}
+        value={value}  // Ensure value is correctly passed as { value, label }
         noOptionsMessage={noOptionsMessage}
         formatOptionLabel={formatOptionLabel}
-        onChange={handleSelectChange || onChange}
+        onChange={handleSelectChange}  // Trigger parent onChange
         onBlur={onBlur}
       />
     </div>
   );
 };
+
 
 export default SelectField;

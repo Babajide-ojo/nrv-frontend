@@ -24,6 +24,7 @@ import CurrentTenantDashboard from "../../../../../components/property-dashboard
 import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
 
 const propertyDashboardLinks: any = [
   {
@@ -149,9 +150,10 @@ const SingleRoom = () => {
               <div className="flex justify-between px-4 py-12 md:px-24 md:py-12">
                 <div>
                   <div className="flex gap-2">
-                    <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
+                   <div> <BackIcon /></div>
+                    {/* <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
                       <BsHouse color="white" size={35} />
-                    </div>
+                    </div> */}
 
                     <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
                       {singleRoom?.propertyId?.streetAddress}

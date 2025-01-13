@@ -284,3 +284,20 @@ export const tenantPropertyMetrics = [
     number: 0,
   },
 ];
+
+export const rentMetricsData= [
+  { value: "monthly", label: "Monthly" },
+  { value: "yearly", label: "Yearly" },
+]
+
+export const propertyTypeData =[
+  { value: "office", label: "Office" },
+  { value: "duplex", label: "Duplex" },
+  { value: "flat", label: "Flat" },
+  { value: "bungalow", label: "Bungalow" },
+  { value: "warehouse", label: "Warehouse" },
+  { value: "2_bedroom_flat", label: "2-Bedroom Flat" },
+  { value: "3_bedroom_flat", label: "3-Bedroom Flat" },
+  { value: "2_bedroom_duplex", label: "2-Bedroom Duplex" },
+  { value: "3_bedroom_duplex", label: "3-Bedroom Duplex" },
+]

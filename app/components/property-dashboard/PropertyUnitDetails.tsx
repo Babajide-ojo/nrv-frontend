@@ -23,9 +23,9 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
         </div>
         <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
-             Name
+             Property Type :<span className="text-nrvDarkBlue"> {data.propertyType}</span>
           </h2>
-          <div className="text-sm text-nrvGreyBlack">{data.name}</div>
+
         </div>
         <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">

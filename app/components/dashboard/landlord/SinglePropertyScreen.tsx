@@ -27,7 +27,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import SingleRoom from "../../../dashboard/landlord/properties/rooms/[id]/page";
 import React from "react";
-import InputField from '../../shared/input-fields/InputFields'
+import InputField from "../../shared/input-fields/InputFields";
+import BackIcon from "../../shared/icons/BackIcon";
 const propertyDashboardLinks: any = [
   {
     id: 1,
@@ -36,7 +37,7 @@ const propertyDashboardLinks: any = [
   {
     id: 4,
     name: "Documents",
-  }
+  },
 ];
 
 interface Property {
@@ -157,7 +158,8 @@ const SinglePropertyScreen = () => {
     const { name, value } = e.target;
     setPropertyData((prevData) => ({
       ...prevData,
-      [name]: value,dispatch
+      [name]: value,
+      dispatch,
     }));
 
     setErrors((prevErrors) => ({
@@ -256,15 +258,14 @@ const SinglePropertyScreen = () => {
             <div className="flex justify-between px-4 py-12 md:px-12 md:py-12">
               <div>
                 <div className="flex gap-2">
-                  <div className="h-12 w-12 bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
-                    <BsHouse color="white" size={35} />
+                  <div>
+                    <BackIcon />
                   </div>
-              
+
                   <p className="text-sm font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
                     {singleProperty?.streetAddress}
                   </p>
                 </div>
-        
               </div>
 
               <div>

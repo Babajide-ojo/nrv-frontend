@@ -12,6 +12,7 @@ import Modal from "../shared/modals/Modal";
 import CustomDatePicker from "../shared/CustomDatePicker";
 import {
   assignDateTenancyTenure,
+  createUserByLandlord,
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
@@ -22,6 +23,8 @@ import CenterModal from "../shared/modals/CenterModal";
 import FileUploader from "../shared/upload/FileUploader";
 import Viewer from "react-viewer";
 import { getFileExtension } from "@/helpers/utils";
+import FormikInputField from "../shared/input-fields/FormikInputField";
+import * as yup from "yup";
 
 interface Data {
   data: any;
@@ -34,6 +37,8 @@ type AddTenantFunction = (
 ) => Promise<void>;
 
 const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
+  console.log({data});
+  
   const { id } = useParams();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +50,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const [openOnboardTenantModal, setOpenOnboardTenantModal] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
   const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
     useState(false);
@@ -53,6 +59,18 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
+
+  const validationSchema = yup.object({
+    firstName: yup.string().required("First Name is required"),
+    lastName: yup.string().required("Last Name is required"),
+    email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    nin: yup.string().required("NIN is required").min(11).max(11),
+    rentEndDate: yup.string().required("Rent start date is required"),
+    rentStartDate: yup.string().required("Rent end date is required"),
+  });
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -144,6 +162,38 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       setOpenAddTenantModal(false);
     }
   };
+
+  const addTenant: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(createUserByLandlord(values))) as any;
+
+      // Check if there is an error in the result
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to add tenant. Please try again."
+          ); // Assuming payload contains the error message
+        } else {
+          toast.error("Failed to add tenant. Please try again.");
+        }
+      } else {
+        toast.success("Tenant onboarded successfully");
+        resetForm(); // Reset form fields after successful submission
+      }
+    } catch (error: any) {
+      // Catch any unexpected errors
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false); // Reset submitting state
+    }
+  };
+
 
   const assignDateToTenancy: AddTenantFunction = async (
     values,
@@ -478,7 +528,25 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
             </div>
           </div>
         ) : (
-          <div className="flex justify-center">No Active Tenancy</div>
+          <div className="mt-8">
+               <div className="flex justify-center">No Active Tenancy</div>
+               <div className="flex justify-center mt-4">
+               <Button
+                    type="submit"
+                    size="large"
+                    className=""
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      setOpenOnboardTenantModal(true)
+                    }}
+                
+                  >
+                   Add Tenant
+                  </Button>
+               </div>
+          </div>
+       
         )}
       </div>
 
@@ -763,6 +831,134 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </Formik>
         </div>
       </CenterModal>
+
+      <Modal
+        isOpen={openOnboardTenantModal}
+        onClose={() => {
+          setOpenOnboardTenantModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+            Onboard A New Tenant
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will make this applicant the current occupant
+            of this property for the designated time
+          </p>
+          <Formik
+            initialValues={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              nin: "",
+              propertyId: data?._id,
+              ownerId: user?._id,
+              rentEndDate: "",
+              rentStartDate: "",
+              accountType: "tenant",
+            }}
+            validationSchema={validationSchema}
+            onSubmit={(values, formikHelpers) =>
+              addTenant(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values }) => (
+              <Form>
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div className="w-full md:flex flex-row gap-3">
+                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                      <FormikInputField
+                        name="firstName"
+                        placeholder="Enter First Name"
+                        label="First Name"
+                        value={values.firstName}
+                      />
+                    </div>
+                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                      <FormikInputField
+                        name="lastName"
+                        placeholder="Last Name"
+                        label="Enter Last Name"
+                        value={values.lastName}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full md:flex flex-row gap-3">
+                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                      <FormikInputField
+                        name="email"
+                        placeholder="Tenant Email"
+                        label="Email"
+                        value={values.email}
+                      />
+                    </div>
+                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                      <FormikInputField
+                        name="nin"
+                        placeholder="Tenant NIN"
+                        label="National Identification Number"
+                        value={values.nin}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full md:flex flex-row gap-3">
+                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
+                      <CustomDatePicker
+                        label="Rent Start Date"
+                        name="rentStartDate"
+                      />
+                    </div>
+                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
+                      <CustomDatePicker
+                        label="Rent End Date"
+                        name="rentEndDate"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full md:flex flex-row gap-3"></div>
+{/* 
+                  <div className="w-full mt-0 md:mt-0">
+                    <FormikSelectField
+                      name="propertyId"
+                      placeholder="Select Property"
+                      label="Select Apartment"
+                      options={landlordProperties}
+                      isSearchable={true}
+                    />
+                  </div> */}
+                </div>
+                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={() => {
+                      resetForm();
+                      setOpenAddTenantModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="large"
+                    className="block w-full"
+                    variant="lightGrey"
+                    showIcon={false}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
 
       {viewDocs === true ? (
         <div>

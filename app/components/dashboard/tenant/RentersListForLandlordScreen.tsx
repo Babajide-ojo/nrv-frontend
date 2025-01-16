@@ -112,7 +112,7 @@ const RentersListForLandlordScreen = () => {
 
   return (
     <div className="p-4 w-full">
-      <div className="text-xl">Messages 🏘️</div>
+      <div className="text-xl">Messages 🏘️...</div>
 
       {isLoading ? (
         <div className="w-full mx-auto">

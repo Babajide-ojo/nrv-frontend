@@ -26,7 +26,7 @@ const MessageScreen = () => {
         <ProtectedRoute>
           <LandLordLayout>
             <div className="p-8 w-full">
-              <div className="text-xl">Messages 🏘️</div>
+              <div className="text-xl">Messages 🏘️.</div>
 
               <div className="w-full h-screen flex justify-center items-center">
                 <div className="">

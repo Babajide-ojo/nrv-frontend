@@ -37,8 +37,8 @@ type AddTenantFunction = (
 ) => Promise<void>;
 
 const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
-  console.log({data});
-  
+  console.log({ data });
+
   const { id } = useParams();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -170,30 +170,27 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   ) => {
     try {
       const result = (await dispatch(createUserByLandlord(values))) as any;
-
-      // Check if there is an error in the result
       if (result.error) {
         if (result.error.message === "Rejected") {
           toast.error(
             result.payload || "Failed to add tenant. Please try again."
-          ); // Assuming payload contains the error message
+          );
         } else {
           toast.error("Failed to add tenant. Please try again.");
         }
       } else {
         toast.success("Tenant onboarded successfully");
-        resetForm(); // Reset form fields after successful submission
+        fetchData();
+        resetForm();
       }
     } catch (error: any) {
-      // Catch any unexpected errors
       toast.error(
         error?.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
-      setSubmitting(false); // Reset submitting state
+      setSubmitting(false);
     }
   };
-
 
   const assignDateToTenancy: AddTenantFunction = async (
     values,
@@ -326,8 +323,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   }, []);
 
   const validate = (values: any) => {
-    console.log({ values });
-
     const errors: { rentEndDate?: string } = {};
     if (tenantDetails?.data?.finalResult?.rentEndDate) {
       const currentEndDate = new Date(
@@ -529,24 +524,22 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           </div>
         ) : (
           <div className="mt-8">
-               <div className="flex justify-center">No Active Tenancy</div>
-               <div className="flex justify-center mt-4">
-               <Button
-                    type="submit"
-                    size="large"
-                    className=""
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={() => {
-                      setOpenOnboardTenantModal(true)
-                    }}
-                
-                  >
-                   Add Tenant
-                  </Button>
-               </div>
+            <div className="flex justify-center">No Active Tenancy</div>
+            <div className="flex justify-center mt-4">
+              <Button
+                type="submit"
+                size="large"
+                className=""
+                variant="lightGrey"
+                showIcon={false}
+                onClick={() => {
+                  setOpenOnboardTenantModal(true);
+                }}
+              >
+                Add Tenant
+              </Button>
+            </div>
           </div>
-       
         )}
       </div>
 
@@ -918,16 +911,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     </div>
                   </div>
                   <div className="w-full md:flex flex-row gap-3"></div>
-{/* 
-                  <div className="w-full mt-0 md:mt-0">
-                    <FormikSelectField
-                      name="propertyId"
-                      placeholder="Select Property"
-                      label="Select Apartment"
-                      options={landlordProperties}
-                      isSearchable={true}
-                    />
-                  </div> */}
                 </div>
                 <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
                   <Button

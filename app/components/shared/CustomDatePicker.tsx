@@ -1,26 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight, FaCalendarAlt } from 'react-icons/fa';
-import './CustomDatePicker.css'; // Ensure this file has responsive styles
 import { useFormikContext, Field, ErrorMessage } from 'formik';
-import '../shared/CustomDatePicker.css'
 
 interface CustomDatePickerProps {
   label?: string;
   name: string;
   cls?: any;
-  errorMessage?: string
+  errorMessage?: string;
 }
 
 const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, errorMessage }) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const [currentView, setCurrentView] = useState<'day' | 'month' | 'year'>('day');
+  const [currentView, setCurrentView] = useState<'day' | 'month' | 'year' | 'month-year'>('day');
   const [currentMonth, setCurrentMonth] = useState<number>(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear());
   const calendarRef = useRef<HTMLDivElement | null>(null);
   const { setFieldValue, setFieldTouched, values } = useFormikContext<any>();
 
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // Abbreviated months (3-letter format)
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const years = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - 10 + i);
 
   const handleDateClick = (date: Date) => {
@@ -69,7 +68,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, e
     return months.map((month, index) => (
       <div
         key={index}
-        className={`calendar-month ${index === currentMonth ? 'selected' : ''}`}
+        className={`calendar-month ${index === currentMonth ? 'bg-blue-500 text-white' : 'text-gray-800'} text-xs p-2 cursor-pointer text-center hover:bg-blue-300 rounded-md`}
         onClick={() => handleMonthClick(index)}
         role="button"
         tabIndex={0}
@@ -83,7 +82,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, e
     return years.map((year) => (
       <div
         key={year}
-        className={`calendar-year ${year === currentYear ? 'selected' : ''}`}
+        className={`calendar-year ${year === currentYear ? 'bg-blue-500 text-white' : 'text-gray-800'} text-xs p-2 cursor-pointer text-center hover:bg-blue-300 rounded-md`}
         onClick={() => handleYearClick(year)}
         role="button"
         tabIndex={0}
@@ -107,90 +106,102 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ label, name, cls, e
   return (
     <div className="custom-date-picker mt-8" ref={calendarRef}>
       {label && <label className="date-input-label font-medium">{label}</label>}
-      <div className="date-input-wrapper">
+      <div className="relative border border-gray-400 rounded-md cursor-pointer focus:ring-2 focus:ring-blue-400">
         <Field
           type="text"
           name={name}
           value={selectedDate ? selectedDate.toLocaleDateString() : ''}
           readOnly
-          className={`date-input text-sm ${cls}`}
+          className={`date-input text-sm ${cls} p-2 pr-10 `}
           placeholder='dd/mm/yyyy'
           aria-label={label}
         />
-        <FaCalendarAlt className="calendar-icon" onClick={() => setShowCalendar(!showCalendar)} />
+        <FaCalendarAlt
+          className="calendar-icon absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer"
+          onClick={() => setShowCalendar(!showCalendar)}
+        />
       </div>
       <ErrorMessage
-          name={name}
-          component="div"
-          className="text-red-500 text-xs"
-        />
+        name={name}
+        component="div"
+        className="text-red-500 text-xs"
+      />
       {showCalendar && (
-        <div className="calendar" aria-expanded={showCalendar}>
-      {currentView === 'day' && (
-  <>
-    <div className="calendar-header">
-      <button
-        type="button"
-        className="calendar-nav-button"
-        onClick={() => setCurrentMonth(prev => (prev + 11) % 12)}
-        aria-label="Previous Month"
-      >
-        <FaChevronLeft />
-      </button>
-      <span className="calendar-month-year">{months[currentMonth]} {currentYear}</span>
-      <button
-        type="button"
-        className="calendar-nav-button"
-        onClick={() => setCurrentMonth(prev => (prev + 1) % 12)}
-        aria-label="Next Month"
-      >
-        <FaChevronRight />
-      </button>
-    </div>
-    <div className="calendar-body">
-      {generateCalendarDays()}
-    </div>
-    <button
-      type="button"
-      className="calendar-back-button"
-      onClick={() => setCurrentView('month')}
-      aria-label="Back to Months"
-    >
-      Back to Months
-    </button>
-  </>
-)}
-
-          {currentView === 'month' && (
+        <div className="calendar absolute z-10 bg-white shadow-xl rounded-md mt-2 w-3/5 p-4">
+          {currentView === 'day' && (
             <>
-              <div className="calendar-header">
-                <button className="calendar-nav-button" onClick={() => setCurrentView('year')} aria-label="Previous Decade">
+              <div className="calendar-header flex justify-between items-center mb-2">
+                <button
+                  type="button"
+                  className="calendar-nav-button text-gray-600 hover:text-blue-600"
+                  onClick={() => setCurrentMonth(prev => (prev + 11) % 12)}
+                  aria-label="Previous Month"
+                >
                   <FaChevronLeft />
                 </button>
-                <span className="calendar-month-year">Select Month</span>
-                <button className="calendar-nav-button" disabled aria-label="Next Decade">
+                <span className="calendar-month-year text-lg">{months[currentMonth]} {currentYear}</span>
+                <button
+                  type="button"
+                  className="calendar-nav-button text-gray-600 hover:text-blue-600"
+                  onClick={() => setCurrentMonth(prev => (prev + 1) % 12)}
+                  aria-label="Next Month"
+                >
                   <FaChevronRight />
                 </button>
               </div>
-              <div className="month-view">
-                {generateMonthView()}
+              <div className="calendar-body grid grid-cols-7 gap-2">
+                {generateCalendarDays()}
+              </div>
+              <button
+                type="button"
+                className="calendar-back-button w-full mt-4 py-2 text-center bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md"
+                onClick={() => setCurrentView('month-year')}
+                aria-label="Back to Month/Year"
+              >
+                Back to Month/Year
+              </button>
+            </>
+          )}
+
+          {currentView === 'month-year' && (
+            <>
+              <div className="calendar-header flex justify-between items-center mb-2">
+                <span className="calendar-month-year text-lg">Select Month and Year</span>
+              </div>
+              <div className="month-year-view grid grid-cols-2 gap-4">
+                <div className="month-view grid grid-cols-3 gap-1">{generateMonthView()}</div>
+                <div className="year-view grid grid-cols-4 gap-1">{generateYearView()}</div>
               </div>
             </>
           )}
-          {currentView === 'year' && (
+
+          {currentView === 'month' && (
             <>
-              <div className="calendar-header">
-                <button className="calendar-nav-button" onClick={() => setCurrentYear(prev => prev - 10)} aria-label="Previous 10 Years">
+              <div className="calendar-header flex justify-between items-center mb-2">
+                <button className="calendar-nav-button text-gray-600 hover:text-blue-600" onClick={() => setCurrentView('year')} aria-label="Previous Decade">
                   <FaChevronLeft />
                 </button>
-                <span className="calendar-month-year">Select Year</span>
-                <button className="calendar-nav-button" onClick={() => setCurrentYear(prev => prev + 10)} aria-label="Next 10 Years">
+                <span className="calendar-month-year text-lg">Select Month</span>
+                <button className="calendar-nav-button text-gray-600 hover:text-blue-600" disabled aria-label="Next Decade">
                   <FaChevronRight />
                 </button>
               </div>
-              <div className="year-view">
-                {generateYearView()}
+              <div className="month-view grid grid-cols-3 gap-">{generateMonthView()}</div>
+            </>
+          )}
+
+          {currentView === 'year' && (
+            <>
+              <div className="calendar-header flex justify-between items-center mb-2">
+                <button className="calendar-nav-button text-gray-600 hover:text-blue-600" onClick={() => setCurrentYear(prev => prev - 10)} aria-label="Previous 10 Years">
+                  <FaChevronLeft />
+                </button>
+                <span className="calendar-month-year text-lg">Select Year</span>
+                <button className="calendar-nav-button text-gray-600 hover:text-blue-600" onClick={() => setCurrentYear(prev => prev + 10)} aria-label="Next 10 Years">
+                  <FaChevronRight />
+                </button>
               </div>
+              <div className="year-view grid grid-cols-4 gap-2">{generateYearView()}</div>
             </>
           )}
         </div>

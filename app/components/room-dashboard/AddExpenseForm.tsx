@@ -10,11 +10,18 @@ import "react-toastify/dist/ReactToastify.css";
 import FormikSelectField from "../shared/input-fields/FormikSelectField";
 import { createExpense } from "@/redux/slices/propertySlice";
 import { SlCloudUpload } from "react-icons/sl";
+import BackIcon from "../shared/icons/BackIcon";
+import { ArrowBack } from "@/public/icons/iconsExport";
+import { FaArrowAltCircleLeft } from "react-icons/fa";
 
 interface User {
   user: {
     _id: string;
   };
+}
+
+interface AddExpenseProps {
+  onExpenseSubmit: (data: any) => void | any; // The callback function passed from the parent
 }
 
 // Validation Schema
@@ -69,7 +76,7 @@ const CustomInputField: React.FC<{
 };
 
 // Main AddExpense Component
-const AddExpense: React.FC = () => {
+const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
   const dispatch = useDispatch();
   const [roomId, setRoomId] = useState<string | any>(null);
   const [user, setUser] = useState<User | any>(null);
@@ -92,8 +99,8 @@ const AddExpense: React.FC = () => {
       if (selectedFiles.length > 0) values.file = selectedFiles[0];
       await dispatch(createExpense(values) as any).unwrap();
       toast.success("Expense added successfully!");
-      router.refresh();
-      resetForm();
+      //resetForm();
+      onExpenseSubmit;
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
     }
@@ -135,14 +142,21 @@ const AddExpense: React.FC = () => {
     values = {};
   };
 
-  
-
   return (
     <div className="container">
       <ToastContainer />
       <div className="max-w-lg mx-auto flex-grow w-full">
-        <div className="text-xl text-nrvGreyBlack font-semibold">
-          Add New Expense 🚀
+        <div className="flex justify-between">
+          <div
+            className=""
+            onClick={onExpenseSubmit}
+          >
+            <FaArrowAltCircleLeft />
+          </div>
+
+          <div className="text-xl text-nrvGreyBlack font-semibold">
+            Add New Expense 🚀
+          </div>
         </div>
 
         <Formik

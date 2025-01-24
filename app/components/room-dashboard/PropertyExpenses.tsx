@@ -34,6 +34,11 @@ const PropertyExpenses = () => {
     }
   };
 
+  const handleStep = (data: any) => {
+    // Here, you can update the parent state with the data passed from AddExpense
+    setCurrentStep(3);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -63,15 +68,15 @@ const PropertyExpenses = () => {
           </div>
         )}
 
-        {currentStep === 2 && <AddExpense />}
+        {currentStep === 2 && <AddExpense onExpenseSubmit={handleStep} />}
         {currentStep === 3 && (
           <div>
             <div className="flex justify-end">
               <Button
-                 size="normal"
-                 className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
-                 variant="mediumGrey"
-                 showIcon={false}
+                size="normal"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                variant="mediumGrey"
+                showIcon={false}
                 onClick={() => {
                   setCurrentStep(2);
                 }}

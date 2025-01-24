@@ -182,6 +182,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         toast.success("Tenant onboarded successfully");
         fetchData();
         resetForm();
+        setOpenOnboardTenantModal(false);
       }
     } catch (error: any) {
       toast.error(

@@ -1,5 +1,7 @@
 /* src/components/CustomDatePicker.css */
 
+/* Existing Styles */
+
 .custom-date-picker {
   position: relative;
   display: inline-block;
@@ -45,20 +47,35 @@
   z-index: 1;
 }
 
-.calendar {
-  position: absolute;
-  top: 100%;
+/* New Overlay Styles */
+.calendar-overlay {
+  position: fixed;
+  top: 0;
   left: 0;
   width: 100%;
-  max-width: 320px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  overflow: hidden;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above everything else */
 }
 
+.calendar-modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px; /* Increased width to fit both month and year views */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  position: relative;
+  z-index: 1001; /* Ensures calendar modal is on top */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for month and year views */
+  gap: 20px;
+}
+
+/* Calendar Header */
 .calendar-header {
   display: flex;
   justify-content: space-between;
@@ -109,13 +126,6 @@
 .calendar-day:hover, .calendar-month:hover, .calendar-year:hover {
   background-color: #153969;
   color: #fff;
-
-}
-
-.calendar-day:hover{
-  background-color: #153969;
-  color: #fff;
-border-radius: 50px;
 }
 
 .calendar-day.selected, .calendar-month.selected, .calendar-year.selected {
@@ -173,7 +183,6 @@ border-radius: 50px;
   border-radius: 10px;
 }
 
-
 /* Custom CSS for the arrow */
 .arrow {
   width: 0;
@@ -184,3 +193,37 @@ border-radius: 50px;
   transform: rotate(45deg);
   margin-top: -15px; /* Adjust to align with the line */
 }
+
+/* Add this to your CustomDatePicker.css */
+
+/* Layout for Month and Year Side by Side */
+.month-year-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns for Month and Year */
+  gap: 20px;
+  padding: 10px;
+}
+
+.month-view, .year-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Adjust as needed */
+  gap: 5px;
+}
+
+.calendar-month, .calendar-year {
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.calendar-month:hover, .calendar-year:hover {
+  background-color: #153969;
+  color: white;
+}
+
+.calendar-month.selected, .calendar-year.selected {
+  background-color: #153969;
+  color: white;
+}
+

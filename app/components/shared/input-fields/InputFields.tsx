@@ -1,108 +1,91 @@
-import React, { ChangeEvent, FocusEvent, useState } from "react";
-import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
-import classNames from "classnames";
+import Image from "next/image";
+import React, { ChangeEventHandler } from "react";
 
 interface InputFieldProps {
-  css?: string;
   label?: string;
   placeholder?: string;
+  name: string;
+  value: string | number;
+  icon?: string | React.ReactNode;
+  isDisabled?: boolean;
+  error?: string | null;
   inputType?: string;
-  borderColor?: string;
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-  value?: string | number;
-  name?: string;
-  disabled?: boolean;
-  error?: string;
-  ariaLabel?: string;
-  onWheel?: (event: React.WheelEvent<HTMLInputElement>) => void;
-  icon?: React.ReactNode;
-  unit?: string;
-  password?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  onClick?: () => void;
+  onWheel?: () => void;
+  onKeyPress?: (e: any) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement, Element>) => void;
+  css?: string;
   required?: boolean;
-  onBlur?: (e: FocusEvent<HTMLInputElement, Element>) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-  css = "",
+export default function InputField({
   label,
   placeholder,
-  inputType = "text",
-  onChange,
-  value,
   name,
-  disabled = false,
+  value,
+  icon,
+  isDisabled,
   error,
-  ariaLabel,
+  inputType,
   onWheel,
-  password = false,
+  onKeyPress,
+  onChange,
+  onClick,
   onBlur,
-}) => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const inputClasses = classNames(
-    "font-normal w-full h-9 outline-none box-border bg-white",
-    css,
-    {
-      "border-red-500": error,
-      "border-nrvLightGrey": !error,
-      "cursor-not-allowed bg-nrvGreyMediumBg": disabled,
-    }
-  );
-
+  css,
+  required,
+}: InputFieldProps) {
   return (
-    <div className="mb-4 relative">
-      <div
-        className="border border-[#a9b0ba] p-3 bg-white rounded-md relative"
-      >
-        <label
-          htmlFor={name}
-          className="block text-[10px] md:text-sm font-medium w-full text-nrvGreyBlack"
-        >
-          {label}
-        </label>
-        <div className="flex items-center relative">
-          <input
-            type={password ? (showPassword ? "text" : "password") : inputType}
-            id={name}
-            name={name}
-            placeholder={placeholder}
-            className={`w-full focus:outline-none text-nrvGreyBlack font-normal text-[16px] ${inputClasses} placeholder:text-nrvLightGrey placeholder:text-[13px]`} // Custom placeholder style here
-            onChange={onChange}
-            value={value}
-            disabled={disabled}
-            onWheel={onWheel}
-            aria-label={ariaLabel}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${name}-error` : undefined}
-            onBlur={onBlur}
-            style={{
-              width: "100%",
-              transformOrigin: "left"
-            }}
-          />
-          {inputType == "password" && (
-            <div
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 cursor-pointer"
-              onClick={togglePasswordVisibility}
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full">
+        <div className="flex flex-col justify-center mb-4">
+          <div className="flex flex-col w-full">
+            <label
+              htmlFor={name}
+              className="flex flex-wrap gap-1 items-center w-full"
             >
-              {showPassword ? (
-                <IoEyeOutline className="text-nrvDarkBlue text-xl" />
-              ) : (
-                <IoEyeOffOutline className="text-nrvDarkBlue text-xl" />
+              <span className="text-black font-medium">{label}</span>
+              {required && (
+                <span className="self-stretch my-auto w-2 text-red-600 whitespace-nowrap">
+                  *
+                </span>
               )}
+            </label>
+            <div
+              className={`flex gap-5 items-center px-3 py-3 mt-1 w-full bg-swBgGray2 rounded-md border ${
+                error ? "border-red-700" : "border-[#9da3af]"
+              } text-zinc-400`}
+            >
+              <input
+                type={inputType ? inputType : "text"}
+                name={name}
+                value={value}
+                onChange={onChange}
+                onKeyDown={onKeyPress}
+                onWheel={onWheel}
+                onBlur={onBlur}
+                placeholder={placeholder}
+                className={`w-full my-auto bg-transparent border-none focus:outline-none border-1 ${css && css}`}
+                disabled={isDisabled}
+                onClick={() => onClick && onClick()}
+              />
+              {icon && typeof icon === "string" ? (
+                <Image
+                  src={icon}
+                  alt={`${name} icon`}
+                  className="shrink-0 w-6 h-6"
+                  width={24}
+                  height={24}
+                />
+              ) : icon ? (
+                icon
+              ) : null}
             </div>
-          )}
+            {error && <div className="text-sm text-red-700 mt-1">{error}</div>}
+          </div>
         </div>
-
       </div>
-      {error && <p className="text-red-500 text-[13px] mt-2">{error}</p>}
     </div>
   );
-};
-
-
-export default InputField;
+}

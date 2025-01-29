@@ -19,6 +19,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { SlCloudUpload } from "react-icons/sl";
 import { propertyTypeData, rentMetricsData } from "@/helpers/data";
+import ImageUploader from "@/app/components/shared/ImageUploader";
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -114,6 +115,8 @@ const CreateRoom = () => {
       noOfPools,
       otherAmentities,
     } = roomData;
+    console.log({roomData});
+    
 
     // Validate required fields
     if (
@@ -126,7 +129,7 @@ const CreateRoom = () => {
       toast.error("Please fill in all required fields.");
       return;
     }
-    console.log({ roomData });
+    console.log({ selectedFiles });
 
     const formData = new FormData();
     formData.append("description", description);
@@ -155,6 +158,11 @@ const CreateRoom = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+ 
+  const handleImageChange = (file: File) => {
+    setSelectedFiles(file);
   };
 
   useEffect(() => {
@@ -317,22 +325,21 @@ const CreateRoom = () => {
                             </div>
                           </div>
 
-                          <div className="w-full mt-4">
+                          {/* <div className="w-full mt-4">
                             <label className="text-nrvGreyBlack mb-2 text-sm font-medium">
-                              Property Photo
+                              Property Photo....
                             </label>
 
-                            {/* Image Preview Section */}
                             {selectedFiles.length > 0 && (
         <div className="mb-4 flex justify-between items-center">
-          {/* Image Icon */}
+  
           <div className="flex items-center">
             <img
               src={URL.createObjectURL(selectedFiles[0])}
               alt="Property preview"
               className="w-20 h-20 object-cover rounded-full border-2 border-nrvLightGrey mr-2" // Small icon style
             />
-            {/* Link to preview the image */}
+    
             <a
               href={URL.createObjectURL(selectedFiles[0])}
               target="_blank"
@@ -349,7 +356,7 @@ const CreateRoom = () => {
                               className="text-center w-full mt-2"
                               onDragOver={(e) => e.preventDefault()}
                             >
-                              <div className="w-full border border-nrvLightGrey bg-white rounded-lg pt-4 pb-4 text-swBlack">
+                              <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
                                 <input
                                   type="file"
                                   id="fileInput"
@@ -377,7 +384,8 @@ const CreateRoom = () => {
                                 </label>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
+                          <ImageUploader label="Upload Image" onChange={handleImageChange}/>
                         </div>
 
                         <div className="flex justify-center mt-8">

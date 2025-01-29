@@ -345,7 +345,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                            css="bg-white"
+                          //  css="bg-white"
                             label="Street Address"
                             placeholder="Enter Street Address"
                             inputType="text"
@@ -357,7 +357,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                            css="bg-white"
+                        //    css="bg-white"
                             label="Unit (Optional)"
                             placeholder="Enter Unit"
                             inputType="text"
@@ -370,7 +370,7 @@ const SinglePropertyScreen = () => {
                         <div className="w-full mt-4 flex gap-3">
                           <div className="w-1/2">
                             <InputField
-                              css="bg-white"
+                          //    css="bg-white"
                               label="City"
                               placeholder="Enter City"
                               inputType="text"
@@ -382,7 +382,7 @@ const SinglePropertyScreen = () => {
                           </div>
                           <div className="w-1/2">
                             <InputField
-                              css="bg-white"
+                           //   css="bg-white"
                               label="State"
                               placeholder="Enter State"
                               inputType="text"
@@ -395,7 +395,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                            css="bg-white"
+                           // css="bg-white"
                             label="Zip Code"
                             placeholder="Enter Zip Code"
                             inputType="text"

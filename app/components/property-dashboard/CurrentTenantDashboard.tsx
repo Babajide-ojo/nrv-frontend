@@ -25,6 +25,9 @@ import Viewer from "react-viewer";
 import { getFileExtension } from "@/helpers/utils";
 import FormikInputField from "../shared/input-fields/FormikInputField";
 import * as yup from "yup";
+import SelectDate from "../shared/SelectDate";
+import { FaCalendar } from "react-icons/fa6";
+import { format } from "date-fns";
 
 interface Data {
   data: any;
@@ -51,9 +54,12 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
   const [openOnboardTenantModal, setOpenOnboardTenantModal] = useState(false);
+  const [openStartDate, setOpenStartDate] = useState(false);
+  const [openEndDate, setOpenEndDate] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
   const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
     useState(false);
+
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
   const toggleVisibility = () => {
@@ -846,10 +852,10 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
               lastName: "",
               email: "",
               nin: "",
+              rentStartDate: new Date(),
+              rentEndDate: new Date(),
               propertyId: data?._id,
               ownerId: user?._id,
-              rentEndDate: "",
-              rentStartDate: "",
               accountType: "tenant",
             }}
             validationSchema={validationSchema}
@@ -857,7 +863,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
               addTenant(values, formikHelpers, dispatch)
             }
           >
-            {({ isSubmitting, resetForm, values }) => (
+            {({ isSubmitting, resetForm, values, setFieldValue }) => (
               <Form>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <div className="w-full md:flex flex-row gap-3">
@@ -897,23 +903,69 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     </div>
                   </div>
 
+                  {/* Replace CustomDatePicker with SelectDate for Rent Start Date */}
                   <div className="w-full md:flex flex-row gap-3">
                     <div className="md:w-1/2 w-full mt-0 md:mt-0">
-                      <CustomDatePicker
-                        label="Rent Start Date"
-                        name="rentStartDate"
+                      <div
+                        onClick={() => setOpenStartDate(true)}
+                        className="cursor-pointer"
+                      >
+                        <FormikInputField
+                          name="rentStartDate"
+                          value={format(
+                            new Date(values.rentStartDate),
+                            "dd-MM-yyyy"
+                          )}
+                          onClick={() => setOpenStartDate(true)}
+                          placeholder="DD-MM-YYYY"
+                          icon={<FaCalendar className="text-xl" />}
+                          isDisabled={false}
+                          label="Rent Start Date"
+                        />
+                      </div>
+                      <SelectDate
+                        isOpen={openStartDate}
+                        onClose={() => setOpenStartDate(false)}
+                        value={values.rentStartDate}
+                        onChange={(selectedDate: any) => {
+                          setFieldValue("rentStartDate", selectedDate);
+                          setOpenStartDate(false);
+                        }}
                       />
                     </div>
+
                     <div className="md:w-1/2 w-full mt-0 md:mt-0">
-                      <CustomDatePicker
-                        label="Rent End Date"
-                        name="rentEndDate"
-                      />
+                      <div
+                        onClick={() => setOpenEndDate(true)}
+                        className="cursor-pointer"
+                      >
+                        <FormikInputField
+                          name="rentEndDate"
+                          value={format(
+                            new Date(values.rentEndDate),
+                            "dd-MM-yyyy"
+                          )}
+                          onClick={() => setOpenEndDate(true)}
+                          label="Rent End Date"
+                          placeholder="DD-MM-YYYY"
+                          icon={<FaCalendar className="text-xl" />}
+                          isDisabled={false}
+                        />
+                      </div>
                     </div>
+
+                    <SelectDate
+                      isOpen={openEndDate}
+                      onClose={() => setOpenEndDate(false)}
+                      value={values.rentEndDate}
+                      onChange={(selectedDate: any) => {
+                        setFieldValue("rentEndDate", selectedDate);
+                        setOpenEndDate(false);
+                      }}
+                    />
                   </div>
-                  <div className="w-full md:flex flex-row gap-3"></div>
                 </div>
-                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                <div className="mt-4 mx-auto w-full mt-8 flex gap-4 justify-between">
                   <Button
                     type="button"
                     size="large"

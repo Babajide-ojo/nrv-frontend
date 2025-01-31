@@ -123,8 +123,7 @@ const CreateRoom = () => {
       !description ||
       !rentAmount ||
       !noOfRooms ||
-      !noOfBaths ||
-      !selectedFiles[0]
+      !noOfBaths 
     ) {
       toast.error("Please fill in all required fields.");
       return;
@@ -141,7 +140,7 @@ const CreateRoom = () => {
     formData.append("noOfBaths", noOfBaths);
     formData.append("noOfPools", noOfPools);
     formData.append("otherAmentities", otherAmentities);
-    formData.append("file", selectedFiles[0]);
+    formData.append("file", selectedFiles);
 
     try {
       setLoading(true);

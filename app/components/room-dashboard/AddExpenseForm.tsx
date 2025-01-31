@@ -40,7 +40,7 @@ const CustomInputField: React.FC<{
   name: string;
   label: string;
   type?: string;
-  value?: string;
+  value?: string| any;
   placeholder?: string;
 }> = ({ name, label, value, ...props }) => {
   const { setFieldValue, setFieldTouched } = useFormikContext();

@@ -5,9 +5,10 @@ interface InputFieldProps {
   label?: string;
   placeholder?: string;
   name: string;
-  value: string | number;
+  password?: boolean;
+  value?: string | number;
   icon?: string | React.ReactNode;
-  isDisabled?: boolean;
+  disabled?: boolean;
   error?: string | null;
   inputType?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -16,6 +17,7 @@ interface InputFieldProps {
   onKeyPress?: (e: any) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement, Element>) => void;
   css?: string;
+  ariaLabel?: any;
   required?: boolean;
 }
 
@@ -24,8 +26,9 @@ export default function InputField({
   placeholder,
   name,
   value,
+  password,
   icon,
-  isDisabled,
+  disabled,
   error,
   inputType,
   onWheel,
@@ -33,6 +36,7 @@ export default function InputField({
   onChange,
   onClick,
   onBlur,
+  ariaLabel,
   css,
   required,
 }: InputFieldProps) {
@@ -64,10 +68,12 @@ export default function InputField({
                 onChange={onChange}
                 onKeyDown={onKeyPress}
                 onWheel={onWheel}
+               // ariaLabel={ariaLabel}
                 onBlur={onBlur}
+               // ariaLabel={ariaLabel}
                 placeholder={placeholder}
                 className={`w-full my-auto bg-transparent border-none focus:outline-none border-1 ${css && css}`}
-                disabled={isDisabled}
+                disabled={disabled}
                 onClick={() => onClick && onClick()}
               />
               {icon && typeof icon === "string" ? (

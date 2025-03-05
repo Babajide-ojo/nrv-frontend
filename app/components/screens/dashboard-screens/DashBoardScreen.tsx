@@ -34,8 +34,7 @@ const DashboardScreen = () => {
     const formData = {
       id: user?.user?._id,
     };
-    console.log({formData});
-    
+
     try {
       const response = await dispatch(getApplicationCount(formData) as any);
       setCount(response.payload.data);

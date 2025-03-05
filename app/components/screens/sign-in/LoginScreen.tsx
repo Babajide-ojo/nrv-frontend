@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdOutlineMail } from "react-icons/md";
 import { MdOutlineKey } from "react-icons/md";
+import EyeIcon from "../../shared/icons/EyeIcon";
 
 interface FormData {
   email: string;
@@ -115,24 +116,20 @@ const LoginScreen: React.FC = () => {
           <div className="mt-2">
             <InputField
               label="Email Address"
-      
               inputType="email"
               name="email"
               onChange={handleInputChange}
               error={errors.email}
-              icon={<MdOutlineMail size={15} color="#999999" />}
             />
           </div>
           <div className="mt-4">
             <InputField
               label="Password"
-    
               inputType={showPassword ? "text" : "password"}
               name="password"
               onChange={handleInputChange}
               error={errors.password}
               password={true}
-              icon={<MdOutlineKey size={15} color="#999999" />}
             />
           </div>
       

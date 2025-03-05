@@ -1,5 +1,7 @@
+import React, { useState, ChangeEventHandler } from "react";
 import Image from "next/image";
-import React, { ChangeEventHandler } from "react";
+import EyeOpenIcon from "../icons/EyeOpenIcon";
+import EyeIcon from "../icons/EyeIcon";
 
 interface InputFieldProps {
   label?: string;
@@ -40,6 +42,14 @@ export default function InputField({
   css,
   required,
 }: InputFieldProps) {
+  // State to toggle password visibility
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  // Toggle the password visibility
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-col w-full">
@@ -49,7 +59,9 @@ export default function InputField({
               htmlFor={name}
               className="flex flex-wrap gap-1 items-center w-full"
             >
-              <span className="text-black font-medium">{label}</span>
+              <span className="text-nrvInputFiledColor text-[14px] font-medium">
+                {label}
+              </span>
               {required && (
                 <span className="self-stretch my-auto w-2 text-red-600 whitespace-nowrap">
                   *
@@ -58,24 +70,34 @@ export default function InputField({
             </label>
             <div
               className={`flex gap-5 items-center px-3 py-3 mt-1 w-full bg-swBgGray2 rounded-md border ${
-                error ? "border-red-700" : "border-[#9da3af]"
+                error ? "border-red-700" : "border-[#E0E0E6]"
               } text-zinc-400`}
             >
               <input
-                type={inputType ? inputType : "text"}
+                type={password && !isPasswordVisible ? "password" : "text"}
                 name={name}
                 value={value}
                 onChange={onChange}
                 onKeyDown={onKeyPress}
                 onWheel={onWheel}
-               // ariaLabel={ariaLabel}
                 onBlur={onBlur}
-               // ariaLabel={ariaLabel}
                 placeholder={placeholder}
-                className={`w-full my-auto bg-transparent border-none focus:outline-none border-1 ${css && css}`}
+                className={`w-full font-light text-black my-auto bg-transparent border-none focus:outline-none border-1 ${
+                  css && css
+                }`}
                 disabled={disabled}
                 onClick={() => onClick && onClick()}
+                aria-label={ariaLabel}
               />
+
+              {password && (
+                <div
+                  className="cursor-pointer"
+                  onClick={togglePasswordVisibility}
+                >
+                  {isPasswordVisible ? <EyeIcon /> : <EyeOpenIcon />}
+                </div>
+              )}
               {icon && typeof icon === "string" ? (
                 <Image
                   src={icon}

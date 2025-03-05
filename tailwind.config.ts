@@ -24,6 +24,7 @@ const config: Config = {
         nrvLightGreyBg:"#EEF0F2", 
         nrvLightBlue: "#6c8ebd",
         nrvGreyMediumBg: "#d7d9db",
+        nrvInputFiledColor: "#807F94"
 
       }
     },

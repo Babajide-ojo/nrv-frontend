@@ -19,6 +19,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import PropertySuccess from "../../../loaders/PropertySuccess";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
+import ImageUploader from "@/app/components/shared/ImageUploader";
 
 interface PropertyData {
   streetAddress: string;
@@ -83,7 +84,7 @@ const CreatePropertyScreen = () => {
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
-    formData.append("file", selectedFiles[0]);
+    formData.append("file", selectedFiles);
     formData.append("createdBy", user?._id);
 
     try {
@@ -124,6 +125,10 @@ const CreatePropertyScreen = () => {
     } else {
       alert("You can only upload a maximum of 2 files.");
     }
+  };
+
+  const handleImageChange = (file: File) => {
+    setSelectedFiles(file);
   };
 
   const handleFileInputChange = (e: any) => {
@@ -186,20 +191,6 @@ const CreatePropertyScreen = () => {
                           No worries, you can change the information later
                         </p>
                         <div className="mx-auto pt-8 ">
-                          {/* <div className="w-full mt-4">
-                            <SelectField
-                              label="Property Type"
-                              name="propertyType"
-                              value={selectedOption}
-                              onChange={handleChange}
-                              options={[
-                                { value: "office", label: "Office" },
-                                { value: "duplex", label: "Duplex" },
-                                { value: "flat", label: "Flat" },
-                              ]}
-                             // placeholder="Select Property Type"
-                            />
-                          </div> */}
                           <div className="w-full mt-4">
                             <InputField
                               css="bg-nrvLightGreyBg"
@@ -212,18 +203,6 @@ const CreatePropertyScreen = () => {
                               error={errors.streetAddress} // Corrected error prop name
                             />
                           </div>
-                          {/* <div className="w-full mt-4">
-                            <InputField
-                              css="bg-nrvLightGreyBg"
-                              label="Unit (Optional)"
-                            //  placeholder="Enter Unit"
-                              inputType="text"
-                              name="unit"
-                              value={propertyData.unit}
-                              onChange={handleInputChange}
-                              error={errors.unit} // Corrected error prop name
-                            />
-                          </div> */}
 
                           <div className="w-full mt-4 flex gap-3">
                             <div className="w-1/2">
@@ -263,7 +242,7 @@ const CreatePropertyScreen = () => {
                               error={errors.zipCode} // Corrected error prop name
                             />
                           </div>
-                          <div
+                          {/* <div
                             className="w-full mt-4 rounded-md bg-nrvLightGreyBg"
                             style={{
                               borderColor: "#7d7d7d",
@@ -272,11 +251,11 @@ const CreatePropertyScreen = () => {
                             }}
                           >
                             <div
-                              className="text-center w-full mt-2 p-2"
+                              className="text-center w-full"
                               onDrop={handleFileDrop}
                               onDragOver={(e) => e.preventDefault()}
                             >
-                              <div className="w-full rounded-lg pt-4 pb-4 text-swBlack">
+                              <div className="w-full rounded-lg pt-2 pb-2 text-swBlack">
                                 <input
                                   type="file"
                                   id="fileInput"
@@ -287,7 +266,7 @@ const CreatePropertyScreen = () => {
 
                                 <label
                                   htmlFor="fileInput"
-                                  className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light  mx-auto mt-5 mb-3"
+                                  className="cursor-pointer rounded-md bg-swBlue text-nrvLightGrey font-light  mx-auto mt-5 mb-3"
                                 >
                                   <div className="text-center flex justify-center">
                                     {selectedFiles.length == 0 &&
@@ -344,7 +323,7 @@ const CreatePropertyScreen = () => {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="font-light text-sm pt-2">
+                                    <div className="font-light text-sm">
                                       <span className="text-nrvDarkBlue font-medium">
                                         Click to upload
                                       </span>{" "}
@@ -358,7 +337,12 @@ const CreatePropertyScreen = () => {
                                 </label>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
+
+                          <ImageUploader
+                            label="Upload Image"
+                            onChange={handleImageChange}
+                          />
                         </div>
 
                         <div className="flex justify-center mt-8">
@@ -368,6 +352,7 @@ const CreatePropertyScreen = () => {
                             className="w-full mb-8"
                             disabled={loading ? true : false}
                             variant="darkPrimary"
+                            isLoading={loading}
                             showIcon={false}
                             // onClick={handleNextAndVerify}
                           >

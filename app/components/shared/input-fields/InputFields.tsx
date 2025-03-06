@@ -71,7 +71,7 @@ export default function InputField({
             <div
               className={`flex gap-5 items-center px-3 py-3 mt-1 w-full bg-swBgGray2 rounded-md border ${
                 error ? "border-red-700" : "border-[#E0E0E6]"
-              } text-zinc-400`}
+              }`}
             >
               <input
                 type={password && !isPasswordVisible ? "password" : "text"}

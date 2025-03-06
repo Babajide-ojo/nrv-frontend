@@ -23,15 +23,16 @@ interface Props {
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    borderColor: state.isFocused ? "#9da3af" : "#9da3af", // Grey border on focus and default
+    borderColor: state.isFocused ? "#E0E0E6" : "#E0E0E6", // Grey border on focus and default
     borderWidth: "1px",
-   boxShadow: state.isFocused ? "#9da3af" : "#9da3af", // Light grey shadow on focus
+    boxShadow: state.isFocused ? "#E0E0E6" : "#E0E0E6", // Light grey shadow on focus
     backgroundColor: "transparent", // Ensure the background is transparent
     borderRadius: "5px",
     fontSize: "15px",
-   // fontWeight: "400",
+    fontWeight: 400,
     color: "#9da3af", // Text color
-    padding: "5px"
+    padding: "5px",
+    height: "48px"
   }),
 
   option: (provided: any, state: any) => ({
@@ -45,7 +46,8 @@ const customStyles = {
 
   placeholder: (provided: any) => ({
     ...provided,
-    color: "#999999", // Grey color for placeholder
+    color: "#807F94", // Grey color for placeholder
+    fontWeight: 300,
   }),
 
   singleValue: (provided: any) => ({
@@ -56,6 +58,7 @@ const customStyles = {
   input: (provided: any) => ({
     ...provided,
     color: "#333333", // Darker grey for input text
+    fontWeight: 300,
   }),
 };
 
@@ -80,25 +83,25 @@ const SelectField: React.FC<Props> = ({
 
   return (
     <div>
-      <label className="text-black font-medium">
+      <div className="text-nrvInputFiledColor text-[14px] font-medium">
         {label}
         {required && <span className="text-red-600 ml-1">*</span>}
-      </label>
-  <div className="pt-1.5">
-  <Select
-        name={name}
-        isDisabled={disabled}
-        styles={customStyles}
-        isSearchable={isSearchable}
-        isClearable={true}
-        options={options}
-        placeholder={placeholder}
-        value={value}
-        noOptionsMessage={noOptionsMessage}
-        onChange={handleSelectChange}
-        onBlur={onBlur}
-      />
-  </div>
+      </div>
+      <div className="pt-1.5">
+        <Select
+          name={name}
+          isDisabled={disabled}
+          styles={customStyles}
+          isSearchable={isSearchable}
+          isClearable={true}
+          options={options}
+          placeholder={placeholder}
+          value={value}
+          noOptionsMessage={noOptionsMessage}
+          onChange={handleSelectChange}
+          onBlur={onBlur}
+        />
+      </div>
     </div>
   );
 };

@@ -6,65 +6,52 @@ import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
-import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
+import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 const PropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [properties, setProperties] = useState<any[]>([]);
-  const [page, setPage] = useState(1); // Current page
-  const [totalPages, setTotalPages] = useState(0); // Total pages
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [singleProperty, setSingleProperty] = useState<any>({});
   const [isOpen, setIsOpen] = useState(false);
-  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const formData = {
-      id: user?.user?._id,
-      page: page,
-    };
-
-    try {
-      const response = await dispatch(getPropertyByUserId(formData) as any); // Pass page parameter
-      setProperties(response?.payload?.data);
-      setTotalPages(response?.totalPages);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-      setIsPageLoading(false); // Stop page loading after fetch
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsPageLoading(true);
+        const storedUser = JSON.parse(
+          localStorage.getItem("nrv-user") || "null"
+        );
+        if (!storedUser?.user?._id) return;
+        setUser(storedUser.user);
+
+        const response = await dispatch(
+          getPropertyByUserId({ id: storedUser.user._id, page }) as any
+        );
+
+        setProperties(response?.payload?.data || []);
+        setTotalPages(response?.payload?.totalPages || 1);
+      } catch (error) {
+        console.error("Error fetching properties", error);
+      } finally {
+        setIsLoading(false);
+        setIsPageLoading(false);
+      }
+    };
     fetchData();
-  }, [page]); // Reload properties when page changes
-
-  const handleNextPage = () => {
-    if (page) {
-      setIsPageLoading(true);
-      setPage(page + 1);
-      // setIsPageLoading(false);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (page > 1) {
-      setIsPageLoading(true);
-      setPage(page - 1);
-      //setIsPageLoading(false);
-    }
-  };
+  }, [dispatch, page]);
 
   return (
     <div>
@@ -76,206 +63,152 @@ const PropertiesScreen = () => {
             <ToastContainer />
             {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="text-white"></div>
+                <div className="text-white">Loading...</div>
               </div>
             )}
-            {properties?.length < 1 ? (
-              <div className="p-8 w-full">
-                <div className="text-xl">Properties 🏘️</div>
-                {/* <p className="text-sm text-nrvLightGrey">
-                  Let’s add another property :)
-                </p> */}
-                <p className="text-sm text-nrvLightGrey">
-                  Afer creating a property, kindly proceed to enlist all
-                  apartments, sections or offices available on that property and
-                  enjoy our seamless property management app
-                </p>
-                <div className="w-full h-screen flex justify-center items-center">
-                  <div className="">
-                    <EmptyState />
-                    <p className="text-nrvLightGrey m-2">
-                      No property listed yet
+            <div className="p-4 w-full">
+              <h2 className="text-xl">Properties 🏘️</h2>
+              {properties.length === 0 ? (
+                <div className="w-full h-screen flex flex-col justify-center items-center">
+                  <EmptyState />
+                  <p className="text-nrvLightGrey m-2">
+                    No property listed yet
+                  </p>
+                  <Button
+                    size="normal"
+                    className="text-nrvDarkBlue border border-nrvDarkBlue mt-4 rounded-md"
+                    variant="lightGrey"
+                    onClick={() =>
+                      router.push("/dashboard/landlord/properties/create")
+                    }
+                  >
+                    Add New
+                  </Button>
+                </div>
+              ) : (
+                <div className="max-w-2xl min-w-lg md:mx-auto mt-8 mx-4">
+                  <div className="flex justify-between">
+                    <p className="text-md text-nrvLightGrey">
+                      Manage your properties below
                     </p>
                     <Button
-                      size="normal"
-                      className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
+                      size="small"
+                      className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md hover:text-white text-sm"
                       variant="lightGrey"
-                      showIcon={false}
+                      onClick={() =>
+                        router.push("/dashboard/landlord/properties/create")
+                      }
                     >
-                      <div
-                        className="flex gap-3"
+                      Add Property
+                    </Button>
+                  </div>
+                  {properties.map((property, index) => (
+                    <div key={index} className="bg-white p-2 rounded-lg mt-8  shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
+                      <div className="">
+                        <div className="flex gap-4 w-full">
+                          <img
+                            src={property.file}
+                            className="h-20 w-20 rounded-lg object-cover"
+                            alt="Property"
+                          />
+                          <div className="w-full">
+                            <p className="text-sm font-normal text-nrvDarkGrey">
+                              {property.streetAddress}
+                            </p>
+                            <p className="text-sm font-normal text-nrvLightGrey mt-2">
+                             Added on {formatDateToWords(property.createdAt)}
+                            </p>
+                          </div>
+                    
+                        </div>
+ 
+                      </div>
+                      <div className="flex justify-end">
+                      <Button
+                        size="small"
+                        className="mt-2 text-nrvDarkBlue text-sm font-normal border border-white rounded-md py-1 px-2 hover:bg-nrvLightBlue hover:text-white transition-colors duration-300"
+                        variant="lightGrey"
                         onClick={() => {
-                          router.push("/dashboard/landlord/properties/create");
+                          localStorage.setItem(
+                            "property",
+                            JSON.stringify(property)
+                          );
+                          setSingleProperty(property);
+                          router.push(
+                            `/dashboard/landlord/properties/${property._id}`
+                          );
                         }}
                       >
-                        {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
-                        <p className="text-nrvDarkBlue">Add New</p>
+                        View
+                      </Button>
                       </div>
+
+                     
+                    </div>
+                  ))}
+
+                  <div className="flex justify-between mt-4">
+                    <Button
+                      size="small"
+                      className="text-nrvDarkBlue text-sm border border-nrvDarkBlue rounded-md"
+                      variant="lightGrey"
+                      onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      size="small"
+                      className="text-nrvDarkBlue text-sm border border-nrvDarkBlue rounded-md"
+                      variant="lightGrey"
+                      onClick={() =>
+                        setPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={page >= totalPages}
+                    >
+                      Next
                     </Button>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="max-w-2xl min-w-lg md:mx-auto mt-8 mx-4">
-                <div className="flex justify-between">
-                  <div>
-                    <div className="text-xl">Properties 🏘️</div>
-                    <p className="text-md text-nrvLightGrey">
-                      Let’s add another property :)
-                    </p>
-                  </div>
+              )}
+            </div>
+
+            <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+              <div className="mx-auto text-center p-4">
+                <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                  Contact Info
+                </h2>
+                <p className="text-nrvLightGrey text-sm">
+                  View your property full details
+                </p>
+                <p className="text-nrvLightGrey underline mt-4 text-md">
+                  {singleProperty.streetAddress}
+                </p>
+                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
-                    size="normal"
-                    className="text-nrvDarkBlue p-3  border border-nrvDarkBlue mt-4 rounded-md hover:text-white"
-                    variant="lightGrey"
-                    showIcon={false}
+                    size="small"
+                    className="text-white w-72 border border-nrvDarkBlue rounded-md"
+                    variant="bluebg"
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/landlord/properties/${singleProperty._id}`
+                      )
+                    }
                   >
-                    <div
-                      className="flex gap-3"
-                      onClick={() => {
-                        router.push("/dashboard/landlord/properties/create");
-                      }}
-                    >
-                      {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
-                      <p className="">Add New</p>
-                    </div>
+                    View full details
+                  </Button>
+                  <Button
+                    size="small"
+                    className="text-nrvDarkBlue w-72 border border-nrvDarkBlue rounded-md"
+                    variant="lightGrey"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Close
                   </Button>
                 </div>
-                {/* <p className="text-md text-nrvDarkBlue mt-4">
-                  After creating a property, kindly proceed to enlist all
-                  apartments, sections or offices available on that property and
-                  enjoy our seamless property management app
-                </p> */}
-                {properties ? (
-                  <div>
-                    {properties?.map((property: any, index: any) => (
-                 
-                        <div
-                          key={index}
-                          className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
-                        >
-                          <div className="w-3/5">
-                            <div className="flex gap-2 ">
-                              <div className="md:w-1/5 w-2/5 ">
-                                <img
-                                  src={property.file}
-                                  className="h-16 w-16 rounded-md"
-                                  alt="Property"
-                                />
-                              </div>
-
-                              <p className="md:w-4/5 w-3/5 md:text-sm text-md text-nrvDarkGrey font-lighter">
-                                {property.streetAddress}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="w-2/5 text-end">
-                            <Button
-                              size="small"
-                              className="text-nrvDarkBlue text-xs rounded border border-nrvDarkBlue mt-8"
-                              variant="lightGrey"
-                              showIcon={false}
-                            >
-                              <div
-                                className="flex gap-3"
-                                onClick={() => {
-                                  localStorage.setItem(
-                                    "property",
-                                    JSON.stringify(property)
-                                  );
-                                  setSingleProperty(property);
-                                  router.push(
-                                    `/dashboard/landlord/properties/${property._id}`
-                                  );
-                                }}
-                              >
-                                <p className="text-xs p-0.5">View details</p>
-                              </div>
-                            </Button>
-                          </div>
-                        </div>
-                       
-                 
-                    ))}
-                     <div className="flex justify-between mt-4">
-                          <Button
-                            size="small"
-                            className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
-                            variant="lightGrey"
-                            showIcon={false}
-                            onClick={handlePrevPage}
-                            disabled={page === 1}
-                          >
-                            Previous
-                          </Button>
-                          <Button
-                            size="small"
-                            className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
-                            variant="lightGrey"
-                            showIcon={false}
-                            onClick={handleNextPage}
-                            disabled={page === totalPages}
-                          >
-                            Next
-                          </Button>
-                        </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center mt-24">
-                  <div className="">
-                    <EmptyState />
-                    <p className="text-nrvLightGrey m-2">No Property Onboarded Yet</p>
-                  </div>
-                </div>
-                )}
               </div>
-            )}
+            </CenterModal>
           </LandLordLayout>
-          <CenterModal
-            isOpen={isOpen}
-            onClose={() => {
-              setIsOpen(false);
-            }}
-          >
-            <div className="mx-auto text-center p-4">
-              <h2 className="text-nrvDarkBlue font-semibold text-xl">
-                Contact Info
-              </h2>
-              <p className="text-nrvLightGrey text-sm">
-                View your property full details
-              </p>
-              <p className="text-nrvLightGrey underline mt-4 text-md">
-                {singleProperty.streetAddress}
-              </p>
-
-              <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
-                <Button
-                  size="small"
-                  className="text-white w-72 max-w-full   border border-nrvDarkBlue mt-2 rounded-md"
-                  variant="bluebg"
-                  showIcon={false}
-                  onClick={() => {
-                    router.push(
-                      `/dashboard/landlord/properties/${singleProperty._id}`
-                    );
-                  }}
-                >
-                  View full details
-                </Button>
-                <Button
-                  size="small"
-                  className="text-nrvDarkBlue  w-72  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
-                  variant="lightGrey"
-                  showIcon={false}
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                >
-                  <div className="flex gap-3">Close</div>
-                </Button>
-              </div>
-            </div>
-          </CenterModal>
         </ProtectedRoute>
       )}
     </div>

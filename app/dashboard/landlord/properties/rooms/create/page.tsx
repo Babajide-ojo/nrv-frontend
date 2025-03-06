@@ -38,7 +38,7 @@ const CreateRoom = () => {
     description: "",
     rentAmountMetrics: "",
     propertyType: "",
-    rentAmount: "",
+    rentAmount: 0,
     noOfRooms: "",
     noOfBaths: "",
     noOfPools: "",
@@ -115,21 +115,13 @@ const CreateRoom = () => {
       noOfPools,
       otherAmentities,
     } = roomData;
-    console.log({roomData});
-    
+    console.log({ roomData });
 
     // Validate required fields
-    if (
-      !description ||
-      !rentAmount ||
-      !noOfRooms ||
-      !noOfBaths 
-    ) {
+    if (!description || !rentAmount || !noOfRooms || !noOfBaths) {
       toast.error("Please fill in all required fields.");
       return;
     }
-    console.log({ selectedFiles });
-
     const formData = new FormData();
     formData.append("description", description);
     formData.append("propertyId", property._id);
@@ -159,7 +151,6 @@ const CreateRoom = () => {
     }
   };
 
- 
   const handleImageChange = (file: File) => {
     setSelectedFiles(file);
   };
@@ -268,8 +259,8 @@ const CreateRoom = () => {
                                 value={Number(
                                   roomData.rentAmount
                                 )?.toLocaleString()}
-                                placeholder="100000"
-                                inputType="text"
+                                placeholder="1"
+                                inputType="number"
                                 name="rentAmount"
                                 onChange={handleInputChange}
                               />
@@ -324,67 +315,11 @@ const CreateRoom = () => {
                             </div>
                           </div>
 
-                          {/* <div className="w-full mt-4">
-                            <label className="text-nrvGreyBlack mb-2 text-sm font-medium">
-                              Property Photo....
-                            </label>
-
-                            {selectedFiles.length > 0 && (
-        <div className="mb-4 flex justify-between items-center">
-  
-          <div className="flex items-center">
-            <img
-              src={URL.createObjectURL(selectedFiles[0])}
-              alt="Property preview"
-              className="w-20 h-20 object-cover rounded-full border-2 border-nrvLightGrey mr-2" // Small icon style
-            />
-    
-            <a
-              href={URL.createObjectURL(selectedFiles[0])}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 text-sm underline"
-            >
-              Preview Image
-            </a>
-          </div>
-        </div>
-      )}
-
-                            <div
-                              className="text-center w-full mt-2"
-                              onDragOver={(e) => e.preventDefault()}
-                            >
-                              <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
-                                <input
-                                  type="file"
-                                  id="fileInput"
-                                  className="hidden"
-                                  accept=".png, .jpg , .jpeg"
-                                  onChange={handleFileInputChange}
-                                />
-                                <label
-                                  htmlFor="fileInput"
-                                  className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
-                                >
-                                  <div className="text-center flex justify-center">
-                                    {selectedFiles.length > 0 ? (
-                                      selectedFiles[0]?.name
-                                    ) : (
-                                      <SlCloudUpload
-                                        size={30}
-                                        fontWeight={900}
-                                      />
-                                    )}
-                                  </div>
-                                  {selectedFiles.length > 0
-                                    ? "Change file"
-                                    : "Click to upload"}
-                                </label>
-                              </div>
-                            </div>
-                          </div> */}
-                          <ImageUploader label="Upload Image" onChange={handleImageChange}/>
+                     
+                          <ImageUploader
+                            label="Upload Image"
+                            onChange={handleImageChange}
+                          />
                         </div>
 
                         <div className="flex justify-center mt-8">
@@ -395,8 +330,9 @@ const CreateRoom = () => {
                             disabled={loading ? true : false}
                             variant="darkPrimary"
                             showIcon={false}
+                            isLoading={loading}
                           >
-                            {loading ? "Submitting" : "Continue"}
+                            {loading ? "Submitting" : "Submit"}
                           </Button>
                         </div>
                       </div>

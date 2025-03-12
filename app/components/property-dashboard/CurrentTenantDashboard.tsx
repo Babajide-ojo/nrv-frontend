@@ -28,6 +28,7 @@ import * as yup from "yup";
 import SelectDate from "../shared/SelectDate";
 import { FaCalendar } from "react-icons/fa6";
 import { format } from "date-fns";
+import CalendarIcon from "../shared/icons/CalendarIcon";
 
 interface Data {
   data: any;
@@ -379,7 +380,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
             <div className="w-full rounded rounded-2xl p-4">
               <div className="md:flex md:gap-8">
                 <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3">
-                  <div className="mb-2 text-md text-nrvDarkBlue font-medium">
+                  <div className="mb-2 text-md text-nrvPrimaryGreen font-medium">
                     Tenant Personal Information
                   </div>
                   <div className="mb-2">
@@ -389,7 +390,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     </p>
                   </div>
                   <div className="mb-2">
-                    <p className="text-sm text-nrvDarkBlue underline">
+                    <p className="text-sm text-nrvPrimaryGreen underline">
                       {tenantDetails?.data?.finalResult?.applicant?.email}
                     </p>
                   </div>
@@ -400,7 +401,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     </p>
                   </div>
                   <div className="mb-4">
-                    <h2 className="text-sm font-medium text-nrvDarkBlue">
+                    <h2 className="text-sm font-medium text-nrvPrimaryGreen">
                       NIN
                     </h2>
                     <div className="flex items-center gap-3">
@@ -414,16 +415,16 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                         className="text-blue-500"
                       >
                         {isVisible ? (
-                          <IoEyeOff className="w-5 h-5 text-nrvDarkBlue" />
+                          <IoEyeOff className="w-5 h-5 text-nrvPrimaryGreen" />
                         ) : (
-                          <IoEye className="w-5 h-5 text-nrvDarkBlue" />
+                          <IoEye className="w-5 h-5 text-nrvPrimaryGreen" />
                         )}
                       </button>
                     </div>
                   </div>
                 </div>
                 <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3 relative">
-                  <div className="mb-8 text-md text-nrvDarkBlue font-medium">
+                  <div className="mb-8 text-md text-nrvPrimaryGreen font-medium">
                     Rent Tenure
                   </div>
                   {tenantDetails?.data?.finalResult?.rentStartDate ? (
@@ -451,7 +452,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           </p>
                         </div>
                       </div>
-                      <div className="mt-4 text-sm text-nrvDarkBlue text-center font-medium">
+                      <div className="mt-4 text-sm text-nrvPrimaryGreen text-center font-medium">
                         {calculateDateDifference(
                           tenantDetails?.data?.finalResult?.rentStartDate,
                           tenantDetails?.data?.finalResult?.rentEndDate
@@ -509,7 +510,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                         </span>
                       </div>
                     ) : (
-                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvPrimaryGreen flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
                           onClick={() =>
@@ -557,7 +558,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         }}
       >
         <div className="mx-auto md:p-16 p-8 w-full h-full">
-          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Extend Tenant Tenure
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -622,7 +623,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         }}
       >
         <div className="mx-auto md:p-16 p-8 w-full h-full">
-          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Assign Rent Start and End Date
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -698,7 +699,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         }}
       >
         <div className="mx-auto md:p-16 p-8 w-full h-full">
-          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Upload Agreement Document
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -839,7 +840,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         }}
       >
         <div className="mx-auto md:p-16 p-8 w-full h-full">
-          <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Onboard A New Tenant
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -918,7 +919,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           )}
                           onClick={() => setOpenStartDate(true)}
                           placeholder="DD-MM-YYYY"
-                          icon={<FaCalendar className="text-xl" />}
+                          icon={<CalendarIcon width={25} height={25} fillColor="#807F94" /> }
                           isDisabled={false}
                           label="Rent Start Date"
                         />
@@ -948,7 +949,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           onClick={() => setOpenEndDate(true)}
                           label="Rent End Date"
                           placeholder="DD-MM-YYYY"
-                          icon={<FaCalendar className="text-xl" />}
+                          icon={<CalendarIcon width={25} height={25} fillColor="#807F94" />                        }
                           isDisabled={false}
                         />
                       </div>

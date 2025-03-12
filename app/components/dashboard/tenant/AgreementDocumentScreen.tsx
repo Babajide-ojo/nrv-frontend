@@ -186,7 +186,7 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
     <div className="pb-4 md:pb-0">
       <ToastContainer />
       <div className="mx-auto md:p-16 p-8 w-full h-full">
-        <h2 className="text-nrvDarkBlue font-semibold text-2xl">
+        <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
           Upload Signed Agreement
         </h2>
         <p className="text-nrvLightGrey text-sm mb-4 mt-4">

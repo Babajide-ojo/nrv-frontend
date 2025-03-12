@@ -262,7 +262,7 @@ const SinglePropertyScreen = () => {
                     <BackIcon />
                   </div>
 
-                  <p className="text-sm font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
+                  <p className="text-sm font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
                     {singleProperty?.streetAddress}
                   </p>
                 </div>
@@ -284,9 +284,9 @@ const SinglePropertyScreen = () => {
                 <div key={item.id}>
                   <Button
                     size="smaller"
-                    className={` text-nrvDarkBlue p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                    className={` text-nrvPrimaryGreen p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
                       currentState === item.id
-                        ? "bg-nrvDarkBlue text-white"
+                        ? "bg-nrvPrimaryGreen text-white"
                         : "bg-nrvGreyMediumBg"
                     }`}
                     variant="ordinary"
@@ -317,12 +317,12 @@ const SinglePropertyScreen = () => {
             >
               <div className="bg-white w-4/5 md:w-3/5 p-4 relative mt-32 rounded-t-3xl overflow-auto max-h-full">
                 <button
-                  className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvDarkBlue rounded-full px-2.5 py-2.5"
+                  className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvPrimaryGreen rounded-full px-2.5 py-2.5"
                   onClick={() => {
                     openDeleteConfirmation();
                   }}
                 >
-                  <RiDeleteBin7Line className="text-nrvDarkBlue" />
+                  <RiDeleteBin7Line className="text-nrvPrimaryGreen" />
                 </button>
 
                 <form onSubmit={handleNextAndVerify}>

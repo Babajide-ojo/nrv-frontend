@@ -1,4 +1,3 @@
-// NavBar.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,7 +9,7 @@ const NavBar: React.FC = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768); // Set isMobile to true if screen width is less than or equal to 768px
+      setIsMobile(window.innerWidth <= 1000); // Set isMobile to true if screen width is less than or equal to 1000px
     };
 
     // Add event listener for window resize
@@ -26,9 +25,8 @@ const NavBar: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className="fixed top-0 left-0 w-full bg-white z-10">
       <div className="w-full gap-2 flex flex-col md:flex-row py-4 px-6 md:px-12">
-    
         {isMobile ? (
           <MobileNavBar />
         ) : (

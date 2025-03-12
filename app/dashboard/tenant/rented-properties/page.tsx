@@ -123,7 +123,7 @@ const RentedPropertiesScreen = () => {
                     <div className="w-2/5 text-end flec flex-col justify-between h-full">
                       <Button
                         size="normal"
-                        className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                        className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
                         variant="lightGrey"
                         showIcon={false}
                       >
@@ -146,7 +146,7 @@ const RentedPropertiesScreen = () => {
                 <div className="flex justify-between mt-4">
                   <Button
                     size="normal"
-                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                    className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={handlePrevPage}
@@ -156,7 +156,7 @@ const RentedPropertiesScreen = () => {
                   </Button>
                   <Button
                     size="normal"
-                    className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                    className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={handleNextPage}

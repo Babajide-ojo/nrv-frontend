@@ -324,7 +324,7 @@ const CreatePropertyScreen = () => {
                                     </div>
                                   ) : (
                                     <div className="font-light text-sm">
-                                      <span className="text-nrvDarkBlue font-medium">
+                                      <span className="text-nrvPrimaryGreen font-medium">
                                         Click to upload
                                       </span>{" "}
                                       <span className="font-medium text-nrvDarkGrey">

@@ -299,7 +299,7 @@ const OnboardingFormScreen: React.FC = () => {
                           </div>
 
                           <div className="w-9/10 p-1 ml-2">
-                            <div className="text-nrvDarkBlue text-md font-semibold">
+                            <div className="text-nrvPrimaryGreen text-md font-semibold">
                               {title}
                             </div>
                             <div className="text-nrvLightGrey text-sm pt-2">

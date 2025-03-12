@@ -133,7 +133,7 @@ const ApplicantScreen = () => {
                                    Apartment ID : {item?.propertyId?.roomId}
                                   </div>
                             </div>
-                            <div className="text-nrvDarkBlue text-xs mt-4">
+                            <div className="text-nrvPrimaryGreen text-xs mt-4">
                               {item?.propertyId?.propertyId.streetAddress},{" "}
                               {item?.propertyId?.propertyId.city} ,{" "}
                               {item?.propertyId?.propertyId.state}
@@ -159,7 +159,7 @@ const ApplicantScreen = () => {
 
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
                 onClick={() => {
@@ -383,7 +383,7 @@ const ApplicantScreen = () => {
                       handleSubmit("Accepted");
                     }}
                     size="normal"
-                    className="bg-nrvDarkBlue text-white p-2 border border-nrvGreyMediumBg rounded-md"
+                    className="bg-nrvPrimaryGreen text-white p-2 border border-nrvGreyMediumBg rounded-md"
                     variant="darkPrimary"
                     showIcon={false}
                   >
@@ -396,7 +396,7 @@ const ApplicantScreen = () => {
                       handleSubmit("Rejected");
                     }}
                     size="normal"
-                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
+                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvPrimaryGreen"
                     variant="mediumGrey"
                     showIcon={false}
                   >
@@ -417,7 +417,7 @@ const ApplicantScreen = () => {
         }}
       >
         <div className="mx-auto text-center p-4 w-full md:w-4/5">
-          <h2 className="text-nrvDarkBlue font-semibold text-xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
             Invite to apply
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4">
@@ -447,7 +447,7 @@ const ApplicantScreen = () => {
           <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+              className="text-white w-72 max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
               variant="bluebg"
               showIcon={false}
             >
@@ -464,7 +464,7 @@ const ApplicantScreen = () => {
           <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => {

@@ -168,7 +168,7 @@ const PropertyDocuments = () => {
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">
             <div>
-              <div className="font-medium text-sm text-nrvDarkBlue">
+              <div className="font-medium text-sm text-nrvPrimaryGreen">
                 Rental Settings
               </div>
               <div className="text-start flex mx-auto mt-4 text-nrvLightGrey font-light text-xs">
@@ -179,7 +179,7 @@ const PropertyDocuments = () => {
             <div>
               <Button
                 size="smaller"
-                className=" p-0.5 border  hover:text-white hover:bg-nrvDarkBlue"
+                className=" p-0.5 border  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="whitebg"
                 showIcon={false}
               >
@@ -379,7 +379,7 @@ const PropertyDocuments = () => {
         <div className="mt-4">
           <Button
             size="normal"
-            className={`bg-nrvLightGreyBg w-full block pt-3 pb-3 text-md rounded-md hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue ${
+            className={`bg-nrvLightGreyBg w-full block pt-3 pb-3 text-md rounded-md hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen ${
               !landlordInsuranceFiles.length &&
               !utilityMaintenanceFiles.length &&
               !otherDocumentFiles.length
@@ -401,7 +401,7 @@ const PropertyDocuments = () => {
       </div>
       <div className="md:w-1/2 w-full md:mt-0 mt-4">
         <div className="bg-white rounded rounded-2xl p-4">
-          <div className="text-start text-nrvDarkBlue text-[11px]">
+          <div className="text-start text-nrvPrimaryGreen text-[11px]">
             Uploaded Land Insurance Documents
           </div>
           {data?.data?.landlordInsurancePolicy?.length > 0 ? (
@@ -410,7 +410,7 @@ const PropertyDocuments = () => {
                 data?.data?.landlordInsurancePolicy.map(
                   (item: any, index: any) => (
                     <div className="w-full mt-6" key={index}>
-                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvPrimaryGreen flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
                           onClick={() => viewDocument(item)}
@@ -439,7 +439,7 @@ const PropertyDocuments = () => {
             </div>
           )}
 
-          <div className="text-start text-nrvDarkBlue text-[11px] mt-8">
+          <div className="text-start text-nrvPrimaryGreen text-[11px] mt-8">
             Utility & Maintenanace Documents
           </div>
           {data?.data?.utilityAndMaintenance?.length > 0 ? (
@@ -448,7 +448,7 @@ const PropertyDocuments = () => {
                 data?.data?.utilityAndMaintenance.map(
                   (item: any, index: any) => (
                     <div className="w-full mt-6" key={index}>
-                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvPrimaryGreen flex space-between justify-between">
                         <div
                           className="underline text-xs cursor-pointer"
                           onClick={() => viewDocument(item)}
@@ -477,7 +477,7 @@ const PropertyDocuments = () => {
             </div>
           )}
 
-          <div className="text-start text-nrvDarkBlue text-[11px] mt-8">
+          <div className="text-start text-nrvPrimaryGreen text-[11px] mt-8">
             Other Documents Uploaded
           </div>
           {data?.data?.otherDocuments?.length > 0 ? (
@@ -485,7 +485,7 @@ const PropertyDocuments = () => {
               {data?.data?.otherDocuments &&
                 data?.data?.otherDocuments.map((item: any, index: any) => (
                   <div className="w-full mt-6" key={index}>
-                    <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvDarkBlue flex space-between justify-between">
+                    <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvPrimaryGreen flex space-between justify-between">
                       <div
                         className="underline text-xs cursor-pointer"
                         onClick={() => viewDocument(item)}
@@ -577,7 +577,7 @@ const PropertyDocuments = () => {
             <div className="mt-8 flex justify-between ">
               <button
                 onClick={closeDeleteConfirmation}
-                className="bg-gray-200 text-sm text-nrvDarkBlue px-6 py-1.5 rounded w-[48%]"
+                className="bg-gray-200 text-sm text-nrvPrimaryGreen px-6 py-1.5 rounded w-[48%]"
               >
                 No
               </button>

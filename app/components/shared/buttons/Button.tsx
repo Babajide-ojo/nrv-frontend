@@ -24,19 +24,19 @@ const classes = {
     small: 'px-3.5 py-1.5 text-[10px]',
     normal: 'px-3.5 py-1.5 text-xs',
     minLarge: 'px-5 py-3 text-[16px] font-lighter',
-    large: 'px-4 py-2 text-sm'
+    large: 'px-8 py-3 text-[12px]'
   },
   variant: {
-    primary: 'rounded-2xl hover:text-white hover:bg-nrvDarkBlue border border-nrvDarkBlue outline-none text-nrvDarkBlue bg-white',
-    darkPrimary: 'rounded-xl outline-none bg-nrvDarkBlue text-white',
-    light: 'rounded-2xl bg-white text-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
-    lightPrimary: 'rounded-2xl text-white border border-white bg-nrvDarkBlue',
-    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
-    bluebg: 'font-light text-white bg-nrvDarkBlue rounded rounded-lg',
-    lightGrey: 'rounded rounded-xxl text-nrvDarkBlue border border-[#153969] hover:bg-nrvDarkBlue hover:text-white',
-    mediumGrey: 'rounded-md bg-nrvLightGreyBg border border-nrvDarkBlue hover:bg-nrvDarkBlue hover:text-white',
-    ordinary: 'rounded-xl text-nrvLightGrey hover:bg-nrvDarkBlue hover:text-white',
-    roundedRec: 'font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvDarkBlue'
+    primary: 'rounded-full hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1 border border-nrvPrimaryGreen outline-none text-nrvPrimaryGreen bg-white',
+    darkPrimary: 'rounded-full text-white bg-nrvPrimaryGreen outline-none hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1',
+    light: 'rounded-2xl bg-white text-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white',
+    lightPrimary: 'rounded-2xl text-white border border-white bg-nrvPrimaryGreen',
+    whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvPrimaryGreen hover:text-white',
+    bluebg: 'font-light text-white bg-nrvPrimaryGreen rounded rounded-lg',
+    lightGrey: 'rounded rounded-xxl text-nrvPrimaryGreen border border-[#153969] hover:bg-nrvPrimaryGreen hover:text-white',
+    mediumGrey: 'rounded-md bg-nrvLightGreyBg border border-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white',
+    ordinary: 'rounded-xl text-nrvLightGrey hover:bg-nrvPrimaryGreen hover:text-white',
+    roundedRec: 'font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvPrimaryGreen'
   }
 };
 

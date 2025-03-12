@@ -151,7 +151,7 @@ const DashboardScreen = () => {
 
         <div className="md:w-1/2 w-full md:mt-0 mt-4">
           <div className="w-full bg-white rounded-xl p-3 flex justify-between">
-            <div className="pt-1 text-xs font-medium text-nrvDarkBlue">
+            <div className="pt-1 text-xs font-medium text-nrvPrimaryGreen">
               Ongoing Maintenance: 0
             </div>
             <div>
@@ -167,7 +167,7 @@ const DashboardScreen = () => {
           </div>
 
           <div className="mt-3 w-full bg-white rounded-xl p-3 flex justify-between mb-2">
-            <div className="pt-1 text-xs font-medium text-nrvDarkBlue">
+            <div className="pt-1 text-xs font-medium text-nrvPrimaryGreen">
               Tenant Verification
             </div>
             <div>
@@ -191,7 +191,7 @@ const DashboardScreen = () => {
           <div className="flex justify-between">
             <h2 className="text-sm">Recent Application Entries</h2>{" "}
             <p
-              className="underline font-light text-nrvDarkBlue text-sm cursor-pointer hover:text-[16px]"
+              className="underline font-light text-nrvPrimaryGreen text-sm cursor-pointer hover:text-[16px]"
               onClick={() => {
                 router.push("/dashboard/landlord/properties/renters");
               }}

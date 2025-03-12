@@ -48,11 +48,13 @@ const MobileNavBar: React.FC = () => {
         <NavLink href="/">
           <img src="/images/nrv-logo.png" alt="Logo" className="w-28 h-auto" />
         </NavLink>
-        <div className="md:hidden">
-          <button onClick={toggleMenu} className="text-nrvDarkBlue">
-            {isOpen ? <IoClose /> : <FaBars />}
-          </button>
-        </div>
+        {window.innerWidth <= 1000 && (
+          <div>
+            <button onClick={toggleMenu} className="text-nrvPrimaryGreen">
+              {isOpen ? <IoClose /> : <FaBars />}
+            </button>
+          </div>
+        )}
       </div>
       {isOpen && (
         <div className="px-4 overflow-y-auto">
@@ -60,7 +62,10 @@ const MobileNavBar: React.FC = () => {
             {navItems.map(({ text, route }, index) => (
               <div key={index}>
                 <div>
-                  <NavLink href={route} className="text-nrvDarkBlue py-3 block">
+                  <NavLink
+                    href={route}
+                    className="text-nrvPrimaryGreen py-3 block"
+                  >
                     {text}
                   </NavLink>
                 </div>
@@ -83,7 +88,10 @@ const MobileNavBar: React.FC = () => {
             </div>
           ) : (
             <div className="flex justify-between mt-4">
-              <NavLink href="/sign-in" className="text-nrvDarkBlue mr-4 mt-4">
+              <NavLink
+                href="/sign-in"
+                className="text-nrvPrimaryGreen mr-4 mt-4"
+              >
                 Sign In
               </NavLink>
               <Button size="large" variant="primary" showIcon={false}>

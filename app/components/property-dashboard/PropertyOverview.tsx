@@ -20,11 +20,11 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
     <div className="pb-12 md:pb-0">
       <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl p-4">
         <div className="flex justify-between border-b border-b-1 mb-4">
-          <div className="font-medium text-nrvDarkBlue text-sm">Apartments</div>
+          <div className="font-medium text-nrvPrimaryGreen text-sm">Apartments</div>
           <div>
             <Button
               size="small"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => {
@@ -73,13 +73,13 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
 
       <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
         <div className="flex justify-between mb-4">
-          <div className="font-light text-nrvDarkBlue text-xs">
+          <div className="font-light text-nrvPrimaryGreen text-xs">
             Ongoing Maintenance: 0
           </div>
           <div>
             <Button
               size="normal"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >

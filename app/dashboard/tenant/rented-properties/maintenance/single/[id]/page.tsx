@@ -99,7 +99,7 @@ const SingleMaintainance = () => {
                         className={`w-full text-white text-md ${
                           maintenance.status === "Resolved"
                             ? "bg-[#107E4B]"
-                            : "bg-nrvDarkBlue"
+                            : "bg-nrvPrimaryGreen"
                         }`}
                         variant="ordinary"
                         size="small"
@@ -146,7 +146,7 @@ const SingleMaintainance = () => {
         }}
       >
         <div className="mx-auto text-center p-4 w-full md:w-4/5">
-          <h2 className="text-nrvDarkBlue font-semibold text-xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
            Has this issue been resolved?
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -156,7 +156,7 @@ const SingleMaintainance = () => {
           <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="small"
-              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+              className="text-white w-72 max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
               variant="bluebg"
               showIcon={false}
                disabled={isLoading === false ? false : true}
@@ -174,7 +174,7 @@ const SingleMaintainance = () => {
           <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="small"
-              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => {

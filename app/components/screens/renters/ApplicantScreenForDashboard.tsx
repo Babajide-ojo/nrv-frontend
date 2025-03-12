@@ -89,7 +89,7 @@ const ApplicantScreenForDashboard = () => {
                         </div>
                         <div className="w-4/5">
                           <div className="flex justify-between w-full">
-                            <div className="text-nrvDarkBlue font-medium text-xs w-1/2">
+                            <div className="text-nrvPrimaryGreen font-medium text-xs w-1/2">
                               {item?.applicant?.firstName} {item?.applicant?.lastName}
                             </div>
                             <div
@@ -101,7 +101,7 @@ const ApplicantScreenForDashboard = () => {
                               Apartment ID: {item?.propertyId?.roomId}
                             </div>
                           </div>
-                          <div className="text-nrvDarkBlue md:text-xs text-xs mt-4">
+                          <div className="text-nrvPrimaryGreen md:text-xs text-xs mt-4">
                             {item?.propertyId?.propertyId.streetAddress},{" "}
                             {item?.propertyId?.propertyId.city},{" "}
                             {item?.propertyId?.propertyId.state}
@@ -124,7 +124,7 @@ const ApplicantScreenForDashboard = () => {
                   </div>
                   <Button
                     size="normal"
-                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2 hover:text-white hover:bg-nrvDarkBlue"
+                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2 hover:text-white hover:bg-nrvPrimaryGreen"
                     variant="mediumGrey"
                     showIcon={false}
                     onClick={() => {

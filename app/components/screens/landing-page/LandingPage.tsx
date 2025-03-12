@@ -8,7 +8,8 @@ import HoverableCard from "@/app/components/shared/cards/HoverableCard";
 import { CardData } from "@/helpers/data";
 import GuideCard from "../../shared/cards/GuideCard";
 import { useRouter } from "next/navigation";
-
+import StatsIcon from "../../icons/StatsIcon";
+//import heroBgImage from "../../../../public/images/nrv-hero-section-img.jpeg";
 
 interface Feature {
   imageUrl: string;
@@ -25,12 +26,12 @@ const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", height: "100%" }}>
-        <div className="bg-white p-4 text-nrvPrimaryGreen h-60 rounded-3xl text-center">
-          <div className="flex justify-center">
+        <div className="bg-white hover:bg-[#E9F4E7] p-4 text-nrvPrimaryGreen h-60 ">
+          {/* <div className="flex justify-center">
             <img src={imageUrl} alt="photo" className="w-12 h-12" />
-          </div>
-          <h2 className="mt-4 text-md">{title}</h2>
-          <p className="mt-4 text-xs font-light">{description}</p>
+          </div> */}
+          <h2 className="mt-4 text-[24px] font-medium h-12">{title}</h2>
+          <p className="mt-4 text-[14px] font-light pt-4">{description}</p>
         </div>
       </div>
     </div>
@@ -57,81 +58,165 @@ const FeatureSection: React.FC = () => {
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/lu7xulisznbrr8bhns4h.png",
-      title: "Tenant Screening",
+      title: "Tenant Screening & Background Checks",
       description:
-        "Efficiently screen potential tenants by accessing comprehensive background checks, credit history, and rental application details.",
+        "Access to background checks and tenant screening reports to assist in thorough tenant evaluations.",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321116/tazn6fia8p6phjao8kkl.png",
-      title: "Secure Rent Payments",
+      title: "Property Management Features",
       description:
-        "Seamlessly process rent payments within the app using a secure payment gateway, providing convenience for both landlords and tenants.",
+        "Tools for effective property listing management, rental payment handling, and occupancy tracking.",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321116/jl1kpsnwhoguzqi1cpu9.png",
-      title: "User-Friendly Dashboard",
+      title: "Rent Collection & Financial Management",
       description:
-        "Access dashboard that provides a quick overview of property listings, notifications, and account settings for efficient management.",
-    },
-    {
-      imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/pqi5czr38jzuhwnqonhd.png",
-      title: "Instant Notifications",
-      description:
-        "Get instant notifications regarding new tenant applications, updates on property status, and important messages from applicants.",
+        "Automated rent collection and timely payments. Detailed financial reports for better property management.",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321116/y7wioy8wv350nw7xokfy.png",
-      title: "Comprehensive Property Listings",
+      title: "Application Management",
       description:
-        "Easily manage and view detailed property listings, including essential information such as address, rental price, and availability status.",
+        "Efficient tools to manage tenant applications, review submissions, and track application statuses.",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/cxs0ybb8jty0n67p7c5g.png",
-      title: "Effortless Tenant Communication",
+      title: "Verified Listing",
       description:
-        "Enable smooth landlord-tenant communication with an in-app messaging system for quick and efficient information exchange.",
+        "Browse 100% verified properties with no hidden surprises. Transparent pricing and detailed property descriptions.",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/pqi5czr38jzuhwnqonhd.png",
-      title: "Intuitive Application Process",
+      title: "Maintenence Request",
       description:
-        "Simplify the tenant application process with a user-friendly interface, guiding applicants through each step for a hassle-free experience.",
+        "Easy-to-use platform for reporting and tracking maintenance issues. Hassle-free maintenance services handled by trusted professionals",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/pqi5czr38jzuhwnqonhd.png",
-      title: "Detailed Screening Reports",
+      title: "Rent Payment Assistance",
       description:
-        "Access comprehensive tenant screening reports for a thorough evaluation, covering credit history, employment verification, rental history, and background checks.",
+        "Safe and secure payment options for rent and deposits. No more middlemen or fraudulent deals",
     },
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/oztkr7otv3sivyxoypfs.png",
-      title: "Transparent Application Status",
+      title: "Relocation Support",
       description:
-        "Provide transparency in the application process with a clear display of application status (Pending, Approved, Rejected) for both landlords and tenants.",
+        "Assistance with finding and moving into your new home. From viewing to moving in, we’ve got you covered",
     },
   ];
 
   return (
     <div className="bg-nrvPrimaryGreen md:p-12 p-2">
-      <div className="text-center text-white">
-        <h2 className="uppercase text-2xl">Key Features</h2>
-        <p className="font-semibold text-2xl mt-2">
-          Experience the Next Level: <br></br> NaijaRentVerify&#39;s Top
-          Features at a Glance
+      <div className=" flex p-4">
+        <p className="text-white font-medium text-2xl mt-2 w-3/5">
+          Whether you’re a landlord looking to maximize your returns or a <br></br> tenant
+          searching for a verified home, NaijaRentVerify is here to make <br></br> renting
+          easier, safer, and more efficient.
         </p>
+        <div className="w-2/5 flex justify-end items-end">
+          <Button variant="primary" className="text-[16px] w-80" size="large">
+            Explore Our Services
+          </Button>
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-4 mt-8">
         {features.map((feature, index) => (
           <FeatureCard key={index} {...feature} />
         ))}
+      </div>
+    </div>
+  );
+};
+
+const AboutSection: React.FC = () => {
+  return (
+    <div className="bg-white md:p-12 p-2 mx-auto mt-4 w-11/12">
+      <div className="w-full flex justify-center">
+        <div className="w-5/12">
+          <div className="md:w-4/5">
+            <h1 className="text-[#1D2227] font-medium text-[24px]">
+              Who We Are ?
+            </h1>
+            <div className="font-light text-[#646D75]  text-[16px] leading-8">
+              <span className="font-medium">NaijaRentVerify</span> was born out
+              of a need for trust and transparency in Nigeria’s rental property
+              market. We understand the challenges faced by both property owners
+              and tenants—fraudulent listings, delayed payments, and lack of
+              reliable property management services.
+            </div>
+          </div>
+
+          <div className="md:w-4/5 pt-12">
+            <h1 className="text-[#1D2227] font-medium text-[24px]">
+              Our Mission ?
+            </h1>
+            <div className="font-light text-[#646D75] text-[16px] leading-8">
+              Our mission is simple: to create a seamless, secure, and
+              stress-free rental experience for everyone. Leveraging
+              cutting-edge technology and a customer-first approach, we provide
+              end-to-end property management solutions that you can trust.
+            </div>
+          </div>
+        </div>
+        <div className="w-7/12">
+          <div className="pt-6">
+            <div className="text-[30px] text-[#03442C] pb-8">
+              Whether you are a landlord looking to maximize your returns or a
+              tenant searching for a verified home, NaijaRentVerify is here to
+              make renting easier, safer, and more efficient.
+            </div>
+            <Button variant="darkPrimary" className="text-[16px]" size="large">
+              Explore Our Services
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-12 mt-16 mb-4">
+        <div className="w-7/12">
+          <Image
+            alt="pto"
+            src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1741785309/Background_1_brbq1j.png"
+            width={1020} // Replace with the actual width of the image
+            height={880} // Replace with the actual height of the image
+            className="w-full h-full"
+          />
+        </div>
+        <div className="w-5/12">
+          <Image
+            alt="pto"
+            src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1741785308/Background_rph4rw.png"
+            width={1020} // Replace with the actual width of the image
+            height={880} // Replace with the actual height of the image
+            className="w-full h-full"
+          />
+        </div>
+      </div>
+      <hr></hr>
+      <div className="flex space-around mt-16">
+        <div className="w-1/4 text-center">
+          <div className="font-medium text-[#1D2227] text-[40px]">5,673+</div>
+          <div className="font-light text-[#646D75]">Onboarded Landlords</div>
+        </div>
+        <div className="w-1/4 text-center">
+          <div className="font-medium text-[#1D2227] text-[40px]">2,179+</div>
+          <div className="font-light text-[#646D75]">Satisfied Reviews</div>
+        </div>
+        <div className="w-1/4 text-center">
+          <div className="font-medium text-[#1D2227] text-[40px]">10+</div>
+          <div className="font-light text-[#646D75]">Years Of Experience</div>
+        </div>
+        <div className="w-1/4 text-center">
+          <div className="font-medium text-[#1D2227] text-[40px]">200k+</div>
+          <div className="font-light text-[#646D75]">Active Users</div>
+        </div>
       </div>
     </div>
   );
@@ -510,18 +595,89 @@ const Footer: React.FC = () => {
   );
 };
 
-const HeroSection = () => {
+const LandingPage = () => {
   const router = useRouter();
   return (
-    <div className="flex flex-col items-center justify-center">
-    
+    <div className="md:m-8">
+      <div
+        style={{
+          height: "700px",
+          backgroundColor: "#ffffff",
+        }}
+        className="md:relative "
+      >
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741768679/nrv-hero-section-img_ttbvxz.jpg')] bg-cover bg-center"></div>
+        <div className="flex items-end gap-4 relative w-full h-full bg-gradient-to-t from-[#03442C] to-transparent opacity-90">
+          <div>
+            <div className="flex justify-end mr-20">
+              <StatsIcon />
+            </div>
+            <div className="md:w-full md:flex block gap-4">
+              <div className="md:w-2/3 w-full">
+                <div className="text-white font-bold md:text-[60px] text-[28px] text-end mr-20">
+                  <div>Find Trustworthy Tenants</div>
+                  <div className="italic">
+                    <div className="flex justify-end">
+                      <span className="flex-col items-center my-auto pr-4">
+                        <svg
+                          width="106"
+                          height="4"
+                          viewBox="0 0 106 4"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <mask id="path-1-inside-1_121_27156" fill="white">
+                            <path d="M0 0.446289H105.25V3.44629H0V0.446289Z" />
+                          </mask>
+                          <path
+                            d="M0 3.44629H105.25V-2.55371H0V3.44629Z"
+                            fill="white"
+                            mask="url(#path-1-inside-1_121_27156)"
+                          />
+                        </svg>
+                      </span>
+                      <span>No More Guesswork!</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/3 p-8 w-full">
+                <div className="text-[16px] text-white font-light leading-8">
+                  Say goodbye to rental risks and endless paperwork! With{" "}
+                  <span className="font-bold">NaijaRentVerify</span>, you can
+                  screen tenants in minutes, verify property details, and secure
+                  hassle-free rental payments—all from your fingertips. Whether
+                  you’re a landlord or a tenant, we make renting stress-free,
+                  transparent, and secure.
+                </div>
+              </div>
+            </div>
+            <div className="bg-white w-2/5 text-[22px] text-[#03442C] flex justify-end">
+              <button className="bg-white text-md p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
+                <span>Get Started Now!</span>
+                <div className="flex my-auto">
+                  <svg
+                    width="28"
+                    height="20"
+                    viewBox="0 0 28 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M18.8672 0.498047C18.6667 0.297525 18.4297 0.197266 18.1562 0.197266C17.8828 0.197266 17.6458 0.297525 17.4453 0.498047C17.2448 0.680338 17.1445 0.908203 17.1445 1.18164C17.1445 1.45508 17.2448 1.69206 17.4453 1.89258L24.6094 9.05664H0.984375C0.710938 9.05664 0.478516 9.15234 0.287109 9.34375C0.0957031 9.53516 0 9.76758 0 10.041C0 10.3145 0.0957031 10.5469 0.287109 10.7383C0.478516 10.9297 0.710938 11.0254 0.984375 11.0254H24.6094L17.4453 18.1895C17.2448 18.3717 17.1445 18.6042 17.1445 18.8867C17.1445 19.1693 17.2448 19.4017 17.4453 19.584C17.6458 19.7845 17.8828 19.8848 18.1562 19.8848C18.4297 19.8848 18.6667 19.7845 18.8672 19.584L27.6992 10.752C27.8997 10.5514 28 10.3145 28 10.041C28 9.76758 27.8997 9.5306 27.6992 9.33008L18.8672 0.498047Z"
+                      fill="#03442C"
+                    />
+                  </svg>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AboutSection />
       <FeatureSection />
-      <GuideSection />
-      <TestimonialSection />
-      <FaqSection />
-      <Footer />
     </div>
   );
 };
 
-export default HeroSection;
+export default LandingPage;

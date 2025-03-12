@@ -32,14 +32,14 @@ const MessageScreen = () => {
                 <div className="">
                   <Button
                     size="normal"
-                    className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
+                    className="text-nrvPrimaryGreen block w-full border border-nrvPrimaryGreen mt-4 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                   >
     
                     <div className="flex gap-3 ">
-                      {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
-                      <p className="text-nrvDarkBlue">Start Conversaton</p>
+                      {/* <IoAddCircle size={20} className="text-nrvPrimaryGreen" />{" "} */}
+                      <p className="text-nrvPrimaryGreen">Start Conversaton</p>
                     </div>
                   </Button>
                 </div>

@@ -47,7 +47,7 @@ const ApartmentDocuments = (data: any) => {
       <div className="md:flex gap-6">
         <div className="md:w-1/2 w-full mt-4 md:mt-0">
           <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvDarkBlue text-sm font-semibold">Uploaded Land Insurance Documents</div>
+            <div className="text-nrvPrimaryGreen text-sm font-semibold">Uploaded Land Insurance Documents</div>
             {data.data.property?.propertyId?.landlordInsurancePolicy?.length > 0 ? (
               <div className="mt-4">
                 {data.data.property.propertyId.landlordInsurancePolicy && data.data.property.propertyId.landlordInsurancePolicy.map((item: string, index: number) => (
@@ -62,7 +62,7 @@ const ApartmentDocuments = (data: any) => {
           </div>
 
           <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvDarkBlue text-sm font-semibold">Utility & Maintenance Documents</div>
+            <div className="text-nrvPrimaryGreen text-sm font-semibold">Utility & Maintenance Documents</div>
             {data.data.property?.propertyId?.utilityAndMaintenance?.length > 0 ? (
               <div className="mt-4">
                 {data.data.property.propertyId.utilityAndMaintenance && data.data.property.propertyId.utilityAndMaintenance.map((item: string, index: number) => (
@@ -77,7 +77,7 @@ const ApartmentDocuments = (data: any) => {
           </div>
 
           <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvDarkBlue text-sm font-semibold"> Uploaded</div>
+            <div className="text-nrvPrimaryGreen text-sm font-semibold"> Uploaded</div>
             {data.data.property?.propertyId?.otherDocuments?.length > 0 ? (
               <div className="mt-4">
                 {data.data.property.propertyId.otherDocuments && data.data.property.propertyId.otherDocuments.map((item: string, index: number) => (

@@ -42,7 +42,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({ children }) => {
 
   return (
     <div className="relative min-h-screen">
-      <div className="fixed bottom-0 left-0 w-full bg-nrvDarkBlue shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
       <div className="flex gap-4 space-between p-2">
       {/* Conditionally render buttons based on showMore state */}
       {!showMore ? (

@@ -101,7 +101,7 @@ const TenantApplications = () => {
         <div>
           {properties && properties.length > 0 ? (
             <div>
-              <div className="mt-4 mb-4 text-lg text-nrvDarkBlue w-full md:w-2/5 mx-auto">
+              <div className="mt-4 mb-4 text-lg text-nrvPrimaryGreen w-full md:w-2/5 mx-auto">
                 Your Applications
               </div>
               {properties?.map((item, index) => {
@@ -121,16 +121,16 @@ const TenantApplications = () => {
                         />
                       </div>
                       <div>
-                        <div className="text-nrvDarkBlue text-sm">
+                        <div className="text-nrvPrimaryGreen text-sm">
                           {item?.applicant?.firstName}{" "}
                           {item?.applicant?.lastName}
                         </div>
-                        <div className="text-nrvDarkBlue text-xs mt-2">
+                        <div className="text-nrvPrimaryGreen text-xs mt-2">
                           {item?.propertyId?.propertyId?.streetAddress},{" "}
                           {item?.propertyId?.propertyId?.city}{" "}
                           {item?.propertyId?.propertyId?.state}
                         </div>
-                        <div className="text-nrvDarkBlue text-xs font-medium mt-2">
+                        <div className="text-nrvPrimaryGreen text-xs font-medium mt-2">
                           Apartment ID: {item?.propertyId?.roomId}
                         </div>
                       </div>
@@ -153,7 +153,7 @@ const TenantApplications = () => {
 
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
                 onClick={() => {
@@ -210,7 +210,7 @@ const TenantApplications = () => {
                   <span className="text-nrvGreyBlack font-medium pr-3">
                     Phone Number :{" "}
                   </span>{" "}
-                  <div className=" underline text-nrvDarkBlue font-medium">  {application?.ownerId?.phoneNumber}</div>
+                  <div className=" underline text-nrvPrimaryGreen font-medium">  {application?.ownerId?.phoneNumber}</div>
                 
                 </div>
                 <div className="mt-3 text-sm font-light">
@@ -299,7 +299,7 @@ const TenantApplications = () => {
                       handleSubmit("Rejected");
                     }}
                     size="normal"
-                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
+                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvPrimaryGreen"
                     variant="mediumGrey"
                     showIcon={false}
                   >
@@ -320,7 +320,7 @@ const TenantApplications = () => {
         }}
       >
         <div className="mx-auto text-center p-4 w-full md:w-4/5">
-          <h2 className="text-nrvDarkBlue font-semibold text-xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
             Invite to apply
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4">
@@ -350,7 +350,7 @@ const TenantApplications = () => {
           <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+              className="text-white w-72 max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
               variant="bluebg"
               showIcon={false}
             >
@@ -367,7 +367,7 @@ const TenantApplications = () => {
           <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => {

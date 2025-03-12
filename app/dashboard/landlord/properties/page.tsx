@@ -76,7 +76,7 @@ const PropertiesScreen = () => {
                   </p>
                   <Button
                     size="normal"
-                    className="text-nrvDarkBlue border border-nrvDarkBlue mt-4 rounded-md"
+                    className="text-nrvPrimaryGreen border border-nrvPrimaryGreen mt-4 rounded-md"
                     variant="lightGrey"
                     onClick={() =>
                       router.push("/dashboard/landlord/properties/create")
@@ -93,7 +93,7 @@ const PropertiesScreen = () => {
                     </p>
                     <Button
                       size="small"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md hover:text-white text-sm"
+                      className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md hover:text-white text-sm"
                       variant="lightGrey"
                       onClick={() =>
                         router.push("/dashboard/landlord/properties/create")
@@ -126,7 +126,7 @@ const PropertiesScreen = () => {
                       <div className="flex justify-end">
                       <Button
                         size="small"
-                        className="mt-2 text-nrvDarkBlue text-sm font-normal border border-white rounded-md py-1 px-2 hover:bg-nrvLightBlue hover:text-white transition-colors duration-300"
+                        className="mt-2 text-nrvPrimaryGreen text-sm font-normal border border-white rounded-md py-1 px-2 hover:bg-nrvLightBlue hover:text-white transition-colors duration-300"
                         variant="lightGrey"
                         onClick={() => {
                           localStorage.setItem(
@@ -150,7 +150,7 @@ const PropertiesScreen = () => {
                   <div className="flex justify-between mt-4">
                     <Button
                       size="small"
-                      className="text-nrvDarkBlue text-sm border border-nrvDarkBlue rounded-md"
+                      className="text-nrvPrimaryGreen text-sm border border-nrvPrimaryGreen rounded-md"
                       variant="lightGrey"
                       onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                       disabled={page === 1}
@@ -159,7 +159,7 @@ const PropertiesScreen = () => {
                     </Button>
                     <Button
                       size="small"
-                      className="text-nrvDarkBlue text-sm border border-nrvDarkBlue rounded-md"
+                      className="text-nrvPrimaryGreen text-sm border border-nrvPrimaryGreen rounded-md"
                       variant="lightGrey"
                       onClick={() =>
                         setPage((prev) => Math.min(prev + 1, totalPages))
@@ -175,7 +175,7 @@ const PropertiesScreen = () => {
 
             <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
               <div className="mx-auto text-center p-4">
-                <h2 className="text-nrvDarkBlue font-semibold text-xl">
+                <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
                   Contact Info
                 </h2>
                 <p className="text-nrvLightGrey text-sm">
@@ -187,7 +187,7 @@ const PropertiesScreen = () => {
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
                     size="small"
-                    className="text-white w-72 border border-nrvDarkBlue rounded-md"
+                    className="text-white w-72 border border-nrvPrimaryGreen rounded-md"
                     variant="bluebg"
                     onClick={() =>
                       router.push(
@@ -199,7 +199,7 @@ const PropertiesScreen = () => {
                   </Button>
                   <Button
                     size="small"
-                    className="text-nrvDarkBlue w-72 border border-nrvDarkBlue rounded-md"
+                    className="text-nrvPrimaryGreen w-72 border border-nrvPrimaryGreen rounded-md"
                     variant="lightGrey"
                     onClick={() => setIsOpen(false)}
                   >

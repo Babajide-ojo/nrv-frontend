@@ -50,7 +50,7 @@ const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange }) => {
         {selectedFiles.length > 0 && (
           <div
             onClick={() => handlePreviewClick(selectedFiles[0])}
-            className="text-nrvDarkBlue font-medium cursor-pointer"
+            className="text-nrvPrimaryGreen font-medium cursor-pointer"
           >
             Preview Image
           </div>
@@ -114,7 +114,7 @@ const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange }) => {
               </div>
             ) : (
               <div className="font-light text-sm">
-                <span className="text-nrvDarkBlue font-medium">
+                <span className="text-nrvPrimaryGreen font-medium">
                   Click to upload
                 </span>{" "}
                 <span className="font-medium text-nrvDarkGrey">

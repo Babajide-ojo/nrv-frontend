@@ -38,7 +38,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
         />
       </div>
       <div className="flex flex-col">
-        <p className="font-medium text-nrvDarkBlue text-md">{title}</p>
+        <p className="font-medium text-nrvPrimaryGreen text-md">{title}</p>
         <p className="font-light text-nrvLightGrey text-sm mt-1">{description}</p>
       </div>
     </div>

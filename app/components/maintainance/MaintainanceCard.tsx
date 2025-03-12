@@ -32,7 +32,7 @@ const MaintainanceCard: React.FC<MaintenanceCardProps> = ({
       <div className="flex gap-3 items-center">
         <div className="w-full flex gap-4 justify-between space-between">
           <div className="flex justify-between space-around">
-            <div className="text-sm font-medium text-nrvDarkBlue">
+            <div className="text-sm font-medium text-nrvPrimaryGreen">
               {name} (Property ID - {propertyId})
             </div>
           </div>

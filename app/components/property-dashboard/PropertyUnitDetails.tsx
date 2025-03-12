@@ -17,13 +17,13 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
 
       <div className="max-w-full md:w-1/2 w-full rounded rounded-2xl p-4">
         <div className="flex justify-between border-b border-b-1 mb-4">
-          <div className="font-semibold text-nrvDarkBlue ">
+          <div className="font-semibold text-nrvPrimaryGreen ">
             Apartment Details
           </div>
         </div>
         <div className="mt-6">
           <h2 className="mb-2 text-nrvGreyBlack font-medium text-sm">
-             Property Type :<span className="text-nrvDarkBlue"> {data.propertyType}</span>
+             Property Type :<span className="text-nrvPrimaryGreen"> {data.propertyType}</span>
           </h2>
 
         </div>
@@ -38,7 +38,7 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
         <div className="flex gap-5 mt-4">
           <Button
             size="smaller"
-            className="rounded-md rounded bg-nrvDarkBlue"
+            className="rounded-md rounded bg-nrvPrimaryGreen"
             variant="light"
             showIcon={false}
           >
@@ -46,7 +46,7 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           </Button>
           <Button
             size="smaller"
-            className="rounded-md rounded bg-nrvDarkBlue"
+            className="rounded-md rounded bg-nrvPrimaryGreen"
             variant="light"
             showIcon={false}
           >
@@ -54,7 +54,7 @@ const PropertyUnitDetails: React.FC<Data> = ({ data }) => {
           </Button>
           <Button
             size="smaller"
-            className="rounded-md rounded bg-nrvDarkBlue"
+            className="rounded-md rounded bg-nrvPrimaryGreen"
             variant="light"
             showIcon={false}
           >

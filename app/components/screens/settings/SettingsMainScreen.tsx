@@ -27,7 +27,7 @@ const SettingsMainScreen = () => {
   return (
     <div>
       <div className="mt-8 ml-8">
-        <p className="text-lg font-medium text-nrvDarkBlue">Account Settings</p>
+        <p className="text-lg font-medium text-nrvPrimaryGreen">Account Settings</p>
         <p className="text-sm text-nrvLightGrey">
           Control Your Account Settings
         </p>
@@ -36,7 +36,7 @@ const SettingsMainScreen = () => {
       <div className="flex gap-3 mt-8 bg-[#E0E1E2] p-2 pl-6">
         <Button
           className={`p-3 rounded-full border-nrvGreyMediumBg ${
-            mainToggle === 1 ? "bg-nrvDarkBlue text-white" : ""
+            mainToggle === 1 ? "bg-nrvPrimaryGreen text-white" : ""
           }`}
           size="large"
           variant="lightGrey"
@@ -47,7 +47,7 @@ const SettingsMainScreen = () => {
         </Button>
         <Button
           className={`p-3 rounded-full border-nrvGreyMediumBg ${
-            mainToggle === 0 ? "bg-nrvDarkBlue text-white" : ""
+            mainToggle === 0 ? "bg-nrvPrimaryGreen text-white" : ""
           }`}
           size="large"
           variant="lightGrey"
@@ -58,7 +58,7 @@ const SettingsMainScreen = () => {
         </Button>
         <Button
           className={`p-3 rounded-full border-nrvGreyMediumBg ${
-            mainToggle === 2 ? "bg-nrvDarkBlue text-white" : ""
+            mainToggle === 2 ? "bg-nrvPrimaryGreen text-white" : ""
           }`}
           size="large"
           variant="lightGrey"
@@ -74,7 +74,7 @@ const SettingsMainScreen = () => {
           {/* <div className="inline-flex gap-1 mt-4 p-1 bg-[#eef0f2] rounded-xl mx-6 ml-6 mx-auto">
             <Button
               className={`p-3 ${
-                notificationTab === 0 ? "bg-nrvDarkBlue text-white" : ""
+                notificationTab === 0 ? "bg-nrvPrimaryGreen text-white" : ""
               }`}
               size="small"
               variant="ordinary"
@@ -85,7 +85,7 @@ const SettingsMainScreen = () => {
             </Button>
             <Button
               className={`p-3 ${
-                notificationTab === 1 ? "bg-nrvDarkBlue text-white" : ""
+                notificationTab === 1 ? "bg-nrvPrimaryGreen text-white" : ""
               }`}
               size="small"
               variant="ordinary"
@@ -96,7 +96,7 @@ const SettingsMainScreen = () => {
             </Button>
             <Button
               className={`p-3 ${
-                notificationTab === 2 ? "bg-nrvDarkBlue text-white" : ""
+                notificationTab === 2 ? "bg-nrvPrimaryGreen text-white" : ""
               }`}
               size="small"
               variant="ordinary"

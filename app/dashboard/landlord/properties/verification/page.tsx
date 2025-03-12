@@ -281,7 +281,7 @@ const VerificationScreen = () => {
                           </div>
                         ))
                       ) : (
-                        <p className="text-center text-gray-500 text-nrvDarkBlue">
+                        <p className="text-center text-gray-500 text-nrvPrimaryGreen">
                           No Tenant history Available.
                         </p>
                       )}

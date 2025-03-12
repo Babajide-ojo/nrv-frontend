@@ -46,6 +46,9 @@ const SelectDate = ({
     <ThemeProvider theme={customTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <MobileDatePicker
+          openTo="year"
+          views={['year', 'month', 'day']}
+          yearsOrder="asc"
           open={isOpen}
           onClose={() => onClose && onClose(false)}
           value={selected}

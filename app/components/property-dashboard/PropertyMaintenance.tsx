@@ -14,7 +14,7 @@ const PropertyMaintenance = () => {
         {showBadge && (
           <div className="bg-[#DDE4F3] max-w-full w-120 rounded rounded-2xl p-4 mb-8">
             <div className="flex justify-between mb-2">
-              <div className="font-light text-nrvDarkBlue"></div>
+              <div className="font-light text-nrvPrimaryGreen"></div>
 
               <div className="text-xs md:text-md p-1 flex gap-2 font-lighter">
                 <FaTimes className="cursor-pointer font-lighter" size={15} onClick={() => {
@@ -35,13 +35,13 @@ const PropertyMaintenance = () => {
 
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">
-            <div className="font-light text-nrvDarkBlue text-xs">
+            <div className="font-light text-nrvPrimaryGreen text-xs">
               Ongoing Maintenance: 0
             </div>
             {/* <div>
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
               >
@@ -60,14 +60,14 @@ const PropertyMaintenance = () => {
       </div>
       <div className="md:w-1/2 w-full mt-4 md:mt-0">
         <div className="bg-white rounded rounded-2xl p-4">
-          <div className="text-start text-nrvDarkBlue font-semibold text-[15px]  pb-12">
+          <div className="text-start text-nrvPrimaryGreen font-semibold text-[15px]  pb-12">
             Objectives
           </div>
 
           <div className="w-full mt-6">
             <Button
               size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >
@@ -80,7 +80,7 @@ const PropertyMaintenance = () => {
           <div className="w-full mt-6">
             <Button
               size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >
@@ -93,7 +93,7 @@ const PropertyMaintenance = () => {
           <div className="w-full mt-6">
             <Button
               size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >
@@ -106,7 +106,7 @@ const PropertyMaintenance = () => {
           <div className="w-full mt-6">
             <Button
               size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >
@@ -119,7 +119,7 @@ const PropertyMaintenance = () => {
           <div className="w-full mt-6">
             <Button
               size="normal"
-              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
             >

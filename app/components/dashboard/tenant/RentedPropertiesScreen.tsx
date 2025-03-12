@@ -126,7 +126,7 @@ const RentedPropertiesScreen = () => {
                   {/* <div className="w-2/5 text-end flec flex-col justify-between h-full">
                     <Button
                       size="small"
-                      className="text-nrvDarkBlue border border-nrvDarkBlue rounded-md"
+                      className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
                       variant="lightGrey"
                       showIcon={false}
                     >

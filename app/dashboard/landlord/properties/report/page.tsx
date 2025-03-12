@@ -36,14 +36,14 @@ const MessageScreen = () => {
                   <p className="text-nrvLightGrey m-2">No property listed yet</p>
                   <Button
                     size="normal"
-                    className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
+                    className="text-nrvPrimaryGreen block w-full border border-nrvPrimaryGreen mt-4 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                   >
     
                     <div className="flex gap-3 ">
-                      {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
-                      <p className="text-nrvDarkBlue">Add New</p>
+                      {/* <IoAddCircle size={20} className="text-nrvPrimaryGreen" />{" "} */}
+                      <p className="text-nrvPrimaryGreen">Add New</p>
                     </div>
                   </Button>
                 </div>

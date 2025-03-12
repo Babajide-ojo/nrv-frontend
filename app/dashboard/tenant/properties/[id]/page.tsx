@@ -667,7 +667,7 @@ const TenantPropertiesScreen = () => {
                   />
                 </svg>
               </div>
-              <h2 className="text-nrvDarkBlue font-semibold text-xl">
+              <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
                 Contact Info
               </h2>
               <p className="text-nrvLightGrey text-md">
@@ -676,8 +676,8 @@ const TenantPropertiesScreen = () => {
 
               <ul className="list-disc">
                 <li className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
+                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
+                  <div className="text-nrvPrimaryGreen md:text-md text-sm pr-3 font-medium">
                     Phone Number :
                     <span className="text-nrvLightGrey pl-1.5">
                       {property?.property.propertyId.createdBy?.phoneNumber}
@@ -686,8 +686,8 @@ const TenantPropertiesScreen = () => {
                 </li>
 
                 <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvDarkBlue md:text-md text-sm pr-3 font-medium">
+                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
+                  <div className="text-nrvPrimaryGreen md:text-md text-sm pr-3 font-medium">
                     Mail Address :
                     <span className="text-nrvLightGrey pl-1.5">
                       {property?.property.propertyId.createdBy?.email}

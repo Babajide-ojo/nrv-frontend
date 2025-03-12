@@ -56,7 +56,7 @@ const PropertyExpenses = () => {
 
             <Button
               size="normal"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => setCurrentStep(2)}
@@ -74,7 +74,7 @@ const PropertyExpenses = () => {
             <div className="flex justify-end">
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
                 onClick={() => {

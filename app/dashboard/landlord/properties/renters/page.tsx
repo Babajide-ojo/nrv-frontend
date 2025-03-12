@@ -82,7 +82,7 @@ const MessageScreen = () => {
                     </p>
                     <Button
                       size="normal"
-                      className="text-nrvDarkBlue block w-full border border-nrvDarkBlue mt-4 rounded-md"
+                      className="text-nrvPrimaryGreen block w-full border border-nrvPrimaryGreen mt-4 rounded-md"
                       variant="lightGrey"
                       showIcon={false}
                     >
@@ -92,8 +92,8 @@ const MessageScreen = () => {
                           setShowEmptyState(false);
                         }}
                       >
-                        {/* <IoAddCircle size={20} className="text-nrvDarkBlue" />{" "} */}
-                        <p className="text-nrvDarkBlue">Add New</p>
+                        {/* <IoAddCircle size={20} className="text-nrvPrimaryGreen" />{" "} */}
+                        <p className="text-nrvPrimaryGreen">Add New</p>
                       </div>
                     </Button>
                   </div>
@@ -106,9 +106,9 @@ const MessageScreen = () => {
                     <div key={item.id}>
                       <Button
                         size="large"
-                        className={`text-nrvDarkBlue border border-nrvGreyMediumBg mt-2 rounded-full mb-2 font-medium text-md ${
+                        className={`text-nrvPrimaryGreen border border-nrvGreyMediumBg mt-2 rounded-full mb-2 font-medium text-md ${
                           currentState === item.id
-                            ? "bg-nrvDarkBlue text-white"
+                            ? "bg-nrvPrimaryGreen text-white"
                             : "bg-nrvGreyMediumBg"
                         }`}
                         variant="lightGrey"

@@ -104,7 +104,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
               key={index}
               className={`w-4/5 rounded-full mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light m-4 ${
                 currentPath === route
-                  ? "bg-nrvDarkBlue text-white"
+                  ? "bg-nrvPrimaryGreen text-white"
                   : "text-black"
               }`}
               onClick={() => {
@@ -123,7 +123,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         {user && (
           <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
             <p className="text-sm font-semibold">{user.name}</p>
-            <p className="text-sm text-nrvDarkBlue mt-2">
+            <p className="text-sm text-nrvPrimaryGreen mt-2">
               Account Type : {user.role}
             </p>
           </div>
@@ -132,7 +132,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         {/* Logout Button at the Bottom */}
         <div className="mt-auto mb-12 ml-12">
           <button
-          className="w-[208px] rounded-full flex gap-2 py-3 hover:px-5 cursor-pointer hover:text-white hover:bg-nrvDarkBlue bg-white text-nrvDarkBlue font-medium"
+          className="w-[208px] rounded-full flex gap-2 py-3 hover:px-5 cursor-pointer hover:text-white hover:bg-nrvPrimaryGreen bg-white text-nrvPrimaryGreen font-medium"
             onClick={() => {
               localStorage.removeItem("nrv-user");
               router.push("/");

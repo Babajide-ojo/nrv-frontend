@@ -59,11 +59,11 @@ const RoomOverview: React.FC<Data> = ({ data }) => {
 
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
           <div className="flex justify-between mb-2">
-            <div className="font-light text-nrvDarkBlue">Leases</div>
+            <div className="font-light text-nrvPrimaryGreen">Leases</div>
             <div>
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
               >
@@ -84,13 +84,13 @@ const RoomOverview: React.FC<Data> = ({ data }) => {
         </div>
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4 mt-8">
           <div className="flex justify-between mb-4">
-            <div className="font-light text-nrvDarkBlue text-xs">
+            <div className="font-light text-nrvPrimaryGreen text-xs">
               Ongoing Maintenance: 0
             </div>
             <div>
               <Button
                 size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
                 variant="mediumGrey"
                 showIcon={false}
               >

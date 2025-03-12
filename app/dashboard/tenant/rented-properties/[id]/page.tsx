@@ -76,7 +76,7 @@ const RentedPropertiesScreen = () => {
               <div className="p-6 md:p-8 mb-40">
                 <div className="flex items-center mb-4 text-nrvGreyBlack mb-8">
                   <BackIcon width={24} height={24} />
-                  <h3 className="ml-3 text-lg font-medium text-nrvDarkBlue">
+                  <h3 className="ml-3 text-lg font-medium text-nrvPrimaryGreen">
                     <span className="font-semibold">Manage Your Apartment</span>
                   </h3>
                 </div>
@@ -190,7 +190,7 @@ const RentedPropertiesScreen = () => {
                 </p>
 
                 <div className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
+                  <div className="text-nrvPrimaryGreen md:text-md text-sm">
                     Property Type:{" "}
                     <span className="text-nrvDarkGrey">
                       {property?.property.propertyId.propertyType}
@@ -199,7 +199,7 @@ const RentedPropertiesScreen = () => {
                 </div>
 
                 <div className="mb-2 flex  mt-4">
-                  <div className="text-nrvDarkBlue md:text-md text-sm">
+                  <div className="text-nrvPrimaryGreen md:text-md text-sm">
                     {" "}
                     Rent Amount:{" "}
                     <span className="text-nrvDarkGrey">
@@ -214,7 +214,7 @@ const RentedPropertiesScreen = () => {
                 </div>
                 <div className="mb-2 flex mt-4">
                   <div className="">
-                    <span className="text-nrvDarkBlue md:text-md text-sm">
+                    <span className="text-nrvPrimaryGreen md:text-md text-sm">
                       {" "}
                       Description:{" "}
                     </span>
@@ -259,7 +259,7 @@ const RentedPropertiesScreen = () => {
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
                     size="small"
-                    className="text-nrvDarkBlue  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={() => {
@@ -278,7 +278,7 @@ const RentedPropertiesScreen = () => {
               }}
             >
               <div className="mx-auto text-center p-4">
-                <p className="text-nrvDarkBlue text-md font-medium">
+                <p className="text-nrvPrimaryGreen text-md font-medium">
                   View Landlord Details
                 </p>
                 <p className="text-nrvDarkGrey mt-4 text-md">
@@ -296,7 +296,7 @@ const RentedPropertiesScreen = () => {
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
                     size="small"
-                    className="text-nrvDarkBlue  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={() => {
@@ -320,7 +320,7 @@ const RentedPropertiesScreen = () => {
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button
                     size="small"
-                    className="text-nrvDarkBlue  max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={() => {

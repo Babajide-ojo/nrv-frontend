@@ -151,18 +151,18 @@ const SingleRoom = () => {
                 <div>
                   <div className="flex gap-2">
                    <div> <BackIcon /></div>
-                    {/* <div className="h-16 w-16  bg-nrvDarkBlue rounded rounded-lg flex justify-center flex-col items-center">
+                    {/* <div className="h-16 w-16  bg-nrvPrimaryGreen rounded rounded-lg flex justify-center flex-col items-center">
                       <BsHouse color="white" size={35} />
                     </div> */}
 
-                    <p className="text-md font-medium text-nrvDarkBlue text-nrvDarkGrey font-light">
+                    <p className="text-md font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
                       {singleRoom?.propertyId?.streetAddress}
                     </p>
                   </div>
                   <div className="flex gap-3 mt-4">
                     <Button
                       size="normal"
-                      className="text-nrvDarkBlue font-medium border border-nrvDarkBlue mt-2 rounded-md"
+                      className="text-nrvPrimaryGreen font-medium border border-nrvPrimaryGreen mt-2 rounded-md"
                       variant="primary"
                       showIcon={false}
                     >
@@ -172,7 +172,7 @@ const SingleRoom = () => {
                     </Button>
                     <Button
                       size="normal"
-                      className="text-nrvDarkBlue font-medium border border-nrvDarkBlue mt-2 rounded-md"
+                      className="text-nrvPrimaryGreen font-medium border border-nrvPrimaryGreen mt-2 rounded-md"
                       variant="primary"
                       showIcon={false}
                     //  disabled={singleRoom.listRoom === false ? false : true}
@@ -203,7 +203,7 @@ const SingleRoom = () => {
                       size="normal"
                       className={`text-[#153969] p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
                         currentState === item.id
-                          ? "bg-nrvDarkBlue text-white"
+                          ? "bg-nrvPrimaryGreen text-white"
                           : "bg-nrvGreyMediumBg"
                       }`}
                       variant="lightGrey"
@@ -257,7 +257,7 @@ const SingleRoom = () => {
               </Button>
               <Button
                 size="large"
-                className="text-white border border-nrvDarkBlue mt-2 rounded-md"
+                className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
                 variant="bluebg"
                 showIcon={false}
               >

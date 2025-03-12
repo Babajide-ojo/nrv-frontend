@@ -288,7 +288,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                 <div className="flex items-center gap-4">
                   <FaPlusCircle
                     size={25}
-                    className="cursor-pointer text-nrvDarkBlue"
+                    className="cursor-pointer text-nrvPrimaryGreen"
                     onClick={() =>
                       document.getElementById("file-input")?.click()
                     }
@@ -309,7 +309,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                   <IoSend
                     onClick={handleSendMessage}
                     size={25}
-                    className="cursor-pointer text-nrvDarkBlue"
+                    className="cursor-pointer text-nrvPrimaryGreen"
                   />
                 </div>
               </div>
@@ -403,7 +403,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                   {/* File Upload Trigger */}
                   <FaPlusCircle
                     size={25}
-                    className="cursor-pointer text-nrvDarkBlue"
+                    className="cursor-pointer text-nrvPrimaryGreen"
                     onClick={() =>
                       document.getElementById("file-input")?.click()
                     }
@@ -428,7 +428,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                   <IoSend
                     onClick={handleSendMessage}
                     size={25}
-                    className="cursor-pointer text-nrvDarkBlue"
+                    className="cursor-pointer text-nrvPrimaryGreen"
                   />
                 </div>
               </div>

@@ -13,18 +13,18 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
     <Link href={href} passHref>
       <div
         style={{ borderColor: "#153969" }}
-        className={cls(`text-nrvDarkBlue hover:border-b'
+        className={cls(`text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
           ${className}
           ${
             activeClassName && location.pathname === href ? activeClassName : ""
           }
         `)}
-        onMouseEnter={(e) => {
-            (e.target as HTMLAnchorElement).style.borderBottomWidth = '2px';
-          }}
-          onMouseLeave={(e) => {
-            (e.target as HTMLAnchorElement).style.borderBottomWidth = '0px';
-          }}
+        // onMouseEnter={(e) => {
+        //     (e.target as HTMLAnchorElement).style.borderBottomWidth = '2px';
+        //   }}
+        //   onMouseLeave={(e) => {
+        //     (e.target as HTMLAnchorElement).style.borderBottomWidth = '0px';
+        //   }}
 
 
       >

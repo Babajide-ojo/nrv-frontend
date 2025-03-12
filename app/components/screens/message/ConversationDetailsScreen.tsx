@@ -84,7 +84,7 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
                 <div
                   className={`p-3 rounded-lg w-fit max-w-xs ${
                     isSender
-                      ? "bg-nrvDarkBlue text-white"
+                      ? "bg-nrvPrimaryGreen text-white"
                       : "bg-gray-200 text-black"
                   }`}
                   style={{

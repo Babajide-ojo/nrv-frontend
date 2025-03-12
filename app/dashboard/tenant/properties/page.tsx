@@ -122,7 +122,7 @@ const TenantPropertiesScreen = () => {
                 <div>
                     <Button
                       size="small"
-                      className="text-nrvDarkGrey bg-nrvGreyMediumBg border border-nrvGreyMediumBg  hover:text-white hover:bg-nrvDarkBlue"
+                      className="text-nrvDarkGrey bg-nrvGreyMediumBg border border-nrvGreyMediumBg  hover:text-white hover:bg-nrvPrimaryGreen"
                       variant="ordinary"
                       showIcon={false}
                       // disabled={isLoading === false ? false : true}

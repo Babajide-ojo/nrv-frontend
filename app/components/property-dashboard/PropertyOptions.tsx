@@ -76,14 +76,14 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
     <div className="md:w-1/2 w-full mt-4 md:mt-0">
         <ToastContainer />
       <div className="bg-white rounded rounded-2xl p-4 m-1">
-        <div className="text-start text-nrvDarkBlue font-semibold text-[15px]  pb-4">
+        <div className="text-start text-nrvPrimaryGreen font-semibold text-[15px]  pb-4">
           Objectives
         </div>
 
         <div className="w-full mt-6">
           <Button
             size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
             onClick={() => {
@@ -99,7 +99,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
         <div className="w-full mt-6">
           <Button
             size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
             onClick={() => {
@@ -117,7 +117,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
         {/* <div className="w-full mt-6">
           <Button
             size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
           >
@@ -130,7 +130,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
         <div className="w-full mt-6">
           <Button
             size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
           >
@@ -143,7 +143,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
         <div className="w-full mt-6">
           <Button
             size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvDarkBlue text-bg-nrvDarkBlue"
+            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
           >
@@ -182,7 +182,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
             </Button>
             <Button
               size="large"
-              className="text-white border border-nrvDarkBlue mt-2 rounded-md"
+              className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
               variant="bluebg"
               showIcon={false}
             >
@@ -305,7 +305,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
                   />
                 </svg>
               </div>
-              <h2 className="text-nrvDarkBlue font-semibold text-xl">
+              <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
                 Contact Info
               </h2>
               <p className="text-nrvLightGrey text-md">
@@ -314,12 +314,12 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
 
               <ul className="list-disc">
                 <li className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
+                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
               
                 </li>
 
                 <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvDarkBlue rounded-full mr-2 text-sm"></div>
+                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
               
                 </li>
                 <div className="mt-4">

@@ -23,7 +23,7 @@ const Carousel = () => {
   const handleSkip = () => {};
   return (
     <div className="w-full md:w-1/2 lg:w-1/2 py-8 px-12 hidden md:block lg:block">
-      <div className="w-full bg-nrvDarkBlue h-full rounded-2xl p-4">
+      <div className="w-full bg-nrvPrimaryGreen h-full rounded-2xl p-4">
         <div style={{ width: "100%", height: "80%", position: "relative" }}>
           <img
             src={carouselData[currentItem].image}

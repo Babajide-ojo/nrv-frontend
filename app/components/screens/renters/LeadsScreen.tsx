@@ -111,7 +111,7 @@ const LeadScreen = () => {
                                  Aparment ID : {item?.propertyId?.roomId}
                                 </div>
                           </div>
-                          <div className="text-nrvDarkBlue text-sm mt-2">
+                          <div className="text-nrvPrimaryGreen text-sm mt-2">
                             {item?.propertyId?.propertyId.streetAddress},{" "}
                             {item?.propertyId?.propertyId.city} ,{" "}
                             {item?.propertyId?.propertyId.state}
@@ -359,7 +359,7 @@ const LeadScreen = () => {
                     setIsOpen(true)
                     }}
                     size="normal"
-                    className="p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvDarkBlue"
+                    className="p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvPrimaryGreen"
                     variant="bluebg"
                     showIcon={false}
                   >
@@ -381,7 +381,7 @@ const LeadScreen = () => {
         }}
       >
         <div className="mx-auto text-center p-4 w-full md:w-4/5">
-          <h2 className="text-nrvDarkBlue font-semibold text-xl">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
             Transfer Application as Tenant
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
@@ -391,7 +391,7 @@ const LeadScreen = () => {
           <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="text-white w-72 max-w-full border border-nrvDarkBlue mt-2 rounded-md"
+              className="text-white w-72 max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
               variant="bluebg"
               showIcon={false}
             >
@@ -408,7 +408,7 @@ const LeadScreen = () => {
           <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
             <Button
               size="large"
-              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvDarkBlue"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
               variant="mediumGrey"
               showIcon={false}
               onClick={() => {

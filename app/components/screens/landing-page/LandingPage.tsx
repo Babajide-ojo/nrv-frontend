@@ -115,14 +115,19 @@ const FeatureSection: React.FC = () => {
 
   return (
     <div className="bg-nrvPrimaryGreen md:p-12 p-2">
+      <div className="p-4">
+        <Button variant="transparentBg" className="text-[16px] bg-transparent w-48" size="large">
+          Services
+        </Button>
+      </div>
       <div className=" flex p-4">
         <p className="text-white font-medium text-2xl mt-2 w-3/5">
-          Whether you’re a landlord looking to maximize your returns or a <br></br> tenant
-          searching for a verified home, NaijaRentVerify is here to make <br></br> renting
-          easier, safer, and more efficient.
+          Whether you’re a landlord looking to maximize your returns or a{" "}
+          <br></br> tenant searching for a verified home, NaijaRentVerify is
+          here to make <br></br> renting easier, safer, and more efficient.
         </p>
         <div className="w-2/5 flex justify-end items-end">
-          <Button variant="primary" className="text-[16px] w-80" size="large">
+          <Button variant="lemonPrimary" className="text-[16px] w-64" size="large">
             Explore Our Services
           </Button>
         </div>
@@ -598,7 +603,7 @@ const Footer: React.FC = () => {
 const LandingPage = () => {
   const router = useRouter();
   return (
-    <div className="md:m-8">
+    <div className="md:m-8 ">
       <div
         style={{
           height: "700px",

@@ -107,7 +107,7 @@ const DesktopNavBar: React.FC = () => {
           ``
         </svg>
       </div>
-      <div className="md:w-2/4 w-full pt-2">
+      <div className="md:w-2/4 w-full bg-white px-8 my-auto py-2 rounded-full">
         <nav className="flex justify-between gap-4 text-['14px']">
           {navItems.map(({ text, route }, index) => (
             <div key={index}>
@@ -137,7 +137,7 @@ const DesktopNavBar: React.FC = () => {
           ) : (
             <div className="md:flex gap-4 justify-end ">
               <Button
-                className="w-40"
+                className="w-36 text-[14px]"
                 size="large"
                 variant="darkPrimary"
                 showIcon={false}
@@ -145,7 +145,7 @@ const DesktopNavBar: React.FC = () => {
                 Get Started
               </Button>
               <Button
-                className="w-40"
+                className="w-36 text-[14px]"
                 size="large"
                 variant="primary"
                 showIcon={false}

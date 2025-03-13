@@ -7,7 +7,7 @@ import { FaSpinner } from 'react-icons/fa'; // Import spinner icon
 import { FaCircleNotch } from "react-icons/fa6";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'darkPrimary' | 'light' | 'lightPrimary' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary' | 'roundedRec';
+  variant?: 'primary' | 'lightPrimary' | 'darkPrimary' | 'light' | 'whitebg' | 'bluebg' | 'lightGrey' | 'mediumGrey' | 'ordinary' | 'roundedRec' | 'transparentBg' | 'lemonPrimary';
   size?: 'small' | 'normal' | 'large' | 'smaller' | 'minLarge';
   pill?: boolean;
   icon?: IconType | ReactElement; // Allowing IconType or JSX elements
@@ -28,6 +28,8 @@ const classes = {
   },
   variant: {
     primary: 'rounded-full hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1 border border-nrvPrimaryGreen outline-none text-nrvPrimaryGreen bg-white',
+    lemonPrimary: 'rounded-full hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1 border border-nrvPrimaryGreen outline-none text-nrvPrimaryGreen bg-[#E9F4E7]',
+    transparentBg: 'rounded-full border border-[#045D23] outline-none text-white bg-transparent',
     darkPrimary: 'rounded-full text-white bg-nrvPrimaryGreen outline-none hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1',
     light: 'rounded-2xl bg-white text-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white',
     lightPrimary: 'rounded-2xl text-white border border-white bg-nrvPrimaryGreen',

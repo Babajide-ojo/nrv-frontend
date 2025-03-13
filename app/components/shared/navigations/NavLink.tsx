@@ -13,7 +13,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
     <Link href={href} passHref>
       <div
         style={{ borderColor: "#153969" }}
-        className={cls(`text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
+        className={cls(`text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
           ${className}
           ${
             activeClassName && location.pathname === href ? activeClassName : ""

@@ -1,0 +1,167 @@
+import { FaPhoneAlt } from "react-icons/fa";
+import { MapPin, Bed, Bath, Ruler } from "lucide-react";
+import { useState } from "react";
+import Button from "../../shared/buttons/Button";
+
+const propertyData = [
+  {
+    type: "Apartment",
+    price: "#250,095",
+    location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
+    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    advisor: {
+      name: "Edwin Martin",
+      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+    },
+    features: {
+      bedrooms: "4 bed",
+      bathrooms: "4 room",
+      area: "12x12 m2",
+      style: "Modern"
+    }
+  },
+  {
+    type: "Commercial",
+    price: "#500,000",
+    location: "10, Victoria Island, Lagos, Nigeria",
+    description: "A premium office space in the heart of the business district.",
+    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    advisor: {
+      name: "Jane Doe",
+      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+    },
+    features: {
+      bedrooms: "N/A",
+      bathrooms: "2 restrooms",
+      area: "2000 sqft",
+      style: "Corporate"
+    }
+  },
+  {
+    type: "Community",
+    price: "#250,095",
+    location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
+    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    advisor: {
+      name: "Edwin Martin",
+      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+    },
+    features: {
+      bedrooms: "4 bed",
+      bathrooms: "4 room",
+      area: "12x12 m2",
+      style: "Modern"
+    }
+  },
+  {
+    type: "Ready Flat",
+    price: "#500,000",
+    location: "10, Victoria Island, Lagos, Nigeria",
+    description: "A premium office space in the heart of the business district.",
+    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    advisor: {
+      name: "Jane Doe",
+      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+    },
+    features: {
+      bedrooms: "N/A",
+      bathrooms: "2 restrooms",
+      area: "2000 sqft",
+      style: "Corporate"
+    }
+  }
+];
+
+const FeaturedProperties = () => {
+  const [selectedProperty, setSelectedProperty] = useState(propertyData[0]);
+
+  return (
+    <div className="bg-[#0D3520] flex items-center justify-center p-5 ">
+      <div className="max-w-6xl w-full my-16">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-white font-normal rounded-full border border-[#BBFF37] p-2">/ FEATURED PROPERTIES</span>
+        </div>
+        <h2 className="text-3xl font-bold text-white">Find Your Ideal Living Space</h2>
+        <div className="flex justify-between">
+        <div className="flex space-x-3 mt-4 text-sm">
+          {propertyData.map((property) => (
+            <button
+              key={property.type}
+              className={`px-4 py-2 rounded-full font-light text-[12px] ${
+                selectedProperty.type === property.type ? "bg-lime-400 text-green-900" : "bg-[#0D3520] border border-[#E9F4E7] text-[#E9F4E7]"
+              }`}
+              onClick={() => setSelectedProperty(property)}
+            >
+              {property.type}
+            </button>
+          ))}
+        </div>
+        <Button variant="lemonPrimary" className="text-[16px] w-64" size="large">
+            Explore Our Services
+          </Button>
+        </div>
+     
+
+        <div className="mt-6 border border-[#E9F4E74D] rounded-2xl flex">
+          <div className="relative w-2/5">
+            <img
+              src={selectedProperty.image}
+              alt={selectedProperty.type}
+              className="rounded-lg w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="w-3/5 pl-6 text-white flex flex-col justify-center">
+            <div>
+              <div className="flex justify-between">
+                <p className="text-lime-400 text-[30px] font-bold mt-4">
+                  {selectedProperty.price} <span className="text-sm font-light text-white">/ Month</span>
+                </p>
+                <div className="mt-4 flex items-center mr-6">
+                  <img
+                    src={selectedProperty.advisor.image}
+                    alt={selectedProperty.advisor.name}
+                    className="w-12 h-12 rounded-full"
+                  />
+                  <div className="ml-3 mr-2">
+                    <p className="font-semibold">{selectedProperty.advisor.name}</p>
+                    <p className="text-white text-sm font-light">Property Advisor</p>
+                  </div>
+                  <button className="ml-auto bg-white p-4 rounded-full">
+                    <FaPhoneAlt size={16} className="font-medium" color="#03442C" />
+                  </button>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-semibold mt-12">{selectedProperty.type} Realty</h3>
+              <p className="flex items-center mt-1 text-white py-4">
+                <MapPin size={16} color="#BBFF37" className="mr-1" /> {selectedProperty.location}
+              </p>
+              <p className="mt-2 text-white font-light text-[14px] leading-8">
+                {selectedProperty.description}
+              </p>
+            </div>
+
+            <div className="mt-4 mr-8 mb-8 bg-[#E9F4E7] p-4 rounded-lg grid grid-cols-4 text-sm text-nrvPrimaryGreen font-medium">
+              {Object.entries(selectedProperty.features).map(([key, value]) => (
+                <div key={key}>
+                  <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                  <div className="flex items-center">
+                    {key === "bedrooms" && <Bed size={16} className="mr-1" />}
+                    {key === "bathrooms" && <Bath size={16} className="mr-1" />}
+                    {key === "area" && <Ruler size={16} className="mr-1" />}
+                    {value}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FeaturedProperties;

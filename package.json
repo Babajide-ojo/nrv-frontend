@@ -26,6 +26,7 @@
     "formik": "^2.4.6",
     "google-map-react": "^2.2.1",
     "install": "^0.13.0",
+    "lucide-react": "^0.479.0",
     "next": "14.2.1",
     "npm": "^10.8.3",
     "react": "^18",
@@ -41,6 +42,7 @@
     "react-toastify": "^10.0.5",
     "react-viewer": "^3.2.2",
     "styled-components": "^6.1.13",
+    "swiper": "^11.2.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

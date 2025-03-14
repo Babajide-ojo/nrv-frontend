@@ -36,7 +36,7 @@ const NavBar: React.FC = () => {
     <div
       className="fixed top-0 left-0 w-full z-10 transition-all"
       style={{
-        backgroundColor: scrolling ? "rgba(255, 255, 255, 0.8)" : "rgba(255, 255, 255, 1)", // Apply opacity when scrolled
+        backgroundColor: scrolling ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 1)", // Apply opacity when scrolled
         backdropFilter: scrolling ? "backdrop-filter" : "none", // Optional: Add blur effect when scrolled
       }}
     >

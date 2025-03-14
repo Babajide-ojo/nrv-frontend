@@ -141,6 +141,9 @@ const DesktopNavBar: React.FC = () => {
                 size="large"
                 variant="darkPrimary"
                 showIcon={false}
+                onClick={() => {
+                  router.push('sign-up')
+                }}
               >
                 Get Started
               </Button>
@@ -149,6 +152,9 @@ const DesktopNavBar: React.FC = () => {
                 size="large"
                 variant="primary"
                 showIcon={false}
+                onClick={() => {
+                  router.push('sign-in')
+                }}
               >
                 Sign In
               </Button>

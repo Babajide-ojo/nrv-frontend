@@ -11,6 +11,9 @@ import { useRouter } from "next/navigation";
 import StatsIcon from "../../icons/StatsIcon";
 import FeaturedProperties from "../home/FeaturedProperties";
 import HowItWorks from "../home/HowItWorks";
+import TestimonialsAndFAQs from "./TestimonialsAndFAQ";
+import ContactSection from "./ContactSection";
+import Footer from "./Footer";
 //import heroBgImage from "../../../../public/images/nrv-hero-section-img.jpeg";
 
 interface Feature {
@@ -29,9 +32,6 @@ const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", height: "100%" }}>
         <div className="bg-white hover:bg-[#E9F4E7] p-4 text-nrvPrimaryGreen h-60">
-          {/* <div className="flex justify-center">
-            <img src={imageUrl} alt="photo" className="w-12 h-12" />
-          </div> */}
           <h2 className="mt-4 text-[20px] font-medium h-12">{title}</h2>
           <p className="mt-4 text-[14px] font-light pt-4 leading-8">{description}</p>
         </div>
@@ -422,6 +422,9 @@ const LandingPage = () => {
       <WhyChooseUs />
       <FeaturedProperties />
       <HowItWorks />
+      <TestimonialsAndFAQs />
+      <ContactSection />
+      <Footer />
     </div>
   );
 };

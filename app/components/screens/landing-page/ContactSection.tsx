@@ -7,7 +7,7 @@ const ContactSection: React.FC = () => {
     <section className="sticky bg-white">
       <div className="absolute top-0 left-0 w-full h-full bg-cover bg-[url('/images/contact-us.jpeg')] bg-cover bg-center z-0"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[#045D23CC] opacity-80 z-10"></div>
-      <div className="relative z-10 p-2 md:p-12">
+      <div className="relative z-10 p-6 md:p-12">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-medium text-white">
             Get in Touch – We are Here to Help!

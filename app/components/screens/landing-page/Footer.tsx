@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-[#03442C] text-white  flex justify-center items-center py-32 w-full">
       <div>
-        <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10">
+        <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10 p-4">
           {/* Newsletter Section */}
           <div>
             <h3 className="text-[42px] font-medium">Explore with Us Now!</h3>
@@ -61,8 +61,8 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="text-white mt-8">
-          {/* Navbar */}
-          <nav className="flex justify-between items-center px-10 py-6 rounded-full bg-[#03442C] max-w-7xl mx-auto mt-6 bg-[#0D3520] opacity-80">
+    
+          <nav className="md:flex hidden justify-between items-center px-10 py-6 rounded-full bg-[#03442C] max-w-7xl mx-auto mt-6 bg-[#0D3520] opacity-80">
             <h1 className="text-lg font-bold">NaijaRentVerify</h1>
             <ul className="flex space-x-8 text-sm">
               <li className="cursor-pointer hover:text-gray-300">About Us</li>

@@ -130,52 +130,50 @@ const FeatureSection: React.FC = () => {
     },
   ];
 
-return (
-  <div className="sticky bg-white">
-    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741878901/nithgfm5chcnnwtqd1bl.jpg')] bg-cover bg-center z-0"></div>
-    <div className="absolute top-0 left-0 w-full h-full bg-nrvPrimaryGreen opacity-80 z-10"></div>
+  return (
+    <div className="sticky bg-white">
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741878901/nithgfm5chcnnwtqd1bl.jpg')] bg-cover bg-center z-0"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-nrvPrimaryGreen opacity-80 z-10"></div>
 
-    <div className="relative z-10 p-2 md:p-12">
-      <div className="p-4">
-        <Button variant="transparentBg" className="text-[16px] bg-transparent w-48" size="large">
-          Services
-        </Button>
-      </div>
-      <div className="flex p-4">
-        <p className="text-white font-medium text-2xl mt-2 w-3/5">
-          Whether you’re a landlord looking to maximize your returns or a{" "}
-          <br /> tenant searching for a verified home, NaijaRentVerify is
-          here to make <br /> renting easier, safer, and more efficient.
-        </p>
-        <div className="w-2/5 flex justify-end items-end">
-          <Button variant="lemonPrimary" className="text-[16px] w-64" size="large">
-            Explore Our Services
+      <div className="relative z-10 p-2 md:p-12">
+        <div className="p-4">
+          <Button variant="transparentBg" className="text-[16px] bg-transparent w-48" size="large">
+            Services
           </Button>
         </div>
-      </div>
-      <div className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 gap-6 p-4 mt-8">
-        {features.map((feature, index) => (
-          <FeatureCard key={index} {...feature} />
-        ))}
+        <div className="flex p-4 flex-col sm:flex-row">
+          <p className="text-white font-medium text-xl sm:text-2xl mt-2 sm:mt-0 sm:w-3/5">
+            Whether you’re a landlord looking to maximize your returns or a{" "}
+            <br /> tenant searching for a verified home, NaijaRentVerify is
+            here to make <br /> renting easier, safer, and more efficient.
+          </p>
+          <div className="w-full sm:w-2/5 flex sm:justify-end items-center sm:items-end mt-4 sm:mt-0">
+            <Button variant="lemonPrimary" className="text-[16px] w-64" size="large">
+              Explore Our Services
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 mt-8">
+          {features.map((feature, index) => (
+            <FeatureCard key={index} {...feature} />
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
-
-  
-  
+  );
 };
+
 
 const AboutSection: React.FC = () => {
   return (
-    <div className="bg-white md:p-12 p-2 mx-auto mt-4 w-11/12">
-      <div className="w-full flex justify-center">
-        <div className="w-5/12">
+    <div className="bg-white md:p-12 p-4 mx-auto mt-4 w-11/12">
+      <div className="flex flex-col md:flex-row">
+        <div className="md:w-5/12 w-full">
           <div className="md:w-4/5">
-            <h1 className="text-[#1D2227] font-medium text-[24px]">
+            <h1 className="text-[#1D2227] font-medium text-[20px] md:text-[24px]">
               Who We Are ?
             </h1>
-            <div className="font-light text-[#646D75]  text-[16px] leading-8">
+            <div className="font-light text-[#646D75] text-[14px] md:text-[16px] leading-8">
               <span className="font-medium">NaijaRentVerify</span> was born out
               of a need for trust and transparency in Nigeria’s rental property
               market. We understand the challenges faced by both property owners
@@ -184,11 +182,11 @@ const AboutSection: React.FC = () => {
             </div>
           </div>
 
-          <div className="md:w-4/5 pt-12">
-            <h1 className="text-[#1D2227] font-medium text-[24px]">
+          <div className="md:w-4/5 pt-8 md:pt-12">
+            <h1 className="text-[#1D2227] font-medium text-[20px] md:text-[24px]">
               Our Mission ?
             </h1>
-            <div className="font-light text-[#646D75] text-[16px] leading-8">
+            <div className="font-light text-[#646D75] text-[14px] md:text-[16px] leading-8">
               Our mission is simple: to create a seamless, secure, and
               stress-free rental experience for everyone. Leveraging
               cutting-edge technology and a customer-first approach, we provide
@@ -196,61 +194,65 @@ const AboutSection: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="w-7/12">
-          <div className="pt-6">
-            <div className="text-[30px] text-[#03442C] pb-8">
-              Whether you are a landlord looking to maximize your returns or a
-              tenant searching for a verified home, NaijaRentVerify is here to
-              make renting easier, safer, and more efficient.
-            </div>
-            <Button variant="darkPrimary" className="text-[16px]" size="large">
-              Explore Our Services
-            </Button>
+
+        <div className="md:w-7/12 w-full pt-6 md:pt-0">
+          <div className="md:text-[30px] text-[#03442C] md:pb-8 text-[20px]">
+            Whether you are a landlord looking to maximize your returns or a
+            tenant searching for a verified home, NaijaRentVerify is here to
+            make renting easier, safer, and more efficient.
           </div>
+          <Button variant="darkPrimary" className="text-[16px] md:my-0 my-8" size="large">
+            Explore Our Services
+          </Button>
         </div>
       </div>
-      <div className="flex gap-12 mt-16 mb-4">
-        <div className="w-7/12">
+
+      <div className="flex flex-col md:flex-row gap-6 md:gap-12 mt-16 mb-4">
+        <div className="w-full md:w-7/12">
           <Image
             alt="pto"
             src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1741785309/Background_1_brbq1j.png"
-            width={1020} // Replace with the actual width of the image
-            height={880} // Replace with the actual height of the image
-            className="w-full h-full"
+            width={1020}
+            height={880}
+            className="w-full h-full object-cover"
           />
         </div>
-        <div className="w-5/12">
+        <div className="w-full md:w-5/12">
           <Image
             alt="pto"
             src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1741785308/Background_rph4rw.png"
-            width={1020} // Replace with the actual width of the image
-            height={880} // Replace with the actual height of the image
-            className="w-full h-full"
+            width={1020}
+            height={880}
+            className="w-full h-full object-cover"
           />
         </div>
       </div>
-      <hr></hr>
-      <div className="flex space-around mt-16">
-        <div className="w-1/4 text-center">
-          <div className="font-medium text-[#1D2227] text-[40px]">5,673+</div>
-          <div className="font-light text-[#646D75]">Onboarded Landlords</div>
-        </div>
-        <div className="w-1/4 text-center">
-          <div className="font-medium text-[#1D2227] text-[40px]">2,179+</div>
-          <div className="font-light text-[#646D75]">Satisfied Reviews</div>
-        </div>
-        <div className="w-1/4 text-center">
-          <div className="font-medium text-[#1D2227] text-[40px]">10+</div>
-          <div className="font-light text-[#646D75]">Years Of Experience</div>
-        </div>
-        <div className="w-1/4 text-center">
-          <div className="font-medium text-[#1D2227] text-[40px]">200k+</div>
-          <div className="font-light text-[#646D75]">Active Users</div>
-        </div>
-      </div>
+
+      <hr />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 text-center">
+  <div className="mb-4">
+    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">5,673+</div>
+    <div className="font-light text-[#646D75]">Onboarded Landlords</div>
+  </div>
+  <div className="mb-4">
+    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">2,179+</div>
+    <div className="font-light text-[#646D75]">Satisfied Reviews</div>
+  </div>
+  <div className="mb-4">
+    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">10+</div>
+    <div className="font-light text-[#646D75]">Years Of Experience</div>
+  </div>
+  <div>
+    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">200k+</div>
+    <div className="font-light text-[#646D75]">Active Users</div>
+  </div>
+</div>
+
     </div>
   );
 };
+
 
 const WhyChooseUs: React.FC = () => {
   const features: Feature[] = [
@@ -343,25 +345,25 @@ const LandingPage = () => {
     <div className="md:m-8 ">
       <div
         style={{
-          height: "700px",
+    
           backgroundColor: "#ffffff",
         }}
-        className="md:relative flex flex-col justify-end"
+        className="md:relative flex flex-col justify-end md:h-[700px] h-[850px]"
       >
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741768679/nrv-hero-section-img_ttbvxz.jpg')] bg-cover bg-center"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#03442C] to-transparent opacity-90"></div>
-        <div className="flex gap-4 relative">
-          <div className="">
-            <div className="flex justify-end mr-20">
+        <div className="flex flex-col justify-end absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741768679/nrv-hero-section-img_ttbvxz.jpg')] bg-cover bg-center"></div>
+        <div className="flex flex-col justify-end absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#03442C] to-transparent opacity-90"></div>
+        <div className=" gap-4 relative">
+
+            <div className="md:flex justify-end md:mr-20 hidden">
               <StatsIcon />
             </div>
             <div className="md:w-full md:flex block gap-4">
               <div className="md:w-2/3 w-full">
-                <div className="text-white font-bold md:text-[60px] text-[28px] text-end mr-20">
+                <div className="text-white font-bold md:text-[60px] text-[28px] md:text-end pl-8">
                   <div>Find Trustworthy Tenants</div>
                   <div className="italic">
-                    <div className="flex justify-end">
-                      <span className="flex-col items-center my-auto pr-4">
+                    <div className="flex md:justify-end">
+                      <span className="md:flex-col items-center my-auto pr-4 hidden">
                         <svg
                           width="106"
                           height="4"
@@ -384,7 +386,7 @@ const LandingPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="md:w-1/3 p-8 w-full">
+              <div className="md:w-1/3 p-8 w-full mr-0 md:mr-20">
                 <div className="text-[16px] text-white font-light leading-8">
                   Say goodbye to rental risks and endless paperwork! With{" "}
                   <span className="font-bold">NaijaRentVerify</span>, you can
@@ -395,10 +397,10 @@ const LandingPage = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white w-2/5 text-[22px] text-[#03442C] flex justify-end">
-              <button className="bg-white text-md p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
+            <div className="bg-white w-2/5 md:text-[22px] text-[14px] text-[#03442C] flex justify-end">
+              <button className="bg-white md:text-md  p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
                 <span>Get Started Now!</span>
-                <div className="flex my-auto">
+                <div className="md:flex my-auto hidden">
                   <svg
                     width="28"
                     height="20"
@@ -414,7 +416,7 @@ const LandingPage = () => {
                 </div>
               </button>
             </div>
-          </div>
+       
         </div>
       </div>
       <AboutSection />

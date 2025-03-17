@@ -23,10 +23,10 @@ const TestimonialsAndFAQs: React.FC = () => {
   return (
     <div className="space-y-16">
       {/* Testimonials Section */}
-      <section className="h-[400px] bg-[#E6F0E9] m-16 w-4/5 flex justify-center p-8 rounded-lg mx-auto">
+      <section className="md:h-[400px] bg-[#E6F0E9] m-16 md:w-4/5 md:flex justify-center p-8 rounded-lg mx-auto">
         <div className="text-start mx-auto pt-16">
           <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
-            Testimonials
+           / Testimonials
           </span>
           <h2 className="my-8 text-4xl font-medium text-[#03442C]">
             Why They Love Us
@@ -37,7 +37,7 @@ const TestimonialsAndFAQs: React.FC = () => {
             their dream homes.
           </p>
         </div>
-        <div className="relative w-full max-w-2xl p-6 bg-white shadow-md rounded-lg h-96 flex items-end">
+        <div className="relative w-full max-w-2xl p-6 bg-white shadow-md rounded-lg h-96 flex items-end md:m-0 mt-12">
           <div>
             <p className="text-[20px] font-light text-[#03442C] leading-8 m-4">
             &rdquo;As a tenant, I appreciate the transparency{" "}
@@ -72,14 +72,14 @@ const TestimonialsAndFAQs: React.FC = () => {
 
       {/* FAQ Section */}
       <div className="bg-[#03442C]">
-        <section className="text-white p-10 rounded-lg flex gap-3 w-4/5 mx-auto">
-          <div className="w-1/2 flex items-center">
+        <section className="text-white md:p-10 p-4 rounded-lg md:flex gap-3 md:w-4/5 mx-auto">
+          <div className="md:w-1/2 w-full flex items-center">
             <div>
               <div className="mb-6">
                 <span className="my-4 text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 px-8 bg-[#E6F0E9]">
-                  FAQs
+                 / FAQs
                 </span>
-                <h2 className="my-8 text-3xl font-bold">
+                <h2 className="my-8 md:text-3xl text-xl font-bold">
                   Frequently Asked Questions
                 </h2>
               </div>
@@ -99,7 +99,7 @@ const TestimonialsAndFAQs: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/2 mt-6 flex justify-center">
+          <div className="md:w-1/2 w-full mt-6 flex justify-center">
             <div className="text-black rounded-lg">
               <img
                 src="https://s3-alpha-sig.figma.com/img/7d71/9111/75ef4ba531bf6a9aa8778a8e9e6834f7?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=byPIXwQQXoJZ9oXROPkq~Rgu0xeJeRYqP0B0WK4YxoniCh8dNsUjbLy~~WIP4s9Dsa6BNbq96Mx02JUwXnDO6-9mPEWaZpvaqx-wpxxkOYnEL8G4KVva8PxmafFaJNLqbvGcBjO8JKJlKy8mCxgAGNODCdAgiT7TOhRt4h5ee7iAW~MtPfSI7R-RpHFeKfVpHjEp5cw8TSu70rDDtNqABEambcq2LPc~b4Yj8c9Wvngk8pe5KR5ztkR75O2Log~scbeffMHZXzi-n-oqlsRafH1SaR17O-h~YdyPp5bhoPSwsg6EFNFXQrBlEhV0tzsTryWNjDxeHXLHefS3OnzufA__"

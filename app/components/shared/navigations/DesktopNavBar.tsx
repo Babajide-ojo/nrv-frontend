@@ -14,13 +14,13 @@ interface NavItem {
   route: string;
 }
 
-const navItems: NavItem[] = [
-  { text: "Home", route: "/" },
-  { text: "About Us", route: "/about" },
-  { text: "Services", route: "/services" },
-  { text: "How it works", route: "/services" },
-  { text: "FAQs", route: "/contact" },
-  { text: "Contact Us", route: "/contact" },
+const navItems = [
+  { text: "Home", targetId: "home" },
+  { text: "About Us", targetId: "about" },
+  { text: "Services", targetId: "services" },
+  { text: "How it Works", targetId: "how-it-works" },
+  { text: "FAQs", targetId: "faqs" },
+  { text: "Contact Us", targetId: "contact" },
 ];
 
 const DesktopNavBar: React.FC = () => {
@@ -109,10 +109,10 @@ const DesktopNavBar: React.FC = () => {
       </div>
       <div className="md:w-2/4 w-full bg-white px-8 my-auto py-2 rounded-full">
         <nav className="flex justify-between gap-4 text-['14px']">
-          {navItems.map(({ text, route }, index) => (
+          {navItems.map(({ text, targetId }, index) => (
             <div key={index}>
               <div>
-                <NavLink href={route}>{text}</NavLink>
+                <NavLink targetId={targetId}>{text}</NavLink>
               </div>
             </div>
           ))}

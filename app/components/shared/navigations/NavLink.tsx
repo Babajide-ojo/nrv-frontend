@@ -1,37 +1,43 @@
 /* eslint-disable react/display-name */
 import React, { forwardRef, AnchorHTMLAttributes } from "react";
-import Link, { LinkProps } from "next/link";
 import { cls } from "../../../../helpers/utils";
 
 interface NavLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
-  href: string;
+  targetId: string; // ID of the section to scroll to
   activeClassName?: string;
 }
 
 const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
-  ({ children, href, className, activeClassName }) => (
-    <Link href={href} passHref>
-      <div
-        style={{ borderColor: "#153969" }}
-        className={cls(`text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
-          ${className}
-          ${
-            activeClassName && location.pathname === href ? activeClassName : ""
-          }
-        `)}
-        // onMouseEnter={(e) => {
-        //     (e.target as HTMLAnchorElement).style.borderBottomWidth = '2px';
-        //   }}
-        //   onMouseLeave={(e) => {
-        //     (e.target as HTMLAnchorElement).style.borderBottomWidth = '0px';
-        //   }}
+  ({ children, targetId, className, activeClassName }, ref) => {
+    const handleScroll = (e: React.MouseEvent) => {
+      e.preventDefault();
+      const targetElement = document.getElementById(targetId);
 
+      console.log({targetElement});
+      
 
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop - 80, // Adjust offset if you have a fixed navbar
+          behavior: "smooth",
+        });
+      }
+    };
+
+    return (
+      <a
+        onClick={handleScroll}
+        ref={ref}
+        className={cls(
+          `text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
+          ${className} 
+          ${activeClassName ? activeClassName : ""}`
+        )}
       >
         {children}
-      </div>
-    </Link>
-  )
+      </a>
+    );
+  }
 );
 
 export default NavLink;

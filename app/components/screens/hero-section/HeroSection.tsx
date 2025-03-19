@@ -25,7 +25,7 @@ const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", height: "100%" }}>
-        <div className="bg-white p-4 text-nrvPrimaryGreen h-60 rounded-3xl text-center">
+        <div className="bg-red p-4 text-nrvPrimaryGreen h-60 rounded-4xl text-center">
           <div className="flex justify-center">
             <img src={imageUrl} alt="photo" className="w-12 h-12" />
           </div>

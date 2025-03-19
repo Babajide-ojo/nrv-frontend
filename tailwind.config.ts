@@ -28,7 +28,10 @@ const config: Config = {
         nrvLightGreyText: "#707070",
         nrvLightGreenButtonHover1: "#BBFF37"
 
-      }
+      },
+      fontFamily: {
+        jakarta: ["Plus Jakarta Sans", "sans-serif"],
+      },
     },
   },
   plugins: [],

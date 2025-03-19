@@ -14,11 +14,13 @@ interface NavItem {
   route: string;
 }
 
-const navItems: NavItem[] = [
-  { text: "Home", route: "/" },
-  { text: "Feature", route: "/about" },
-  { text: "How it works", route: "/services" },
-  { text: "FAQs", route: "/contact" },
+const navItems = [
+  { text: "Home", targetId: "home" },
+  { text: "About Us", targetId: "about" },
+  { text: "Services", targetId: "services" },
+  { text: "How it Works", targetId: "how-it-works" },
+  { text: "FAQs", targetId: "faqs" },
+  { text: "Contact Us", targetId: "contact" },
 ];
 
 const MobileNavBar: React.FC = () => {
@@ -45,7 +47,7 @@ const MobileNavBar: React.FC = () => {
       }`}
     >
       <div className="flex justify-between items-center px-4">
-        <NavLink href="/">
+        <NavLink targetId="/">
           <img src="/images/nrv-logo.png" alt="Logo" className="w-28 h-auto" />
         </NavLink>
         {window.innerWidth <= 1000 && (
@@ -59,11 +61,11 @@ const MobileNavBar: React.FC = () => {
       {isOpen && (
         <div className="px-4 overflow-y-auto">
           <nav>
-            {navItems.map(({ text, route }, index) => (
+            {navItems.map(({ text, targetId }, index) => (
               <div key={index}>
                 <div>
                   <NavLink
-                    href={route}
+                    targetId={targetId}
                     className="text-nrvPrimaryGreen py-3 block"
                   >
                     {text}
@@ -89,7 +91,7 @@ const MobileNavBar: React.FC = () => {
           ) : (
             <div className="flex justify-between mt-4">
               <NavLink
-                href="/sign-in"
+                targetId="/sign-in"
                 className="text-nrvPrimaryGreen mr-4 mt-4"
               >
                 Sign In

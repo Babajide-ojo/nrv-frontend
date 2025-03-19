@@ -14,6 +14,7 @@ import HowItWorks from "../home/HowItWorks";
 import TestimonialsAndFAQs from "./TestimonialsAndFAQ";
 import ContactSection from "./ContactSection";
 import Footer from "./Footer";
+import ShortLets from "./ShortletDisplay";
 //import heroBgImage from "../../../../public/images/nrv-hero-section-img.jpeg";
 
 interface Feature {
@@ -33,25 +34,35 @@ const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
       <div style={{ width: "100%", height: "100%" }}>
         <div className="bg-white hover:bg-[#E9F4E7] p-4 text-nrvPrimaryGreen h-60">
           <h2 className="mt-4 text-[20px] font-medium h-12">{title}</h2>
-          <p className="mt-4 text-[14px] font-light pt-4 leading-8">{description}</p>
+          <p className="mt-4 text-[14px] font-light pt-4 leading-8">
+            {description}
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-const WhyChooseUsCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
+const WhyChooseUsCard: React.FC<Feature> = ({
+  imageUrl,
+  title,
+  description,
+}) => {
   return (
-      <div style={{ width: "100%", height: "300px" }} className="bg-[#E9F4E7] hover:bg-[#E9F4E7] p-4 text-nrvPrimaryGreen rounded-md">
-        <div className="bg-[#E9F4E7] hover:bg-[#E9F4E7]">
-          <div className="flex justify-start py-4">
-            <img src={imageUrl} alt="photo" className="w-12 h-12" />
-          </div>
-          <h2 className="mt-4 text-[20px] font-medium h-8">{title}</h2>
-          <p className="mt-4 text-[14px] font-light pt-4 leading-8">{description}</p>
+    <div
+      style={{ width: "100%", height: "300px" }}
+      className="bg-[#E9F4E7] hover:bg-[#E9F4E7] p-4 text-nrvPrimaryGreen rounded-2xl hover:bg-[#BBFF37E5]"
+    >
+      <div className="">
+        <div className="flex justify-start py-4">
+          <img src={imageUrl} alt="photo" className="w-12 h-12" />
         </div>
+        <h2 className="mt-4 text-[20px] font-medium h-8">{title}</h2>
+        <p className="mt-4 text-[14px] font-light pt-4 leading-8">
+          {description}
+        </p>
       </div>
-
+    </div>
   );
 };
 
@@ -137,18 +148,26 @@ const FeatureSection: React.FC = () => {
 
       <div className="relative z-10 p-2 md:p-12">
         <div className="p-4">
-          <Button variant="transparentBg" className="text-[16px] bg-transparent w-48" size="large">
+          <Button
+            variant="transparentBg"
+            className="text-[16px] bg-transparent w-48"
+            size="large"
+          >
             Services
           </Button>
         </div>
         <div className="flex p-4 flex-col sm:flex-row">
           <p className="text-white font-medium text-xl sm:text-2xl mt-2 sm:mt-0 sm:w-3/5">
             Whether you’re a landlord looking to maximize your returns or a{" "}
-            <br /> tenant searching for a verified home, NaijaRentVerify is
-            here to make <br /> renting easier, safer, and more efficient.
+            <br /> tenant searching for a verified home, NaijaRentVerify is here
+            to make <br /> renting easier, safer, and more efficient.
           </p>
           <div className="w-full sm:w-2/5 flex sm:justify-end items-center sm:items-end mt-4 sm:mt-0">
-            <Button variant="lemonPrimary" className="text-[16px] w-64" size="large">
+            <Button
+              variant="lemonPrimary"
+              className="text-[16px] w-64"
+              size="large"
+            >
               Explore Our Services
             </Button>
           </div>
@@ -162,7 +181,6 @@ const FeatureSection: React.FC = () => {
     </div>
   );
 };
-
 
 const AboutSection: React.FC = () => {
   return (
@@ -201,7 +219,11 @@ const AboutSection: React.FC = () => {
             tenant searching for a verified home, NaijaRentVerify is here to
             make renting easier, safer, and more efficient.
           </div>
-          <Button variant="darkPrimary" className="text-[16px] md:my-0 my-8" size="large">
+          <Button
+            variant="darkPrimary"
+            className="text-[16px] md:my-0 my-8"
+            size="large"
+          >
             Explore Our Services
           </Button>
         </div>
@@ -231,28 +253,34 @@ const AboutSection: React.FC = () => {
       <hr />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 text-center">
-  <div className="mb-4">
-    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">5,673+</div>
-    <div className="font-light text-[#646D75]">Onboarded Landlords</div>
-  </div>
-  <div className="mb-4">
-    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">2,179+</div>
-    <div className="font-light text-[#646D75]">Satisfied Reviews</div>
-  </div>
-  <div className="mb-4">
-    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">10+</div>
-    <div className="font-light text-[#646D75]">Years Of Experience</div>
-  </div>
-  <div>
-    <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">200k+</div>
-    <div className="font-light text-[#646D75]">Active Users</div>
-  </div>
-</div>
-
+        <div className="mb-4">
+          <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">
+            5,673+
+          </div>
+          <div className="font-light text-[#646D75]">Onboarded Landlords</div>
+        </div>
+        <div className="mb-4">
+          <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">
+            2,179+
+          </div>
+          <div className="font-light text-[#646D75]">Satisfied Reviews</div>
+        </div>
+        <div className="mb-4">
+          <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">
+            10+
+          </div>
+          <div className="font-light text-[#646D75]">Years Of Experience</div>
+        </div>
+        <div>
+          <div className="font-medium text-[#1D2227] text-[32px] md:text-[40px]">
+            200k+
+          </div>
+          <div className="font-light text-[#646D75]">Active Users</div>
+        </div>
+      </div>
     </div>
   );
 };
-
 
 const WhyChooseUs: React.FC = () => {
   const features: Feature[] = [
@@ -314,38 +342,37 @@ const WhyChooseUs: React.FC = () => {
     },
   ];
 
-return (
-  <div className="relative bg-white">
-    <div className="p-2 md:p-12">
-      <div className="p-4">
-        <Button variant="primary" className="text-[16px] w-48" size="large">
-          Why Choose Us
-        </Button>
-      </div>
-      <div className="flex p-4">
-        <p className="text-nrvPrimaryGreen font-medium text-3xl mt-2 w-full">
-        NaijaRentVerify is a leading rental property management company <br></br> dedicated to making property rental seamless, secure, and stress-free.
-        </p>
-    
-      </div>
-      <div className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 gap-6 p-4 mt-8">
-        {features.map((feature, index) => (
-          <WhyChooseUsCard key={index} {...feature} />
-        ))}
+  return (
+    <div className="relative bg-white">
+      <div className="p-2 md:p-12">
+        <div className="p-4">
+          <Button variant="primary" className="text-[16px] w-48" size="large">
+            Why Choose Us
+          </Button>
+        </div>
+        <div className="flex p-4">
+          <p className="text-nrvPrimaryGreen font-medium text-3xl mt-2 w-full">
+            NaijaRentVerify is a leading rental property management company{" "}
+            <br></br> dedicated to making property rental seamless, secure, and
+            stress-free.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 2xl:grid-cols-4 lg:grid-cols-2 gap-6 p-4 mt-8">
+          {features.map((feature, index) => (
+            <WhyChooseUsCard key={index} {...feature} />
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
-
-
 
 const LandingPage = () => {
   return (
-    <div className="md:m-8 ">
+    <div className="md:m-8 font-jakarta">
       <div
+        id="home"
         style={{
-    
           backgroundColor: "#ffffff",
         }}
         className="md:relative flex flex-col justify-end md:h-[700px] h-[850px]"
@@ -353,83 +380,91 @@ const LandingPage = () => {
         <div className="flex flex-col justify-end absolute top-0 left-0 w-full h-full bg-[url('https://res.cloudinary.com/dzv98o7ds/image/upload/v1741768679/nrv-hero-section-img_ttbvxz.jpg')] bg-cover bg-center"></div>
         <div className="flex flex-col justify-end absolute top-0 left-0 w-full h-full bg-gradient-to-t from-[#03442C] to-transparent opacity-90"></div>
         <div className=" gap-4 relative">
-
-            <div className="md:flex justify-end md:mr-20 hidden">
-              <StatsIcon />
-            </div>
-            <div className="md:w-full md:flex block gap-4">
-              <div className="md:w-2/3 w-full">
-                <div className="text-white font-bold md:text-[60px] text-[28px] md:text-end pl-8">
-                  <div>Find Trustworthy Tenants</div>
-                  <div className="italic">
-                    <div className="flex md:justify-end">
-                      <span className="md:flex-col items-center my-auto pr-4 hidden">
-                        <svg
-                          width="106"
-                          height="4"
-                          viewBox="0 0 106 4"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <mask id="path-1-inside-1_121_27156" fill="white">
-                            <path d="M0 0.446289H105.25V3.44629H0V0.446289Z" />
-                          </mask>
-                          <path
-                            d="M0 3.44629H105.25V-2.55371H0V3.44629Z"
-                            fill="white"
-                            mask="url(#path-1-inside-1_121_27156)"
-                          />
-                        </svg>
-                      </span>
-                      <span>No More Guesswork!</span>
-                    </div>
+          <div className="md:flex justify-end md:mr-20 hidden">
+            <StatsIcon />
+          </div>
+          <div className="md:w-full md:flex block gap-4">
+            <div className="md:w-2/3 w-full">
+              <div className="text-white font-bold md:text-[60px] text-[28px] md:text-end pl-8">
+                <div className="">Find Trustworthy Tenants</div>
+                <div className="italic">
+                  <div className="flex md:justify-end">
+                    <span className="md:flex-col items-center my-auto pr-4 hidden">
+                      <svg
+                        width="106"
+                        height="4"
+                        viewBox="0 0 106 4"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <mask id="path-1-inside-1_121_27156" fill="white">
+                          <path d="M0 0.446289H105.25V3.44629H0V0.446289Z" />
+                        </mask>
+                        <path
+                          d="M0 3.44629H105.25V-2.55371H0V3.44629Z"
+                          fill="white"
+                          mask="url(#path-1-inside-1_121_27156)"
+                        />
+                      </svg>
+                    </span>
+                    <span>No More Guesswork!</span>
                   </div>
                 </div>
               </div>
-              <div className="md:w-1/3 p-8 w-full mr-0 md:mr-20">
-                <div className="text-[16px] text-white font-light leading-8">
-                  Say goodbye to rental risks and endless paperwork! With{" "}
-                  <span className="font-bold">NaijaRentVerify</span>, you can
-                  screen tenants in minutes, verify property details, and secure
-                  hassle-free rental payments—all from your fingertips. Whether
-                  you’re a landlord or a tenant, we make renting stress-free,
-                  transparent, and secure.
-                </div>
+            </div>
+            <div className="md:w-1/3 p-8 w-full mr-0 md:mr-20">
+              <div className="text-[16px] text-white font-light leading-8">
+                Say goodbye to rental risks and endless paperwork! With{" "}
+                <span className="font-bold">NaijaRentVerify</span>, you can
+                screen tenants in minutes, verify property details, and secure
+                hassle-free rental payments—all from your fingertips. Whether
+                you’re a landlord or a tenant, we make renting stress-free,
+                transparent, and secure.
               </div>
             </div>
-            <div className="bg-white w-2/5 md:text-[22px] text-[14px] text-[#03442C] flex justify-end">
-              <button className="bg-white md:text-md  p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
-                <span>Get Started Now!</span>
-                <div className="md:flex my-auto hidden">
-                  <svg
-                    width="28"
-                    height="20"
-                    viewBox="0 0 28 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M18.8672 0.498047C18.6667 0.297525 18.4297 0.197266 18.1562 0.197266C17.8828 0.197266 17.6458 0.297525 17.4453 0.498047C17.2448 0.680338 17.1445 0.908203 17.1445 1.18164C17.1445 1.45508 17.2448 1.69206 17.4453 1.89258L24.6094 9.05664H0.984375C0.710938 9.05664 0.478516 9.15234 0.287109 9.34375C0.0957031 9.53516 0 9.76758 0 10.041C0 10.3145 0.0957031 10.5469 0.287109 10.7383C0.478516 10.9297 0.710938 11.0254 0.984375 11.0254H24.6094L17.4453 18.1895C17.2448 18.3717 17.1445 18.6042 17.1445 18.8867C17.1445 19.1693 17.2448 19.4017 17.4453 19.584C17.6458 19.7845 17.8828 19.8848 18.1562 19.8848C18.4297 19.8848 18.6667 19.7845 18.8672 19.584L27.6992 10.752C27.8997 10.5514 28 10.3145 28 10.041C28 9.76758 27.8997 9.5306 27.6992 9.33008L18.8672 0.498047Z"
-                      fill="#03442C"
-                    />
-                  </svg>
-                </div>
-              </button>
-            </div>
-       
+          </div>
+          <div className="bg-white w-2/5 md:text-[22px] text-[14px] text-[#03442C] flex justify-end">
+            <button className="bg-white md:text-md  p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
+              <span>Get Started Now!</span>
+              <div className="md:flex my-auto hidden">
+                <svg
+                  width="28"
+                  height="20"
+                  viewBox="0 0 28 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.8672 0.498047C18.6667 0.297525 18.4297 0.197266 18.1562 0.197266C17.8828 0.197266 17.6458 0.297525 17.4453 0.498047C17.2448 0.680338 17.1445 0.908203 17.1445 1.18164C17.1445 1.45508 17.2448 1.69206 17.4453 1.89258L24.6094 9.05664H0.984375C0.710938 9.05664 0.478516 9.15234 0.287109 9.34375C0.0957031 9.53516 0 9.76758 0 10.041C0 10.3145 0.0957031 10.5469 0.287109 10.7383C0.478516 10.9297 0.710938 11.0254 0.984375 11.0254H24.6094L17.4453 18.1895C17.2448 18.3717 17.1445 18.6042 17.1445 18.8867C17.1445 19.1693 17.2448 19.4017 17.4453 19.584C17.6458 19.7845 17.8828 19.8848 18.1562 19.8848C18.4297 19.8848 18.6667 19.7845 18.8672 19.584L27.6992 10.752C27.8997 10.5514 28 10.3145 28 10.041C28 9.76758 27.8997 9.5306 27.6992 9.33008L18.8672 0.498047Z"
+                    fill="#03442C"
+                  />
+                </svg>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
-      <AboutSection />
-      <FeatureSection />
+      <section id="about">
+        <AboutSection />
+      </section>
+      <section id="services">
+        <FeatureSection />
+      </section>
       <WhyChooseUs />
       <FeaturedProperties />
-      <HowItWorks />
-      <TestimonialsAndFAQs />
-      <ContactSection />
+      <div id="how-it-works">
+        <HowItWorks />
+      </div>
+      <ShortLets />
+      <div id="faqs">
+        <TestimonialsAndFAQs />
+      </div>
+      <div id="contact">
+        <ContactSection />
+      </div>
       <Footer />
     </div>
   );
 };
-
 
 export default LandingPage;

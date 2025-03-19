@@ -13,9 +13,6 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
       e.preventDefault();
       const targetElement = document.getElementById(targetId);
 
-      console.log({targetElement});
-      
-
       if (targetElement) {
         window.scrollTo({
           top: targetElement.offsetTop - 80, // Adjust offset if you have a fixed navbar
@@ -29,7 +26,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
         onClick={handleScroll}
         ref={ref}
         className={cls(
-          `text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen
+          `text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen cursor-pointer
           ${className} 
           ${activeClassName ? activeClassName : ""}`
         )}

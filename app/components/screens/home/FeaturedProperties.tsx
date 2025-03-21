@@ -9,10 +9,10 @@ const propertyData = [
     price: "#250,095",
     location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
-    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    image: "/images/featured-img.svg",
     advisor: {
-      name: "Edwin Martin",
-      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+      name: "Dami Ademola",
+      image: "/images/dami.svg"
     },
     features: {
       bedrooms: "4 bed",
@@ -26,10 +26,10 @@ const propertyData = [
     price: "#500,000",
     location: "10, Victoria Island, Lagos, Nigeria",
     description: "A premium office space in the heart of the business district.",
-    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    image: "/images/featured-img.svg",
     advisor: {
-      name: "Jane Doe",
-      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+      name: "Dami Ademola",
+      image: "/images/dami.svg"
     },
     features: {
       bedrooms: "N/A",
@@ -43,10 +43,10 @@ const propertyData = [
     price: "#250,095",
     location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
-    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    image: "/images/featured-img.svg",
     advisor: {
-      name: "Edwin Martin",
-      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+      name: "Dami Ademola",
+      image: "/images/dami.svg"
     },
     features: {
       bedrooms: "4 bed",
@@ -60,10 +60,10 @@ const propertyData = [
     price: "#500,000",
     location: "10, Victoria Island, Lagos, Nigeria",
     description: "A premium office space in the heart of the business district.",
-    image: "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741888750/Background_6_iiesmh.png",
+    image: "/images/featured-img.svg",
     advisor: {
-      name: "Jane Doe",
-      image: "https://s3-alpha-sig.figma.com/img/482d/1115/34e56ca189b925bb3e3d481a27c7b165?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=hBF0O0oBF5BbCyeUycrjGlxTlVndcXmLfL~b2ol2qKyANzPjLy8NypAIpZWseYPSeIUWdXxnUDdv-4KV5KSP2dkgbX2DaWUNJyPRlnW8ScqjgIXBwdHXqcF0-K2GxVKtYJpNPtFHK5ytDWo5GO4joDyEQMALPd9O1eDvtZIYfA4X1kSZYU-NtaxKPNA6E2LcG-nlcsS1Vo1B27Tp-LtCu3f7zqhCkErr97f90vLA6Vv0-m5dLbm2hYljOhIKJHewOr-QF0WNB3JYkFn9NS1o0T5eTFY5SdJFZBGLYUzVlIvLsrkfF1oB4v90BIvyNcpQV1sMb39OXpNIfcDr-9SmXA__"
+      name: "Dami Ademola",
+      image: "/images/dami.svg"
     },
     features: {
       bedrooms: "N/A",

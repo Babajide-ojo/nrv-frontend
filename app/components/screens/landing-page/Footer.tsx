@@ -1,11 +1,12 @@
 import { ArrowRight, Mail } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-[#03442C] text-white  flex justify-center items-center py-32 w-full">
-      <div>
-        <div className="max-w-7xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10 p-4">
+      <div className="w-4/5 mx-auto">
+        <div className="max-w-9xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10 p-4">
           {/* Newsletter Section */}
           <div>
             <h3 className="text-[42px] font-medium">Explore with Us Now!</h3>
@@ -27,41 +28,60 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Links Section */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
             <div>
-              <ul className="mt-2 space-y-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <li>About Us</li>
-                <li>Careers</li>
-                <li>Contact Us</li>
-                <li>Legal Notices</li>
-                <li>Privacy Notice</li>
+              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
+                <Link href="#">
+                  {" "}
+                  <li>About Us</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Careers</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Contact Us</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Legal Notices</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Privacy Notice</li>
+                </Link>
               </ul>
             </div>
 
             <div>
-              <ul className="mt-2 space-y-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <li>Rental Manager</li>
-                <li>List Your Property</li>
-                <li>Screen Applicants</li>
-                <li>Create Rental</li>
-                <li>Leases</li>
-              </ul>
-            </div>
-
-            <div>
-              <ul className="mt-2 space-y-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <li>Advertise</li>
-                <li>Add a Property</li>
-                <li>Digital Feeds Program</li>
-                <li>Customer Portal</li>
-                <li>Community Voice</li>
+              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
+                <Link href="#">
+                  {" "}
+                  <li>Add a Property</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>List Your Property for Rent</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Screen Applicants</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Create Rental</li>
+                </Link>
+                <Link href="#">
+                  {" "}
+                  <li>Customer Portal</li>
+                </Link>
               </ul>
             </div>
           </div>
         </div>
 
         <div className="text-white mt-8">
-    
           <nav className="md:flex hidden justify-between items-center px-10 py-6 rounded-full bg-[#03442C] max-w-7xl mx-auto mt-6 bg-[#0D3520] opacity-80">
             <h1 className="text-lg font-bold">NaijaRentVerify</h1>
             <ul className="flex space-x-8 text-sm">

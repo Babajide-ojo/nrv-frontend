@@ -1,22 +1,39 @@
 import { useEffect, useState } from "react";
-import Button from "../../shared/buttons/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
-import { IoIosArrowBack } from "react-icons/io";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import OtpInput from "react-otp-input";
+import { IoReload } from "react-icons/io5";
+import Button from "../../shared/buttons/Button";
 
 const SignUpVerifyAccount: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [otp, setOtp] = useState<string>("");
+  const [otp, setOtp] = useState("");
   const { error } = useSelector((state: any) => state.user);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [timer, setTimer] = useState(120);
+  const [canResend, setCanResend] = useState(false);
 
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev === 1) {
+          clearInterval(countdown);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-  const   handleSubmit = async () => {
+    return () => clearInterval(countdown);
+  }, []);
+
+  const handleSubmit = async () => {
+    if (otp.length !== 6) return;
     const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
     const payload = {
       email: user?.data?.email,
@@ -47,24 +64,31 @@ const SignUpVerifyAccount: React.FC = () => {
     } catch (error: any) {
       setIsLoading(false);
       toast.error(error);
-    } 
+    }
+  };
+
+  const handleResend = () => {
+    setTimer(120);
+    setCanResend(false);
   };
 
   return (
-    <main className="flex justify-center items-center bg-swSecondary50 mx-auto h-screen">
-      <div className="w-full sm:w-3/5 p-2">
-        <p className="text-2xl font-semibold text-swGray800 flex gap-2 text-center justify-center">
-          Check your mail!
-        </p>
-        <p className="text-center mt-2 mb-8 text-[0.86rem] flex items-center justify-center font-light mx-auto">
-          We just sent you an email. Enter the 6-digit
-          code to verify your account.
-        </p>
-        <p className="text-center text-nrvLightBlue mt-5 mb-8 text-[0.86rem] flex items-center justify-center font-light nrvLightBlue">
-          Open an email app <br />
-          Change email or Resend code in 00:59
-        </p>
-        <div className="flex justify-center w-full  mx-auto">
+    <main className="font-jakarta flex justify-center items-center min-h-screen bg-white">
+      <div className="w-full max-w-md p-6  bg-white">
+        <h2 className="text-2xl font-semibold text-gray-900">Verify Your Email Address</h2>
+        <p className="mt-2 text-gray-600">We&#34;ve sent a verification link to your email.</p>
+        <p className="mt-1 text-gray-600">Enter the 6-digit OTP to verify your account.</p>
+
+        <div className="mt-4 text-left text-gray-700">
+          <p className="font-semibold">Instructions:</p>
+          <ul className="list-disc list-inside text-sm ">
+            <li className="mt-4">Open your email inbox.</li>
+            <li className="mt-4">Look for an email from NaijaRentVerify.</li>
+            <li className="mt-4">Copy the One-time PIN (OTP) and paste it here.</li>
+          </ul>
+        </div>
+
+        <div className="mt-8 flex justify-center">
           <OtpInput
             value={otp}
             onChange={setOtp}
@@ -73,7 +97,7 @@ const SignUpVerifyAccount: React.FC = () => {
             renderInput={(props) => (
               <input
                 {...props}
-                className="otp-input "
+                className="otp-input outline-none border-1 border-gray-300"
                 style={{
                   fontSize: "16px",
                   height: "50px",
@@ -88,22 +112,32 @@ const SignUpVerifyAccount: React.FC = () => {
             )}
           />
         </div>
-        <div className="text-center text-red-500 mb-8 mt-6">
-          {!otp && "Please enter the complete verification code."}
+
+        <p className="mt-4 text-sm text-gray-500 text-center">Did not receive verification code?</p>
+        <div className="mt-2 flex items-center justify-center space-x-2 text-green-600 text-center">
+          {canResend ? (
+            <button onClick={handleResend} className="flex items-center gap-1">
+              <IoReload className="text-lg" /> Resend OTP
+            </button>
+          ) : (
+            <p className="text-gray-500">{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}s</p>
+          )}
         </div>
-        <div className="mt-24">
-          <Button
-            onClick={handleSubmit}
-            size="minLarge"
-            className="block w-full"
-            variant="bluebg"
+
+
+        <Button
+            size="large"
+            className="block w-full mt-6 font-medium text-[16px]"
+            variant="darkPrimary"
             showIcon={false}
+            onClick={handleSubmit}
             disabled={otp.length !== 6 || isLoading}
-            isLoading= {isLoading ? true : false}
+            isLoading={isLoading}
           >
-            {isLoading ? "Loading..." : "Confirm"}
+            {isLoading ? "Loading..." : "Continue"}
           </Button>
-        </div>
+
+        <p className="mt-4 text-gray-500 italic text-center font-light">Contact Support</p>
       </div>
     </main>
   );

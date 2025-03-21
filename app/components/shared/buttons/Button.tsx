@@ -31,7 +31,7 @@ const classes = {
     lemonPrimary: 'rounded-full hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1 border border-nrvPrimaryGreen outline-none text-nrvPrimaryGreen bg-[#E9F4E7]',
     transparentBg: 'rounded-full border border-nrvLightGreenButtonHover1 outline-none text-white bg-transparent',
     darkPrimary: 'rounded-full text-white bg-nrvPrimaryGreen outline-none hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1',
-    light: 'rounded-2xl bg-white text-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white',
+    light: 'rounded-full bg-white border border-[#03442C] text-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white',
     lightPrimary: 'rounded-2xl text-white border border-white bg-nrvPrimaryGreen',
     whitebg: 'font-light bg-white text-nrvLightGrey rounded rounded-lg border border-nrvLightGrey hover:bg-nrvPrimaryGreen hover:text-white',
     bluebg: 'font-light text-white bg-nrvPrimaryGreen rounded rounded-lg',

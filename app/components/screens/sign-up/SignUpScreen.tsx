@@ -12,13 +12,8 @@ import SignUpMultiForm from "./SignUpMultiForm";
 
 const SignUpScreen = () => {
   return (
-    <div className="flex justify-center">
-          <ToastContainer />
-          <div className="w-full sm:w-1/2 p-8 justify-center">
-        <SignUpMultiForm />
-      </div>
-      <Carousel />
-  
+    <div className="">
+      <SignUpMultiForm />
     </div>
   );
 };

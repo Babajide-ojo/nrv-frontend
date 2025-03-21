@@ -1,318 +1,153 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { Formik, Form } from "formik";
 import * as yup from "yup";
-import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import Button from "@/app/components/shared/buttons/Button";
 import CheckBox from "@/app/components/shared/input-fields/CheckBox";
-import { IoPersonCircleSharp, IoCheckmarkCircleSharp } from "react-icons/io5";
-import { IoIosArrowBack } from "react-icons/io";
-import "react-toastify/dist/ReactToastify.css";
-import Link from "next/link";
 import InputField from "@/app/components/shared/input-fields/InputFields";
+import Carousel from "../sign-in/Carousel";
+import { CheckCircle, Smile, User } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import VerifyAccountSideBar from "./VerifyAccountSideBar";
+import AccountSideBar from "./AccountSideBar";
 
-// Validation schema using yup
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last Name is required"),
-  email: yup
-    .string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  nin: yup.string().required("NIN is required"),
+  email: yup.string().email("Invalid email address").required("Email is required"),
+  nin: yup.string().optional(),
+  phoneNumber: yup.string().required("Phone Number is required"),
+  accountType: yup.string().required("Account Type is required"),
   password: yup
     .string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
     .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
     .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(
-      /[^a-zA-Z0-9]/,
-      "Password must contain at least one special character"
-    )
+    .matches(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
     .matches(/\d/, "Password must contain at least one number"),
-  phoneNumber: yup.string().required("Phone Number is required"),
-  homeAddress: yup.string().required("Home Address is required"),
-  accountType: yup.string().required("Account Type is required"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
-
-// Custom InputField component
-const CustomInputField = ({ name , type,  ...props }: any) => {
-  console.log({type});
-  
-  const { setFieldValue, setFieldTouched } = useFormikContext();
-
-  const handleChange = (event: any) => {
-    const { name, value } = event.target;
-    setFieldValue(name, value);
-  };
-
-  const handleBlur = (event: any) => {
-    const { name } = event.target;
-    setFieldTouched(name, true);
-  };
-
-  return (
-    <div className="w-full mt-4">
-      <InputField
-        name={name}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        inputType={type}
-        {...props}
-      />
-      <ErrorMessage
-        name={name}
-        component="div"
-        className="text-red-500 text-xs"
-      />
-    </div>
-  );
-};
 
 const SignUpMultiForm = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
- // const { loading, error, data } = useSelector((state: any) => state.user);
   const [currentStep, setCurrentStep] = useState(1);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [accountType, setAccountType] = useState<string>("");
-
-  const handleItemClick = (index: number) =>
-    setActiveIndex(index === activeIndex ? null : index);
-  const handleAccountType = (text: string) => setAccountType(text);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   const handleSubmit = async (values: any) => {
+    const { confirmPassword, ...payload } = values;
     try {
-      await dispatch(createUser(values) as any).unwrap();
+      await dispatch(createUser(payload) as any).unwrap();
       setCurrentStep(3);
     } catch (error: any) {
       toast.error(error);
+      console.error({ error });
     }
   };
 
   return (
-    <div className="container">
-
+    <div className="font-jakarta">
+      <ToastContainer />
       {currentStep === 1 && (
-        <div
-          style={{
-            minHeight: "90vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <div className="max-w-md mx-auto pt-8 flex-grow w-full">
-            <div className="text-2xl text-nrvGreyBlack font-semibold">
-              Welcome user 🚀
-            </div>
-            <div className="pt-2 text-nrvGrayText text-md font-light">
-              What will you be joining naijarentverify as?
-            </div>
-            <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ${
-                activeIndex === 0 ? "bg-gray-100" : ""
-              }`}
-              onClick={() => {
-                handleItemClick(0);
-                handleAccountType("landlord");
-                setCurrentStep(2)
-              }}
-            >
-              <div className="flex items-center justify-center">
-                <IoPersonCircleSharp color="#153969" size={40} />
+        <div className="flex w-full">
+          <div className="w-full md:w-1/2 justify-center">
+            <Carousel />
+          </div>
+          <div className="w-full md:w-1/2 flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
+            <div className="max-w-md w-full">
+              <h1 className="text-2xl font-bold text-black">Create an Account!</h1>
+              <p className="text-gray-500 mt-2">
+                Welcome to NaijarentVerify! Choose your role to get started. We’ll tailor your experience to meet your needs.
+              </p>
+              <div className="mt-6 space-y-4">
+                {[{ role: "owner", icon: <Smile className="text-green-600" />, text: "Sign Up as a Property Owner/Landlord", description: "Sign up as a Property owner and get to explore our powerful tools for thorough tenant screening, List, manage, and grow your rental properties with ease." },
+                  { role: "tenant", icon: <User className="text-gray-500" />, text: "Sign Up as a Tenant", description:"Sign up as a Tenant to Find and secure your dream home with verified listings, Complete your rental agreement and payments securely without stress and extra cost or fee." },
+                ].map(({ role, icon, text, description }) => (
+                  <div key={role} className="border rounded-xl cursor-pointer" onClick={() => setSelectedRole(role)}>
+                    <div className={`flex justify-between p-4 rounded-t-xl ${selectedRole === role ? "bg-[#E9F4E7]" : "border-gray-300"}`}>
+                      <div className="flex space-x-2">{icon}<span className="font-medium text-[#045D23]">{text}</span></div>
+                      {selectedRole === role && <CheckCircle className="text-green-600" />}
+                    </div>
+                    <p className="text-[#03442C] border-t border p-4 font-light text-[14px] leading-6">{description}</p>
+                  </div>
+                ))}
               </div>
-              <div className="p-1.5">
-                <div className="text-nrvGreyBlack text-lg font-medium pb-2">
-                  Sign up as a landlord
-                </div>
-                <div className="text-nrvGreyBlack text-md font-medium">
-                  Explore our powerful tools for thorough tenant screening.
-                </div>
-              </div>
-              {activeIndex === 0 && (
-                <div className="top-0 right-0">
-                  <IoCheckmarkCircleSharp color="#153969" size={25} />
-                </div>
-              )}
-            </div>
-            <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl p-3 ${
-                activeIndex === 1 ? "bg-gray-100" : ""
-              }`}
-              onClick={() => {
-                handleItemClick(1);
-                handleAccountType("tenant");
-                setCurrentStep(2)
-              }}
-            >
-              <div className="flex items-center justify-center">
-                <IoPersonCircleSharp color="#153969" size={40} />
-              </div>
-              <div className="p-2">
-                <div className="text-nrvGreyBlack text-lg font-medium pb-2">
-                  Sign up as a tenant
-                </div>
-                <div className="text-nrvGreyBlack text-md font-medium">
-                  Explore our powerful tools for thorough tenant screening.
-                </div>
-              </div>
-              {activeIndex === 1 && (
-                <div className="top-0 right-0">
-                  <IoCheckmarkCircleSharp color="#153969" size={25} />
-                </div>
-              )}
-            </div>
-            <div className="w-full justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey">
-                Already have an account?
-              </div>
-              <Link
-                href="/sign-in"
-                className="text-sm underline font-light text-[#153969]"
+              <Button
+                size="large"
+                className="block w-full mt-6 font-medium text-[16px]"
+                variant={selectedRole === null ? "light" : "darkPrimary"}
+                onClick={() => setCurrentStep(2)}
+                disabled={!selectedRole}
               >
-                Log in
-              </Link>
+                Continue
+              </Button>
+              <p className="text-gray-500 mt-4 text-center text-[14px]">Already have an account? <a href="#" className="text-black font-semibold">Log in here.</a></p>
             </div>
           </div>
-          {/* <div className="flex justify-center max-w-lg mx-auto w-full">
-            <Button
-              disabled={!accountType}
-              size="large"
-              className="block w-full"
-              variant="bluebg"
-              showIcon={false}
-              onClick={() => setCurrentStep(2)}
-            >
-              Next
-            </Button>
-          </div> */}
         </div>
       )}
       {currentStep === 2 && (
-        <div>
-          <div className="max-w-lg mx-auto pt-8 flex-grow w-full">
-            <div className="text-2xl text-nrvGreyBlack font-semibold flex gap-2">
-              <span>
-                <IoIosArrowBack
-                  className="mt-1 hover:cursor-pointer"
-                  onClick={() => setCurrentStep(1)}
-                />
-              </span>{" "}
-              Sign up as a {accountType} 🚀
+        <div className="flex w-full h-screen">
+          <div className="w-1/2 bg-[#E9F4E7]">
+          <AccountSideBar />
+          </div>
+          <div className="w-1/2 bg-white p-12">
+            <div className="max-w-md mx-auto">
+              <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
+              <Formik
+                initialValues={{
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  phoneNumber: "",
+                  nin: "",
+                  password: "",
+                  confirmPassword: "",
+                  accountType: selectedRole,
+                }}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+              >
+                {({ handleChange, handleBlur, values , errors}) => (
+                  <Form className="space-y-4">
+                    {["firstName", "lastName", "email", "phoneNumber", "nin", "password", "confirmPassword"].map((name) => (
+                      <InputField
+                        key={name}
+                        name={name}
+                        label={name.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
+                        inputType={name.includes("password") ? "password" : name.includes("phoneNumber") ? "phone" : name.includes("nin") ? "nin" : name.includes("email") ? "email" : "text"}
+                        value={(values as any)[name]}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={(errors as any)[name]}
+                        password={name.includes("password") ? true : name.includes("confirmPassword") ? true : false }
+                      />
+                    ))}
+                    <CheckBox label="I agree to the Terms of Use and Privacy Policy" />
+                    <Button variant="darkPrimary" type="submit" size="large" className="block w-full mt-6 font-medium text-[16px]">Continue</Button>
+                  </Form>
+                )}
+              </Formik>
             </div>
-
-            <Formik
-              initialValues={{
-                firstName: "",
-                lastName: "",
-                email: "",
-                nin: "",
-                password: "",
-                phoneNumber: "",
-                homeAddress: "",
-                accountType: accountType,
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting }) => (
-                <Form>
-                  <div
-                    style={{
-                      minHeight: "70vh",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <div>
-                      <div className="w-full md:flex flex-row gap-3">
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="firstName"
-                           // placeholder="Enter First Name"
-                            label="Enter first name"
-                          />
-                        </div>
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="lastName"
-                         //   placeholder="Enter Last Name"
-                            label="Enter Last Name"
-                          />
-                        </div>
-                      </div>
-                      <div className="w-full md:flex flex-row gap-3">
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="email"
-                         //   placeholder="Enter Email Address"
-                            label="Enter Email Address"
-                          />
-                        </div>
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="nin"
-                           // placeholder="Enter NIN"
-                            label="Enter NIN"
-                          />
-                        </div>
-                      </div>
-                      <div className="w-full mt-4">
-                        <CustomInputField
-                          name="homeAddress"
-                         // placeholder="Enter Home Address"
-                          label="Enter Home Address"
-                        />
-                      </div>
-                      <div className="w-full mt-6 md:flex flex-row gap-3">
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="phoneNumber"
-                           // placeholder="Enter Phone Number"
-                            label="Enter Phone Number"
-                          />
-                        </div>
-                        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                          <CustomInputField
-                            name="password"
-                          //  placeholder="Enter Password"
-                            label="Enter Password"
-                            type="password"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid:col-3 gap-2 mt-16">
-                        {/* Password strength requirements buttons */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 max-w-lg mx-auto w-full">
-                    <div className="w-full mb-2">
-                      <CheckBox label="I agree to the terms of use and privacy policy" />
-                    </div>
-                    <Button
-                      type="submit"
-                      size="minLarge"
-                      className="block w-full"
-                      variant="bluebg"
-                      showIcon={false}
-                      disabled={isSubmitting}
-                      isLoading={isSubmitting ? true : false}
-                    >
-                      {isSubmitting ? "Loading..." : "Submit"}
-                    </Button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
           </div>
         </div>
       )}
-      {currentStep === 3 && <SignUppVerifyAccountScreen />}
+      {currentStep === 3 && (
+        <div className="flex w-full">
+          <div className="w-1/2 bg-[#E9F4E7]">
+            <VerifyAccountSideBar />
+          </div>
+          <div className="w-1/2">
+            <SignUppVerifyAccountScreen />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

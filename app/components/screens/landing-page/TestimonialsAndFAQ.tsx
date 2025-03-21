@@ -102,7 +102,7 @@ const TestimonialsAndFAQs: React.FC = () => {
           <div className="md:w-1/2 w-full mt-6 flex justify-center">
             <div className="text-black rounded-lg">
               <img
-                src="https://s3-alpha-sig.figma.com/img/7d71/9111/75ef4ba531bf6a9aa8778a8e9e6834f7?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=byPIXwQQXoJZ9oXROPkq~Rgu0xeJeRYqP0B0WK4YxoniCh8dNsUjbLy~~WIP4s9Dsa6BNbq96Mx02JUwXnDO6-9mPEWaZpvaqx-wpxxkOYnEL8G4KVva8PxmafFaJNLqbvGcBjO8JKJlKy8mCxgAGNODCdAgiT7TOhRt4h5ee7iAW~MtPfSI7R-RpHFeKfVpHjEp5cw8TSu70rDDtNqABEambcq2LPc~b4Yj8c9Wvngk8pe5KR5ztkR75O2Log~scbeffMHZXzi-n-oqlsRafH1SaR17O-h~YdyPp5bhoPSwsg6EFNFXQrBlEhV0tzsTryWNjDxeHXLHefS3OnzufA__"
+                src="/images/faq.svg"
                 alt="Download App"
                 className="rounded-lg w-[470px] h-[470px]"
               />

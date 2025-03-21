@@ -8,6 +8,7 @@ import Logo from "../../../../public/images/nrv-logo.png";
 import Image from "next/image";
 import { IoPersonCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+import ShortletBadge from "./ShortletBadge";
 
 interface NavItem {
   text: string;
@@ -116,6 +117,7 @@ const DesktopNavBar: React.FC = () => {
               </div>
             </div>
           ))}
+          <ShortletBadge />
         </nav>
       </div>
       <div className="md:w-1/4">

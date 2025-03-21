@@ -10,9 +10,8 @@ import { loginUser } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { MdOutlineMail } from "react-icons/md";
-import { MdOutlineKey } from "react-icons/md";
-import EyeIcon from "../../shared/icons/EyeIcon";
+import { FcGoogle } from "react-icons/fc";
+import { FaCheck } from "react-icons/fa";
 
 interface FormData {
   email: string;
@@ -30,10 +29,10 @@ const LoginScreen: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
-
     if (!formData.email.trim()) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -42,39 +41,27 @@ const LoginScreen: React.FC = () => {
     if (!formData.password.trim()) {
       errors.password = "Password is required";
     }
-
     setErrors(errors);
-
     return Object.keys(errors).length === 0;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-    setIsLoading(true); // Set loading state to true when starting the request
+    if (!validateForm()) return;
+    setIsLoading(true);
     try {
       const userData = await dispatch(loginUser(formData) as any).unwrap();
       localStorage.setItem("nrv-user", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
-
-      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
+      if (userAccountType === "landlord" && userData.user.isOnboarded) {
         router.push("/dashboard/landlord");
-      } else if (userAccountType === "landlord" && userData.user.isOnboarded === false) {
-        router.push("/onboard/landlord")
+      } else if (userAccountType === "landlord") {
+        router.push("/onboard/landlord");
       } else if (userAccountType === "tenant") {
         router.push("/dashboard/tenant");
       }
@@ -86,34 +73,16 @@ const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div
-      className="flex justify-center h-screen bg-['#e5f0fa']"
-      style={{
-        minHeight: "85vh",
-      }}
-    >
+    <div className="font-jakarta flex justify-center h-screen bg-gray-100">
       <ToastContainer />
-    
-      <div
-        className="w-full sm:w-1/2 p-8 justify-center h-screen"
-        style={{
-          minHeight: "85vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
+      <Carousel />
+      <div className="w-full sm:w-1/2 p-8 flex flex-col justify-center">
         <div className="max-w-md mx-auto w-full">
-          <div className="text-3xl text-nrvGreyBlack font-semibold">
-            Welcome to NaijaRentVerify
-          </div>
-          {/* <div className="pt-2 text-nrvLightGrey text-md font-light">
-            Please enter your login to access your account.
-          </div> */}
-    
-          <div className="flex items-center w-full mt-6">
-
-          </div>
-          <div className="mt-2">
+          <h1 className="text-3xl font-semibold">Welcome back!</h1>
+          <p className="text-gray-500 text-[16px] mt-2 font-light leading-8">
+            Nice having you here again, Kindly enter the email address and password you used to create your account with us. 🔐
+          </p>
+          <div className="mt-6">
             <InputField
               label="Email Address"
               inputType="email"
@@ -122,7 +91,7 @@ const LoginScreen: React.FC = () => {
               error={errors.email}
             />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 relative">
             <InputField
               label="Password"
               inputType={showPassword ? "text" : "password"}
@@ -130,47 +99,48 @@ const LoginScreen: React.FC = () => {
               onChange={handleInputChange}
               error={errors.password}
               password={true}
+              startIcon="/images/password-icon.svg"
             />
           </div>
-      
-        </div>
-        <div>
-          <div className="max-w-md w-full flex-grow mx-auto mt-4">
-            <Button
-              size="minLarge"
-              className="block w-full"
-              variant="darkPrimary"
-              showIcon={false}
-              onClick={handleSubmit}
-              disabled={isLoading}
-              isLoading={isLoading}
-            >
-              {isLoading ? "Loading..." : "Login"}
-            </Button>
-            <div className="justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey font-light">
-                Do not have an account?
-              </div>
-              <Link
-                href="/sign-up"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Sign Up
-              </Link>
-            </div>
-            <div className="justify-center flex gap-3 mt-4">
-      
-              <Link
-                href="/forgot-password"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Forgot password?
-              </Link>
-            </div>
+          <div className="flex items-center mt-4">
+            <button
+              className={`w-5 h-5 flex items-center justify-center border rounded-md transition-all ${
+                rememberMe ? "bg-[#03442C] border-[#03442]" : "border-gray-400"
+              }`}
+              onClick={() => setRememberMe(!rememberMe)}
+            ><FaCheck size={10} color={rememberMe ? "white": "#03442"} /></button>
+            <label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer">
+              Remember this Device
+            </label>
+          </div>
+          <Button
+            size="large"
+            className="block w-full mt-6 font-medium text-[16px]"
+            variant="darkPrimary"
+            showIcon={false}
+            onClick={handleSubmit}
+            disabled={isLoading}
+            isLoading={isLoading}
+          >
+            {isLoading ? "Loading..." : "Login"}
+          </Button>
+          <div className="text-center mt-4">
+            <Link href="/forgot-password" className="text-sm text-[#645D5D] font-light">
+              Forgot Password? <span className="font-medium text-nrvPrimaryGreen">Recover</span>
+            </Link>
+          </div>
+          <div className="mt-6">
+            <button className="w-full flex items-center justify-center gap-3 border py-2 rounded-md">
+              <FcGoogle size={20} /> Continue with Google
+            </button>
+          </div>
+          <div className="text-center mt-4">
+            <Link href="/sign-up" className="text-sm text-[#645D5D] font-light">
+              Are you new here? <span className="font-medium text-nrvPrimaryGreen">Create Account</span>
+            </Link>
           </div>
         </div>
       </div>
-      <Carousel />
     </div>
   );
 };

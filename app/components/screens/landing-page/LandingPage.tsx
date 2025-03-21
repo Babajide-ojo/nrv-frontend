@@ -15,6 +15,7 @@ import TestimonialsAndFAQs from "./TestimonialsAndFAQ";
 import ContactSection from "./ContactSection";
 import Footer from "./Footer";
 import ShortLets from "./ShortletDisplay";
+
 //import heroBgImage from "../../../../public/images/nrv-hero-section-img.jpeg";
 
 interface Feature {
@@ -29,6 +30,7 @@ interface Testimonials {
 }
 
 const FeatureCard: React.FC<Feature> = ({ imageUrl, title, description }) => {
+  const router = useRouter();
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <div style={{ width: "100%", height: "100%" }}>
@@ -163,13 +165,13 @@ const FeatureSection: React.FC = () => {
             to make <br /> renting easier, safer, and more efficient.
           </p>
           <div className="w-full sm:w-2/5 flex sm:justify-end items-center sm:items-end mt-4 sm:mt-0">
-            <Button
+            {/* <Button
               variant="lemonPrimary"
               className="text-[16px] w-64"
               size="large"
             >
               Explore Our Services
-            </Button>
+            </Button> */}
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 mt-8">
@@ -242,7 +244,7 @@ const AboutSection: React.FC = () => {
         <div className="w-full md:w-5/12">
           <Image
             alt="pto"
-            src="https://res.cloudinary.com/dzv98o7ds/image/upload/v1741785308/Background_rph4rw.png"
+            src="/images/nigeria-home.jpeg"
             width={1020}
             height={880}
             className="w-full h-full object-cover"
@@ -286,56 +288,56 @@ const WhyChooseUs: React.FC = () => {
   const features: Feature[] = [
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885660/Background_3_jdzsoy.png",
+        "/icons/TenantScreening.svg",
       title: "Tenant Screening",
       description:
         "Efficiently screen potential tenants by accessing comprehensive background checks, credit history, and rental application details.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885659/Background_4_xmjoho.png",
+        "/icons/PropertyListing.svg",
       title: "Property Listing",
       description:
         "Easily manage and view detailed property listings, including essential information such as address, rental price, and availability status.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885659/Background_5_qkzove.png",
+        "/icons/SecureRentPayment.svg",
       title: "Secure Rent Payment",
       description:
         "Seamlessly process rent payments within the app using a secure payment gateway, providing convenience for both landlords & tenants.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885659/Background_4_xmjoho.png",
+        "/icons/IntuitiveApplication.svg",
       title: "Intuitive Application",
       description:
         "Simplify the tenant application process with a user-friendly interface, guiding applicants through each step for a hassle-free experience.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885660/Background_3_jdzsoy.png",
+        "/icons/Dashboard.svg",
       title: "User Friendly Dashboard",
       description:
         "Access dashboard that provides a quick overview of property listings, notifications, and account settings for efficient management.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885660/Background_3_jdzsoy.png",
+        "/icons/Communication.svg",
       title: "In App Communication",
       description:
         "Enable smooth landlord-tenant communication with an in-app messaging system for quick and efficient information exchange.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885659/Background_4_xmjoho.png",
+        "/icons/notification.svg",
       title: "Instant Notification",
       description:
         "Get instant notifications regarding new tenant applications, updates on property status, and important messages from applicants.",
     },
     {
       imageUrl:
-        "https://res.cloudinary.com/dzv98o7ds/image/upload/v1741885659/Background_4_xmjoho.png",
+        "/icons/Support.svg",
       title: "24/7 Support",
       description:
         "Dedicated support team to assist with your rental journey From viewing to moving in, we got you covered.",
@@ -368,6 +370,8 @@ const WhyChooseUs: React.FC = () => {
 };
 
 const LandingPage = () => {
+  const router = useRouter();
+
   return (
     <div className="md:m-8 font-jakarta">
       <div
@@ -424,7 +428,10 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="bg-white w-2/5 md:text-[22px] text-[14px] text-[#03442C] flex justify-end">
-            <button className="bg-white md:text-md  p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6">
+            <button
+              className="bg-white md:text-md  p-6 hover:bg-nrvLightGreenButtonHover1 font-medium transition-colors duration-300 flex gap-6"
+              onClick={() => router.push("/sign-up")}
+            >
               <span>Get Started Now!</span>
               <div className="md:flex my-auto hidden">
                 <svg

@@ -85,8 +85,9 @@ const HowItWorks = () => {
               variant="lemonPrimary"
               className="text-[16px] w-64"
               size="large"
+              onClick={() => router.push('/sign-up')}
             >
-              Explore Our Services
+              Sign Up to Get Started
             </Button>
           </div>
         </div>

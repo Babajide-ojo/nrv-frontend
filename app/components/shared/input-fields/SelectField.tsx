@@ -23,22 +23,22 @@ interface Props {
 const customStyles = {
   control: (provided: any, state: any) => ({
     ...provided,
-    borderColor: state.isFocused ? "#E0E0E6" : "#E0E0E6", // Grey border on focus and default
-    borderWidth: "1px",
-    boxShadow: state.isFocused ? "#E0E0E6" : "#E0E0E6", // Light grey shadow on focus
-    backgroundColor: "transparent", // Ensure the background is transparent
+    borderColor: "#E0E0E6", // Grey border always
+    borderWidth: "0px",
+    boxShadow: "none", // Remove blue border on focus
+    backgroundColor: "transparent",
     borderRadius: "5px",
     fontSize: "15px",
     fontWeight: 400,
-    color: "#9da3af", // Text color
-    padding: "5px",
-    height: "48px"
+    color: "#807F94",
+    padding: "2px",
+    height: "48px",
   }),
 
   option: (provided: any, state: any) => ({
     ...provided,
-    backgroundColor: state.isFocused ? "#f5f5f5" : "white", // Light grey when focused
-    color: state.isFocused ? "#000000" : "#000000",
+    backgroundColor: state.isFocused ? "#f5f5f5" : "white",
+    color: "#807F94",
     borderRadius: "5px",
     cursor: "pointer",
     fontSize: "14px",
@@ -46,18 +46,18 @@ const customStyles = {
 
   placeholder: (provided: any) => ({
     ...provided,
-    color: "#807F94", // Grey color for placeholder
+    color: "#807F94",
     fontWeight: 300,
   }),
 
   singleValue: (provided: any) => ({
     ...provided,
-    color: "#333333", // Set the text color to a darker grey
+    color: "#333333",
   }),
 
   input: (provided: any) => ({
     ...provided,
-    color: "#333333", // Darker grey for input text
+    color: "#333333",
     fontWeight: 300,
   }),
 };
@@ -83,11 +83,11 @@ const SelectField: React.FC<Props> = ({
 
   return (
     <div>
-      <div className="text-nrvInputFiledColor text-[14px] font-medium">
-        {label}
-        {required && <span className="text-red-600 ml-1">*</span>}
-      </div>
-      <div className="pt-1.5">
+    <label htmlFor={name} className="flex gap-1 items-center w-full">
+        <span className="text-[#807F94] text-[14px] font-medium">{label}</span>
+        {required && <span className="text-red-600">*</span>}
+      </label>
+      <div className="border border-gray-300 rounded-lg pl-1.5 mt-2">
         <Select
           name={name}
           isDisabled={disabled}

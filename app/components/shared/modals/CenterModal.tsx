@@ -32,7 +32,7 @@ const CenterModal: React.FC<CenterModalProps> = ({
           bgColor ? bgColor : "bg-white"
         } overflow-hidden rounded-2xl shadow-md" style={modalStyles} ${
           height && height
-        } m-8 p-4 ${!width ? twidth || "max-w-xl w-full" : ""} `}
+        } m-8  ${!width ? twidth || "max-w-xl w-full" : ""} `}
       >
         {children}
       </div>

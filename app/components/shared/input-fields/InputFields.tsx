@@ -234,6 +234,16 @@ export default function InputField({
               {showPassword ? <EyeIcon /> : <EyeOpenIcon />}
             </button>
           )}
+
+          {icon && (
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="focus:outline-none"
+            >
+              {icon}
+            </button>
+          )}
         </div>
       )}
 

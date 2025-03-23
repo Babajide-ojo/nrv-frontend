@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
@@ -11,13 +13,15 @@ import Carousel from "../sign-in/Carousel";
 import { CheckCircle, Smile, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import VerifyAccountSideBar from "./VerifyAccountSideBar";
 import AccountSideBar from "./AccountSideBar";
 
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
   lastName: yup.string().required("Last Name is required"),
-  email: yup.string().email("Invalid email address").required("Email is required"),
+  email: yup
+    .string()
+    .email("Invalid email address")
+    .required("Email is required"),
   nin: yup.string().optional(),
   phoneNumber: yup.string().required("Phone Number is required"),
   accountType: yup.string().required("Account Type is required"),
@@ -27,7 +31,10 @@ const validationSchema = yup.object({
     .min(8, "Password must be at least 8 characters")
     .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
     .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/[^a-zA-Z0-9]/, "Password must contain at least one special character")
+    .matches(
+      /[^a-zA-Z0-9]/,
+      "Password must contain at least one special character"
+    )
     .matches(/\d/, "Password must contain at least one number"),
   confirmPassword: yup
     .string()
@@ -39,15 +46,23 @@ const SignUpMultiForm = () => {
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState(false); // Checkbox state
 
   const handleSubmit = async (values: any) => {
+    if (!isChecked) {
+      toast.error("You must agree to the Terms of Use and Privacy Policy");
+      return;
+    }
     const { confirmPassword, ...payload } = values;
+    setIsLoading(true);
     try {
       await dispatch(createUser(payload) as any).unwrap();
       setCurrentStep(3);
+      setIsLoading(false);
     } catch (error: any) {
       toast.error(error);
-      console.error({ error });
+      setIsLoading(false);
     }
   };
 
@@ -61,20 +76,55 @@ const SignUpMultiForm = () => {
           </div>
           <div className="w-full md:w-1/2 flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
             <div className="max-w-md w-full">
-              <h1 className="text-2xl font-bold text-black">Create an Account!</h1>
+              <h1 className="text-2xl font-bold text-black">
+                Create an Account!
+              </h1>
               <p className="text-gray-500 mt-2">
-                Welcome to NaijarentVerify! Choose your role to get started. We’ll tailor your experience to meet your needs.
+                Welcome to NaijarentVerify! Choose your role to get started.
+                We’ll tailor your experience to meet your needs.
               </p>
               <div className="mt-6 space-y-4">
-                {[{ role: "owner", icon: <Smile className="text-green-600" />, text: "Sign Up as a Property Owner/Landlord", description: "Sign up as a Property owner and get to explore our powerful tools for thorough tenant screening, List, manage, and grow your rental properties with ease." },
-                  { role: "tenant", icon: <User className="text-gray-500" />, text: "Sign Up as a Tenant", description:"Sign up as a Tenant to Find and secure your dream home with verified listings, Complete your rental agreement and payments securely without stress and extra cost or fee." },
+                {[
+                  {
+                    role: "owner",
+                    icon: <Smile className="text-green-600" />,
+                    text: "Sign Up as a Property Owner/Landlord",
+                    description:
+                      "Sign up as a Property owner and get to explore our powerful tools for thorough tenant screening, List, manage, and grow your rental properties with ease.",
+                  },
+                  {
+                    role: "tenant",
+                    icon: <User className="text-gray-500" />,
+                    text: "Sign Up as a Tenant",
+                    description:
+                      "Sign up as a Tenant to Find and secure your dream home with verified listings, Complete your rental agreement and payments securely without stress and extra cost or fee.",
+                  },
                 ].map(({ role, icon, text, description }) => (
-                  <div key={role} className="border rounded-xl cursor-pointer" onClick={() => setSelectedRole(role)}>
-                    <div className={`flex justify-between p-4 rounded-t-xl ${selectedRole === role ? "bg-[#E9F4E7]" : "border-gray-300"}`}>
-                      <div className="flex space-x-2">{icon}<span className="font-medium text-[#045D23]">{text}</span></div>
-                      {selectedRole === role && <CheckCircle className="text-green-600" />}
+                  <div
+                    key={role}
+                    className="border rounded-xl cursor-pointer"
+                    onClick={() => setSelectedRole(role)}
+                  >
+                    <div
+                      className={`flex justify-between p-4 rounded-t-xl ${
+                        selectedRole === role
+                          ? "bg-[#E9F4E7]"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <div className="flex space-x-2">
+                        {icon}
+                        <span className="font-medium text-[#045D23]">
+                          {text}
+                        </span>
+                      </div>
+                      {selectedRole === role && (
+                        <CheckCircle className="text-green-600" />
+                      )}
                     </div>
-                    <p className="text-[#03442C] border-t border p-4 font-light text-[14px] leading-6">{description}</p>
+                    <p className="text-[#03442C] border-t border p-4 font-light text-[14px] leading-6">
+                      {description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -87,7 +137,6 @@ const SignUpMultiForm = () => {
               >
                 Continue
               </Button>
-              <p className="text-gray-500 mt-4 text-center text-[14px]">Already have an account? <a href="#" className="text-black font-semibold">Log in here.</a></p>
             </div>
           </div>
         </div>
@@ -95,7 +144,7 @@ const SignUpMultiForm = () => {
       {currentStep === 2 && (
         <div className="flex w-full h-screen">
           <div className="w-1/2 bg-[#E9F4E7]">
-          <AccountSideBar />
+            <AccountSideBar />
           </div>
           <div className="w-1/2 bg-white p-12">
             <div className="max-w-md mx-auto">
@@ -114,23 +163,62 @@ const SignUpMultiForm = () => {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                {({ handleChange, handleBlur, values , errors}) => (
+                {({ handleChange, handleBlur, values, errors }) => (
                   <Form className="space-y-4">
-                    {["firstName", "lastName", "email", "phoneNumber", "nin", "password", "confirmPassword"].map((name) => (
+                    {[
+                      "firstName",
+                      "lastName",
+                      "email",
+                      "phoneNumber",
+                      "nin",
+                      "password",
+                      "confirmPassword",
+                    ].map((name) => (
                       <InputField
                         key={name}
+                        placeholder="Start Typing..."
                         name={name}
-                        label={name.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}
-                        inputType={name.includes("password") ? "password" : name.includes("phoneNumber") ? "phone" : name.includes("nin") ? "nin" : name.includes("email") ? "email" : "text"}
+                        label={name
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                        inputType={
+                          name.includes("password")
+                            ? "password"
+                            : name.includes("phoneNumber")
+                            ? "phone"
+                            : name.includes("nin")
+                            ? "nin"
+                            : name.includes("email")
+                            ? "email"
+                            : "text"
+                        }
                         value={(values as any)[name]}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         error={(errors as any)[name]}
-                        password={name.includes("password") ? true : name.includes("confirmPassword") ? true : false }
+                        password={
+                          name.includes("password") ||
+                          name.includes("confirmPassword")
+                        }
                       />
                     ))}
-                    <CheckBox label="I agree to the Terms of Use and Privacy Policy" />
-                    <Button variant="darkPrimary" type="submit" size="large" className="block w-full mt-6 font-medium text-[16px]">Continue</Button>
+                    {/* Terms and Conditions Checkbox */}
+                    <CheckBox
+                      label="I agree to the Terms of Use and Privacy Policy"
+                      checked={isChecked}
+                      onChange={() => setIsChecked(!isChecked)}
+                    />
+                    {/* Submit Button */}
+                    <Button
+                      variant="darkPrimary"
+                      type="submit"
+                      size="large"
+                      className="block w-full mt-6 font-medium text-[16px]"
+                      isLoading={isLoading}
+                      disabled={!isChecked} // Disable if not checked
+                    >
+                      Continue
+                    </Button>
                   </Form>
                 )}
               </Formik>
@@ -138,16 +226,7 @@ const SignUpMultiForm = () => {
           </div>
         </div>
       )}
-      {currentStep === 3 && (
-        <div className="flex w-full">
-          <div className="w-1/2 bg-[#E9F4E7]">
-            <VerifyAccountSideBar />
-          </div>
-          <div className="w-1/2">
-            <SignUppVerifyAccountScreen />
-          </div>
-        </div>
-      )}
+      {currentStep === 3 && <SignUppVerifyAccountScreen />}
     </div>
   );
 };

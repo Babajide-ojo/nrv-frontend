@@ -84,15 +84,21 @@ export const createUser = createAsyncThunk<UserToken, FormData, {}>(
     }
 );
 
-export const updateUser = createAsyncThunk<UserToken, FormData, {}>(
+export const updateUser = createAsyncThunk<UserToken, any, {}>(
     "user/update",
     async (formData: any, { rejectWithValue }) => {
         const { id, payload } = formData;
+        console.log({hello: payload});
+        
         try {
-            const response: any = await axios.put(`${API_URL}/users/${id}`, payload, {
-                headers: {
-                    "Content-Type": "application/json"
-                }
+            const response: any = await axios.put(`${API_URL}/users/${id}`, payload, 
+                {
+                    headers: {
+                      "Content-Type": "mulipart/form-data",
+                    //  "Authorization": `Bearer ${payload.token}`, // If auth token is needed
+                //      "X-User-Data": JSON.stringify(payload), // Sending data in headers (if required)
+                    },
+                  
             });
             return response.data;
         } catch (error: any) {

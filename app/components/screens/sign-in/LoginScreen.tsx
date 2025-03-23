@@ -58,6 +58,7 @@ const LoginScreen: React.FC = () => {
       const userData = await dispatch(loginUser(formData) as any).unwrap();
       localStorage.setItem("nrv-user", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
+
       if (userAccountType === "landlord" && userData.user.isOnboarded) {
         router.push("/dashboard/landlord");
       } else if (userAccountType === "landlord") {
@@ -66,6 +67,12 @@ const LoginScreen: React.FC = () => {
         router.push("/dashboard/tenant");
       }
     } catch (error: any) {
+
+      const userData = await dispatch(loginUser(formData) as any).unwrap();
+      if(userData.user.isOnboarded == false){
+        localStorage.setItem("stepToLoad", JSON.stringify(userData));
+        router.push("/sign-up")
+      }
       toast.error(error);
     } finally {
       setIsLoading(false);

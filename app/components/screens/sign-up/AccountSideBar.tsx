@@ -58,104 +58,103 @@ const AccountSideBar = () => {
               </div>
             </div>
             <div className="flex items-start space-x-2">
-            <div className="">
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g filter="url(#filter0_d_401_9055)">
-                      <g clip-path="url(#clip0_401_9055)">
-                        <rect
-                          x="4"
-                          y="4"
-                          width="32"
-                          height="32"
-                          rx="16"
-                          fill="white"
-                        />
-                        <rect
-                          x="5"
-                          y="5"
-                          width="30"
-                          height="30"
-                          rx="15"
-                          fill="white"
-                        />
-                        <rect
-                          x="5"
-                          y="5"
-                          width="30"
-                          height="30"
-                          rx="15"
-                          stroke="#045D23"
-                          stroke-width="2"
-                        />
-                        <circle cx="20" cy="20" r="5" fill="#045D23" />
-                      </g>
+              <div className="">
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g filter="url(#filter0_d_401_9055)">
+                    <g clip-path="url(#clip0_401_9055)">
+                      <rect
+                        x="4"
+                        y="4"
+                        width="32"
+                        height="32"
+                        rx="16"
+                        fill="white"
+                      />
+                      <rect
+                        x="5"
+                        y="5"
+                        width="30"
+                        height="30"
+                        rx="15"
+                        fill="white"
+                      />
+                      <rect
+                        x="5"
+                        y="5"
+                        width="30"
+                        height="30"
+                        rx="15"
+                        stroke="#045D23"
+                        stroke-width="2"
+                      />
+                      <circle cx="20" cy="20" r="5" fill="#045D23" />
                     </g>
-                    <defs>
-                      <filter
-                        id="filter0_d_401_9055"
-                        x="0"
-                        y="0"
-                        width="40"
-                        height="40"
-                        filterUnits="userSpaceOnUse"
-                        color-interpolation-filters="sRGB"
-                      >
-                        <feFlood
-                          flood-opacity="0"
-                          result="BackgroundImageFix"
-                        />
-                        <feColorMatrix
-                          in="SourceAlpha"
-                          type="matrix"
-                          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                          result="hardAlpha"
-                        />
-                        <feMorphology
-                          radius="4"
-                          operator="dilate"
-                          in="SourceAlpha"
-                          result="effect1_dropShadow_401_9055"
-                        />
-                        <feOffset />
-                        <feColorMatrix
-                          type="matrix"
-                          values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-                        />
-                        <feBlend
-                          mode="normal"
-                          in2="BackgroundImageFix"
-                          result="effect1_dropShadow_401_9055"
-                        />
-                        <feBlend
-                          mode="normal"
-                          in="SourceGraphic"
-                          in2="effect1_dropShadow_401_9055"
-                          result="shape"
-                        />
-                      </filter>
-                      <clipPath id="clip0_401_9055">
-                        <rect
-                          x="4"
-                          y="4"
-                          width="32"
-                          height="32"
-                          rx="16"
-                          fill="white"
-                        />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </div>
+                  </g>
+                  <defs>
+                    <filter
+                      id="filter0_d_401_9055"
+                      x="0"
+                      y="0"
+                      width="40"
+                      height="40"
+                      filterUnits="userSpaceOnUse"
+                      color-interpolation-filters="sRGB"
+                    >
+                      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                      <feColorMatrix
+                        in="SourceAlpha"
+                        type="matrix"
+                        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+                        result="hardAlpha"
+                      />
+                      <feMorphology
+                        radius="4"
+                        operator="dilate"
+                        in="SourceAlpha"
+                        result="effect1_dropShadow_401_9055"
+                      />
+                      <feOffset />
+                      <feColorMatrix
+                        type="matrix"
+                        values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
+                      />
+                      <feBlend
+                        mode="normal"
+                        in2="BackgroundImageFix"
+                        result="effect1_dropShadow_401_9055"
+                      />
+                      <feBlend
+                        mode="normal"
+                        in="SourceGraphic"
+                        in2="effect1_dropShadow_401_9055"
+                        result="shape"
+                      />
+                    </filter>
+                    <clipPath id="clip0_401_9055">
+                      <rect
+                        x="4"
+                        y="4"
+                        width="32"
+                        height="32"
+                        rx="16"
+                        fill="white"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
               <div>
-                <h3 className="font-medium text-[#645D5D]">Create Your Account</h3>
+                <h3 className="font-medium text-[#645D5D]">
+                  Create Your Account
+                </h3>
                 <p className="text-sm text-gray-600">
-                Create Your NaijaRentVerify Account
+                  Create Your NaijaRentVerify Account
                 </p>
               </div>
             </div>
@@ -163,94 +162,28 @@ const AccountSideBar = () => {
               <div key={step} className="flex items-start space-x-2">
                 <div className="">
                   <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 40 40"
+                    width="32"
+                    height="32"
+                    viewBox="0 0 32 32"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g filter="url(#filter0_d_401_9055)">
-                      <g clip-path="url(#clip0_401_9055)">
-                        <rect
-                          x="4"
-                          y="4"
-                          width="32"
-                          height="32"
-                          rx="16"
-                          fill="white"
-                        />
-                        <rect
-                          x="5"
-                          y="5"
-                          width="30"
-                          height="30"
-                          rx="15"
-                          fill="white"
-                        />
-                        <rect
-                          x="5"
-                          y="5"
-                          width="30"
-                          height="30"
-                          rx="15"
-                          stroke="#045D23"
-                          stroke-width="2"
-                        />
-                        <circle cx="20" cy="20" r="5" fill="#045D23" />
-                      </g>
+                    <g clip-path="url(#clip0_401_8611)">
+                      <rect width="32" height="32" rx="16" fill="#F7F7F8" />
+                      <rect
+                        x="1"
+                        y="1"
+                        width="30"
+                        height="30"
+                        rx="15"
+                        stroke="#E0E0E6"
+                        stroke-width="2"
+                      />
+                      <circle cx="16" cy="16" r="5" fill="#E0E0E6" />
                     </g>
                     <defs>
-                      <filter
-                        id="filter0_d_401_9055"
-                        x="0"
-                        y="0"
-                        width="40"
-                        height="40"
-                        filterUnits="userSpaceOnUse"
-                        color-interpolation-filters="sRGB"
-                      >
-                        <feFlood
-                          flood-opacity="0"
-                          result="BackgroundImageFix"
-                        />
-                        <feColorMatrix
-                          in="SourceAlpha"
-                          type="matrix"
-                          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                          result="hardAlpha"
-                        />
-                        <feMorphology
-                          radius="4"
-                          operator="dilate"
-                          in="SourceAlpha"
-                          result="effect1_dropShadow_401_9055"
-                        />
-                        <feOffset />
-                        <feColorMatrix
-                          type="matrix"
-                          values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-                        />
-                        <feBlend
-                          mode="normal"
-                          in2="BackgroundImageFix"
-                          result="effect1_dropShadow_401_9055"
-                        />
-                        <feBlend
-                          mode="normal"
-                          in="SourceGraphic"
-                          in2="effect1_dropShadow_401_9055"
-                          result="shape"
-                        />
-                      </filter>
-                      <clipPath id="clip0_401_9055">
-                        <rect
-                          x="4"
-                          y="4"
-                          width="32"
-                          height="32"
-                          rx="16"
-                          fill="white"
-                        />
+                      <clipPath id="clip0_401_8611">
+                        <rect width="32" height="32" rx="16" fill="white" />
                       </clipPath>
                     </defs>
                   </svg>

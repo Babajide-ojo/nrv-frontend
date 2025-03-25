@@ -77,7 +77,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFormData((prev) => ({
+      setFormData((prev: any) => ({
         ...prev,
         file: file,
       }));

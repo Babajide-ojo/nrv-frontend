@@ -30,7 +30,7 @@ const initialState: PropertyState = {
 }; 
 
 
-export const createProperty = createAsyncThunk< FormData, {}>(
+export const createProperty = createAsyncThunk< FormData | any, {}>(
     "property/create",
     async (formData: any, { rejectWithValue }) => {
         try {

@@ -10,6 +10,8 @@ import Button from "../../shared/buttons/Button";
 import PreferencesForm from "./PreferencesForm";
 import VerifyAccountSideBar from "./VerifyAccountSideBar";
 import CompleteProfileSideBar from "./CompleteProfileSideBar";
+import AddPropertySideBar from "./AddPropertySideBar";
+import MultiStepForm from "./MultiStepForm";
 
 const SignUpVerifyAccount: React.FC = () => {
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ const SignUpVerifyAccount: React.FC = () => {
   const [timer, setTimer] = useState(120);
   const [canResend, setCanResend] = useState(false);
   const [step, setStep] = useState(1);
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     const countdown = setInterval(() => {
@@ -46,7 +49,9 @@ const SignUpVerifyAccount: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await dispatch(verifyAccount(payload) as any).unwrap();
+      const response = await dispatch(verifyAccount(payload) as any).unwrap();
+      setData(response);
+
       setStep(2); // Move to the second step
     } catch (error: any) {
       setIsLoading(false);
@@ -156,15 +161,36 @@ const SignUpVerifyAccount: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="flex w-full">
-            <div className="w-1/2 bg-[#E9F4E7]">
-              <CompleteProfileSideBar />
-            </div>
-            <div className="w-1/2 flex-col justify-center">
-              <div className="max-w-md mx-auto">
-                <PreferencesForm />
+          <div>
+            {data.user.accountType === "tenant" && (
+              <div className="flex w-full">
+                <div className="w-1/2 bg-[#E9F4E7]">
+                  <CompleteProfileSideBar />
+                </div>
+                <div className="w-1/2 flex-col justify-center">
+                  <div className="max-w-md mx-auto">
+                    <PreferencesForm />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {data.user.accountType === "landlord" && (
+              <div className="flex w-full">
+                <div className="w-1/2 bg-[#E9F4E7]">
+                  <AddPropertySideBar />
+                </div>
+                <div className="w-1/2 flex-col justify-center">
+                  <div className="max-w-xl mx-auto">
+                    <MultiStepForm />
+                  </div>
+                </div>
+              </div>
+
+              
+            )}
+
+           
           </div>
         )}
       </div>

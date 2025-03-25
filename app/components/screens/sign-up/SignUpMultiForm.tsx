@@ -81,12 +81,12 @@ const SignUpMultiForm = () => {
               </h1>
               <p className="text-gray-500 mt-2">
                 Welcome to NaijarentVerify! Choose your role to get started.
-                We’ll tailor your experience to meet your needs.
+                We&apos;ll tailor your experience to meet your needs.
               </p>
               <div className="mt-6 space-y-4">
                 {[
                   {
-                    role: "owner",
+                    role: "landlord",
                     icon: <Smile className="text-green-600" />,
                     text: "Sign Up as a Property Owner/Landlord",
                     description:

@@ -42,8 +42,10 @@ const SignUpVerifyAccount: React.FC = () => {
   const handleSubmit = async () => {
     if (otp.length !== 6) return;
     const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
+    console.log({user: user.user.email});
+    
     const payload = {
-      email: user?.data?.email,
+      email: user?.data?.email || user.user.email,
       confirmationCode: otp,
     };
 
@@ -51,8 +53,8 @@ const SignUpVerifyAccount: React.FC = () => {
     try {
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
       setData(response);
-
-      setStep(2); // Move to the second step
+      localStorage.removeItem("stepToLoad");
+      setStep(2); 
     } catch (error: any) {
       setIsLoading(false);
       toast.error(error);

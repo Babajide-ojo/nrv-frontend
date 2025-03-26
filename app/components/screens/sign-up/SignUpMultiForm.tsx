@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
@@ -64,7 +64,24 @@ const SignUpMultiForm = () => {
       toast.error(error);
       setIsLoading(false);
     }
+
+
   };
+
+  useEffect(() => {
+    const stepFromStorage = localStorage.getItem("stepToLoad");
+    if (stepFromStorage) {
+      try {
+        const parsedStep = JSON.parse(stepFromStorage);
+        setCurrentStep(parsedStep);
+      } catch (error) {
+        console.error("Error parsing stepToLoad from localStorage:", error);
+        setCurrentStep(1); 
+      }
+    } else {
+      setCurrentStep(1);
+    }
+  }, []); 
 
   return (
     <div className="font-jakarta">

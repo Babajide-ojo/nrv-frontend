@@ -18,6 +18,7 @@ interface Props {
   value: any;
   disabled?: boolean;
   onBlur?: any;
+  error?: any
 }
 
 const customStyles = {
@@ -74,6 +75,7 @@ const SelectField: React.FC<Props> = ({
   onBlur,
   value,
   disabled,
+  error
 }) => {
   const handleSelectChange = (selectedOption: any) => {
     if (onChange) {
@@ -87,7 +89,7 @@ const SelectField: React.FC<Props> = ({
         <span className="text-[#807F94] text-[14px] font-medium">{label}</span>
         {required && <span className="text-red-600">*</span>}
       </label>
-      <div className="border border-gray-300 rounded-lg pl-1.5 mt-2">
+      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1.5">
         <Select
           name={name}
           isDisabled={disabled}
@@ -102,6 +104,8 @@ const SelectField: React.FC<Props> = ({
           onBlur={onBlur}
         />
       </div>
+            {/* Error Message */}
+            {error && <div className="text-sm text-red-700 mt-1">{error}</div>}
     </div>
   );
 };

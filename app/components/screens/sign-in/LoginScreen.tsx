@@ -57,22 +57,21 @@ const LoginScreen: React.FC = () => {
     try {
       const userData = await dispatch(loginUser(formData) as any).unwrap();
       localStorage.setItem("nrv-user", JSON.stringify(userData));
+      localStorage.setItem("emailToVerify", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
-
-      if (userAccountType === "landlord" && userData.user.isOnboarded) {
+      //const userData = await dispatch(loginUser(formData) as any).unwrap();
+      if(userData.user.isOnboarded == false){
+        localStorage.setItem("stepToLoad", JSON.stringify(3));
+        router.push("/sign-up")
+      }
+      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
         router.push("/dashboard/landlord");
-      } else if (userAccountType === "landlord") {
-        router.push("/onboard/landlord");
-      } else if (userAccountType === "tenant") {
+      } else if (userAccountType === "tenant" && userData.user.isOnboarded === true) {
         router.push("/dashboard/tenant");
       }
     } catch (error: any) {
 
-      const userData = await dispatch(loginUser(formData) as any).unwrap();
-      if(userData.user.isOnboarded == false){
-        localStorage.setItem("stepToLoad", JSON.stringify(userData));
-        router.push("/sign-up")
-      }
+
       toast.error(error);
     } finally {
       setIsLoading(false);

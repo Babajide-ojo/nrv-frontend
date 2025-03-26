@@ -53,11 +53,16 @@ export default function InputField({
   const [inputError, setInputError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Validate Input Change
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const inputValue = e.target.value;
+    
     if (onChange) onChange(e);
-
+  
+    // Clear error when user starts typing
+    if (inputError) {
+      setInputError(null);
+    }
+  
     // Email Validation
     if (inputType === "email") {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -65,7 +70,7 @@ export default function InputField({
       setIsValid(isValidEmail);
       setInputError(isValidEmail ? null : "Invalid email format.");
     }
-
+  
     // NIN Validation (Nigeria)
     if (inputType === "nin") {
       if (/^\d{11}$/.test(inputValue)) {
@@ -76,11 +81,11 @@ export default function InputField({
         setInputError("NIN must be exactly 11 digits.");
       }
     }
-
+  
     // Phone Number Validation (Nigeria)
     if (inputType === "phone") {
       const phoneNumber = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-
+  
       if (phoneNumber.startsWith("0")) {
         if (phoneNumber.length === 11) {
           setIsValid(true);
@@ -104,6 +109,7 @@ export default function InputField({
       }
     }
   };
+  
 
   return (
     <div className="font-jakarta flex flex-col w-full">

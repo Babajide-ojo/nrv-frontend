@@ -42,8 +42,7 @@ const SignUpVerifyAccount: React.FC = () => {
   const handleSubmit = async () => {
     if (otp.length !== 6) return;
     const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
-    console.log({user: user.user.email});
-    
+
     const payload = {
       email: user?.data?.email || user.user.email,
       confirmationCode: otp,

@@ -46,7 +46,7 @@ const CreateRoom = () => {
     file: null,
     propertyId:
       typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("property") as any)._id
+        ? JSON.parse(localStorage.getItem("property") as any)?._id
         : "",
   });
 

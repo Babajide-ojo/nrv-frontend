@@ -60,13 +60,13 @@ const LoginScreen: React.FC = () => {
       localStorage.setItem("emailToVerify", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
       //const userData = await dispatch(loginUser(formData) as any).unwrap();
-      if(userData.user.isOnboarded == false){
+      if(userData.user.status === "inactive"){
         localStorage.setItem("stepToLoad", JSON.stringify(3));
         router.push("/sign-up")
       }
-      if (userAccountType === "landlord" && userData.user.isOnboarded === true) {
+      if (userAccountType === "landlord" && userData.user.status === "active") {
         router.push("/dashboard/landlord");
-      } else if (userAccountType === "tenant" && userData.user.isOnboarded === true) {
+      } else if (userAccountType === "tenant" && userData.user.status === "active") {
         router.push("/dashboard/tenant");
       }
     } catch (error: any) {

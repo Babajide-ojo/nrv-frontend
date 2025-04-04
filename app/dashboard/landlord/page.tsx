@@ -23,7 +23,7 @@ const SignIn = () => {
         <LoadingPage />
       ) : (
         <ProtectedRoute>
-          <LandLordLayout>
+          <LandLordLayout mainPath="Dashboard">
             <DashboardScreen />
           </LandLordLayout>
         </ProtectedRoute>

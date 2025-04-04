@@ -32,7 +32,7 @@ import BackIcon from "../../shared/icons/BackIcon";
 const propertyDashboardLinks: any = [
   {
     id: 1,
-    name: "Overview",
+    name: "All Apartments",
   },
   {
     id: 4,
@@ -247,24 +247,24 @@ const SinglePropertyScreen = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, [id, dispatch]);
 
   return (
     <div>
       <ProtectedRoute>
         <LandLordLayout>
           <ToastContainer />
-          <div>
-            <div className="flex justify-between px-4 py-12 md:px-12 md:py-12">
+          <div className="p-8">
+            <div className="flex justify-between pb-4">
               <div>
                 <div className="flex gap-2">
+      
+                   <BackIcon /> <span className="text-xs">Back</span>
                   <div>
-                    <BackIcon />
-                  </div>
-
-                  <p className="text-sm font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
+                  <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
                     {singleProperty?.streetAddress}
                   </p>
+                  </div>
                 </div>
               </div>
 
@@ -279,29 +279,71 @@ const SinglePropertyScreen = () => {
                 </div>
               </div>
             </div>
-            <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-12 pl-4 overflow-scroll">
+
+            {/* Summary Cards */}
+            <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
+              {[
+                {
+                  label: "Active Tenants",
+                  value: "85% Occupied",
+                  detail: "12 out of 14 units occupied",
+                  color: "text-green-600",
+                },
+                {
+                  label: "Number of Vacant Apartment",
+                  value: "12 months",
+                  detail: "0% compared to last 6 months",
+                  color: "text-green-600",
+                },
+                {
+                  label: "Number of Selected Applicants",
+                  value: "10%",
+                  detail: "2 tenants moved out this year",
+                  color: "text-green-600",
+                },
+                {
+                  label: "Click Leads",
+                  value: "15%",
+                  detail: "2 out of 14 units vacant",
+                  color: "text-green-600",
+                },
+              ].map((stat, index) => (
+                <div
+                  key={index}
+                  className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
+                >
+                  <p className="text-[#67667A] font-medium text-sm">
+                    {stat.label}
+                  </p>
+                  <p className={`text-xl text-[#03442C] font-medium`}>
+                    {stat.value}
+                  </p>
+                  <p className="text-[#8D9196] text-xs font-lighter">
+                    {stat.detail}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="flex w-full gap-1 md:gap-6 border-b-2">
               {propertyDashboardLinks.map((item: any) => (
                 <div key={item.id}>
-                  <Button
-                    size="smaller"
-                    className={` text-nrvPrimaryGreen p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
+                  <div
+                    className={`text-[16px] font-medium mt-2 mb-2 cursor-pointer px-12 text-center ${
                       currentState === item.id
-                        ? "bg-nrvPrimaryGreen text-white"
-                        : "bg-nrvGreyMediumBg"
+                        ? "text-[#2B892B]"
+                        : "text-[#344054]"
                     }`}
-                    variant="ordinary"
-                    showIcon={false}
                     onClick={() => {
                       setCurrentState(item.id);
                     }}
                   >
-                    <div className="text-[11px] p-2">{item.name}</div>
-                  </Button>
+                    {item.name}
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="px-4 py-4 md:px-12 md:py-6">
+            <div className="px-4 md:py-6">
               {currentState === 1 && singleProperty && (
                 <PropertyOverview data={singleProperty} />
               )}
@@ -345,7 +387,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                          //  css="bg-white"
+                            //  css="bg-white"
                             label="Street Address"
                             placeholder="Enter Street Address"
                             inputType="text"
@@ -357,7 +399,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                        //    css="bg-white"
+                            //    css="bg-white"
                             label="Unit (Optional)"
                             placeholder="Enter Unit"
                             inputType="text"
@@ -370,7 +412,7 @@ const SinglePropertyScreen = () => {
                         <div className="w-full mt-4 flex gap-3">
                           <div className="w-1/2">
                             <InputField
-                          //    css="bg-white"
+                              //    css="bg-white"
                               label="City"
                               placeholder="Enter City"
                               inputType="text"
@@ -382,7 +424,7 @@ const SinglePropertyScreen = () => {
                           </div>
                           <div className="w-1/2">
                             <InputField
-                           //   css="bg-white"
+                              //   css="bg-white"
                               label="State"
                               placeholder="Enter State"
                               inputType="text"
@@ -395,7 +437,7 @@ const SinglePropertyScreen = () => {
                         </div>
                         <div className="w-full mt-4">
                           <InputField
-                           // css="bg-white"
+                            // css="bg-white"
                             label="Zip Code"
                             placeholder="Enter Zip Code"
                             inputType="text"

@@ -252,33 +252,55 @@ const SinglePropertyScreen = () => {
   return (
     <div>
       <ProtectedRoute>
-        <LandLordLayout>
+        <LandLordLayout
+          mainPath="Properties"
+          subMainPath="Manage Properties / View Property"
+        >
           <ToastContainer />
           <div className="p-8">
-            <div className="flex justify-between pb-4">
-              <div>
-                <div className="flex gap-2">
-      
-                   <BackIcon /> <span className="text-xs">Back</span>
-                  <div>
-                  <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
-                    {singleProperty?.streetAddress}
-                  </p>
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
+  {/* Left Section */}
+  <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+    {/* Back Button */}
+    <div className="flex gap-2 items-center">
+      <BackIcon />
+      <span className="text-xs">Back</span>
+    </div>
 
-              <div>
-                <div
-                  className="p-2 border border-gray-500 rounded rounded-full"
-                  onClick={() => {
-                    showProperty();
-                  }}
-                >
-                  <PiPencilSimpleLight />
-                </div>
-              </div>
-            </div>
+    {/* Address Info */}
+    <div>
+      <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
+        {singleProperty?.streetAddress}
+      </p>
+      <p className="text-[12px] font-light text-[#475467]">
+        {singleProperty?.city}, {singleProperty?.state}
+      </p>
+    </div>
+  </div>
+
+  {/* Right Section (Buttons) */}
+  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+    <Button
+      variant="light"
+      className="px-6 py-2 rounded-md flex gap-2 justify-center"
+      onClick={() =>
+        router.push("/dashboard/landlord/properties/create")
+      }
+    >
+      Update Property Info
+    </Button>
+    <Button
+      variant="darkPrimary"
+      className="px-6 py-2 rounded-md justify-center"
+      onClick={() =>
+        router.push("/dashboard/landlord/properties/create")
+      }
+    >
+      + Add New Apartment
+    </Button>
+  </div>
+</div>
+
 
             {/* Summary Cards */}
             <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
@@ -343,7 +365,7 @@ const SinglePropertyScreen = () => {
               ))}
             </div>
 
-            <div className="px-4 md:py-6">
+            <div className="pt-4">
               {currentState === 1 && singleProperty && (
                 <PropertyOverview data={singleProperty} />
               )}

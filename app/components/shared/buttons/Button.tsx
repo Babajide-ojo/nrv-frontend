@@ -48,7 +48,7 @@ const classes = {
     darkPrimary:
       "rounded-full text-white bg-nrvPrimaryGreen outline-none hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1",
     light:
-      "rounded-full bg-white border border-[#03442C] text-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white",
+      "rounded-full bg-white border border-[#ECECEE] text-nrvPrimaryGreen",
     lightPrimary:
       "rounded-2xl text-white border border-white bg-nrvPrimaryGreen",
     whitebg:

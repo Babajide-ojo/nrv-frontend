@@ -347,10 +347,10 @@ const summaryStats = [
                   className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
                 >
                   <p className="text-[#67667A] font-medium text-sm">
-                    {stat.label}
+                    {stat?.label}
                   </p>
                   <p className={`text-xl text-[#03442C] font-medium`}>
-                    {stat.value}
+                    {stat?.value | 0}
                   </p>
                   <p className="text-[#8D9196] text-xs font-lighter">
                     {stat?.detail}

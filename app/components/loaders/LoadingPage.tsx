@@ -5,8 +5,8 @@ import Image from 'next/image';
 const LoadingPage = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-white">
-    <div className="animate-zoom">
-      <Image src={logo} alt="Logo" width={100} height={100} /> 
+    <div className="animate-zoom text-nrvPrimaryGreen text-lg">
+      Loading...
     </div>
   </div>
   

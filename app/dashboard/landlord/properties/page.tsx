@@ -52,7 +52,6 @@ const PropertiesScreen = () => {
     tenantTurnoverRate: 0,
     vacancyRate: 0,
   });
-  
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -88,38 +87,35 @@ const PropertiesScreen = () => {
       let totalTenants = 0;
       let tenantTurnover = 0;
       let totalLeaseDuration = 0;
-  
+
       properties.forEach((property) => {
         totalUnits += property.apartmentCount;
         totalOccupied += property.apartmentCount - property.unitsLeft;
         totalVacant += property.unitsLeft;
-  
+
         // Assuming tenantTurnover and leaseDuration are available on the property
         tenantTurnover += property.tenantTurnover || 0;
         totalTenants += property.apartmentCount;
-  
+
         if (property.leaseDuration) {
           totalLeaseDuration += property.leaseDuration;
         }
       });
-  
-      const avgLeaseDuration = totalLeaseDuration / properties.length;
-  
+
+      const avgLeaseDuration = properties.length;
+
       setSummaryData({
         occupancyRate: (totalOccupied / totalUnits) * 100,
         avgLeaseDuration,
-        tenantTurnoverRate: (tenantTurnover / totalTenants) * 100,
+        tenantTurnoverRate: totalUnits,
         vacancyRate: (totalVacant / totalUnits) * 100,
       });
     };
-  
+
     if (properties.length > 0) {
       calculateSummaryData();
     }
   }, [properties]);
-
-  
-  
 
   return (
     <ProtectedRoute>
@@ -177,51 +173,45 @@ const PropertiesScreen = () => {
             </div>
           </div>
 
-     {/* Summary Cards */}
-<div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
-  {[
-    {
-      label: "Occupancy Rate",
-      value: `${summaryData.occupancyRate.toFixed(2)}%`,
-    //  detail: `${(summaryData.occupancyRate / 100 * totalUnits).toFixed(0)} out of ${totalUnits} units occupied`,
-      color: "text-green-600",
-    },
-    {
-      label: "Average Lease Duration",
-      value: `${summaryData.avgLeaseDuration.toFixed(1)} months`,
-      detail: `Average duration across ${properties.length} properties`,
-      color: "text-green-600",
-    },
-    {
-      label: "Tenant Turnover Rate",
-      value: `${summaryData.tenantTurnoverRate.toFixed(2)}%`,
-   //   detail: `${tenantTurnover} tenants moved out this year`,
-      color: "text-green-600",
-    },
-    {
-      label: "Vacancy Rate",
-      value: `${summaryData.vacancyRate.toFixed(2)}%`,
-   //   detail: `${totalVacant} out of ${totalUnits} units vacant`,
-      color: "text-green-600",
-    },
-  ].map((stat, index) => (
-    <div
-      key={index}
-      className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
-    >
-      <p className="text-[#67667A] font-medium text-sm">
-        {stat.label}
-      </p>
-      <p className={`text-xl text-[#03442C] font-medium`}>
-        {stat.value}
-      </p>
-      <p className="text-[#8D9196] text-xs font-lighter">
-        {stat.detail}
-      </p>
-    </div>
-  ))}
-</div>
-
+          {/* Summary Cards */}
+          <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
+            {[
+              {
+                label: "Total Number of Properties",
+                value: `${summaryData.avgLeaseDuration.toFixed(0)}`,
+                color: "text-green-600",
+              },
+              {
+                label: "Total Number of Apartments/Units",
+                value: `${summaryData.tenantTurnoverRate.toFixed(0)}`,
+                color: "text-green-600",
+              },
+              {
+                label: "Overall Occupancy Rate",
+                value: `${summaryData.occupancyRate.toFixed(2)}%`,
+                color: "text-green-600",
+              },
+   
+              {
+                label: "Vacancy Rate",
+                value: `${summaryData.vacancyRate.toFixed(2)}%`,
+                color: "text-green-600",
+              },
+            ].map((stat, index) => (
+              <div
+                key={index}
+                className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
+              >
+                <p className="text-[#67667A] font-medium text-sm">
+                  {stat.label}
+                </p>
+                <p className={`text-xl text-[#03442C] font-medium`}>
+                  {stat.value}
+                </p>
+          
+              </div>
+            ))}
+          </div>
 
           {/* Property Listings */}
           {isLoading ? (
@@ -264,9 +254,17 @@ const PropertiesScreen = () => {
                         />
                       </div>
                       <div>
-                        <button className="bg-[#E7F6EC] px-3 py-1.5 text-[#099137] text-[10px] font-semibold rounded-full">
-                          Active
-                        </button>
+                        {property.apartmentCount > 0 && (
+                          <button className="bg-[#E7F6EC] px-3 py-1.5 text-[#099137] text-[10px] font-semibold rounded-full Cursor-none">
+                            {property.apartmentCount} Unit(s)
+                          </button>
+                        )}
+
+                        {property.apartmentCount === 0 && (
+                          <button className="bg-red-100 px-3 py-1.5 text-red-700 text-[10px] font-semibold rounded-full">
+                            No Apartment Added Yet
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="mt-4">

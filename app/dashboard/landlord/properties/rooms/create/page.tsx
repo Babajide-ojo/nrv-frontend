@@ -102,6 +102,9 @@ const CreateRoom = () => {
     e.preventDefault();
 
     const property = getPropertyFromLocalStorage();
+
+    console.log({property});
+    
     if (!property) {
       toast.error("Property data not found.");
       return;

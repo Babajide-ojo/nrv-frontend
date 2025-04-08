@@ -24,7 +24,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                 className="bg-white border border-[#F0F2F5] rounded-lg p-4 transition relative cursor-pointer"
                 onClick={() => {
                   router.push(
-                    `/dashboard/landlord/properties/room/${item._id}`
+                    `/dashboard/landlord/properties/rooms/${item._id}`
                   );
                 }}
               >
@@ -37,8 +37,16 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                     />
                   </div>
                   <div>
-                    <button className="bg-[#E7F6EC] px-4 py-1.5 text-[#099137] text-[12px] font-semibold rounded-full">
-                      Active
+                    <button
+                      className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
+                        item?.assignedToTenant
+                          ? "bg-[#FFF1DA] text-[#F3A218]"
+                          : "bg-[#E7F6EC] text-[#099137]"
+                      }`}
+                    >
+                      {item?.assignedToTenant
+                        ? "Occupied By Tenant"
+                        : "Currently Vacant"}
                     </button>
                   </div>
                 </div>
@@ -47,7 +55,9 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                     {item?.propertyType}
                   </h3>
                   <p className="text-[13px] font-light text-[#101928] h-14">
-                    <span className="font-semibold text-[13px]">Description :</span>{" "}
+                    <span className="font-semibold text-[13px]">
+                      Description :
+                    </span>{" "}
                     {item?.description}
                   </p>
                   <p className="text-xs text-gray-400">
@@ -55,9 +65,15 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                   </p>
                   <div className="flex gap-2 w-full mt-4 justify-between border-t pt-2">
                     <div className="text-[13px] font-medium text-[#1D2227]">
-                      ₦{item.rentAmount.toLocaleString()} <span className="text-[11px] text-[#646D75]">per annum</span>
+                      ₦{item.rentAmount.toLocaleString()}{" "}
+                      <span className="text-[11px] text-[#646D75]">
+                        per annum
+                      </span>
                     </div>
-                    <div className="text-[13px] font-medium italic text-[#045D23]"> View Details</div>
+                    <div className="text-[13px] font-medium italic text-[#045D23]">
+                      {" "}
+                      View Details
+                    </div>
                   </div>
                 </div>
               </div>

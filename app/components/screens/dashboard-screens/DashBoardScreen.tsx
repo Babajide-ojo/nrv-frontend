@@ -131,7 +131,7 @@ const DashboardScreen = () => {
               },
               {
                 title: "Total Leads & Applicants",
-                count: count.totalNew + count.totalAccepted,
+                count: count?.totalNew + count?.totalAccepted,
                 change: "+15%",
                 icon: "/icons/Leads.svg",
               },
@@ -145,7 +145,7 @@ const DashboardScreen = () => {
               <div className="p-3 border bg-white flex items-start" key={index}>
                 <div>
                   <p className="text-[#767484] text-sm">{title}</p>
-                  <p className="text-3xl font-semibold my-6">{count}</p>
+                  <p className="text-3xl font-semibold my-6">{count | 0}</p>
                   <div className="flex items-center gap-2 mt-2 text-xs text-[#8D8B99]">
                     <FaChartLine
                       className="bg-green-100 p-1 rounded text-green-600"

@@ -249,6 +249,43 @@ const SinglePropertyScreen = () => {
     fetchData();
   }, [id, dispatch]);
 
+const property = singleProperty;
+
+const totalRooms = singleProperty?.rooms?.length;
+const occupiedRooms = singleProperty?.rooms?.filter((room: any) => room?.assignedToTenant).length;
+const vacantRooms = totalRooms - occupiedRooms;
+
+const occupancyRate = ((occupiedRooms / totalRooms) * 100).toFixed(0);
+const vacancyRate = ((vacantRooms / totalRooms) * 100).toFixed(0);
+
+const summaryStats = [
+  {
+    label: "Active Tenants",
+    value: `${occupancyRate}% Occupied`,
+    detail: `${occupiedRooms} out of ${totalRooms} units occupied`,
+    color: "text-green-600",
+  },
+  {
+    label: "Number of Vacant Apartment",
+    value: `${vacancyRate}% Vacant`,
+    detail: `${vacantRooms} out of ${totalRooms} units vacant`,
+    color: "text-yellow-600",
+  },
+  {
+    label: "Number of Selected Applicants",
+    value: "N/A",
+    detail: "Applicant data not available",
+    color: "text-gray-500",
+  },
+  {
+    label: "Click Leads",
+    value: "N/A",
+    detail: "Lead tracking not enabled",
+    color: "text-gray-500",
+  },
+];
+
+
   return (
     <div>
       <ProtectedRoute>
@@ -258,78 +295,53 @@ const SinglePropertyScreen = () => {
         >
           <ToastContainer />
           <div className="p-8">
-          <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
-  {/* Left Section */}
-  <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
-    {/* Back Button */}
-    <div className="flex gap-2 items-center">
-      <BackIcon />
-      <span className="text-xs">Back</span>
-    </div>
+            <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
+              {/* Left Section */}
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+                {/* Back Button */}
+                <div className="flex gap-2 items-center">
+                  <BackIcon />
+                  <span className="text-xs">Back</span>
+                </div>
 
-    {/* Address Info */}
-    <div>
-      <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
-        {singleProperty?.streetAddress}
-      </p>
-      <p className="text-[12px] font-light text-[#475467]">
-        {singleProperty?.city}, {singleProperty?.state}
-      </p>
-    </div>
-  </div>
+                {/* Address Info */}
+                <div>
+                  <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
+                    {singleProperty?.streetAddress}
+                  </p>
+                  <p className="text-[12px] font-light text-[#475467]">
+                    {singleProperty?.city}, {singleProperty?.state}
+                  </p>
+                </div>
+              </div>
 
-  {/* Right Section (Buttons) */}
-  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-    <Button
-      variant="light"
-      className="px-6 py-2 rounded-md flex gap-2 justify-center"
-      onClick={() =>
-        router.push("/dashboard/landlord/properties/create")
-      }
-    >
-      Update Property Info
-    </Button>
-    <Button
-      variant="darkPrimary"
-      className="px-6 py-2 rounded-md justify-center"
-      onClick={() =>
-        router.push("/dashboard/landlord/properties/create")
-      }
-    >
-      + Add New Apartment
-    </Button>
-  </div>
-</div>
-
+              {/* Right Section (Buttons) */}
+              <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                <Button
+                  variant="light"
+                  className="px-6 py-2 rounded-md flex gap-2 justify-center"
+                  onClick={() =>
+                    router.push("/dashboard/landlord/properties/create")
+                  }
+                >
+                  Update Property Info
+                </Button>
+                <Button
+                  variant="darkPrimary"
+                  className="px-6 py-2 rounded-md justify-center"
+                  onClick={() => {
+                    //localStorage.setItem("property", JSON.stringify(id))
+                    router.push("/dashboard/landlord/properties/rooms/create");
+                  }}
+                >
+                  + Add New Apartment
+                </Button>
+              </div>
+            </div>
 
             {/* Summary Cards */}
             <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
-              {[
-                {
-                  label: "Active Tenants",
-                  value: "85% Occupied",
-                  detail: "12 out of 14 units occupied",
-                  color: "text-green-600",
-                },
-                {
-                  label: "Number of Vacant Apartment",
-                  value: "12 months",
-                  detail: "0% compared to last 6 months",
-                  color: "text-green-600",
-                },
-                {
-                  label: "Number of Selected Applicants",
-                  value: "10%",
-                  detail: "2 tenants moved out this year",
-                  color: "text-green-600",
-                },
-                {
-                  label: "Click Leads",
-                  value: "15%",
-                  detail: "2 out of 14 units vacant",
-                  color: "text-green-600",
-                },
-              ].map((stat, index) => (
+              {summaryStats.map((stat: any, index: any) => (
                 <div
                   key={index}
                   className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
@@ -341,7 +353,7 @@ const SinglePropertyScreen = () => {
                     {stat.value}
                   </p>
                   <p className="text-[#8D9196] text-xs font-lighter">
-                    {stat.detail}
+                    {stat?.detail}
                   </p>
                 </div>
               ))}
@@ -446,7 +458,6 @@ const SinglePropertyScreen = () => {
                           </div>
                           <div className="w-1/2">
                             <InputField
-                              //   css="bg-white"
                               label="State"
                               placeholder="Enter State"
                               inputType="text"

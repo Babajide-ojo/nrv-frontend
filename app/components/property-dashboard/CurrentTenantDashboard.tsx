@@ -377,155 +377,119 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       <div>
         {tenantDetails.data != null ? (
           <div>
-            <div className="w-full rounded rounded-2xl p-4">
-              <div className="md:flex md:gap-8">
-                <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3">
-                  <div className="mb-2 text-md text-nrvPrimaryGreen font-medium">
-                    Tenant Personal Information
-                  </div>
-                  <div className="mb-2">
-                    <p className="text-sm text-nrvGreyBlack">
-                      {tenantDetails?.data?.finalResult?.applicant?.firstName}{" "}
+            <div className="w-full">
+              <div className="md:gap-8">
+                <div className="grid md:grid-cols-5 grid-cols-2 gap-4 border-r border-l border-b border-t-0 rounded-l-xl rounded-r-xl  p-4 text-sm">
+                  <div className="text-[#101928]">
+                    <p className="text-[#475367] text-xs">Tenant Name</p>
+                    <p className="font-semibold text-[#101928]">
+                      {" "}
+                      {
+                        tenantDetails?.data?.finalResult?.applicant?.firstName
+                      }{" "}
                       {tenantDetails?.data?.finalResult?.applicant?.lastName}
                     </p>
                   </div>
-                  <div className="mb-2">
-                    <p className="text-sm text-nrvPrimaryGreen underline">
+                  <div className="text-[#101928]">
+                    <p className="text-[#475367] text-xs">Tenant Email</p>
+                    <p className="text-[#1D2739] pt-1.5 text-[13px]">
+                      {" "}
                       {tenantDetails?.data?.finalResult?.applicant?.email}
                     </p>
-                  </div>
-                  <div className="mb-2">
-                    <p className="text-sm text-nrvGreyBlack">
+                    <p className="pt-1.5 text-[11px]">
                       {tenantDetails?.data?.finalResult?.applicant
                         ?.phoneNumber || "No phone number provided yet"}
                     </p>
                   </div>
-                  <div className="mb-4">
-                    <h2 className="text-sm font-medium text-nrvPrimaryGreen">
-                      NIN
-                    </h2>
-                    <div className="flex items-center gap-3">
-                      <span className="text-md text-nrvGreyBlack">
-                        {isVisible
-                          ? tenantDetails?.data?.finalResult?.applicant?.nin
-                          : "****************"}
-                      </span>
-                      <button
-                        onClick={toggleVisibility}
-                        className="text-blue-500"
-                      >
-                        {isVisible ? (
-                          <IoEyeOff className="w-5 h-5 text-nrvPrimaryGreen" />
-                        ) : (
-                          <IoEye className="w-5 h-5 text-nrvPrimaryGreen" />
-                        )}
-                      </button>
-                    </div>
+                  {/* <div>
+                    <p className="text-[#475367] text-xs mb-2">Tenant Type</p>
+                    <p className="text-[#1D2739] pt-1.5 text-[13px]">{data.tenantType}</p>
+                  </div> */}
+                  <div>
+                    <p className="text-[#475367] text-xs">
+                      Rent Starts on
+                    </p>
+                    <p className="text-[#1D2739] pt-1.5 text-[13px]">
+                      {formatDateToWords(
+                        tenantDetails?.data?.finalResult?.rentStartDate
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[#475367] text-xs">
+                      Rent Expires on
+                    </p>
+                    <p className="text-[#1D2739] pt-1.5 text-[13px]">
+                      {formatDateToWords(
+                        tenantDetails?.data?.finalResult?.rentEndDate
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[#475367] text-xs">
+                      Tenancy Duration
+                    </p>
+                    <p className="text-[#1D2739] pt-1.5 text-[13px]">
+                      {calculateDateDifference(
+                        tenantDetails?.data?.finalResult?.rentStartDate,
+                        tenantDetails?.data?.finalResult?.rentEndDate
+                      )}
+                    </p>
                   </div>
                 </div>
-                <div className="md:w-1/3 w-full bg-white shadow-md rounded-lg p-3 relative">
-                  <div className="mb-8 text-md text-nrvPrimaryGreen font-medium">
-                    Rent Tenure
+
+                <div className="flex flex-col md:flex-row gap-4 mt-6 w-full">
+                  <div
+                    onClick={() => setOpenAddTenantModal(true)}
+                    className="flex-1 flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 cursor-pointer transition duration-300"
+                  >
+                    <span className="text-sm font-medium text-nrvGreyBlack">
+                      Extend Rent Tenure
+                    </span>
+                    <span className="text-nrvPrimaryGreen hover:underline text-sm">
+                      Click here
+                    </span>
                   </div>
-                  {tenantDetails?.data?.finalResult?.rentStartDate ? (
-                    <div>
-                      <div className="relative flex items-center justify-between">
-                        <div className="date-section text-center flex-grow">
-                          <p className="text-xs font-medium">Rent Start Date</p>
-                          <hr className="my-2 border-t-2 border-gray-300" />
-                          <p className="text-xs text-nrvGreyBlack">
-                            {formatDateToWords(
-                              tenantDetails?.data?.finalResult?.rentStartDate
-                            )}
-                          </p>
-                        </div>
-                        <div className="absolute inset-x-0 flex justify-center">
-                          <div className="arrow"></div>
-                        </div>
-                        <div className="date-section text-center flex-grow">
-                          <p className="text-xs font-medium">Rent End Date</p>
-                          <hr className="my-2 border-t-2 border-gray-300" />
-                          <p className="text-xs text-red-500">
-                            {formatDateToWords(
-                              tenantDetails?.data?.finalResult?.rentEndDate
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-4 text-sm text-nrvPrimaryGreen text-center font-medium">
-                        {calculateDateDifference(
-                          tenantDetails?.data?.finalResult?.rentStartDate,
-                          tenantDetails?.data?.finalResult?.rentEndDate
-                        )}
-                      </div>
+                  <div
+                    onClick={() => setOpenTenancyModal(true)}
+                    className="flex-1 flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 cursor-pointer transition duration-300"
+                  >
+                    <span className="text-sm font-medium text-nrvGreyBlack">
+                      End Rent Tenure
+                    </span>
+                    <span className="text-nrvPrimaryGreen hover:underline text-sm">
+                      Click here
+                    </span>
+                  </div>
+
+                  {/* Upload or View Agreement */}
+                  {tenantDetails?.data?.agreementDocument === null ? (
+                    <div
+                      onClick={() => setOpenUploadAgreementDocsModal(true)}
+                      className="flex-1 flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 cursor-pointer transition duration-300"
+                    >
+                      <span className="text-sm font-medium text-nrvGreyBlack">
+                        Upload Agreement Documents
+                      </span>
+                      <span className="text-nrvPrimaryGreen hover:underline text-sm">
+                        Click here
+                      </span>
                     </div>
                   ) : (
-                    <div
-                      className=""
-                      onClick={() => {
-                        setOpenAssignDateModal(true);
-                      }}
-                    >
-                      <div className="text-red-600 text-sm underline text-center">
-                        Click here to set up the rent period for this tenant
+                    <div className="flex-1 flex items-center justify-between p-3 bg-green-50 border border-green-100 rounded-lg shadow-sm">
+                      <div
+                        onClick={() =>
+                          viewDocument(
+                            tenantDetails?.data?.agreementDocument
+                              ?.unsignedDocument
+                          )
+                        }
+                        className="text-sm text-green-700 underline cursor-pointer"
+                      >
+                        View Unsigned Agreement
                       </div>
                     </div>
                   )}
-                </div>
-
-                <div className="md:w-1/3 w-full bg-white shadow-lg rounded-lg p-6">
-                  <div className="flex flex-col gap-4">
-                    <div
-                      onClick={() => setOpenAddTenantModal(true)}
-                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                    >
-                      <span className="text-xs font-medium text-nrvGreyBlack">
-                        Extend Rent Tenure
-                      </span>
-                      <span className="text-blue-500 hover:underline text-sm">
-                        click here
-                      </span>
-                    </div>
-                    <div
-                      onClick={() => setOpenTenancyModal(true)}
-                      className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                    >
-                      <span className="text-xs font-medium text-nrvGreyBlack">
-                        End Rent Tenure
-                      </span>
-                      <span className="text-blue-500 hover:underline text-sm ">
-                        click here
-                      </span>
-                    </div>
-                    {tenantDetails?.data?.agreementDocument === null ? (
-                      <div
-                        onClick={() => setOpenUploadAgreementDocsModal(true)}
-                        className="flex justify-between items-center p-2 rounded-lg shadow-sm hover:bg-gray-200 transition duration-300 ease-in-out cursor-pointer"
-                      >
-                        <span className="text-xs font-medium text-nrvGreyBlack">
-                          Upload Agreement Documents
-                        </span>
-                        <span className="text-blue-500 text-sm  hover:underline">
-                          click here
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="bg-white w-full block border border-nrvGreyMediumBg p-2 rounded-md text-bg-nrvPrimaryGreen flex space-between justify-between">
-                        <div
-                          className="underline text-xs cursor-pointer"
-                          onClick={() =>
-                            viewDocument(
-                              tenantDetails?.data?.agreementDocument
-                                ?.unsignedDocument
-                            )
-                          }
-                        >
-                          {" "}
-                          View Unsigned Agreement
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
             </div>
@@ -919,7 +883,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           )}
                           onClick={() => setOpenStartDate(true)}
                           placeholder="DD-MM-YYYY"
-                          icon={<CalendarIcon width={25} height={25} fillColor="#807F94" /> }
+                          icon={
+                            <CalendarIcon
+                              width={25}
+                              height={25}
+                              fillColor="#807F94"
+                            />
+                          }
                           isDisabled={false}
                           label="Rent Start Date"
                         />
@@ -949,7 +919,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           onClick={() => setOpenEndDate(true)}
                           label="Rent End Date"
                           placeholder="DD-MM-YYYY"
-                          icon={<CalendarIcon width={25} height={25} fillColor="#807F94" />                        }
+                          icon={
+                            <CalendarIcon
+                              width={25}
+                              height={25}
+                              fillColor="#807F94"
+                            />
+                          }
                           isDisabled={false}
                         />
                       </div>

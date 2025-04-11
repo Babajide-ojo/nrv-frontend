@@ -48,7 +48,7 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             </div> */}
             <div className="col-span-2 border-t p-4">
               <p className="text-gray-500 text-xs">Description</p>
-              <p>{data?.description}</p>
+              <p>{data?.name}</p>
             </div>
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs">Number of Bedrooms</p>
@@ -58,17 +58,14 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
               <p className="text-gray-500 text-xs">Number of Bathrooms</p>
               <p>{data?.noOfBaths}</p>
             </div>
-            <div className="border-t p-4">
-              <p className="text-gray-500 text-xs">Number of Pool</p>
-              <p>{data?.noOfPools}</p>
-            </div>
+
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs">Property Type</p>
               <p>{data?.propertyType}</p>
             </div>
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs ">Rental Collection Preference</p>
-              <p className="uppercase font-medium">{data?.rentAmountMetrics}</p>
+              <p className="uppercase text-xs font-medium">{data?.rentAmountMetrics}</p>
             </div>
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs">Payment Option</p>
@@ -81,7 +78,7 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             <p className="text-gray-500 mb-2">Apartment Facilities/Amenities</p>
             <div className="flex flex-wrap gap-2">
        
-              {data?.otherAmentities?.split(",").map((item: any, index: any) => (
+              {data?.otherAmentities?.map((item: any, index: any) => (
                 <span
                   key={index}
                   className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full"
@@ -96,7 +93,7 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
         {/* Right Preview Section */}
         <div className="w-full">
           <img
-            src={data?.file}
+            src={data?.propertyId?.file}
             alt="Apartment"
             className="w-full h-[350px] object-cover rounded-xl mb-4"
           />

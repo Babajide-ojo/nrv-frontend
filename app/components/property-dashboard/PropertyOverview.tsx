@@ -9,9 +9,10 @@ import { formatDate } from "@/helpers/utils";
 
 interface Data {
   data: any;
+  img?: string;
 }
 
-const PropertyOverview: React.FC<Data> = ({ data }) => {
+const PropertyOverview: React.FC<Data> = ({ data, img }) => {
   const router = useRouter();
   return (
     <div className="font-jakarta">
@@ -31,7 +32,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                 <div className="flex w-full justify-between">
                   <div>
                     <img
-                      src={item.file}
+                      src={data?.file}
                       className="h-16 w-16 rounded-lg"
                       alt="Property"
                     />
@@ -58,7 +59,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
                     <span className="font-semibold text-[13px]">
                       Description :
                     </span>{" "}
-                    {item?.description}
+                    {item?.name}
                   </p>
                   <p className="text-xs text-gray-400">
                     Added on {formatDate(item.createdAt.slice(0, 10))}

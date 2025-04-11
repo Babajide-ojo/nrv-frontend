@@ -34,6 +34,8 @@ export const createProperty = createAsyncThunk< FormData | any, {}>(
     "property/create",
     async (formData: any, { rejectWithValue }) => {
         try {
+            console.log({formData});
+            
             const response: any = await axios.post(`${API_URL}/properties/add`, formData);
             return response.data;
         } catch (error: any) {

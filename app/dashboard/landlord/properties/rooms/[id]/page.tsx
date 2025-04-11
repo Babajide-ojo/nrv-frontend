@@ -325,8 +325,9 @@ const SingleRoom = () => {
                         Occupied by Tenant
                       </div>
                     </div>
-                    <CurrentTenantDashboard data={singleRoom} />
+
                     <PropertyUnitDetails data={singleRoom} />
+                    <CurrentTenantDashboard data={singleRoom} />
                   </div>
                 )}
 

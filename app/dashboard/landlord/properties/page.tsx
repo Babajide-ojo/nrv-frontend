@@ -270,7 +270,7 @@ const PropertiesScreen = () => {
                     <div className="mt-4">
                       <h3 className="text-md font-semibold">{property.name}</h3>
                       <p className="text-md text-[#101928] w-4/5 h-14">
-                        {property.streetAddress}
+                        {property.streetAddress},  {property.city},  {property.state}
                       </p>
                       <p className="text-xs text-gray-400 font-light">
                         Added on {formatDate(property.createdAt.slice(0, 10))}

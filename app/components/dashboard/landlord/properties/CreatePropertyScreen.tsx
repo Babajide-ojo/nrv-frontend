@@ -574,7 +574,7 @@ const CreatePropertyScreen = () => {
     "Home Theatres",
     "Elevator",
   ].map((amenity, i) => {
-    const amenities = Array.isArray(unit.otherAmenities) ? unit.otherAmenities : [];
+    const amenities = Array.isArray(unit.otherAmentities) ? unit.otherAmentities : [];
 
     return (
       <label key={i} className="flex items-center space-x-2 cursor-pointer">
@@ -585,7 +585,7 @@ const CreatePropertyScreen = () => {
             const updatedAmenities = e.target.checked
               ? [...amenities, amenity]
               : amenities.filter((a) => a !== amenity);
-            handleUnitChange(index, "otherAmenities", updatedAmenities);
+            handleUnitChange(index, "otherAmentities", updatedAmenities);
           }}
           className="peer hidden"
         />

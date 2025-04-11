@@ -408,7 +408,7 @@ const CreatePropertyScreen = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                               <InputField
                                 label="Description"
-                                value={unit.name}
+                                value={unit?.name}
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -555,58 +555,59 @@ const CreatePropertyScreen = () => {
                               />
                             </div>
 
-                            <div className="mt-4">
-                              <p className="text-sm font-medium mb-2">
-                                Other Amentities
-                              </p>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {[
-                                  "Parking Space",
-                                  "Wi-Fi/Internet",
-                                  "Gym/Fitness Centre",
-                                  "Outdoor living area",
-                                  "Security",
-                                  "Spa",
-                                  "Power Backup",
-                                  "Swimming Pool",
-                                  "Major appliances",
-                                  "Smart Technology",
-                                  "Smart Wine Cellar",
-                                  "Home Theatres",
-                                  "Elevator",
-                                ].map((amenity, index) => (
-                                  <label         key={index} className="flex items-center space-x-2 cursor-pointer">
-                                  <input
-                          
-                                    type="checkbox"
-                                    checked={unit.otherAmentities.includes(amenity)}
-                                    onChange={(e) => {
-                                      const updatedotherAmentities = e.target.checked
-                                        ? [...unit.otherAmentities, amenity]
-                                        : unit.otherAmentities.filter((a) => a !== amenity);
-                                      handleUnitChange(index, "otherAmentities", updatedotherAmentities);
-                                    }}
-                                    className="peer hidden" // hide native checkbox
-                                  />
-                                  <div className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-green-600 transition">
-                                    {unit.otherAmentities.includes(amenity) && (
-                                      <svg
-                                        className="w-3 h-3 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                      </svg>
-                                    )}
-                                  </div>
-                                  <span className="text-sm">{amenity}</span>
-                                </label>
-                                
-                                ))}
-                              </div>
-                            </div>
+                            <p className="text-sm font-medium mb-2">
+  Other Amenities
+</p>
+<div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+  {[
+    "Parking Space",
+    "Wi-Fi/Internet",
+    "Gym/Fitness Centre",
+    "Outdoor living area",
+    "Security",
+    "Spa",
+    "Power Backup",
+    "Swimming Pool",
+    "Major appliances",
+    "Smart Technology",
+    "Smart Wine Cellar",
+    "Home Theatres",
+    "Elevator",
+  ].map((amenity, i) => {
+    const amenities = Array.isArray(unit.otherAmenities) ? unit.otherAmenities : [];
+
+    return (
+      <label key={i} className="flex items-center space-x-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={amenities.includes(amenity)}
+          onChange={(e) => {
+            const updatedAmenities = e.target.checked
+              ? [...amenities, amenity]
+              : amenities.filter((a) => a !== amenity);
+            handleUnitChange(index, "otherAmenities", updatedAmenities);
+          }}
+          className="peer hidden"
+        />
+        <div className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-green-600 transition">
+          {amenities.includes(amenity) && (
+            <svg
+              className="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          )}
+        </div>
+        <span className="text-sm">{amenity}</span>
+      </label>
+    );
+  })}
+</div>
+
                           </div>
                         ))}
 

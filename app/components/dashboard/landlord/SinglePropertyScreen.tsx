@@ -261,25 +261,25 @@ const vacancyRate = ((vacantRooms / totalRooms) * 100).toFixed(0);
 const summaryStats = [
   {
     label: "Active Tenants",
-    value: `${occupancyRate}% Occupied`,
+    value: `${occupiedRooms} Occupied`,
     detail: `${occupiedRooms} out of ${totalRooms} units occupied`,
     color: "text-green-600",
   },
   {
     label: "Number of Vacant Apartment",
-    value: `${vacancyRate}% Vacant`,
+    value: `${vacantRooms} Vacant`,
     detail: `${vacantRooms} out of ${totalRooms} units vacant`,
     color: "text-yellow-600",
   },
   {
     label: "Number of Selected Applicants",
-    value: "N/A",
+    value: "0",
     detail: "Applicant data not available",
     color: "text-gray-500",
   },
   {
     label: "Click Leads",
-    value: "N/A",
+    value: "0",
     detail: "Lead tracking not enabled",
     color: "text-gray-500",
   },
@@ -321,7 +321,7 @@ const summaryStats = [
                   variant="light"
                   className="px-6 py-2 rounded-md flex gap-2 justify-center"
                   onClick={() =>
-                    router.push("/dashboard/landlord/properties/create")
+                    router.push(`/dashboard/landlord/properties/update/${singleProperty._id}`)
                   }
                 >
                   Update Property Info
@@ -350,7 +350,7 @@ const summaryStats = [
                     {stat?.label}
                   </p>
                   <p className={`text-xl text-[#03442C] font-medium`}>
-                    {stat?.value | 0}
+                    {stat?.value}
                   </p>
                   <p className="text-[#8D9196] text-xs font-lighter">
                     {stat?.detail}

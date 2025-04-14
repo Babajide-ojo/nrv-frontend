@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { formatDate } from "@/helpers/utils";
+import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: number;
@@ -273,7 +273,7 @@ const PropertiesScreen = () => {
                         {property.streetAddress},  {property.city},  {property.state}
                       </p>
                       <p className="text-xs text-gray-400 font-light">
-                        Added on {formatDate(property.createdAt.slice(0, 10))}
+                        Added on {formatDateToWords(property.createdAt)}
                       </p>
                       <div className="flex gap-2 w-full mt-4 border-t pt-2">
                         <div className="w-1/12">

@@ -48,7 +48,7 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             </div> */}
             <div className="col-span-2 border-t p-4">
               <p className="text-gray-500 text-xs">Description</p>
-              <p>{data?.name}</p>
+              <p>{data?.description}</p>
             </div>
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs">Number of Bedrooms</p>
@@ -60,8 +60,12 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             </div>
 
             <div className="border-t p-4">
-              <p className="text-gray-500 text-xs">Property Type</p>
-              <p>{data?.propertyType}</p>
+              <p className="text-gray-500 text-xs">Apartment Type</p>
+              <p>{data?.apartmentType}</p>
+            </div>
+            <div className="border-t p-4">
+              <p className="text-gray-500 text-xs">Apartment Style</p>
+              <p>{data?.apartmentStyle}</p>
             </div>
             <div className="border-t p-4">
               <p className="text-gray-500 text-xs ">Rental Collection Preference</p>
@@ -76,7 +80,7 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
           {/* Amenities */}
           <div>
             <p className="text-gray-500 mb-2">Apartment Facilities/Amenities</p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-6">
        
               {data?.otherAmentities?.map((item: any, index: any) => (
                 <span

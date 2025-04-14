@@ -5,7 +5,7 @@ import Button from "../shared/buttons/Button";
 import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { formatDate } from "@/helpers/utils";
+import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 interface Data {
   data: any;
@@ -59,10 +59,10 @@ const PropertyOverview: React.FC<Data> = ({ data, img }) => {
                     <span className="font-semibold text-[13px]">
                       Description :
                     </span>{" "}
-                    {item?.name}
+                    {item?.description}
                   </p>
                   <p className="text-xs text-gray-400">
-                    Added on {formatDate(item.createdAt.slice(0, 10))}
+                    Added on {formatDateToWords(item.createdAt)}
                   </p>
                   <div className="flex gap-2 w-full mt-4 justify-between border-t pt-2">
                     <div className="text-[13px] font-medium text-[#1D2227]">

@@ -20,7 +20,7 @@ import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
 
 interface UnitData {
-  name: string;
+  description: string;
   rentAmount: string;
   noOfRooms: string;
   noOfBaths: string;
@@ -66,7 +66,7 @@ const CreatePropertyScreen = () => {
     zipCode: "",
     units: [
       {
-        name: "",
+        description: "",
         rentAmount: "",
         noOfRooms: "",
         noOfBaths: "",
@@ -79,11 +79,9 @@ const CreatePropertyScreen = () => {
     ],
   });
 
-
-
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
-  
+
     if (!propertyData.nameOfProperty.trim()) {
       errors.nameOfProperty = "Property name is required";
     }
@@ -102,29 +100,27 @@ const CreatePropertyScreen = () => {
     if (!selectedFiles || selectedFiles.length === 0) {
       errors.file = "A file is required";
     }
-  
+
     if (!propertyData.units || propertyData.units.length === 0) {
       errors.units = "At least one room/unit must be added";
     } else {
       propertyData.units.forEach((unit, index) => {
-        if (!unit.name?.trim() || !unit.rentAmount?.trim()) {
-          errors[`unit-${index}`] = `Room ${index + 1}: Name and rent are required`;
+        if (!unit.description?.trim() || !unit.rentAmount?.trim()) {
+          errors[`unit-${index}`] = `Room ${
+            index + 1
+          }: Name and rent are required`;
         }
       });
     }
 
-  
     // ✅ Show a single toast if any errors exist
     if (Object.keys(errors).length > 0) {
       toast.error("All fields are required");
       return false;
     }
-  
+
     return true;
   };
-  
-  
-  
 
   const handleNextAndVerify = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -134,6 +130,7 @@ const CreatePropertyScreen = () => {
     formData.append("nameOfProperty", propertyData.nameOfProperty);
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
+   // formData.append("name", buildingType.name);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
@@ -153,7 +150,7 @@ const CreatePropertyScreen = () => {
         zipCode: "",
         units: [
           {
-            name: "",
+            description: "",
             rentAmount: "",
             noOfRooms: "",
             noOfBaths: "",
@@ -208,7 +205,7 @@ const CreatePropertyScreen = () => {
       units: [
         ...prevData.units,
         {
-          name: "",
+          description: "",
           rentAmount: "",
           noOfRooms: "",
           noOfBaths: "",
@@ -269,7 +266,7 @@ const CreatePropertyScreen = () => {
                 encType="multipart/form-data"
               >
                 <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">
-                  <div className="flex justify-between">
+                  <div className="md:flex md:justify-between block">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">
                         Add New Property
@@ -366,7 +363,10 @@ const CreatePropertyScreen = () => {
                           value: propertyData.state,
                         }}
                         onChange={(val: any) =>
-                          setPropertyData({ ...propertyData, state: val?.value })
+                          setPropertyData({
+                            ...propertyData,
+                            state: val?.value,
+                          })
                         }
                         options={nigerianStates}
                         placeholder="Select State"
@@ -388,35 +388,35 @@ const CreatePropertyScreen = () => {
                             key={index}
                             className="border p-4 rounded-xl mb-6 bg-white shadow-sm"
                           >
-                       <div className="flex justify-between">
-                       <h3 className="font-semibold mb-2">
-                              Unit {index + 1}
-                            </h3>
+                            <div className="flex justify-between">
+                              <h3 className="font-semibold mb-2">
+                                Unit {index + 1}
+                              </h3>
 
-                            {index > 0 && (
+                              {index > 0 && (
                                 <Button
-                                variant="light"
-                                className="text-red-500"
-                                type="button"
-                                onClick={()=>removeUnit(index)}
-                              >
-                                - Remove Unit
-                              </Button>
-                            )}
-                       </div>
+                                  variant="light"
+                                  className="text-red-500"
+                                  type="button"
+                                  onClick={() => removeUnit(index)}
+                                >
+                                  - Remove Unit
+                                </Button>
+                              )}
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                               <InputField
                                 label="Description"
-                                value={unit?.name}
+                                value={unit?.description}
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
-                                    "name",
+                                    "description",
                                     e.target.value
                                   )
                                 }
-                                name={`name-${index}`}
+                                name={`descriotion-${index}`}
                               />
 
                               <InputField
@@ -556,58 +556,75 @@ const CreatePropertyScreen = () => {
                             </div>
 
                             <p className="text-sm font-medium mb-2">
-  Other Amenities
-</p>
-<div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-  {[
-    "Parking Space",
-    "Wi-Fi/Internet",
-    "Gym/Fitness Centre",
-    "Outdoor living area",
-    "Security",
-    "Spa",
-    "Power Backup",
-    "Swimming Pool",
-    "Major appliances",
-    "Smart Technology",
-    "Smart Wine Cellar",
-    "Home Theatres",
-    "Elevator",
-  ].map((amenity, i) => {
-    const amenities = Array.isArray(unit.otherAmentities) ? unit.otherAmentities : [];
+                              Other Amenities
+                            </p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                              {[
+                                "Parking Space",
+                                "Wi-Fi/Internet",
+                                "Gym/Fitness Centre",
+                                "Outdoor living area",
+                                "Security",
+                                "Spa",
+                                "Power Backup",
+                                "Swimming Pool",
+                                "Major appliances",
+                                "Smart Technology",
+                                "Smart Wine Cellar",
+                                "Home Theatres",
+                                "Elevator",
+                              ].map((amenity, i) => {
+                                const amenities = Array.isArray(
+                                  unit.otherAmentities
+                                )
+                                  ? unit.otherAmentities
+                                  : [];
 
-    return (
-      <label key={i} className="flex items-center space-x-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={amenities.includes(amenity)}
-          onChange={(e) => {
-            const updatedAmenities = e.target.checked
-              ? [...amenities, amenity]
-              : amenities.filter((a) => a !== amenity);
-            handleUnitChange(index, "otherAmentities", updatedAmenities);
-          }}
-          className="peer hidden"
-        />
-        <div className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-green-600 transition">
-          {amenities.includes(amenity) && (
-            <svg
-              className="w-3 h-3 text-white"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          )}
-        </div>
-        <span className="text-sm">{amenity}</span>
-      </label>
-    );
-  })}
-</div>
-
+                                return (
+                                  <label
+                                    key={i}
+                                    className="flex items-center space-x-2 cursor-pointer"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={amenities.includes(amenity)}
+                                      onChange={(e) => {
+                                        const updatedAmenities = e.target
+                                          .checked
+                                          ? [...amenities, amenity]
+                                          : amenities.filter(
+                                              (a) => a !== amenity
+                                            );
+                                        handleUnitChange(
+                                          index,
+                                          "otherAmentities",
+                                          updatedAmenities
+                                        );
+                                      }}
+                                      className="peer hidden"
+                                    />
+                                    <div className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-green-600 transition">
+                                      {amenities.includes(amenity) && (
+                                        <svg
+                                          className="w-3 h-3 text-white"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M5 13l4 4L19 7"
+                                          />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <span className="text-sm">{amenity}</span>
+                                  </label>
+                                );
+                              })}
+                            </div>
                           </div>
                         ))}
 

@@ -321,9 +321,17 @@ const SingleRoom = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="text-xs text-orange-500 bg-orange-100 px-3 py-1 rounded-full mt-4 md:mt-0">
-                        Occupied by Tenant
-                      </div>
+                      <button
+                      className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
+                        singleRoom?.assignedToTenant
+                          ? "bg-[#FFF1DA] text-[#F3A218]"
+                          : "text-[#E7F6EC] bg-[#099137]"
+                      }`}
+                    >
+                      {singleRoom?.assignedToTenant
+                        ? "Occupied By Tenant"
+                        : "Currently Vacant"}
+                    </button>
                     </div>
 
                     <PropertyUnitDetails data={singleRoom} />

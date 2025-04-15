@@ -18,6 +18,7 @@ import SelectField from "@/app/components/shared/input-fields/SelectField";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
+import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
 
 interface UnitData {
   description: string;
@@ -43,12 +44,12 @@ interface PropertyData {
 
 const CreatePropertyScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [fileError, setFileError] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<any>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [properties, setProperties] = useState([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [currentAmountStep, setCurrentAmountStep] = useState(0);
   const [buildingType, setBuildingType] = useState<any>({
     label: "Residential",
@@ -130,7 +131,7 @@ const CreatePropertyScreen = () => {
     formData.append("nameOfProperty", propertyData.nameOfProperty);
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
-   // formData.append("name", buildingType.name);
+    // formData.append("name", buildingType.name);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
@@ -289,7 +290,8 @@ const CreatePropertyScreen = () => {
                         className="px-6 py-1.5 rounded-md"
                         isLoading={loading}
                         disabled={loading}
-                        type="submit"
+                        onClick={() => setShowModal(true)}
+                        // type="submit"
                       >
                         {loading ? "Submitting" : "Submit"}
                       </Button>
@@ -640,6 +642,14 @@ const CreatePropertyScreen = () => {
                     </div>
                   </div>
                 </div>
+                <ConfirmationModal
+                  isOpen={showModal}
+                  heading="Add New Property"
+                  message={`Do you want to add a new property Listings?`}
+                  subMessage="If you leave this page, any changes you made will be lost if you do not save them."
+                  onCancel={() => setShowModal(false)}
+                  onConfirm={()=>handleNextAndVerify}
+                />
               </form>
             )}
             {currentAmountStep === 1 && <PropertySuccess />}

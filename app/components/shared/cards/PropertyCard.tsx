@@ -31,7 +31,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
       <div className="pt-4" style={{ maxHeight: "100px", minHeight: "100px" }}>
         <h2 className="text-lg font-medium text-nrvGreyBlack pt-2">
-          {property.propertyId.city}, {property.propertyId.state}
+          {property?.propertyId?.city}, {property?.propertyId?.state}
         </h2>
         <h2 className="text-sm text-nrvLightGrey pt-2 font-light">
           {address}

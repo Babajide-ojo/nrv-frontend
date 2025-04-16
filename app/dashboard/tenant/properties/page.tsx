@@ -195,7 +195,7 @@ const TenantPropertiesScreen = () => {
                   >
                     <PropertyCard
                       imageUrl={property?.file}
-                      address={property?.propertyId.streetAddress}
+                      address={property?.propertyId?.streetAddress}
                       rentAmount={property?.rentAmount}
                       property={property}
                     />

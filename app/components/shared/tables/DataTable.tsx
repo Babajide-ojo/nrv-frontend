@@ -23,6 +23,7 @@ interface DataTableProps {
   endpoint: string;
   columns: ColumnConfig[];
   filters?: FilterConfig[];
+  status?: string
   rowActions?: (row: any) => JSX.Element;
 }
 
@@ -30,6 +31,7 @@ export default function DataTable({
   endpoint,
   columns,
   filters = [],
+  status,
   rowActions,
 }: DataTableProps) {
   const [data, setData] = useState<any[]>([]);
@@ -58,14 +60,12 @@ export default function DataTable({
     params.append('page', currentPage.toString());
     params.append('limit', pageSize.toString());
 
-    const res = await fetch(`${endpoint}?${params.toString()}`);
+    const res = await fetch(`${endpoint}?${params.toString()}${status ? `&status=${status}` : ""}` );
     const json = await res.json();
-
     console.log({json});
     
-
-    setData(json.data.data|| json || []);
-    setTotalCount(json.data.pagination.total || 0);
+    setData(json?.data || json?.data?.data || []);
+    setTotalCount(json?.pagination?.total || json?.data?.pagination?.total || 0);
     setLoading(false);
   };
 
@@ -164,7 +164,7 @@ export default function DataTable({
       </div>
 
       {/* Pagination with page numbers */}
-      {!loading && totalPages > 1 && (
+      {!loading && totalPages > 0 && (
         <div className="flex justify-end items-center mt-4 gap-2 flex-wrap">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

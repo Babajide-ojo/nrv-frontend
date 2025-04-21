@@ -54,7 +54,7 @@ const links = [
   },
   {
     name: "Maintenance",
-    route: "/dashboard/landlord/maintenance",
+    route: "/dashboard/landlord/properties/maintenance",
     icon: <FiTool />,
   },
   {

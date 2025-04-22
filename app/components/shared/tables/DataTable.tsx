@@ -148,7 +148,7 @@ export default function DataTable({
                     </td>
                   ))}
                   {rowActions && (
-                    <td className="px-4 py-3 text-[12px]">{rowActions(row)}</td>
+                    <td className="px-4 py-3 text-[12px]">{rowActions(row._id)}</td>
                   )}
                 </tr>
               ))

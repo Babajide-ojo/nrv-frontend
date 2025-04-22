@@ -50,6 +50,23 @@ const Maintainance = () => {
     setActiveTab(status);
   };
 
+
+  const handleRowAction = (id: string) => {
+    return (
+      <div className="flex gap-2">
+        <p className="text-sm text-nrvPrimaryGreen font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
+          View
+        </p>
+  
+      </div>
+    );
+  };
+
+  const handleDelete = (id: string) => {
+    // handle delete logic here
+    console.log('Deleting user with ID:', id);
+  };
+
   useEffect(() => {
     if (user?.user?._id) {
       fetchData();
@@ -200,6 +217,7 @@ const Maintainance = () => {
             </div>
 
             <DataTable
+            rowActions={handleRowAction}
               key={activeTab} 
               endpoint={`${API_URL}/maintenance/get-landlord-maintenance/${user?.user?._id}`}
               status={activeTab}

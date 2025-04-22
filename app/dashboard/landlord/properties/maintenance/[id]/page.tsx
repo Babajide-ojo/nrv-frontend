@@ -229,7 +229,7 @@ const SingleMaintainance = () => {
                   </p>
                   <p className="text-sm text-gray-500 p-4 leading-8">
                     Your maintenance request has been received by the property
-                    owner. You'll be notified once assigned to a technician.
+                    owner. You will be notified once assigned to a technician.
                   </p>
                   <div className="flex justify-end bg-gray-50 p-4">
                     <Button

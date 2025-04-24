@@ -45,6 +45,27 @@ export const createMaintenance = createAsyncThunk<FormData, {}>(
   }
 );
 
+export const updateMaintenance = createAsyncThunk<any, { id: string; formData: any }>(
+  "maintenance/update",  // Changed the action type to "maintenance/update"
+  async (payload: { id: string; formData: any }, { rejectWithValue }) => {
+    try {
+      // Make sure the URL includes the dynamic 'id' as part of the request
+      const response: any = await axios.put(
+        `${API_URL}/maintenance/update/${JSON.parse(payload.id)}`, // Use the payload.id in the URL
+        payload.formData
+      );
+      return response.data;
+    } catch (error: any) {
+      // Check for error response message
+      if (error.response?.data?.message) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue("An error occurred, please try again later");
+      }
+    }
+  }
+);
+
 
 export const getMaintenanceByUserId = createAsyncThunk<any, {}>(
   "maintenance/get",

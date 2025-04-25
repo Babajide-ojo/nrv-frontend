@@ -310,6 +310,7 @@ import Image from "next/image";
 import {
   getMaintenanceById,
   markIssueAsResolved,
+  updateMaintenance,
 } from "@/redux/slices/maintenanceSlice";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
 import { useDispatch } from "react-redux";
@@ -327,6 +328,8 @@ const SingleMaintainance = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isResolvedModalOpen, setIsResolvedModalOpen] =
+    useState<boolean>(false);
   const [maintenance, setMaintenance] = useState<any>({});
 
   const fetchData = async () => {
@@ -340,23 +343,25 @@ const SingleMaintainance = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleAsResolved = async () => {
     try {
       setIsLoading(true);
-      const data = await dispatch(markIssueAsResolved({ id }) as any).unwrap();
-      if (data.response?.statusCode === 400) {
-        toast.error(data.response.message);
-      } else {
-        setMaintenance(data?.payload?.data);
-        router.push(
-          `/dashboard/tenant/rented-properties/maintenance/single/${id}`
-        );
-      }
+      const response = await dispatch(
+        updateMaintenance({
+          id: JSON.stringify(id),
+          formData: {
+            status: "Resolved",
+          },
+        }) as any
+      );
+      setMaintenance(response?.payload?.data);
+      setIsLoading(false);
+      setIsResolvedModalOpen(false);
+      toast.success("Maintenanace As Resolved Successfully");
     } catch (error) {
-      toast.error("Could not mark issue as resolved.");
+      toast.error("Failed to fetch maintenance data.");
     } finally {
       setIsLoading(false);
-      setIsOpen(false);
     }
   };
 
@@ -365,7 +370,11 @@ const SingleMaintainance = () => {
   }, []);
 
   return (
-    <LandLordLayout>
+    <LandLordLayout
+      path="Maintenance"
+      mainPath="Single Maintenance"
+      subMainPath="Assign To Expert"
+    >
       <div className="p-6 max-w-[1200px] mx-auto font-jakarta">
         {/* Header */}
         <div className="flex items-center gap-2 text-nrvGreyBlack">
@@ -438,7 +447,7 @@ const SingleMaintainance = () => {
                     <span className="block font-semibold text-[11px]">
                       Request ID:
                     </span>
-                    <span>{maintenance?.ticketId || "#MR-1024"}</span>
+                    <span>#MR {maintenance?.maintenanceId}</span>
                   </div>
                   <div>
                     <span className="block font-semibold text-red-600 text-[11px]">
@@ -468,36 +477,53 @@ const SingleMaintainance = () => {
                   <span>{maintenance?.description}</span>
                 </div>
                 <div>
-                  <span className="block font-semibold text-[11px]">
+                  <span className="block font-semibold text-[11px] mt-2">
                     Status:
                   </span>
-                  <span>{maintenance?.status || "Pending"}</span>
+                  <span
+                    className={`px-2 py-1.5 rounded rounded-full text-xs font-medium ${
+                      maintenance.status === "Resolved"
+                        ? "bg-[#F7F6F2] text-green-700"
+                        : "bg-[#F7F6F2] text-yellow-700"
+                    }`}
+                  >
+                    {maintenance.status || "Pending"}
+                  </span>
                 </div>
                 <div>
                   <span className="block font-semibold text-[11px]">
-                    Tenant Availability:
+                    {maintenance.status === "Resolved" && "Date Resolved"}{" "}
+                    {maintenance.status === "Declined" && "Date Declined"}
                   </span>
-                  <span>{maintenance?.availability}</span>
+                  <span>
+                    {formatDate(maintenance?.updatedAt?.slice(0, 10))}
+                  </span>
                 </div>
               </div>
 
               <div className="flex gap-3 mt-4">
-                <Button
-                  className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
-                  onClick={() => setIsOpen(true)}
-                >
-                  Mark As Resolved
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border border-red-500 text-red-500 hover:text-red-500 rounded-md text-[12px] font-medium"
-                >
-                  Notify Tenant
-                </Button>
+                {maintenance.status === "New" && (
+                  <Button
+                    className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
+                    onClick={() => {
+                      setIsResolvedModalOpen(true);
+                    }}
+                  >
+                    Mark As Resolved
+                  </Button>
+                )}
+                {maintenance.status === "New" && (
+                  <Button
+                    variant="outline"
+                    className="border border-red-500 text-red-500 hover:text-red-500 rounded-md text-[12px] font-medium"
+                  >
+                    Decline Request
+                  </Button>
+                )}
               </div>
             </div>
             {/* Right: Assignment + Timeline */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 mt-4">
               <div className="border rounded-xl p-4 shadow-sm">
                 <h3 className="font-medium text-md text-[#101828] mb-2">
                   Assignment Card
@@ -512,11 +538,15 @@ const SingleMaintainance = () => {
                     </p>
                     <p className="text-sm text-[#475467]">
                       Contact:{" "}
-                      <span className="text-gray-500">{maintenance.assigneePhoneNumber}</span>
+                      <span className="text-gray-500">
+                        {maintenance.assigneePhoneNumber}
+                      </span>
                     </p>
                     <p className="text-sm text-[#475467]">
                       Scheduled Date:{" "}
-                      <span className="text-gray-500">{formatDate( maintenance.scheduledDate.slice(0, 10))}</span>
+                      <span className="text-gray-500">
+                        {formatDate(maintenance.scheduledDate.slice(0, 10))}
+                      </span>
                     </p>
                   </div>
                 ) : (
@@ -531,17 +561,19 @@ const SingleMaintainance = () => {
                 )}
               </div>
 
-              <div className="border rounded-xl p-4 shadow-sm">
+              <div className="border rounded-xl p-4 shadow-sm ">
                 <h3 className="font-medium text-md text-[#101828] mb-2">
                   Timeline
                 </h3>
-                <p className="text-sm text-[#475467]">
-                  Ticket opened: {maintenance?.createdAt}
-                </p>
-                <p className="text-sm text-[#475467]">
-                  Diagnosed & Assigned: -
-                </p>
-                <p className="text-sm text-[#475467]">Repair Completed: -</p>
+                <div className="space-y-6">
+                  <p className="text-sm text-[#475467]">
+                    Ticket opened: {maintenance?.createdAt}
+                  </p>
+                  <p className="text-sm text-[#475467]">
+                    Diagnosed & Assigned: -
+                  </p>
+                  <p className="text-sm text-[#475467]">Repair Completed: -</p>
+                </div>
               </div>
 
               <div className="border rounded-xl shadow-sm">
@@ -588,7 +620,44 @@ const SingleMaintainance = () => {
           )}
         </div>
         <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <AssignMaintenanceRequest onCancel={() => setIsOpen(false)}  onSuccess={() => () => setIsOpen(false)}/>
+          <AssignMaintenanceRequest
+            onCancel={() => setIsOpen(false)}
+            onSuccess={() => () => setIsOpen(false)}
+          />
+        </CenterModal>
+
+        <CenterModal
+          isOpen={isResolvedModalOpen}
+          onClose={() => setIsResolvedModalOpen(false)}
+        >
+          <div className="p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-gray-800 text-center">
+              Update Maintenance Status
+            </h2>
+
+            <div className="text-base text-center">
+              This action will mark the request as{" "}
+              <span className="font-medium text-green-700">Resolved</span>.
+            </div>
+
+            <div className="flex justify-end space-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsResolvedModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleAsResolved()}
+                disabled={isLoading}
+                type="submit"
+                className="bg-green-700 hover:bg-green-800 text-white"
+              >
+                {isLoading ? "Updating..." : "Submit"}
+              </Button>
+            </div>
+          </div>
         </CenterModal>
       </div>
     </LandLordLayout>

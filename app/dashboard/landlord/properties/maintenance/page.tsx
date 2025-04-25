@@ -54,7 +54,7 @@ const Maintainance = () => {
   const handleRowAction = (id: string) => {
     return (
       <div className="flex gap-2">
-        <p className="text-sm text-nrvPrimaryGreen font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
+        <p className="text-sm text-[#2B892B] font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
           View
         </p>
   
@@ -81,7 +81,7 @@ const Maintainance = () => {
         <ProtectedRoute>
           <LandLordLayout mainPath="Maintenance">
             <ToastContainer />
-            <div className="space-y-12 p-4">
+            <div className="space-y-12 p-4 font-jakarta">
               {/* Header */}
               <div className="flex items-center justify-between w-full">
                 <div>
@@ -165,10 +165,11 @@ const Maintainance = () => {
               {/* Status Tabs */}
               <div className="flex gap-3">
                 <Button
+                  variant="default"
                   className={`${
-                    activeTab === "in progress"
-                      ? "bg-green-700 text-white"
-                      : "bg-white text-gray-800 border"
+                    activeTab === "New"
+                      ? "bg-green-700 text-white text-center"
+                      : "bg-white text-gray-800 border text-center"
                   }`}
                   onClick={() => handleTabClick("New")}
                 >
@@ -179,7 +180,7 @@ const Maintainance = () => {
                 </Button>
                 <Button
                   className={`${
-                    activeTab === "in-progress"
+                    activeTab === "In progress"
                       ? "bg-green-700 text-white"
                       : "bg-white text-gray-800 border"
                   }`}
@@ -192,7 +193,7 @@ const Maintainance = () => {
                 </Button>
                 <Button
                   className={`${
-                    activeTab === "resolved"
+                    activeTab === "Completed"
                       ? "bg-green-700 text-white"
                       : "bg-white text-gray-800 border"
                   }`}
@@ -206,7 +207,7 @@ const Maintainance = () => {
               </div>
 
               {/* Section Title */}
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex-col items-center gap-4 mt-2">
                 <h4 className="text-lg font-semibold">
                   Recent Maintenance Activities
                 </h4>
@@ -217,7 +218,7 @@ const Maintainance = () => {
             </div>
 
             <DataTable
-            rowActions={handleRowAction}
+              rowActions={handleRowAction}
               key={activeTab} 
               endpoint={`${API_URL}/maintenance/get-landlord-maintenance/${user?.user?._id}`}
               status={activeTab}
@@ -230,8 +231,8 @@ const Maintainance = () => {
                       <div className="text-[#101828] font-medium text-[13px]">
                         {val?.apartmentType || "N/A"}
                       </div>
-                      <div>
-                        {val?.propertyId?.streetAddress || "No address"}
+                      <div className="text-[#667085] font-light">
+                        {val?.propertyId?.streetAddress}
                       </div>
                     </div>
                   ),
@@ -256,8 +257,8 @@ const Maintainance = () => {
                     <span
                       className={`px-2 py-1 rounded text-xs font-medium ${
                         val === "Resolved"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? "bg-[#F7F6F2] text-green-700"
+                          : "bg-[#F7F6F2] text-yellow-700"
                       }`}
                     >
                       {val || "Pending"}

@@ -18,6 +18,7 @@ import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import { BsWindowSidebar } from "react-icons/bs";
 
 const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => void , onCancel?: () => void }) => {
   const [loading, setIsLoading] = useState<boolean>(false);
@@ -45,12 +46,7 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
         setIsLoading(true);
         const response =await dispatch(updateMaintenance({ id: JSON.stringify(id), formData: values }) as any).unwrap();
         setIsLoading(false);
-  
-        if (onSuccess) {
-          console.log({x: "y"});
-          onSuccess();
-        }
-        router.refresh()
+        window.location.reload();
       } catch (error) {
         console.error("Update failed:", error);
         setIsLoading(false);

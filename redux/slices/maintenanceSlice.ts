@@ -45,9 +45,9 @@ export const createMaintenance = createAsyncThunk<FormData, {}>(
   }
 );
 
-export const updateMaintenance = createAsyncThunk<any, { id: string; formData: any }>(
+export const updateMaintenance = createAsyncThunk<any, { id: any; formData: any }>(
   "maintenance/update",  // Changed the action type to "maintenance/update"
-  async (payload: { id: string; formData: any }, { rejectWithValue }) => {
+  async (payload: { id: any; formData: any }, { rejectWithValue }) => {
     try {
       // Make sure the URL includes the dynamic 'id' as part of the request
       const response: any = await axios.put(

@@ -21,6 +21,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
 import DataTable from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
+import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
 
 interface Property {
   id: string;
@@ -69,11 +70,6 @@ const SingleRoom = () => {
       setCurrentState(parseInt(savedState, 10));
     }
   }, []);
-
-  const handleTabChange = (newState: number) => {
-    setCurrentState(newState);
-    localStorage.setItem("currentRoomState", newState.toString()); // Save current state
-  };
 
   const updateRoom = async () => {
     const payload = {
@@ -144,9 +140,7 @@ const SingleRoom = () => {
                     </div>
                     <div className="bg-[#E9F4E7] border-t border-l border-r border-[#E9F4E7] rounded-l rounded-r p-2 flex flex-col md:flex-row items-start md:items-center justify-between">
                       <div className="flex gap-2">
-                        <div>
-                       
-                        </div>
+                        <div></div>
 
                         <div className="pt-1">
                           <p className="font-medium text-sm text-[#101928]">
@@ -198,15 +192,36 @@ const SingleRoom = () => {
                       </TabsContent>
                       <TabsContent value="maintenance">
                         <DataTable
+                          rowActions={(id: string) => {
+                            return (
+                              <div className="flex gap-2">
+                                <p
+                                  className="text-xs text-[#2B892B] font-medium cursor-pointer"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/landlord/properties/maintenance/${id}`
+                                    )
+                                  }
+                                >
+                                  view
+                                </p>
+                              </div>
+                            );
+                          }}
                           endpoint={`${API_URL}/maintenance/get-apartment-maintenance/${singleRoom?._id}`}
                           columns={[
                             {
-                              key: "title",
-                              label: "Title",
+                              key: "maintenanceId",
+                              label: "Maintenance ID",
+                              render: (val) => (
+                                <span className="font-medium italic text-[#045D23]">
+                                  MR-{val}
+                                </span>
+                              ),
                             },
                             {
-                              key: "description",
-                              label: "Description",
+                              key: "title",
+                              label: "Title",
                             },
                             {
                               key: "createdAt",
@@ -222,8 +237,8 @@ const SingleRoom = () => {
                                 <span
                                   className={`px-2 py-1 rounded text-xs font-medium ${
                                     val === "Resolved"
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-yellow-100 text-yellow-700"
+                                      ? "bg-[#F7F6F2] text-green-700"
+                                      : "bg-[#F7F6F2] text-yellow-700"
                                   }`}
                                 >
                                   {val || "Pending"}
@@ -234,7 +249,7 @@ const SingleRoom = () => {
                         />
                       </TabsContent>
                       <TabsContent value="document">
-                        Documents Section
+                        <ApartmentDocuments />
                       </TabsContent>
                     </Tabs>
                   </div>

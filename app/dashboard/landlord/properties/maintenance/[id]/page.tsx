@@ -375,291 +375,303 @@ const SingleMaintainance = () => {
       mainPath="Single Maintenance"
       subMainPath="Assign To Expert"
     >
-      <div className="p-6 max-w-[1200px] mx-auto font-jakarta">
-        {/* Header */}
-        <div className="flex items-center gap-2 text-nrvGreyBlack">
-          <button onClick={() => router.back()}>
-            <BackIcon />
-          </button>
-          <h1 className="text-xl font-semibold">Active Ticket</h1>
-        </div>
-
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Tenant Info */}
-          <div className="border rounded-sm shadow-sm p-4 flex flex-col gap-4">
-            <div className="flex gap-4 items-center">
-              <div className="w-1/3">
-                <div className="relative w-full h-[120px]">
-                  <Image
-                    src={maintenance?.roomId?.propertyId?.file}
-                    alt="Property Image"
-                    fill
-                    className="object-cover rounded-sm"
-                  />
+      {
+        isLoading ? (
+          <div className="flex justify-center items-center h-[70vh]">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-500 text-sm">Loading Maintenance Details...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 max-w-[1200px] mx-auto font-jakarta">
+          {/* Header */}
+          <div className="flex items-center gap-2 text-nrvGreyBlack">
+            <button onClick={() => router.back()}>
+              <BackIcon />
+            </button>
+            <h1 className="text-xl font-semibold">Active Ticket</h1>
+          </div>
+  
+          {/* Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Tenant Info */}
+            <div className="border rounded-sm shadow-sm p-4 flex flex-col gap-4">
+              <div className="flex gap-4 items-center">
+                <div className="w-1/3">
+                  <div className="relative w-full h-[120px]">
+                    <Image
+                      src={maintenance?.roomId?.propertyId?.file}
+                      alt="Property Image"
+                      fill
+                      className="object-cover rounded-sm"
+                    />
+                  </div>
+                </div>
+                <div className="w-2/3 ">
+                  <p className="font-medium text-[15px] text-[#263245]">
+                    Apartment ID : {maintenance?.roomId?.roomId}
+                  </p>
+                  <p className="font-medium text-[13px] text-[#263245] pt-2">
+                    <div className="flex gap-2">
+                      <LocationIcon />{" "}
+                      <div>
+                        {maintenance?.roomId?.propertyId?.streetAddress},{" "}
+                        {maintenance?.roomId?.propertyId?.city},{" "}
+                        {maintenance?.roomId?.propertyId?.state}
+                      </div>
+                    </div>
+                  </p>
+  
+                  <div></div>
                 </div>
               </div>
-              <div className="w-2/3 ">
-                <p className="font-medium text-[15px] text-[#263245]">
-                  Apartment ID : {maintenance?.roomId?.roomId}
-                </p>
-                <p className="font-medium text-[13px] text-[#263245] pt-2">
-                  <div className="flex gap-2">
-                    <LocationIcon />{" "}
+              <div className="flex justify-center my-8">
+                <Image
+                  src="/images/verified-user-icon.svg"
+                  alt="Property Image"
+                  width={300}
+                  height={300}
+                  className="object-cover rounded-sm"
+                />
+              </div>
+  
+              <div className="bg-[#ECFDF3] text-[#027A48] text-center text-sm py-6 rounded-md">
+                +234 81 3226 5445
+              </div>
+  
+              <Button className="bg-nrvPrimaryGreen text-white w-4/5 p-6 mx-auto">
+                Send Message
+              </Button>
+            </div>
+  
+            <div>
+              <div className="border rounded-xl shadow-sm p-4 h-fit">
+                <div className="text-[#101828] font-medium text-md mb-4">
+                  Active Maintenance Ticket
+                </div>
+                <div className="text-sm text-[#667085] space-y-6">
+                  <div className="flex justify-between">
                     <div>
-                      {maintenance?.roomId?.propertyId?.streetAddress},{" "}
-                      {maintenance?.roomId?.propertyId?.city},{" "}
-                      {maintenance?.roomId?.propertyId?.state}
+                      <span className="block font-semibold text-[11px]">
+                        Request ID:
+                      </span>
+                      <span>#MR {maintenance?.maintenanceId}</span>
+                    </div>
+                    <div>
+                      <span className="block font-semibold text-red-600 text-[11px]">
+                        Priority:
+                      </span>
+                      <span className="text-red-600">
+                        {maintenance?.priority}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block font-semibold text-[11px]">
+                        Reported on:
+                      </span>
+                      <span>{maintenance?.createdAt?.slice(0, 10)}</span>
                     </div>
                   </div>
-                </p>
-
-                <div></div>
-              </div>
-            </div>
-            <div className="flex justify-center my-8">
-              <Image
-                src="/images/verified-user-icon.svg"
-                alt="Property Image"
-                width={300}
-                height={300}
-                className="object-cover rounded-sm"
-              />
-            </div>
-
-            <div className="bg-[#ECFDF3] text-[#027A48] text-center text-sm py-6 rounded-md">
-              +234 81 3226 5445
-            </div>
-
-            <Button className="bg-nrvPrimaryGreen text-white w-4/5 p-6 mx-auto">
-              Send Message
-            </Button>
-          </div>
-
-          <div>
-            <div className="border rounded-xl shadow-sm p-4 h-fit">
-              <div className="text-[#101828] font-medium text-md mb-4">
-                Active Maintenance Ticket
-              </div>
-              <div className="text-sm text-[#667085] space-y-6">
-                <div className="flex justify-between">
                   <div>
                     <span className="block font-semibold text-[11px]">
-                      Request ID:
+                      Issue Type:
                     </span>
-                    <span>#MR {maintenance?.maintenanceId}</span>
-                  </div>
-                  <div>
-                    <span className="block font-semibold text-red-600 text-[11px]">
-                      Priority:
-                    </span>
-                    <span className="text-red-600">
-                      {maintenance?.priority}
-                    </span>
+                    <span>{maintenance?.title}</span>
                   </div>
                   <div>
                     <span className="block font-semibold text-[11px]">
-                      Reported on:
+                      Description:
                     </span>
-                    <span>{maintenance?.createdAt?.slice(0, 10)}</span>
+                    <span>{maintenance?.description}</span>
                   </div>
-                </div>
-                <div>
-                  <span className="block font-semibold text-[11px]">
-                    Issue Type:
-                  </span>
-                  <span>{maintenance?.title}</span>
-                </div>
-                <div>
-                  <span className="block font-semibold text-[11px]">
-                    Description:
-                  </span>
-                  <span>{maintenance?.description}</span>
-                </div>
-                <div>
-                  <span className="block font-semibold text-[11px] mt-2">
-                    Status:
-                  </span>
-                  <span
-                    className={`px-2 py-1.5 rounded rounded-full text-xs font-medium ${
-                      maintenance.status === "Resolved"
-                        ? "bg-[#F7F6F2] text-green-700"
-                        : "bg-[#F7F6F2] text-yellow-700"
-                    }`}
-                  >
-                    {maintenance.status || "Pending"}
-                  </span>
-                </div>
-                <div>
-                  <span className="block font-semibold text-[11px]">
-                    {maintenance.status === "Resolved" && "Date Resolved"}{" "}
-                    {maintenance.status === "Declined" && "Date Declined"}
-                  </span>
-                  <span>
-                    {formatDate(maintenance?.updatedAt?.slice(0, 10))}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-4">
-                {maintenance.status === "New" && (
-                  <Button
-                    className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
-                    onClick={() => {
-                      setIsResolvedModalOpen(true);
-                    }}
-                  >
-                    Mark As Resolved
-                  </Button>
-                )}
-                {maintenance.status === "New" && (
-                  <Button
-                    variant="outline"
-                    className="border border-red-500 text-red-500 hover:text-red-500 rounded-md text-[12px] font-medium"
-                  >
-                    Decline Request
-                  </Button>
-                )}
-              </div>
-            </div>
-            {/* Right: Assignment + Timeline */}
-            <div className="flex flex-col gap-4 mt-4">
-              <div className="border rounded-xl p-4 shadow-sm">
-                <h3 className="font-medium text-md text-[#101828] mb-2">
-                  Assignment Card
-                </h3>
-                {maintenance?.assignedTo ? (
-                  <div className="space-y-4">
-                    <p className="text-sm text-[#475467]">
-                      Currently assigned to:{" "}
-                      <span className="text-gray-500">
-                        {maintenance?.assignedTo || "-"}
-                      </span>
-                    </p>
-                    <p className="text-sm text-[#475467]">
-                      Contact:{" "}
-                      <span className="text-gray-500">
-                        {maintenance.assigneePhoneNumber}
-                      </span>
-                    </p>
-                    <p className="text-sm text-[#475467]">
-                      Scheduled Date:{" "}
-                      <span className="text-gray-500">
-                        {formatDate(maintenance.scheduledDate.slice(0, 10))}
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="p-8 items-center flex justify-center">
-                    <Button
-                      className="text-[#2B892B] bg-[#BBFF37] rounded-md text-[12px] font-semibold"
-                      onClick={() => setIsOpen(true)}
+                  <div>
+                    <span className="block font-semibold text-[11px] mt-2">
+                      Status:
+                    </span>
+                    <span
+                      className={`px-2 py-1.5 rounded rounded-full text-xs font-medium ${
+                        maintenance.status === "Resolved"
+                          ? "bg-[#F7F6F2] text-green-700"
+                          : "bg-[#F7F6F2] text-yellow-700"
+                      }`}
                     >
-                      Assign Expert To Request
+                      {maintenance.status || "Pending"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="block font-semibold text-[11px]">
+                      {maintenance.status === "Resolved" && "Date Resolved"}{" "}
+                      {maintenance.status === "Declined" && "Date Declined"}
+                    </span>
+                    <span>
+                      {formatDate(maintenance?.updatedAt?.slice(0, 10))}
+                    </span>
+                  </div>
+                </div>
+  
+                <div className="flex gap-3 mt-4">
+                  {maintenance.status === "New" && (
+                    <Button
+                      className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
+                      onClick={() => {
+                        setIsResolvedModalOpen(true);
+                      }}
+                    >
+                      Mark As Resolved
+                    </Button>
+                  )}
+                  {maintenance.status === "New" && (
+                    <Button
+                      variant="outline"
+                      className="border border-red-500 text-red-500 hover:text-red-500 rounded-md text-[12px] font-medium"
+                    >
+                      Decline Request
+                    </Button>
+                  )}
+                </div>
+              </div>
+              {/* Right: Assignment + Timeline */}
+              <div className="flex flex-col gap-4 mt-4">
+                <div className="border rounded-xl p-4 shadow-sm">
+                  <h3 className="font-medium text-md text-[#101828] mb-2">
+                    Assignment Card
+                  </h3>
+                  {maintenance?.assignedTo ? (
+                    <div className="space-y-4">
+                      <p className="text-sm text-[#475467]">
+                        Currently assigned to:{" "}
+                        <span className="text-gray-500">
+                          {maintenance?.assignedTo || "-"}
+                        </span>
+                      </p>
+                      <p className="text-sm text-[#475467]">
+                        Contact:{" "}
+                        <span className="text-gray-500">
+                          {maintenance.assigneePhoneNumber}
+                        </span>
+                      </p>
+                      <p className="text-sm text-[#475467]">
+                        Scheduled Date:{" "}
+                        <span className="text-gray-500">
+                          {formatDate(maintenance.scheduledDate.slice(0, 10))}
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-8 items-center flex justify-center">
+                      <Button
+                        className="text-[#2B892B] bg-[#BBFF37] rounded-md text-[12px] font-semibold"
+                        onClick={() => setIsOpen(true)}
+                      >
+                        Assign Expert To Request
+                      </Button>
+                    </div>
+                  )}
+                </div>
+  
+                <div className="border rounded-xl p-4 shadow-sm ">
+                  <h3 className="font-medium text-md text-[#101828] mb-2">
+                    Timeline
+                  </h3>
+                  <div className="space-y-6">
+                    <p className="text-sm text-[#475467]">
+                      Ticket opened: {maintenance?.createdAt}
+                    </p>
+                    <p className="text-sm text-[#475467]">
+                      Diagnosed & Assigned: -
+                    </p>
+                    <p className="text-sm text-[#475467]">Repair Completed: -</p>
+                  </div>
+                </div>
+  
+                <div className="border rounded-xl shadow-sm">
+                  <p className="text-nrvPrimaryGreen font-medium text-sm p-4">
+                    Your Maintenance Request is in Progress!
+                  </p>
+                  <p className="text-sm text-gray-500 px-4 pb-4">
+                    Your maintenance request has been received. You will be
+                    notified once its assigned.
+                  </p>
+                  <div className="flex justify-end bg-gray-50 p-4">
+                    <Button className="border text-nrvPrimaryGreen" size="sm">
+                      Contact Property Owner
                     </Button>
                   </div>
-                )}
-              </div>
-
-              <div className="border rounded-xl p-4 shadow-sm ">
-                <h3 className="font-medium text-md text-[#101828] mb-2">
-                  Timeline
-                </h3>
-                <div className="space-y-6">
-                  <p className="text-sm text-[#475467]">
-                    Ticket opened: {maintenance?.createdAt}
-                  </p>
-                  <p className="text-sm text-[#475467]">
-                    Diagnosed & Assigned: -
-                  </p>
-                  <p className="text-sm text-[#475467]">Repair Completed: -</p>
-                </div>
-              </div>
-
-              <div className="border rounded-xl shadow-sm">
-                <p className="text-nrvPrimaryGreen font-medium text-sm p-4">
-                  Your Maintenance Request is in Progress!
-                </p>
-                <p className="text-sm text-gray-500 px-4 pb-4">
-                  Your maintenance request has been received. You will be
-                  notified once its assigned.
-                </p>
-                <div className="flex justify-end bg-gray-50 p-4">
-                  <Button className="border text-nrvPrimaryGreen" size="sm">
-                    Contact Property Owner
-                  </Button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="border rounded-xl p-4 shadow-sm">
-          <h3 className="text-md font-medium text-[#101828] mb-4">
-            Attachments from Tenant
-          </h3>
-          {maintenance?.attachments?.length ? (
-            maintenance.attachments.map((file: any, index: number) => (
-              <div
-                key={index}
-                className="flex justify-between items-center p-3 mb-2 bg-gray-100 rounded text-sm"
-              >
-                <span className="truncate max-w-[70%]">{file.name}</span>
-                <div className="flex gap-3">
-                  <a href={file.url} target="_blank" rel="noopener noreferrer">
-                    👁️
-                  </a>
-                  <a href={file.url} download>
-                    ⬇️
-                  </a>
+  
+          <div className="border rounded-xl p-4 shadow-sm">
+            <h3 className="text-md font-medium text-[#101828] mb-4">
+              Attachments from Tenant
+            </h3>
+            {maintenance?.attachments?.length ? (
+              maintenance.attachments.map((file: any, index: number) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center p-3 mb-2 bg-gray-100 rounded text-sm"
+                >
+                  <span className="truncate max-w-[70%]">{file.name}</span>
+                  <div className="flex gap-3">
+                    <a href={file.url} target="_blank" rel="noopener noreferrer">
+                      👁️
+                    </a>
+                    <a href={file.url} download>
+                      ⬇️
+                    </a>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-gray-400">No attachments provided.</p>
-          )}
-        </div>
-        <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-          <AssignMaintenanceRequest
-            onCancel={() => setIsOpen(false)}
-            onSuccess={() => () => setIsOpen(false)}
-          />
-        </CenterModal>
-
-        <CenterModal
-          isOpen={isResolvedModalOpen}
-          onClose={() => setIsResolvedModalOpen(false)}
-        >
-          <div className="p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-gray-800 text-center">
-              Update Maintenance Status
-            </h2>
-
-            <div className="text-base text-center">
-              This action will mark the request as{" "}
-              <span className="font-medium text-green-700">Resolved</span>.
-            </div>
-
-            <div className="flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsResolvedModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleAsResolved()}
-                disabled={isLoading}
-                type="submit"
-                className="bg-green-700 hover:bg-green-800 text-white"
-              >
-                {isLoading ? "Updating..." : "Submit"}
-              </Button>
-            </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-400">No attachments provided.</p>
+            )}
           </div>
-        </CenterModal>
-      </div>
+          <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+            <AssignMaintenanceRequest
+              onCancel={() => setIsOpen(false)}
+              onSuccess={() => () => setIsOpen(false)}
+            />
+          </CenterModal>
+  
+          <CenterModal
+            isOpen={isResolvedModalOpen}
+            onClose={() => setIsResolvedModalOpen(false)}
+          >
+            <div className="p-6 space-y-6">
+              <h2 className="text-lg font-semibold text-gray-800 text-center">
+                Update Maintenance Status
+              </h2>
+  
+              <div className="text-base text-center">
+                This action will mark the request as{" "}
+                <span className="font-medium text-green-700">Resolved</span>.
+              </div>
+  
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsResolvedModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => handleAsResolved()}
+                  disabled={isLoading}
+                  type="submit"
+                  className="bg-green-700 hover:bg-green-800 text-white"
+                >
+                  {isLoading ? "Updating..." : "Submit"}
+                </Button>
+              </div>
+            </div>
+          </CenterModal>
+        </div>
+        )
+      }
+  
     </LandLordLayout>
   );
 };

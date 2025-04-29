@@ -2,17 +2,15 @@
 
 import { useState, useEffect } from "react";
 import LandLordSideBar from "../shared/navigations/LandLordSideBar";
-import { FaMessage, FaPerson } from "react-icons/fa6";
+import { FaMessage, FaPerson, FaBell, FaCheck } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome, IoMdMore } from "react-icons/io";
 import {
   IoBackspace,
   IoPeopleCircleOutline,
-  IoPeopleOutline,
   IoSettings,
 } from "react-icons/io5";
 import { useRouter } from "next/navigation";
-import { FaBell, FaCheck, FaCog } from "react-icons/fa";
 import Image from "next/image";
 
 interface LandLordLayoutProps {
@@ -20,6 +18,7 @@ interface LandLordLayoutProps {
   mainPath?: string;
   path?: string;
   subMainPath?: string;
+  comingSoon?: boolean;
 }
 
 const LandLordLayout: React.FC<LandLordLayoutProps> = ({
@@ -27,13 +26,22 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   mainPath,
   path,
   subMainPath,
+  comingSoon = false,
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [activeLink, setActiveLink] = useState<string>("");
   const router = useRouter();
-
   const [showMore, setShowMore] = useState(false);
+
+  const validPaths = [
+    "dashboard",
+    "landlord",
+    "properties",
+    "maintenance",
+
+  ];
+
   useEffect(() => {
     setActiveLink(window.location.pathname);
     const storedUser = localStorage.getItem("nrv-user");
@@ -56,20 +64,34 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       const screenWidth = window.innerWidth;
       setIsSidebarOpen(screenWidth > 1110);
     };
-
     handleResize();
-
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
+  useEffect(() => {
+    const lastPathSegment = window.location.pathname
+    .split("/")
+    .filter(Boolean)
+    .pop();
+
+    console.log({lastPathSegment});
+    
+  
+    const isValidPath = validPaths.includes(lastPathSegment || "");
+
+    if (comingSoon || !isValidPath) {
+      router.push("/dashboard/landlord/coming-soon");
+    }
+  }, [comingSoon, router]);
+
   return (
     <div className="relative min-h-screen">
+      {/* Mobile Bottom Nav */}
       <div className="fixed bottom-0 left-0 w-full bg-white shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
-          {/* Conditionally render buttons based on showMore state */}
           {!showMore ? (
             <>
               <button
@@ -88,9 +110,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() =>
-                  router.push("/dashboard/landlord/properties/renters")
-                }
+                onClick={() => router.push("/dashboard/landlord/properties/renters")}
               >
                 <IoPeopleCircleOutline size={24} color="white" />
                 <span className="text-[11px] text-white">Renters</span>
@@ -99,7 +119,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/landlord/messages")}
               >
-                <IoPeopleCircleOutline size={24} color="white" />
+                <FaMessage size={24} color="white" />
                 <span className="text-[11px] text-white">Messages</span>
               </button>
               <button
@@ -121,18 +141,14 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() =>
-                  router.push("/dashboard/landlord/properties/maintenance")
-                }
+                onClick={() => router.push("/dashboard/landlord/properties/maintenance")}
               >
                 <IoSettings size={24} color="white" />
                 <span className="text-[11px] text-white">Maintenance</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() =>
-                  router.push("/dashboard/landlord/properties/verification")
-                }
+                onClick={() => router.push("/dashboard/landlord/properties/verification")}
               >
                 <FaCheck size={24} color="white" />
                 <span className="text-[11px] text-white">Verification</span>
@@ -148,20 +164,14 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           )}
         </div>
       </div>
-      <div
-        className="flex w-full min-h-screen bg-white"
-        style={{ paddingBottom: "40px" }}
-      >
+
+      {/* Layout Content */}
+      <div className="flex w-full min-h-screen bg-white" style={{ paddingBottom: "40px" }}>
         <div className={isSidebarOpen ? "w-1/5" : "hidden md:block w-1/10"}>
           <LandLordSideBar isOpen={isSidebarOpen} />
         </div>
-        <div
-          className={
-            isSidebarOpen
-              ? "w-9/10  flex-1 overflow-y-auto"
-              : "w-full flex-1 overflow-y-auto"
-          }
-        >
+        <div className={isSidebarOpen ? "w-9/10 flex-1 overflow-y-auto" : "w-full flex-1 overflow-y-auto"}>
+          {/* Header */}
           <div className="p-4 bg-white shadow-md">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Breadcrumbs */}
@@ -183,21 +193,19 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
 
                 <span className="mx-2 hidden sm:inline">&gt;</span>
                 {path && <span className="text-sm text-[#333333]">{path}</span>}
-                {subMainPath && (
-                  <span className="mx-2 hidden sm:inline">/</span>
-                )}
-                <a
-                  href=""
-                  className="text-sm hover:text-gray-900 text-[#333333]"
-                >
+                {subMainPath && <span className="mx-2 hidden sm:inline">/</span>}
+                <a href="#" className="text-sm hover:text-gray-900 text-[#333333]">
                   {mainPath}
                 </a>
                 {subMainPath && (
-                  <span className="mx-2 hidden sm:inline">/</span>
+                  <>
+                    <span className="mx-2 hidden sm:inline">/</span>
+                    <span className="text-sm text-[#333333]">{subMainPath}</span>
+                  </>
                 )}
-                <span className="text-sm text-[#333333]">{subMainPath}</span>
               </nav>
 
+              {/* User Info */}
               <div className="flex items-center justify-between md:justify-end space-x-4">
                 <div className="flex items-center space-x-2">
                   <FaPerson />
@@ -207,6 +215,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
             </div>
           </div>
 
+          {/* Main Content */}
           <main className="bg-white w-full">{children}</main>
         </div>
       </div>

@@ -54,8 +54,8 @@ const Maintainance = () => {
   const handleRowAction = (id: string) => {
     return (
       <div className="flex gap-2">
-        <p className="text-sm text-[#2B892B] font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
-          View
+        <p className="text-xs text-[#2B892B] font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
+          view
         </p>
   
       </div>
@@ -238,12 +238,13 @@ const Maintainance = () => {
                   ),
                 },
                 {
-                  key: "title",
-                  label: "Title",
+                  key: "maintenanceId",
+                  label: "Maintenance ID",
+                  render: (val) => <span className="font-medium italic text-[#045D23]">MR-{val}</span>,
                 },
                 {
-                  key: "description",
-                  label: "Description",
+                  key: "title",
+                  label: "Title",
                 },
                 {
                   key: "createdAt",

@@ -191,7 +191,7 @@ const PropertiesScreen = () => {
                 value: `${summaryData.occupancyRate.toFixed(2)}%`,
                 color: "text-green-600",
               },
-   
+
               {
                 label: "Vacancy Rate",
                 value: `${summaryData.vacancyRate.toFixed(2)}%`,
@@ -208,7 +208,6 @@ const PropertiesScreen = () => {
                 <p className={`text-xl text-[#03442C] font-medium`}>
                   {stat.value}
                 </p>
-          
               </div>
             ))}
           </div>
@@ -221,7 +220,7 @@ const PropertiesScreen = () => {
               <p className="text-gray-500">No properties listed yet.</p>
             </div>
           ) : (
-            <div className="grid grid-col-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-col-1 md:grid-cols-3 gap-8">
               {properties.map((property) => {
                 // Calculate the lease progress based on unitsLeft and apartmentCount
                 const occupiedProgress =
@@ -270,7 +269,8 @@ const PropertiesScreen = () => {
                     <div className="mt-4">
                       <h3 className="text-md font-semibold">{property.name}</h3>
                       <p className="text-md text-[#101928] w-4/5 h-14">
-                        {property.streetAddress},  {property.city},  {property.state}
+                        {property.streetAddress}, {property.city},{" "}
+                        {property.state}
                       </p>
                       <p className="text-xs text-gray-400 font-light">
                         Added on {formatDateToWords(property.createdAt)}
@@ -387,6 +387,21 @@ const PropertiesScreen = () => {
                           {property?.unitsLeft === property.apartmentCount && (
                             <div className="relative w-full h-2 bg-red-500 rounded-full mt-2"></div>
                           )}
+                        </div>
+
+                        <div
+                          className="w-4/12 flex justify-end text-[13px] font-medium italic text-[#045D23]"
+                          onClick={() => {
+                            localStorage.setItem(
+                              "property",
+                              JSON.stringify(property)
+                            );
+                            router.push(
+                              `/dashboard/landlord/properties/${property._id}`
+                            );
+                          }}
+                        >
+                          View Details
                         </div>
                       </div>
                     </div>

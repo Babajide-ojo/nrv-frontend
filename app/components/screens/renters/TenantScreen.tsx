@@ -25,6 +25,9 @@ import { AnyAction, Dispatch, ThunkDispatch } from "@reduxjs/toolkit";
 import Modal from "../../shared/modals/Modal";
 import CustomDatePicker from "../../shared/CustomDatePicker";
 import { FcHome } from "react-icons/fc";
+import DataTable from "../../shared/tables/DataTable";
+import { API_URL } from "@/config/constant";
+import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 const TenantScreen = () => {
   const dispatch = useDispatch();
@@ -53,28 +56,36 @@ const TenantScreen = () => {
     try {
       const storedUser = localStorage.getItem("nrv-user");
       const user = storedUser ? JSON.parse(storedUser) : null;
-  
+      console.log({user});
+      
+
       if (!user?.user?._id) {
         console.error("Invalid user data or user not logged in");
         setIsLoading(false);
         setIsPageLoading(false);
         return;
       }
-  
+
       setUser(user.user);
-  
+
       const formData = {
         page,
         id: user.user._id,
         status: "activeTenant",
       };
-  
-      const _response = await dispatch(getAllLandlordApartment(formData) as any);
+
+      const _response = await dispatch(
+        getAllLandlordApartment(formData) as any
+      );
       if (_response?.payload?.data) {
         const properties = _response.payload.data;
         setProperties(properties);
         const landlordProperties = properties.map((item: any) => ({
-          label: <div className="text-xs">{item.propertyId?.streetAddress} | Property ID - {item?.roomId}</div>,
+          label: (
+            <div className="text-xs">
+              {item.propertyId?.streetAddress} | Property ID - {item?.roomId}
+            </div>
+          ),
           value: item._id,
         }));
         setLandlordProperties(landlordProperties);
@@ -91,7 +102,6 @@ const TenantScreen = () => {
       setIsPageLoading(false); // Stop page loading after fetch
     }
   };
-  
 
   const fetchSelfOnboardedTenantData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") || "{}");
@@ -207,57 +217,64 @@ const TenantScreen = () => {
           </Button>
         </div>
         <div className="">
-          {toggleTenantView === "onboarded_tenant" && (
-            <div>
-              {tenents && tenents.length > 0 ? (
-                <div className="w-full md:w-2/5 mx-auto">
-                  {tenents?.map((item: any, index) => {
-                    return (
-                      <div key={index}>
-                        <div className="flex bg-white mt-4 mrounded rounded-2xl p-4">
-                          <div className="w-1/5 flex justify-center items-center">
-                            <FcHome size={24} />
-                          </div>
-                          <div className="w-4/5">
-                            <div className="flex justify-between w-full">
-                              <div className="text-nrvDarkGrey font-light text-sm w-1/2">
-                                {item?.applicant?.firstName}{" "}
-                                {item?.applicant?.lastName}
-                              </div>
-                              <div
-                                className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
-                                onClick={() =>
-                                  router.push(`rooms/${item?.propertyId?._id}`)
-                                }
-                              >
-                                Aparment ID : {item?.propertyId?.roomId}
-                              </div>
-                            </div>
-                            <div className="text-nrvPrimaryGreen text-sm mt-2">
-                              {item?.propertyId?.propertyId.streetAddress},{" "}
-                              {item?.propertyId?.propertyId.city} ,{" "}
-                              {item?.propertyId?.propertyId.state}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="max-w-full w-120 rounded rounded-2xl p-4 mt-8 text-center">
-                  <div className="text-md py-2">
-                    {" "}
-                    Onboard Tenant Directly on Naija Rent Verify
+          <DataTable
+            //rowActions={handleRowAction}
+            //key={activeTab}
+            endpoint={`${API_URL}/properties/tenant/landlord-onboarded/${JSON.parse(localStorage.getItem("nrv-user")as any ).user._id}`}
+            //status={activeTab}
+            columns={[
+              {
+                key: "applicant",
+                label: "Tenant Name",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#667085] font-light">
+                      {val?.firstName}  {val?.lastName}
+                    </div>
                   </div>
-                  <div className="text-center flex mx-auto w-2/5 mt-4 text-sm text-nrvGrayText font-light">
-                    Easily manage all your pre-existing tenants by onboarding
-                    them without listing your apartments!
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                ),
+              },
+              {
+                key: "tenantName",
+                label: "Tenant Name",
+                render: (val) => (
+                  <span className="font-medium italic text-[#045D23]">
+                    MR-{val}
+                  </span>
+                ),
+              },
+              {
+                key: "title",
+                label: "Title",
+              },
+              {
+                key: "rentStartDate",
+                label: "Lease Start Date",
+                render: (val) => <span>{formatDate(val.slice(0, 10)) }</span>,
+              },
+              {
+                key: "rentEndDate",
+                label: "Lease End Date",
+                render: (val) => <span>{formatDate(val.slice(0, 10))}</span>,
+              },
+              {
+                key: "status",
+                label: "Status",
+                render: (val) => (
+                  <span
+                    className={`px-2 py-1 rounded text-xs font-medium ${
+                      val === "Resolved"
+                        ? "bg-[#F7F6F2] text-green-700"
+                        : "bg-[#F7F6F2] text-yellow-700"
+                    }`}
+                  >
+                    {val || "Pending"}
+                  </span>
+                ),
+              },
+           
+            ]}
+          />
         </div>
       </div>
 

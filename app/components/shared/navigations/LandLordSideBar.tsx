@@ -38,10 +38,10 @@ const links = [
   },
   {
     name: "Leads & Applications",
-    route: "/dashboard/landlord/leads",
+    route: "/dashboard/landlord/properties/renters",
     icon: <FiFileText />,
   },
-  { name: "Tenants", route: "/dashboard/landlord/tenants", icon: <FiUsers /> },
+  { name: "Tenants", route: "/dashboard/landlord/properties/renters", icon: <FiUsers /> },
   {
     name: "Rent Collection",
     route: "/dashboard/landlord/rent",

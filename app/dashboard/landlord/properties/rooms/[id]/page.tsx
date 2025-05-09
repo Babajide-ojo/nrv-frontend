@@ -23,15 +23,7 @@ import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
 
-interface Property {
-  id: string;
-  file: string;
-  streetAddress: string;
-  unit: string;
-  city: string;
-  state: string;
-  zipCode: string;
-}
+
 
 const SingleRoom = () => {
   const dispatch = useDispatch();
@@ -249,7 +241,7 @@ const SingleRoom = () => {
                         />
                       </TabsContent>
                       <TabsContent value="document">
-                        <ApartmentDocuments />
+                        <ApartmentDocuments propertyId={id}/>
                       </TabsContent>
                     </Tabs>
                   </div>

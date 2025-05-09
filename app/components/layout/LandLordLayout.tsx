@@ -34,14 +34,6 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   const router = useRouter();
   const [showMore, setShowMore] = useState(false);
 
-  const validPaths = [
-    "dashboard",
-    "landlord",
-    "properties",
-    "maintenance",
-
-  ];
-
   useEffect(() => {
     setActiveLink(window.location.pathname);
     const storedUser = localStorage.getItem("nrv-user");
@@ -70,22 +62,6 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    const lastPathSegment = window.location.pathname
-    .split("/")
-    .filter(Boolean)
-    .pop();
-
-    console.log({lastPathSegment});
-    
-  
-    const isValidPath = validPaths.includes(lastPathSegment || "");
-
-    if (comingSoon || !isValidPath) {
-      router.push("/dashboard/landlord/coming-soon");
-    }
-  }, [comingSoon, router]);
 
   return (
     <div className="relative min-h-screen">

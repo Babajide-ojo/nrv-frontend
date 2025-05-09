@@ -548,13 +548,13 @@ const SingleMaintainance = () => {
                       <p className="text-sm text-[#475467]">
                         Contact:{" "}
                         <span className="text-gray-500">
-                          {maintenance.assigneePhoneNumber}
+                          {maintenance?.assigneePhoneNumber}
                         </span>
                       </p>
                       <p className="text-sm text-[#475467]">
                         Scheduled Date:{" "}
                         <span className="text-gray-500">
-                          {formatDate(maintenance.scheduledDate.slice(0, 10))}
+                          {formatDate(maintenance?.scheduledDate?.slice(0, 10))}
                         </span>
                       </p>
                     </div>

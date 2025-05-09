@@ -71,7 +71,7 @@ const RentedPropertiesScreen = () => {
                   <div className=" text-md font-light text-nrvDarkGrey">
                     Here are the documents for this apartments!
                   </div>
-                  {property && <ApartmentDocuments data={property} />}
+                  {/* {property && <ApartmentDocuments data={property} />} */}
                 </div>
               </div>
             )}

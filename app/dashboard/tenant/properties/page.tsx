@@ -182,7 +182,7 @@ const TenantPropertiesScreen = () => {
               <div className="pt-8 text-nrvGreyBlack text-lg font-semibold">
                 Explore Properties
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
                 {properties?.map((property: any) => (
                   <div
                     key={property.id}
@@ -195,7 +195,7 @@ const TenantPropertiesScreen = () => {
                   >
                     <PropertyCard
                       imageUrl={property?.file}
-                      address={property?.propertyId?.streetAddress}
+                      address={property?.propertyId?.street}
                       rentAmount={property?.rentAmount}
                       property={property}
                     />

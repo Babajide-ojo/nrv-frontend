@@ -39,7 +39,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="relative min-h-screen bg-nrvLightGreyBg">
+    <div className="relative min-h-screen">
       <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           {!showMore ? (
@@ -80,12 +80,12 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      <div className="flex w-full min-h-screen bg-nrvLightGreyBg" style={{ paddingBottom: "40px" }}>
+      <div className="flex w-full min-h-screen" style={{ paddingBottom: "40px" }}>
         <div className={isSidebarOpen ? "w-1/5 bg-white" : "hidden md:block w-1/10"}>
           <TenantSideBar isOpen={isSidebarOpen} />
         </div>
         <div className={isSidebarOpen ? "w-9/10 flex-1 overflow-y-auto flex" : "w-full flex-1 overflow-y-auto"}>
-          <main className="bg-nrvLightGreyBg w-full">{children}</main>
+          <main className=" w-full">{children}</main>
         </div>
       </div>
     </div>

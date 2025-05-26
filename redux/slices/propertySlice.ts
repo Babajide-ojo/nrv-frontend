@@ -293,6 +293,22 @@ export const getApplicationsByTenantId = createAsyncThunk<any, {}>(
     }
 );
 
+export const getApplicationsById = createAsyncThunk<any, {}>(
+    "property/single-applications",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/single-application/${formData.id}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
 export const updateApplicationStatus = createAsyncThunk<any, {}>(
     "property/application-update",
     async (formData: any, { rejectWithValue }) => {
@@ -709,6 +725,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getTenantMetrics.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getApplicationsById.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getApplicationsById.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getApplicationsById.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

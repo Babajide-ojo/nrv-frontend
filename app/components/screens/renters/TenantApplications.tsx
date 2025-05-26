@@ -93,14 +93,18 @@ const TenantApplications = () => {
     setActiveTab(status);
   };
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    
+    setUser(user?.user);
+  }, []);
+
   return (
     <div>
       <ToastContainer />
       {currentStep === 1 && (
-        <div>
-          {isLoading ? (
-            <LoadingPage />
-          ) : (
+
+        
             <div>
               <ToastContainer />
               <div className="space-y-12 p-4 font-jakarta">
@@ -226,7 +230,7 @@ const TenantApplications = () => {
               <DataTable
                 rowActions={handleRowAction}
                 key={activeTab}
-                endpoint={`${API_URL}/properties/tenant-applications/${user?._id}`}
+                endpoint={`${API_URL}/properties/tenant-applications/${JSON.parse(localStorage.getItem("nrv-user") as any)?.user?._id}`}
                 status={activeTab}
                 columns={[
                   {
@@ -265,8 +269,8 @@ const TenantApplications = () => {
                 ]}
               />
             </div>
-          )}
-        </div>
+  
+    
       )}
       {currentStep === 2 && (
         <div>

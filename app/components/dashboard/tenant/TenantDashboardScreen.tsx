@@ -326,7 +326,8 @@ const TenantDashboardScreen = () => {
                 {tenantDashboardMetrics.map(
                   ({ title, imageLink, number, link, icon }, index) => (
                     <div
-                      className="p-3 border bg-white flex items-start"
+                      className="p-3 border bg-white flex items-start justify-between
+                      "
                       key={index}
                     >
                       <div>

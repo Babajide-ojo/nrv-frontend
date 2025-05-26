@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Button from "../../shared/buttons/Button";
 import {
   getApplicationsByLandlordId,
   inviteApplicant,
@@ -11,9 +10,34 @@ import {
 } from "../../../../redux/slices/propertySlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CenterModal from "../../shared/modals/CenterModal";
-import InputField from "../../shared/input-fields/InputFields";
-import { FcHome } from "react-icons/fc";
+import { formatDateToWords } from "@/helpers/utils";
+import { RefreshCcw } from "lucide-react";
+import DataTable from "../../shared/tables/DataTable";
+import { API_URL } from "@/config/constant";
+import { Button } from "@/components/ui/button";
+
+const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
+  <div className="bg-white p-4 rounded-md">
+    <div className="font-semibold text-md text-nrvGreyBlack mb-2">{title}</div>
+    {data.map(([label, value]: any, idx: number) => (
+      <div key={idx} className="text-sm mb-2">
+        <span className="font-medium text-nrvGreyBlack">{label}:</span> {value}
+      </div>
+    ))}
+    {files.map(([label, url]: any, idx: number) => (
+      <div key={idx} className="text-sm mb-2">
+        <span className="font-medium text-nrvGreyBlack">{label}:</span>{' '}
+        <a href={url} className="underline" target="_blank" rel="noopener noreferrer">View</a>
+      </div>
+    ))}
+    {fileUrl && (
+      <div className="text-sm">
+        <a href={fileUrl} className="underline" target="_blank" rel="noopener noreferrer">Download Proof</a>
+      </div>
+    )}
+  </div>
+);
+
 
 const ApplicantScreen = () => {
   const dispatch = useDispatch();
@@ -22,39 +46,10 @@ const ApplicantScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [user, setUser] = useState<any>({});
-  const [properties, setProperties] = useState<any[]>([]);
   const [application, setApplication] = useState<any>([]);
-  const [page, setPage] = useState(1); // Current page
-  const [totalPages, setTotalPages] = useState(0); // Total pages
-  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
+
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [isOpen, setIsOpen] = useState(false);
-  const [applicantDetails, setApplicantDetails] = useState<any>({
-    fullName: "",
-    email: "",
-  });
-
-  const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const formData = {
-      page: page,
-      id: user?.user?._id,
-      status: "New",
-    };
-
-    try {
-      const response = await dispatch(
-        getApplicationsByLandlordId(formData) as any
-      );
-      setProperties(response?.payload?.data);
-      setTotalPages(response?.totalPages);
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
-      setIsPageLoading(false);
-    }
-  };
+  const [activeTab, setActiveTab] = useState<string>("New");
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -65,352 +60,303 @@ const ApplicantScreen = () => {
       setIsLoading(true);
       await dispatch(updateApplicationStatus(payload) as any).unwrap();
       toast.success("Application accepted");
-      router.push('/dashboard/landlord/properties/renters')
+      router.push("/dashboard/landlord/properties/renters");
     } catch (error: any) {
       toast.error(error);
     }
   };
 
-  const handleInvitation = async () => {
-    const payload = {
-      name: applicantDetails.fullName,
-      email: applicantDetails.email,
-    };
-    try {
-      setIsLoading(true);
-      await dispatch(inviteApplicant(payload) as any).unwrap();
-      toast.success("Invitation sent successfully");
-      setIsOpen(false);
-    } catch (error: any) {
-      toast.error(error);
-    }
+
+  const handleRowAction = (id: string) => {
+    return (
+      <div className="flex gap-2">
+        <p
+          className="text-xs text-[#2B892B] font-medium cursor-pointer"
+          onClick={() => router.push(`/dashboard/landlord/properties/renters/${id}`)}
+        >
+          view applicant
+        </p>
+      </div>
+    );
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setApplicantDetails((prevData: any) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const handleTabClick = (status: string) => {
+    setActiveTab(status);
   };
+
   useEffect(() => {
-    fetchData();
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
   }, []);
+
   return (
     <div>
       <ToastContainer />
       {currentStep === 1 && (
         <div>
-          {properties && properties.length > 0 ? (
-                <div className="m-4 w-full md:w-2/5 mx-auto ">
-              {properties?.map((item, index) => {
-                return (
-                  <div key={index}>
-                        <div
-                          className="flex bg-white mt-4 mrounded rounded-2xl p-4 cursor-pointer hover:bg-gray-50"
-                         onClick={() => {
-                          setApplication(item);
-                          setCurrentStep(2);
-                         }}
-                        >
-                          <div className="w-1/5 flex justify-center items-center">
-                          <FcHome size={24} />
-                          </div>
-                          <div className="w-4/5">
-                            <div className="flex justify-between w-full">
-                              <div className="text-nrvDarkGrey font-light text-sm w-1/2">
-                                {item?.applicant?.firstName}{" "}
-                                {item?.applicant?.lastName} 
-                              </div>
-                              <div
-                                    className="cursor-pointer text-xs underline text-end text-nrvGrayText w-1/2 text-end"
-                                    // onClick={() =>
-                                    //   router.push(
-                                    //     `rooms/${item?.propertyId?._id}`
-                                    //   )
-                                    // }
-                                  >
-                                   Apartment ID : {item?.propertyId?.roomId}
-                                  </div>
-                            </div>
-                            <div className="text-nrvPrimaryGreen text-xs mt-4">
-                              {item?.propertyId?.propertyId.streetAddress},{" "}
-                              {item?.propertyId?.propertyId.city} ,{" "}
-                              {item?.propertyId?.propertyId.state}
-                            </div>
-                      
-                          </div>
-                        </div>
-                      </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="max-w-full w-120 rounded rounded-2xl p-4 mt-8 text-center">
-              <div className="text-md py-2">
-                Collect Rental Applications. Free for Landlords
+          <ToastContainer />
+          <div className="space-y-12 p-4 font-jakarta">
+            {/* Header */}
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h2 className="text-xl font-semibold">
+                  View & Manage Your Leads & Applications
+                </h2>
+                <p className="text-gray-500 text-sm mt-2 font-lighter">
+                  View and update your property leads and application.
+                </p>
               </div>
-              <div className="text-center flex mx-auto w-4/5 mt-4 text-sm text-nrvGrayText font-light">
-                Invite renters to complete our online, industry-standard
-                application. We’ll send you their responses and a screening
-                report in one easy-to-read profile. Demo the application from
-                the renter’s perspective.
-              </div>
-
-              <Button
-                size="normal"
-                className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-8 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
-                variant="mediumGrey"
-                showIcon={false}
-                onClick={() => {
-                  setIsOpen(true);
-                }}
-              >
-                <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                  Invite to Apply
-                </div>
+              <Button variant="outline" size="sm" className="gap-2">
+                <RefreshCcw className="w-4 h-4" />
+                Refresh
               </Button>
             </div>
-          )}
-        </div>
-      )}
-      {currentStep === 2 && (
-        <div>
-          <div className="p-3 bg-white rounded-md mx-2 my-4 text-sm flex gap-3">
-            <div
-              className="pt-1 font-light"
-              onClick={() => {
-                setCurrentStep(1);
-              }}
-            >
-              <svg
-                width="22"
-                height="12"
-                viewBox="0 0 22 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+                {[
+                  {
+                    title: "Active Applications",
+                    value: `${0}`,
+                    change: "0%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Approved Applications",
+                    value: `${0}`,
+                    change: "10%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Pending (Under Review)",
+                    value: `${0}`,
+                    change: "83%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Rejected (Declined Applications)",
+                    value: `${0}`,
+                    change: "10%",
+                    trend: "down",
+                    comparison: "compared to the last 6 months",
+                  },
+                ].map((card, i) => (
+                  <div key={i} className="border-r last:border-none px-4">
+                    <p className="text-gray-500 text-sm">{card.title}</p>
+                    <h3 className="text-xl font-semibold text-green-900">
+                      {card.value}
+                    </h3>
+                    <p
+                      className={`text-xs mt-1 ${
+                        card.trend === "up" ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {card.trend === "up" ? "↑" : "↓"} {card.change}{" "}
+                      {card.comparison}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            }
+
+            <div className="flex gap-3">
+              <Button
+                variant="default"
+                className={`${
+                  activeTab === "New"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("Leads")}
               >
-                <path
-                  d="M21 6.75C21.4142 6.75 21.75 6.41421 21.75 6C21.75 5.58579 21.4142 5.25 21 5.25V6.75ZM0.469669 5.46967C0.176777 5.76256 0.176777 6.23744 0.469669 6.53033L5.24264 11.3033C5.53553 11.5962 6.01041 11.5962 6.3033 11.3033C6.59619 11.0104 6.59619 10.5355 6.3033 10.2426L2.06066 6L6.3033 1.75736C6.59619 1.46447 6.59619 0.989593 6.3033 0.696699C6.01041 0.403806 5.53553 0.403806 5.24264 0.696699L0.469669 5.46967ZM21 5.25L1 5.25V6.75L21 6.75V5.25Z"
-                  fill="#333333"
-                />
-              </svg>
-            </div>
-            <div> Applicant Details</div>
-          </div>
-          <div className="md:flex mx-2 bg-white p-3 rounded-md border-r ">
-            <div className="md:w-2/5 w-full md:border-r">
-              <div className="mb-4 border-b pb-4 px-2 md:mr-20 mr-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack ">
-                  {" "}
-                  Personal Information
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    First Name{" "}
-                  </span>{" "}
-                  {application?.applicant?.firstName}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Last Name{" "}
-                  </span>
-                  {application?.applicant?.lastName}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Phone Number{" "}
-                  </span>{" "}
-                  {application?.applicant?.phoneNumber}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Current Address{" "}
-                  </span>{" "}
-                  {application?.applicant?.homeAddress}
-                </div>
-                {/* <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Date Of Birth{" "}
-                  </span>{" "}
-                  January 1, 1990{" "}
-                </div> */}
-              </div>
-              {/* <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Employment Information
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Current Employer{" "}
-                  </span>{" "}
-                  {application?.currentEmployer}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Job Title{" "}
-                  </span>{" "}
-                  {application?.jobTitle}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Monthly Income{" "}
-                  </span>{" "}
-                  {application?.monthlyIncome}{" "} Naira
-                </div>
-              </div> */}
-              {/* <div className="mb-4  border-b pb-4 px-2 md:mr-20 mr-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Rental History
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Previous Landlord{" "}
-                  </span>{" "}
-                  {application?.currentLandlord}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Previous Address{" "}
-                  </span>{" "}
-                  {application?.currentAddress}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reason for Leaving{" "}
-                  </span>{" "}
-                  {application?.reasonForLeaving}{" "}
-                </div>
-              </div> */}
-              <div className="mb-4 pb-4 px-2 md:mr-20 mr-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Background Check Results
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Criminal Record{" "}
-                  </span>{" "}
-                  {application?.criminalRecord === true ? "YES" : "NO"}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Eviction History{" "}
-                  </span>{" "}
-                  {application?.evictionHistory === true ? "YES" : "NO"}{" "}
-                </div>
-              </div>
+                All Applications{" "}
+                <span className="ml-2 font-semibold">
+                  {/* {maintenance?.summary?.New} */}
+                </span>
+              </Button>
+              <Button
+                className={`${
+                  activeTab === "Selected Applicant"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("Selected Applicant")}
+              >
+                Selected Applicants <span className="ml-2 font-semibold"></span>
+              </Button>
+              <Button
+                className={`${
+                  activeTab === "Approved"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("Approved Tenant")}
+              >
+                Approved Tenants <span className="ml-2 font-semibold"></span>
+              </Button>
             </div>
 
-            <div className="md:w-3/5 w-full">
-              <div className="mb-4 border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack ">
-                  {" "}
-                  References
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Reference Full Name
-                  </span>{" "}
-                  {application?.applicant?.firstName}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-              Phone Number
-                  </span>
-                  {application?.applicant?.lastName}
-                </div>
-              </div>
-              <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Additional Information
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Desired Move-in Date
-                  </span>{" "}
-                  {application?.applicant?.firstName}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Number of Pets{" "}
-                  </span>{" "}
-                  {application?.petNumber}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Smoking
-                  </span>{" "}
-                  {application?.smoker === true ? "YES" : "NO"}{" "}
-                </div>
-                <div className="mt-3 text-sm font-light">
-                  <span className="text-nrvGreyBlack font-medium pr-3">
-                    Number of Vehicles
-                  </span>{" "}
-                  {application?.numberOfVehicles}{" "}
-                </div>
-              </div>
-              <div className="mb-4  border-b pb-4 px-2 mr-3 md:ml-20 ml-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Uploaded Documents
-                </div>
-                <div className="mt-3 text-sm font-light cursor-pointer">
-                  <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
-                    ID Proof
-                  </span>{" "}
-                  <a className="underline" href={application?.identificationCard}>View ID Card</a>
-              
-                </div>
-                <div className="mt-3 text-sm font-light cursor-pointer">
-                  <span className="text-nrvGreyBlack font-medium pr-3 cursor-none">
-                    Income Verification
-                  </span>{" "}
-                  {application?.applicant?.firstName}{" "}
-                </div>
-              </div>
-              <div className="mb-4 pb-4 px-2 mr-3 md:ml-20 ml-3">
-                <div className="mt-4 font-medium text-md text-nrvGreyBlack">
-                  {" "}
-                  Actions
-                </div>
-                <div className="flex gap-3 mt-4">
-                  <Button
-                    onClick={() => {
-                      handleSubmit("Accepted");
-                    }}
-                    size="normal"
-                    className="bg-nrvPrimaryGreen text-white p-2 border border-nrvGreyMediumBg rounded-md"
-                    variant="darkPrimary"
-                    showIcon={false}
-                  >
-                    <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                      Accept Applicant
-                    </div>
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      handleSubmit("Rejected");
-                    }}
-                    size="normal"
-                    className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg rounded-md  hover:text-white hover:bg-nrvPrimaryGreen"
-                    variant="mediumGrey"
-                    showIcon={false}
-                  >
-                    <div className="text-xs md:text-md p-1 flex gap-2 font-medium">
-                      Reject Applicant
-                    </div>
-                  </Button>
-                </div>
-              </div>
+            {/* Section Title */}
+            <div className="flex-col items-center gap-4 mt-2">
+              <h4 className="text-lg font-semibold">Active Application</h4>
+              <span className="text-gray-400 text-sm">
+                View and manage active applications
+              </span>
             </div>
           </div>
+
+          <DataTable
+            rowActions={handleRowAction}
+            key={activeTab}
+            endpoint={`${API_URL}/properties/applications/${
+              JSON.parse(localStorage.getItem("nrv-user") as any)?.user?._id
+            }`}
+            status={activeTab}
+            columns={[
+              {
+                key: "propertyId",
+                label: "Apartment Name & Address",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#101828] font-medium text-[13px]">
+                      {val?.apartmentStyle || "N/A"}
+                    </div>
+                    <div className="text-[#667085] font-light">
+                      {val?.propertyId?.streetAddress}, {val?.propertyId?.state}
+                      , Nigeria
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "status",
+                label: "Status",
+              },
+              {
+                key: "createdAt",
+                label: "Applied Date & Time",
+                render: (val) => <span>{formatDateToWords(val)}</span>,
+              },
+              {
+                key: "status",
+                label: "Next Step",
+                render: (val) => (
+                  <span className="font-medium italic text-[#045D23]">
+                    {val === "New" ? "Background Check" : null}
+                  </span>
+                ),
+              },
+            ]}
+          />
         </div>
       )}
-      <CenterModal
+{currentStep === 2 && (
+  <div className="mx-2 my-4">
+    {/* Breadcrumb and Back Button */}
+    <div className="flex items-center gap-3 text-sm mb-3">
+      <button
+        className="text-nrvGreyBlack"
+        onClick={() => setCurrentStep(1)}
+      >
+        <svg width="22" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M21 6.75C21.4142 6.75 21.75 6.41421 21.75 6C21.75 5.58579 21.4142 5.25 21 5.25V6.75ZM0.469669 5.46967C0.176777 5.76256 0.176777 6.23744 0.469669 6.53033L5.24264 11.3033C5.53553 11.5962 6.01041 11.5962 6.3033 11.3033C6.59619 11.0104 6.59619 10.5355 6.3033 10.2426L2.06066 6L6.3033 1.75736C6.59619 1.46447 6.59619 0.989593 6.3033 0.696699C6.01041 0.403806 5.53553 0.403806 5.24264 0.696699L0.469669 5.46967ZM21 5.25L1 5.25V6.75L21 6.75V5.25Z"
+            fill="#333333"
+          />
+        </svg>
+      </button>
+      <span className="text-nrvGreyBlack">Applicant Profile</span>
+    </div>
+
+    {/* Grid Layout */}
+    <div className="flex flex-col md:flex-row gap-4">
+      {/* Left Panel */}
+      <div className="w-full md:w-1/3 bg-white rounded-md p-4">
+        {/* Property Card */}
+        <div className="mb-4">
+          <img src={application?.propertyId?.propertyId?.file} alt="Property" className="rounded-md w-full h-40 object-cover" />
+          <div className="text-sm text-green-600 font-medium mt-2">Tenant Status: Active</div>
+          <div className="text-md font-semibold mt-1">{application?.propertyTitle}</div>
+          <div className="text-sm text-gray-500">{application?.propertyLocation}</div>
+          <div className="text-xs mt-1">Applied on: {application?.appliedDate}</div>
+        </div>
+
+        {/* Applicant Info */}
+        <div className="text-center">
+          <img src={application?.applicant?.photoUrl} alt="Profile" className="w-16 h-16 mx-auto rounded-full" />
+          <div className="text-green-700 text-xs font-medium mt-1">Account Verified</div>
+          <div className="text-md font-semibold mt-1">{application?.applicant?.fullName}</div>
+          <div className="text-sm text-gray-500">{application?.applicant?.email}</div>
+
+          {/* NIN */}
+          <div className="mt-4 bg-gray-100 p-2 rounded flex justify-between items-center">
+            <span>3456 **** *****</span>
+            <button className="text-sm text-green-600">Show NIN</button>
+          </div>
+
+          {/* Phone + Actions */}
+          <div className="mt-4 text-sm text-gray-700">{application?.applicant?.phoneNumber}</div>
+          <div className="flex gap-2 mt-3 justify-center">
+            <Button className="bg-nrvPrimaryGreen text-white text-xs px-4 py-2">Send Message</Button>
+            <Button className="bg-nrvGreyMediumBg text-xs px-4 py-2">Send Offer</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Personal Info */}
+        <InfoCard title="Personal Information" data={[
+          ['Marital Status', application?.applicant?.maritalStatus],
+          ['Gender', application?.applicant?.gender],
+          ['Date of Birth', application?.applicant?.dob]
+        ]} />
+
+        {/* Employment Details */}
+        <InfoCard title="Employment Details" data={[
+          ['Employer', application?.employment?.employer],
+          ['Job Title', application?.employment?.jobTitle],
+          ['Salary Range', application?.employment?.salaryRange]
+        ]} />
+
+        {/* Rental History */}
+        <InfoCard title="Recent Rental History" data={[
+          ['Previous Address', application?.rental?.previousAddress],
+          ['Reason for Moving', application?.rental?.reasonForMoving],
+          ['Landlord Reference', application?.rental?.landlordReference]
+        ]} />
+
+        {/* Background Check */}
+        <InfoCard title="Background Check Status" data={[
+          ['Criminal Record', application?.criminalRecord ? 'Yes' : 'Clear'],
+          ['Credit Score', application?.creditScore],
+          ['Interview Notes', application?.interviewNotes]
+        ]} />
+
+        {/* Rental Payment History */}
+        <InfoCard title="Rental Payment History" data={[
+          ['Timelines', '100% On-Time Payments']
+        ]} fileUrl={application?.documents?.proofOfPayment} />
+
+        {/* Identification */}
+        <InfoCard title="Identification" files={[
+          ['Government ID', application?.documents?.govtID],
+          ['Selfie', application?.documents?.selfie]
+        ]} />
+
+        {/* Submitted Docs */}
+        <InfoCard title="Submitted Documents" files={[
+          ['Proof of Income', application?.documents?.bankStatement],
+          ['Reference Letter', application?.documents?.referenceLetter]
+        ]} />
+      </div>
+    </div>
+  </div>
+)}
+
+      {/* <CenterModal
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false);
@@ -475,7 +421,7 @@ const ApplicantScreen = () => {
             </Button>
           </div>
         </div>
-      </CenterModal>
+      </CenterModal> */}
     </div>
   );
 };

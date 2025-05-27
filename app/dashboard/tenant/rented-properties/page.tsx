@@ -6,6 +6,7 @@ import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
+import { Button as UiButton } from "@/components/ui/button";
 import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,10 +14,12 @@ import {
   getPropertyByUserId,
   getRentedApartmentsForTenant,
 } from "../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 import TenantLayout from "@/app/components/layout/TenantLayout";
+import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { RefreshCcw } from "lucide-react";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +28,8 @@ const RentedPropertiesScreen = () => {
   const [page, setPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(0); // Total pages
   const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
+
+  console.log("Properties:", properties);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -43,6 +48,7 @@ const RentedPropertiesScreen = () => {
       ); // Pass page parameter
       setProperties(response?.payload?.data);
       setTotalPages(response?.totalPages);
+      toast.success("Properties fetched successfully");
     } catch (error) {
       console.error("Error fetching properties:", error);
     } finally {
@@ -84,7 +90,7 @@ const RentedPropertiesScreen = () => {
             )}
             {properties?.length < 1 ? (
               <div className="p-8 w-full">
-                <div className="text-2xl">Rented Apartments 🏘️,</div>
+                <div className="text-2xl">View Rented Apartments</div>
 
                 <div className="w-full h-screen flex justify-center items-center">
                   <div className="">
@@ -94,13 +100,22 @@ const RentedPropertiesScreen = () => {
                 </div>
               </div>
             ) : (
-              <div className="max-w-2xl min-w-lg md:mx-auto mt-8 mx-4">
+              <div className="max-w-5xl md:mx-auto mt-8 mx-4">
                 <div className="flex justify-between">
                   <div>
-                    <div className="text-2xl">Rented Apartment 🏘️</div>
+                    <div className="text-2xl">View Rented Apartment</div>
                   </div>
+                  <UiButton
+                    onClick={fetchData}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <RefreshCcw className="w-4 h-4" />
+                    Refresh
+                  </UiButton>
                 </div>
-                {properties?.map((property: any) => (
+                {/* {properties?.map((property: any) => (
                   <div
                     key={property.id}
                     className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
@@ -142,15 +157,35 @@ const RentedPropertiesScreen = () => {
                       </Button>
                     </div>
                   </div>
-                ))}
-                <div className="flex justify-between mt-4">
+                ))} */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
+                  {properties?.map((property: any) => (
+                    <div
+                      key={property?.propertyId?._id}
+                      className=" mt-8"
+                      onClick={() => {
+                        router.push(
+                          `/dashboard/tenant/properties/${property?.propertyId?._id}`
+                        );
+                      }}
+                    >
+                      <PropertyCard
+                        imageUrl={property?.propertyId?.file}
+                        address={property?.propertyId?.propertyId?.street}
+                        rentAmount={property?.propertyId?.rentAmount}
+                        property={property?.propertyId}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* <div className="flex justify-between mt-4">
                   <Button
                     size="normal"
                     className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
                     variant="lightGrey"
                     showIcon={false}
                     onClick={handlePrevPage}
-                   // disabled={page === 1}
+                    // disabled={page === 1}
                   >
                     Previous
                   </Button>
@@ -164,7 +199,7 @@ const RentedPropertiesScreen = () => {
                   >
                     Next
                   </Button>
-                </div>
+                </div> */}
               </div>
             )}
           </TenantLayout>

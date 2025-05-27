@@ -44,7 +44,7 @@ const validationSchema = yup.object({
 
 const SignUpMultiForm = () => {
   const dispatch = useDispatch();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(3);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Checkbox state
@@ -64,8 +64,6 @@ const SignUpMultiForm = () => {
       toast.error(error);
       setIsLoading(false);
     }
-
-
   };
 
   useEffect(() => {
@@ -76,12 +74,12 @@ const SignUpMultiForm = () => {
         setCurrentStep(parsedStep);
       } catch (error) {
         console.error("Error parsing stepToLoad from localStorage:", error);
-        setCurrentStep(1); 
+        setCurrentStep(1);
       }
     } else {
       setCurrentStep(1);
     }
-  }, []); 
+  }, []);
 
   return (
     <div className="font-jakarta">
@@ -159,12 +157,12 @@ const SignUpMultiForm = () => {
         </div>
       )}
       {currentStep === 2 && (
-        <div className="flex w-full h-screen">
+        <div className="flex w-full h-screen overflow-hidden">
           <div className="w-1/2 bg-[#E9F4E7]">
             <AccountSideBar />
           </div>
-          <div className="w-1/2 bg-white p-12">
-            <div className="max-w-md mx-auto">
+          <div className="w-1/2 bg-white p-12 pb-20 overflow-y-auto">
+            <div className="max-w-md mx-auto ">
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
               <Formik
                 initialValues={{

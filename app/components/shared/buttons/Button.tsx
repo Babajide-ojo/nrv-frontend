@@ -19,6 +19,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | "ordinary"
     | "roundedRec"
     | "transparentBg"
+    | "orangeOutline"
     | "lemonPrimary";
   size?: "small" | "normal" | "large" | "smaller" | "minLarge";
   pill?: boolean;
@@ -47,8 +48,7 @@ const classes = {
       "rounded-full border border-nrvLightGreenButtonHover1 outline-none text-white bg-transparent",
     darkPrimary:
       "rounded-full text-white bg-nrvPrimaryGreen outline-none hover:text-nrvPrimaryGreen hover:bg-nrvLightGreenButtonHover1",
-    light:
-      "rounded-full bg-white border border-[#ECECEE] text-nrvPrimaryGreen",
+    light: "rounded-full bg-white border border-[#ECECEE] text-nrvPrimaryGreen",
     lightPrimary:
       "rounded-2xl text-white border border-white bg-nrvPrimaryGreen",
     whitebg:
@@ -60,6 +60,8 @@ const classes = {
       "rounded-md bg-nrvLightGreyBg border border-nrvPrimaryGreen hover:bg-nrvPrimaryGreen hover:text-white",
     ordinary:
       "rounded-xl text-nrvLightGrey hover:bg-nrvPrimaryGreen hover:text-white",
+    orangeOutline:
+      "border border-[#FFAA00] text-[#FFAA00] hover:bg-[#FFAA00]/20",
     roundedRec:
       "font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvPrimaryGreen",
   },

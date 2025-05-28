@@ -165,7 +165,7 @@ const RentedPropertiesScreen = () => {
                       className=" mt-8"
                       onClick={() => {
                         router.push(
-                          `/dashboard/tenant/rented-properties/${property?.propertyId?._id}`
+                          `/dashboard/tenant/rented-properties/${property?._id}`
                         );
                       }}
                     >

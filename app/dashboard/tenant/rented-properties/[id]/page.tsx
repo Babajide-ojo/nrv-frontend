@@ -31,6 +31,7 @@ import MessageIcon from "@/app/components/icons/MessageIcon";
 import PdfIcon from "@/app/components/icons/PdfIcon";
 import EyeIcon from "@/app/components/icons/EyeIcon";
 import { DownloadIcon } from "lucide-react";
+import { format } from "date-fns";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -53,10 +54,10 @@ const RentedPropertiesScreen = () => {
     };
 
     try {
-      const response = await dispatch(
-        getPropertyByIdForTenant(formData) as any
-      );
-      // const response = await dispatch(getApplicationsById(formData) as any);
+      // const response = await dispatch(
+      //   getPropertyByIdForTenant(formData) as any
+      // );
+      const response = await dispatch(getApplicationsById(formData) as any);
       setProperty(response?.payload?.data);
     } catch (error) {
       console.error("Error fetching properties:", error);
@@ -67,17 +68,27 @@ const RentedPropertiesScreen = () => {
   };
 
   const rentDetails = [
-    { name: "Rent Status", value: "Active*" },
-    { name: "Rent Start Date", value: "2023-11-06*" },
-    { name: "Rent End Date", value: "2023-11-06*" },
+    { name: "Rent Status", value: property?.status },
+    {
+      name: "Rent Start Date",
+      value: property?.rentStartDate
+        ? format(new Date(property?.rentStartDate), "dd-MM-yyyy")
+        : "NIL",
+    },
+    {
+      name: "Rent End Date",
+      value: property?.rentEndDate
+        ? format(new Date(property?.rentEndDate), "dd-MM-yyyy")
+        : "NIL",
+    },
     {
       name: "Rent Amount",
-      value: `₦${property?.property?.rentAmount?.toLocaleString() ?? 0}`,
+      value: `₦${property?.propertyId?.rentAmount?.toLocaleString() ?? 0}`,
     },
     { name: "Security Deposit", value: "₦500,000*" },
     {
       name: "Landlord Contact",
-      value: property?.property?.propertyId?.createdBy?.phoneNumber,
+      value: property?.ownerId?.phoneNumber,
     },
   ];
 
@@ -112,7 +123,7 @@ const RentedPropertiesScreen = () => {
                       </span>
                     </h3>
                     <p className="-mt-1 text-xs">
-                      {property?.property?.propertyId?.streetAddress}
+                      {property?.propertyId?.propertyId?.streetAddress}
                     </p>
                   </div>
                 </div>
@@ -123,10 +134,10 @@ const RentedPropertiesScreen = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-base">
-                        {property?.property?.description}
+                        {property?.propertyId?.description}
                       </p>
                       <p className="font- text-sm text-[#475367]">
-                        Apartment ID: {property?.property?.propertyId?._id}
+                        Apartment ID: {property?.propertyId?.roomId}
                       </p>
                     </div>
                   </div>
@@ -156,7 +167,7 @@ const RentedPropertiesScreen = () => {
                             Apartment Name
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.property?.description}
+                            {property?.propertyId?.description}
                           </p>
                         </div>
                         <div className="sm:border-l sm:pl-5 mt-4 sm:mt-0">
@@ -164,8 +175,8 @@ const RentedPropertiesScreen = () => {
                             Apartment Address/Location
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.property?.propertyId?.streetAddress}{" "}
-                            {property?.property?.propertyId?.state}
+                            {property?.propertyId?.propertyId?.streetAddress}{" "}
+                            {property?.propertyId?.propertyId?.state}
                           </p>
                         </div>
                       </div>
@@ -189,7 +200,7 @@ const RentedPropertiesScreen = () => {
                             Number of Bedrooms
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.property?.noOfRooms}
+                            {property?.propertyId?.noOfRooms}
                           </p>
                         </div>
                         <div className="sm:border-l sm:pl-5 mt-4 sm:mt-0">
@@ -197,7 +208,7 @@ const RentedPropertiesScreen = () => {
                             Number of Bathrooms
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.property?.noOfBaths}
+                            {property?.propertyId?.noOfBaths}
                           </p>
                         </div>
                       </div>
@@ -207,8 +218,9 @@ const RentedPropertiesScreen = () => {
                             Apartment Facilities/Amenities
                           </p>
                           <div className="flex gap-3 flex-wrap mt-3 mb-5">
-                            {property?.property?.otherAmentities?.length > 0 &&
-                              property?.property?.otherAmentities?.map(
+                            {property?.propertyId?.otherAmentities?.length >
+                              0 &&
+                              property?.propertyId?.otherAmentities?.map(
                                 (amenity: string, i: number) => (
                                   <div
                                     key={i}
@@ -326,15 +338,15 @@ const RentedPropertiesScreen = () => {
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">Quiet Hours</p>
-                            <p className="font-semibold">10:00 PM - 4:00 AM</p>
+                            <p className="font-semibold">10:00 PM - 4:00 AM*</p>
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">Pet Policy</p>
-                            <p className="font-semibold">None</p>
+                            <p className="font-semibold">None*</p>
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">Parking Rules</p>
-                            <p className="font-semibold">None</p>
+                            <p className="font-semibold">None*</p>
                           </div>
                         </div>
                         <div className="p-4 border rounded-lg">
@@ -345,17 +357,19 @@ const RentedPropertiesScreen = () => {
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">Landlord</p>
-                            <p className="font-semibold">+234 81 32265445</p>
+                            <p className="font-semibold">
+                              {property?.ownerId?.phoneNumber}
+                            </p>
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">
                               Maintenance Hotline
                             </p>
-                            <p className="font-semibold">+234 81 32265445</p>
+                            <p className="font-semibold">+234 81 32265445*</p>
                           </div>
                           <div className="mt-4 text-sm flex flex-col">
                             <p className="text-[#475467]">Building Security</p>
-                            <p className="font-semibold">+234 81 6675 5303</p>
+                            <p className="font-semibold">+234 81 6675 5303*</p>
                           </div>
                         </div>
                       </div>
@@ -364,7 +378,7 @@ const RentedPropertiesScreen = () => {
                       <div className="w-full aspect-square rounded-lg p-3 bg-[#F9FAFB]">
                         <div className="h-full w-full aspect-square rounded-lg overflow-hidden">
                           <Image
-                            src={property?.property?.propertyId?.file}
+                            src={property?.propertyId?.propertyId?.file}
                             alt="Apartment Image"
                             width={200}
                             height={200}
@@ -378,7 +392,7 @@ const RentedPropertiesScreen = () => {
                           className="h-10 rounded-md w-full"
                           onClick={() =>
                             window.open(
-                              `mailto:${property?.property?.owner?.email}`
+                              `mailto:${property?.propertyId?.owner?.email}`
                             )
                           }
                         >
@@ -511,16 +525,16 @@ const RentedPropertiesScreen = () => {
                   View your property full details
                 </p>
                 <p className="text-nrvDarkGrey mt-4 text-sm">
-                  {property?.property.propertyId.streetAddress},{" "}
-                  {property?.property.propertyId.city},{" "}
-                  {property?.property.propertyId.state}
+                  {property?.propertyId?.propertyId?.streetAddress},{" "}
+                  {property?.propertyId?.propertyId?.city},{" "}
+                  {property?.propertyId?.propertyId?.state}
                 </p>
 
                 <div className="mb-2 flex md:items-center items-start mt-4">
                   <div className="text-nrvPrimaryGreen md:text-md text-sm">
                     Property Type:{" "}
                     <span className="text-nrvDarkGrey">
-                      {property?.property.propertyId.propertyType}
+                      {property?.propertyId?.propertyId?.propertyType}
                     </span>
                   </div>
                 </div>
@@ -533,9 +547,9 @@ const RentedPropertiesScreen = () => {
                       {" "}
                       ₦{" "}
                       {parseInt(
-                        property?.property?.rentAmount
+                        property?.propertyId?.rentAmount
                       ).toLocaleString()}
-                      /{property?.property?.rentAmountMetrics}
+                      /{property?.propertyId?.rentAmountMetrics}
                     </span>
                   </div>
                 </div>
@@ -547,7 +561,7 @@ const RentedPropertiesScreen = () => {
                     </span>
                     <span className="text-nrvDarkGrey text-xs">
                       {" "}
-                      {property?.property.description}
+                      {property?.propertyId?.description}
                     </span>
                   </div>
                 </div>
@@ -563,7 +577,7 @@ const RentedPropertiesScreen = () => {
                       variant="ordinary"
                       showIcon={false}
                     >
-                      {property?.property.noOfRooms} Rooms
+                      {property?.propertyId?.noOfRooms} Rooms
                     </Button>
                     <Button
                       size="smaller"
@@ -571,7 +585,7 @@ const RentedPropertiesScreen = () => {
                       variant="ordinary"
                       showIcon={false}
                     >
-                      {property?.property.noOfBaths} Baths
+                      {property?.propertyId?.noOfBaths} Baths
                     </Button>
                     <Button
                       size="smaller"
@@ -579,7 +593,7 @@ const RentedPropertiesScreen = () => {
                       variant="ordinary"
                       showIcon={false}
                     >
-                      {property?.property.noOfPools} Pools
+                      {property?.propertyId?.noOfPools} Pools
                     </Button>
                   </div>
                 </div>
@@ -609,16 +623,16 @@ const RentedPropertiesScreen = () => {
                   View Landlord Details
                 </p>
                 <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.property.propertyId.createdBy.firstName}{" "}
-                  {property?.property.propertyId.createdBy.lastName}
+                  {property?.propertyId?.propertyId?.createdBy?.firstName}{" "}
+                  {property?.propertyId?.propertyId?.createdBy?.lastName}
                 </p>
 
                 <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.property.propertyId.createdBy.phoneNumber}
+                  {property?.propertyId?.propertyId?.createdBy?.phoneNumber}
                 </p>
 
                 <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.property.propertyId.createdBy.email}
+                  {property?.propertyId?.propertyId?.createdBy?.email}
                 </p>
                 <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
                   <Button

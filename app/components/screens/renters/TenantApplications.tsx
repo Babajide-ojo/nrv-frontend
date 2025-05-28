@@ -80,7 +80,8 @@ const TenantApplications = () => {
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
           onClick={() =>
-            setCurrentStep(2)
+            // setCurrentStep(2)
+            router.push(`/dashboard/tenant/properties/applications/${id}`)
           }
         >
           view

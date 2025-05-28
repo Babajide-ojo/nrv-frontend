@@ -5,7 +5,10 @@ import LoadingPage from "../../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { getPropertyByIdForTenant } from "../../../../../redux/slices/propertySlice";
+import {
+  getApplicationsById,
+  getPropertyByIdForTenant,
+} from "../../../../../redux/slices/propertySlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "@/app/components/layout/TenantLayout";
@@ -25,6 +28,9 @@ import Image from "next/image";
 import House from "@/app/components/icons/House";
 import CheckMark from "@/app/components/icons/CheckMark";
 import MessageIcon from "@/app/components/icons/MessageIcon";
+import PdfIcon from "@/app/components/icons/PdfIcon";
+import EyeIcon from "@/app/components/icons/EyeIcon";
+import { DownloadIcon } from "lucide-react";
 
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -50,6 +56,7 @@ const RentedPropertiesScreen = () => {
       const response = await dispatch(
         getPropertyByIdForTenant(formData) as any
       );
+      // const response = await dispatch(getApplicationsById(formData) as any);
       setProperty(response?.payload?.data);
     } catch (error) {
       console.error("Error fetching properties:", error);
@@ -60,13 +67,14 @@ const RentedPropertiesScreen = () => {
   };
 
   const rentDetails = [
-    { name: "Rent Status", value: "" },
-    { name: "Rent Start Date", value: "" },
+    { name: "Rent Status", value: "Active*" },
+    { name: "Rent Start Date", value: "2023-11-06*" },
+    { name: "Rent End Date", value: "2023-11-06*" },
     {
       name: "Rent Amount",
       value: `₦${property?.property?.rentAmount?.toLocaleString() ?? 0}`,
     },
-    { name: "Security Deposit", value: "" },
+    { name: "Security Deposit", value: "₦500,000*" },
     {
       name: "Landlord Contact",
       value: property?.property?.propertyId?.createdBy?.phoneNumber,
@@ -211,6 +219,143 @@ const RentedPropertiesScreen = () => {
                                   </div>
                                 )
                               )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="py-4 md:pr-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <p className="text-lg font-semibold">
+                              Rent Payment Tracker
+                            </p>
+                          </div>
+                          <div className="mt-4 flex flex-col">
+                            <p className="text-sm text-[#475467]">
+                              January 2023
+                            </p>
+                            <div className="text-sm flex items-center gap-2 justify-between">
+                              <p className="font-semibold">Paid ₦5,000,000</p>
+                              <button className="text-[#2B892B] underline">
+                                View Receipt
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex flex-col">
+                            <p className="text-sm text-[#475467]">
+                              January 2024
+                            </p>
+                            <div className="text-sm flex items-center gap-2 justify-between">
+                              <p className="font-semibold">Paid ₦5,000,000</p>
+                              <button className="text-[#2B892B] underline">
+                                View Receipt
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-4 flex flex-col">
+                            <p className="text-sm text-[#475467]">
+                              January 2025
+                            </p>
+                            <div className="text-sm flex items-center gap-2 justify-between">
+                              <p className="font-semibold">Paid ₦5,000,000</p>
+                              <button className="text-[#2B892B] underline">
+                                View Receipt
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <p className="text-lg font-semibold">
+                              Signed Documents
+                            </p>
+                          </div>
+                          <div className="mt-4 flex flex-col">
+                            <p className="text-xs text-[#475467]">
+                              Signed Lease Agreement
+                            </p>
+                            <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
+                              <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                <PdfIcon width={20} height={20} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold">
+                                  Signed Lease.pdf
+                                </p>
+                                <p className="text-xs text-[#475467]">
+                                  11 Sep, 2023 | 12:24pm • 2MB
+                                </p>
+                              </div>
+                              <EyeIcon width={29} height={20} color="#475367" />
+                              <DownloadIcon
+                                width={23.33}
+                                height={24.5}
+                                color="#475367"
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-6 flex flex-col">
+                            <p className="text-xs text-[#475467]">
+                              Offer Letter
+                            </p>
+                            <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
+                              <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                <PdfIcon width={20} height={20} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold">
+                                  Signed Lease.pdf
+                                </p>
+                                <p className="text-xs text-[#475467]">
+                                  11 Sep, 2023 | 12:24pm • 2MB
+                                </p>
+                              </div>
+                              <EyeIcon width={29} height={20} color="#475367" />
+                              <DownloadIcon
+                                width={23.33}
+                                height={24.5}
+                                color="#475367"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <p className="text-lg font-semibold">
+                              Rules & Policies
+                            </p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">Quiet Hours</p>
+                            <p className="font-semibold">10:00 PM - 4:00 AM</p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">Pet Policy</p>
+                            <p className="font-semibold">None</p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">Parking Rules</p>
+                            <p className="font-semibold">None</p>
+                          </div>
+                        </div>
+                        <div className="p-4 border rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <p className="text-lg font-semibold">
+                              Emergency Contacts
+                            </p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">Landlord</p>
+                            <p className="font-semibold">+234 81 32265445</p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">
+                              Maintenance Hotline
+                            </p>
+                            <p className="font-semibold">+234 81 32265445</p>
+                          </div>
+                          <div className="mt-4 text-sm flex flex-col">
+                            <p className="text-[#475467]">Building Security</p>
+                            <p className="font-semibold">+234 81 6675 5303</p>
                           </div>
                         </div>
                       </div>

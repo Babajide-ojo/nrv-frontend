@@ -146,8 +146,8 @@ const TenantPropertiesScreen = () => {
   };
 
 
+  console.log({property});
   const handleSubmit = async (value: any) => {
-    console.log({property});
     
     const formData: any = new FormData();
 
@@ -355,11 +355,11 @@ const TenantPropertiesScreen = () => {
                     </div>
 
                     <Card className="flex items-center gap-4 p-4 mt-4">
-                      <img
+                      {/* <img
                         src={property?.owner?.imageUrl}
                         alt="owner"
                         className="w-14 h-14 rounded-full object-cover"
-                      />
+                      /> */}
                       <div>
                         <p className="font-semibold">{property?.owner?.name}</p>
                         <p className="text-sm text-gray-600">

@@ -376,6 +376,11 @@ const RentedPropertiesScreen = () => {
                         <Button
                           variant="darkPrimary"
                           className="h-10 rounded-md w-full"
+                          onClick={() =>
+                            window.open(
+                              `mailto:${property?.property?.owner?.email}`
+                            )
+                          }
                         >
                           <div className="flex gap-2 items-center">
                             <MessageIcon />
@@ -391,6 +396,11 @@ const RentedPropertiesScreen = () => {
                         <Button
                           variant="orangeOutline"
                           className="h-10 rounded-md w-full"
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
+                            )
+                          }
                         >
                           Request Maintainance
                         </Button>

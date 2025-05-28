@@ -31,13 +31,23 @@ import {
   Copy,
   Facebook,
   Linkedin,
+  Mail,
+  Phone,
   Star,
   Twitter,
+  User,
 } from "lucide-react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Label } from "@/components/ui/label";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { startOfToday } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Link from "next/link";
 
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
@@ -57,6 +67,7 @@ const TenantPropertiesScreen = () => {
     currentResidence: "",
     reasonForLeaving: "",
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -96,7 +107,7 @@ const TenantPropertiesScreen = () => {
           name: `${raw?.propertyId.createdBy.firstName} ${raw?.propertyId.createdBy.lastName}`,
           email: raw?.propertyId.createdBy.email,
           phoneNumber: raw?.propertyId.createdBy.phoneNumber,
-          id: raw?.propertyId.createdBy._id, 
+          id: raw?.propertyId.createdBy._id,
           reviews: 345,
           imageUrl: "/owner.jpg", // placeholder
         },
@@ -145,10 +156,8 @@ const TenantPropertiesScreen = () => {
     }
   };
 
-
-  console.log({property});
+  console.log({ property });
   const handleSubmit = async (value: any) => {
-    
     const formData: any = new FormData();
 
     formData.append("propertyId", id);
@@ -276,6 +285,7 @@ const TenantPropertiesScreen = () => {
                         <Button
                           variant="ordinary"
                           className="p-0 text-green-600"
+                          onClick={() => setIsModalOpen(true)}
                         >
                           View Contact Information
                         </Button>
@@ -442,7 +452,7 @@ const TenantPropertiesScreen = () => {
                                         },
                                         sx: {
                                           fontSize: "12px",
-                                         // backgroundColor: "white",
+                                          // backgroundColor: "white",
                                           boxShadow: "none",
                                           "&:hover": {
                                             boxShadow: "none",
@@ -767,6 +777,66 @@ const TenantPropertiesScreen = () => {
           </CenterModal>
         </ProtectedRoute>
       )}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Contact Information
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <User className="h-5 w-5 text-gray-600" />
+              <div>
+                <p className="text-sm text-gray-600">Name</p>
+                <p className="font-medium">{property?.owner?.name}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Mail className="h-5 w-5 text-gray-600" />
+              <div>
+                <p className="text-sm text-gray-600">Email</p>
+                <p className="font-medium">{property?.owner?.email}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <Phone className="h-5 w-5 text-gray-600" />
+              <div>
+                <p className="text-sm text-gray-600">Phone Number</p>
+                <p className="font-medium">{property?.owner?.phoneNumber}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-4">
+            <Link className="flex-1" href={`tel:${property?.owner?.phoneNumber}`}>
+              <Button
+                // variant="outline"
+                className="w-full"
+              >
+                <div className="flex items-center gap-2 py-1">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Call
+                </div>
+              </Button>
+            </Link>
+            <Link className="flex-1" href={`mailto:${property?.owner?.email}`}>
+              <Button
+                className="w-full"
+                // onClick={() => window.open(`mailto:${property?.owner?.email}`)}
+              >
+                <div className="flex items-center gap-2 py-1">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </div>
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

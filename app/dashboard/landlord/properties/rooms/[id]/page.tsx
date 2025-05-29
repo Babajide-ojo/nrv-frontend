@@ -23,14 +23,12 @@ import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
 
-
-
 const SingleRoom = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  // const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -143,17 +141,31 @@ const SingleRoom = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
-                          singleRoom?.assignedToTenant
-                            ? "bg-[#FFF1DA] text-[#F3A218]"
-                            : "text-[#E7F6EC] bg-[#099137]"
-                        }`}
-                      >
-                        {singleRoom?.assignedToTenant
-                          ? "Occupied By Tenant"
-                          : "Currently Vacant"}
-                      </button>
+                      <div className="flex gap-4">
+                        <button
+                          className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
+                            singleRoom?.assignedToTenant
+                              ? "bg-[#FFF1DA] text-[#F3A218]"
+                              : "text-[#E7F6EC] bg-[#099137]"
+                          }`}
+                        >
+                          {singleRoom?.assignedToTenant
+                            ? "Occupied By Tenant"
+                            : "Currently Vacant"}
+                        </button>
+                        <button
+                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137]"
+                          onClick={() => {
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <div className="flex gap-3 p-1.5 text-swBlue">
+                            {singleRoom.listRoom === false
+                              ? "List Apartment"
+                              : "Unlist Apartment"}
+                          </div>
+                        </button>
+                      </div>
                     </div>
 
                     <Tabs defaultValue="details" className="w-full mt-4">
@@ -241,7 +253,7 @@ const SingleRoom = () => {
                         />
                       </TabsContent>
                       <TabsContent value="document">
-                        <ApartmentDocuments propertyId={id}/>
+                        <ApartmentDocuments propertyId={id} />
                       </TabsContent>
                     </Tabs>
                   </div>
@@ -253,9 +265,9 @@ const SingleRoom = () => {
           </div>
         </LandLordLayout>
         <CenterModal
-          isOpen={isOpen}
+          isOpen={isModalOpen}
           onClose={() => {
-            setIsOpen(false);
+            setIsModalOpen(false);
           }}
         >
           <div className="mx-auto text-center p-4">
@@ -274,7 +286,7 @@ const SingleRoom = () => {
                 variant="ordinary"
                 showIcon={false}
                 onClick={() => {
-                  setIsOpen(false);
+                  setIsModalOpen(false);
                 }}
               >
                 <div className="flex gap-3">Close</div>

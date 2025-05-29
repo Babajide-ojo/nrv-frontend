@@ -235,8 +235,8 @@ const ApplicationDetails = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4 h-fit">
-          <div className="p-4 border rounded-lg h-fit">
+        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-1 gap-4 h-fit">
+          {/* <div className="p-4 border rounded-lg h-fit">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Personal Information</p>
             </div>
@@ -252,7 +252,7 @@ const ApplicationDetails = () => {
               <p className=" text-[#475467]">Date of Birth</p>
               <p className="font-semibold">Friday, Sep 25, 1990*</p>
             </div>
-          </div>
+          </div> */}
           <div className="p-4 border rounded-lg h-fit">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Employment Details</p>
@@ -272,7 +272,7 @@ const ApplicationDetails = () => {
               <p className="font-semibold">{`₦${application?.monthlyIncome?.toLocaleString()}`}</p>
             </div>
           </div>
-          <div className="p-4 border rounded-lg h-fit">
+          {/* <div className="p-4 border rounded-lg h-fit">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Rental History</p>
             </div>
@@ -290,8 +290,8 @@ const ApplicationDetails = () => {
               <p className=" text-[#475467]">Landlord/Agent Reference</p>
               <p className="font-semibold">Name: Mrs. Adebayo - 08029876543*</p>
             </div>
-          </div>
-          <div className="p-4 border rounded-lg h-fit">
+          </div> */}
+          {/* <div className="p-4 border rounded-lg h-fit">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Background Check Status</p>
             </div>
@@ -309,7 +309,7 @@ const ApplicationDetails = () => {
                 Tenant is reliable and has a stable income.*
               </p>
             </div>
-          </div>
+          </div> */}
           <div className="p-4 border rounded-lg">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Identification</p>

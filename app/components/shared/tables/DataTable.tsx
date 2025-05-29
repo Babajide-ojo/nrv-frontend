@@ -10,7 +10,7 @@ import useDebounce from '@/lib/useDebounce';
 export interface ColumnConfig {
   key: string;
   label: string;
-  render?: (value: any, row: any) => JSX.Element;
+  render?: (value: any, row: any) => any;
 }
 
 export interface FilterConfig {
@@ -24,6 +24,7 @@ interface DataTableProps {
   columns: ColumnConfig[];
   filters?: FilterConfig[];
   status?: string
+  searchTerm?: boolean;
   rowActions?: (row: any) => JSX.Element;
 }
 
@@ -32,6 +33,7 @@ export default function DataTable({
   columns,
   filters = [],
   status,
+  searchTerm = true,
   rowActions,
 }: DataTableProps) {
   const [data, setData] = useState<any[]>([]);
@@ -94,7 +96,7 @@ export default function DataTable({
   return (
     <div className="p-4 bg-white rounded-xl shadow-md font-jakarta">
       <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
-        <Input
+  {searchTerm &&       <Input
           placeholder="Search..."
           value={search}
           onChange={(e) => {
@@ -102,7 +104,7 @@ export default function DataTable({
             setCurrentPage(1);
           }}
           className="w-full md:w-1/3"
-        />
+        />}
         {filters.map((filter) => (
           <Select
             key={filter.name}

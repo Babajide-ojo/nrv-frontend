@@ -41,7 +41,7 @@ const links = [
     route: "/dashboard/landlord/properties/renters",
     icon: <FiFileText />,
   },
-  { name: "Tenants", route: "/dashboard/landlord/properties/renters", icon: <FiUsers /> },
+  { name: "Tenants", route: "/dashboard/landlord/properties/tenants", icon: <FiUsers /> },
   {
     name: "Rent Collection",
     route: "/dashboard/landlord/rent",

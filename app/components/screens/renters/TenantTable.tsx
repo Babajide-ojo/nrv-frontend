@@ -52,7 +52,7 @@ const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   </div>
 );
 
-const ApplicantScreen = () => {
+const TenantTable = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -62,7 +62,7 @@ const ApplicantScreen = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("New");
+  const [activeTab, setActiveTab] = useState<string>("activeTenant");
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -85,10 +85,10 @@ const ApplicantScreen = () => {
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
           onClick={() =>
-            router.push(`/dashboard/landlord/properties/renters/${id}`)
+            router.push(`/dashboard/landlord/properties/tenants/${id}`)
           }
         >
-          view applicant
+          View profile
         </p>
       </div>
     );
@@ -113,11 +113,10 @@ const ApplicantScreen = () => {
             {/* Header */}
             <div className="flex items-center justify-between w-full">
               <div>
-                <h2 className="text-xl font-semibold">
-                  View & Manage Your Leads & Applications
-                </h2>
+                <h2 className="text-xl font-semibold">Tenant Management</h2>
                 <p className="text-gray-500 text-sm mt-2 font-lighter">
-                  View and update your property leads and application.
+                  {" "}
+                  View & Manage Tenant Directoy
                 </p>
               </div>
               <Button variant="outline" size="sm" className="gap-2">
@@ -129,31 +128,31 @@ const ApplicantScreen = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
                 {[
                   {
-                    title: "Active Applications",
+                    title: "Total Active Leases",
                     value: `${0}`,
                     change: "0%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
                   },
                   {
-                    title: "Approved Applications",
+                    title: "Total Lease Amount",
                     value: `${0}`,
                     change: "10%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
                   },
                   {
-                    title: "Pending (Under Review)",
+                    title: "Total Number of Past Tenant",
                     value: `${0}`,
                     change: "83%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
                   },
                   {
-                    title: "Rejected (Declined Applications)",
+                    title: "Total Number of Past Tenant",
                     value: `${0}`,
-                    change: "10%",
-                    trend: "down",
+                    change: "83%",
+                    trend: "up",
                     comparison: "compared to the last 6 months",
                   },
                 ].map((card, i) => (
@@ -179,56 +178,58 @@ const ApplicantScreen = () => {
               <Button
                 variant="default"
                 className={`${
-                  activeTab === "New"
-                    ? "bg-green-700 text-white"
-                    : "bg-white text-gray-800 border"
-                }`}
-                onClick={() => handleTabClick("New")}
-              >
-                All Applications{" "}
-                <span className="ml-2 font-semibold">
-                  {/* {maintenance?.summary?.New} */}
-                </span>
-              </Button>
-              <Button
-                className={`${
-                  activeTab === "Selected Applicant"
-                    ? "bg-green-700 text-white"
-                    : "bg-white text-gray-800 border"
-                }`}
-                onClick={() => handleTabClick("Selected Applicant")}
-              >
-                Selected Applicants <span className="ml-2 font-semibold"></span>
-              </Button>
-              <Button
-                className={`${
                   activeTab === "activeTenant"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
                 onClick={() => handleTabClick("activeTenant")}
               >
-                Approved Tenants <span className="ml-2 font-semibold"></span>
+                Active Tenants{" "}
+                <span className="ml-2 font-semibold">
+                  {/* {maintenance?.summary?.New} */}
+                </span>
+              </Button>
+              <Button
+                className={`${
+                  activeTab === "ended"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("ended")}
+              >
+                Past Tenants <span className="ml-2 font-semibold"></span>
               </Button>
             </div>
 
             {/* Section Title */}
             <div className="flex-col items-center gap-4 mt-2">
-              <h4 className="text-lg font-semibold">Active Application</h4>
+              <h4 className="text-lg font-semibold">Manage Tenants</h4>
               <span className="text-gray-400 text-sm">
-                View and manage active applications
+                View and manage all your tenants
               </span>
             </div>
           </div>
 
           <DataTable
+             searchTerm = {false}
             rowActions={handleRowAction}
             key={activeTab}
-            endpoint={`${API_URL}/properties/applications/${
-              JSON.parse(localStorage.getItem("nrv-user") as any)?.user?._id
+            endpoint={`${API_URL}/properties/tenant/landlord-onboarded/${
+              JSON.parse(localStorage.getItem("nrv-user") as any).user._id
             }`}
             status={activeTab}
             columns={[
+              {
+                key: "applicant",
+                label: "Tenant Name",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#101828] font-medium text-[13px]">
+                      {val?.firstName} {val?.lastName}
+                    </div>
+                  </div>
+                ),
+              },
               {
                 key: "propertyId",
                 label: "Apartment Name & Address",
@@ -245,22 +246,47 @@ const ApplicantScreen = () => {
                 ),
               },
               {
-                key: "status",
-                label: "Status",
+                key: "leaseDuration",
+                label: "Lease Duration",
+                render: (_val, row) => {
+                  const start = row?.rentStartDate
+                    ? new Date(row.rentStartDate)
+                    : null;
+                  const end = row?.rentEndDate
+                    ? new Date(row.rentEndDate)
+                    : null;
+
+                  if (!start || !end) {
+                    return (
+                      <span className="text-[#D92D20] italic underline cursor-pointer">
+                        Lease hasn't started, click here to start lease
+                      </span>
+                    );
+                  }
+
+                  const durationInYears =
+                    end.getFullYear() - start.getFullYear();
+                  const formattedStart = start.toLocaleDateString("en-GB");
+                  const formattedEnd = end.toLocaleDateString("en-GB");
+
+                  return `${durationInYears} year${
+                    durationInYears > 1 ? "s" : ""
+                  } (${formattedStart} – ${formattedEnd})`;
+                },
+              },
+              {
+                key: "propertyId",
+                label: "Rent Amount",
+                render: (val) => (
+                  <span>
+                    {val?.rentAmount ? val?.rentAmount.toLocaleString() : null}
+                  </span>
+                ),
               },
               {
                 key: "createdAt",
                 label: "Applied Date & Time",
                 render: (val) => <span>{formatDateToWords(val)}</span>,
-              },
-              {
-                key: "status",
-                label: "Next Step",
-                render: (val) => (
-                  <span className="font-medium italic text-[#045D23]">
-                    {val === "New" ? "Background Check" : null}
-                  </span>
-                ),
               },
             ]}
           />
@@ -287,7 +313,7 @@ const ApplicantScreen = () => {
                 />
               </svg>
             </button>
-            <span className="text-nrvGreyBlack">Applicant Profile</span>
+            <span className="text-nrvGreyBlack">Tenant Details</span>
           </div>
 
           {/* Grid Layout */}
@@ -433,4 +459,4 @@ const ApplicantScreen = () => {
   );
 };
 
-export default ApplicantScreen;
+export default TenantTable;

@@ -394,6 +394,7 @@ const TenantPropertiesScreen = () => {
                     desiredMoveInDate: new Date(),
                     currentEmployer: "",
                     reasonForLeaving: "",
+                    jobTitle: "",
                     ownerId: user?._id,
                   }}
                   // validationSchema={validationSchema}
@@ -532,6 +533,16 @@ const TenantPropertiesScreen = () => {
                               placeholder="Reason for leaving"
                               label="Reason for Leaving/Relocation"
                               value={values.reasonForLeaving}
+                              css="bg-nrvLightGreyBg"
+                            />
+                          </div>
+
+                          <div className="w-full mt-8 md:mt-0">
+                            <FormikInputField
+                              name="jobTitle"
+                              placeholder="Job Title/Business Type"
+                              label="Job Title/Business Type"
+                              value={values.jobTitle}
                               css="bg-nrvLightGreyBg"
                             />
                           </div>

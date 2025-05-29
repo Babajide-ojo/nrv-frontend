@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   getApplicationsById,
@@ -34,6 +34,7 @@ import { DownloadIcon } from "lucide-react";
 import { format } from "date-fns";
 
 const RentedPropertiesScreen = () => {
+  const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
   const [property, setProperty] = useState<any>({});
   const [isPageLoading, setIsPageLoading] = useState(false);
@@ -67,30 +68,64 @@ const RentedPropertiesScreen = () => {
     }
   };
 
-  const rentDetails = [
-    { name: "Rent Status", value: property?.status },
-    {
-      name: "Rent Start Date",
-      value: property?.rentStartDate
-        ? format(new Date(property?.rentStartDate), "dd-MM-yyyy")
-        : "NIL",
-    },
-    {
-      name: "Rent End Date",
-      value: property?.rentEndDate
-        ? format(new Date(property?.rentEndDate), "dd-MM-yyyy")
-        : "NIL",
-    },
-    {
-      name: "Rent Amount",
-      value: `₦${property?.propertyId?.rentAmount?.toLocaleString() ?? 0}`,
-    },
-    { name: "Security Deposit", value: "₦500,000*" },
-    {
-      name: "Landlord Contact",
-      value: property?.ownerId?.phoneNumber,
-    },
-  ];
+  const rentDetails = pathname.includes("applications")
+    ? [
+        { name: "Application Status", value: property?.status },
+        {
+          name: "Application Submitted",
+          value: property?.submitted
+            ? format(new Date(property?.submitted), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Documents Verified",
+          value: property?.verified
+            ? format(new Date(property?.verified), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Background Check",
+          value: property?.backGroundCheck
+            ? format(new Date(property?.backGroundCheck), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Landlord Review",
+          value: property?.landlordReview
+            ? format(new Date(property?.landlordReview), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Decision Made",
+          value: property?.decision
+            ? format(new Date(property?.decision), "dd-MM-yyyy")
+            : "NIL",
+        },
+      ]
+    : [
+        { name: "Rent Status", value: property?.status },
+        {
+          name: "Rent Start Date",
+          value: property?.rentStartDate
+            ? format(new Date(property?.rentStartDate), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Rent End Date",
+          value: property?.rentEndDate
+            ? format(new Date(property?.rentEndDate), "dd-MM-yyyy")
+            : "NIL",
+        },
+        {
+          name: "Rent Amount",
+          value: `₦${property?.propertyId?.rentAmount?.toLocaleString() ?? 0}`,
+        },
+        { name: "Security Deposit", value: "₦500,000*" },
+        {
+          name: "Landlord Contact",
+          value: property?.ownerId?.phoneNumber,
+        },
+      ];
 
   console.log("Property Data:", property);
 
@@ -160,7 +195,7 @@ const RentedPropertiesScreen = () => {
                     Apartment Information
                   </p>
                   <div className="flex flex-col-reverse md:flex-row px-4">
-                    <div className="md:border-r w-full md:w-4/5">
+                    <div className="md:border-r w-full md:w-[70%]">
                       <div className="py-4 flex flex-col sm:flex-row border-b">
                         <div className="w-60">
                           <p className="text-[#475367] text-sm">
@@ -234,147 +269,233 @@ const RentedPropertiesScreen = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="py-4 md:pr-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <p className="text-lg font-semibold">
-                              Rent Payment Tracker
-                            </p>
-                          </div>
-                          <div className="mt-4 flex flex-col">
-                            <p className="text-sm text-[#475467]">
-                              January 2023
-                            </p>
-                            <div className="text-sm flex items-center gap-2 justify-between">
-                              <p className="font-semibold">Paid ₦5,000,000</p>
-                              <button className="text-[#2B892B] underline">
-                                View Receipt
-                              </button>
+                      {pathname.includes("applications") ? (
+                        <div className="py-4 md:pr-4 pb-10 overflow-x-auto">
+                          <table className="w-full rounded-lg border overflow-hidden text-xs whitespace-nowrap">
+                            <thead className="bg-gray-100">
+                              <tr>
+                                <th className="text-start p-3 font-normal">
+                                  YOUR DOCUMENTS
+                                </th>
+                                <th className="text-start p-3 font-normal">
+                                  STATUS
+                                </th>
+                                <th className="text-start p-3 font-normal">
+                                  UPLOADED ON
+                                </th>
+                                <th> </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td className="p-3 flex items-center gap-2">
+                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                    <PdfIcon width={20} height={20} />
+                                  </div>
+                                  ID Card*
+                                </td>
+                                <td className="p-3">
+                                  <div className="bg-green-100 text-green-500 rounded-full py-1 px-3 w-fit">
+                                    Verified
+                                  </div>
+                                </td>
+                                <td className="p-3">12-12-2024 03:38PM*</td>
+                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline">
+                                  View
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="p-3 flex items-center gap-2">
+                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                    <PdfIcon width={20} height={20} />
+                                  </div>
+                                  Proof of Income*
+                                </td>
+                                <td className="p-3">
+                                  <div className="bg-green-100 text-green-500 rounded-full py-1 px-3 w-fit">
+                                    Verified
+                                  </div>
+                                </td>
+                                <td className="p-3">12-12-2024 03:38PM*</td>
+                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline">
+                                  View
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="p-3 flex items-center gap-2">
+                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                    <PdfIcon width={20} height={20} />
+                                  </div>
+                                  Reference Letter*
+                                </td>
+                                <td className="p-3">
+                                  <div className="bg-yellow-100 text-yellow-500 rounded-full py-1 px-3 w-fit">
+                                    Not Uploaded
+                                  </div>
+                                </td>
+                                <td className="p-3"></td>
+                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline"></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="py-4 md:pr-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <p className="text-lg font-semibold">
+                                Rent Payment Tracker
+                              </p>
+                            </div>
+                            <div className="mt-4 flex flex-col">
+                              <p className="text-sm text-[#475467]">
+                                January 2023
+                              </p>
+                              <div className="text-sm flex items-center gap-2 justify-between">
+                                <p className="font-semibold">Paid ₦5,000,000</p>
+                                <button className="text-[#2B892B] underline">
+                                  View Receipt
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-4 flex flex-col">
+                              <p className="text-sm text-[#475467]">
+                                January 2024
+                              </p>
+                              <div className="text-sm flex items-center gap-2 justify-between">
+                                <p className="font-semibold">Paid ₦5,000,000</p>
+                                <button className="text-[#2B892B] underline">
+                                  View Receipt
+                                </button>
+                              </div>
+                            </div>
+                            <div className="mt-4 flex flex-col">
+                              <p className="text-sm text-[#475467]">
+                                January 2025
+                              </p>
+                              <div className="text-sm flex items-center gap-2 justify-between">
+                                <p className="font-semibold">Paid ₦5,000,000</p>
+                                <button className="text-[#2B892B] underline">
+                                  View Receipt
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <div className="mt-4 flex flex-col">
-                            <p className="text-sm text-[#475467]">
-                              January 2024
-                            </p>
-                            <div className="text-sm flex items-center gap-2 justify-between">
-                              <p className="font-semibold">Paid ₦5,000,000</p>
-                              <button className="text-[#2B892B] underline">
-                                View Receipt
-                              </button>
+                          <div className="p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <p className="text-lg font-semibold">
+                                Signed Documents
+                              </p>
+                            </div>
+                            <div className="mt-4 flex flex-col">
+                              <p className="text-xs text-[#475467]">
+                                Signed Lease Agreement
+                              </p>
+                              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
+                                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                  <PdfIcon width={20} height={20} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold">
+                                    Signed Lease.pdf
+                                  </p>
+                                  <p className="text-xs text-[#475467]">
+                                    11 Sep, 2023 | 12:24pm • 2MB
+                                  </p>
+                                </div>
+                                <EyeIcon
+                                  width={29}
+                                  height={20}
+                                  color="#475367"
+                                />
+                                <DownloadIcon
+                                  width={23.33}
+                                  height={24.5}
+                                  color="#475367"
+                                />
+                              </div>
+                            </div>
+                            <div className="mt-6 flex flex-col">
+                              <p className="text-xs text-[#475467]">
+                                Offer Letter
+                              </p>
+                              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
+                                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
+                                  <PdfIcon width={20} height={20} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold">
+                                    Signed Lease.pdf
+                                  </p>
+                                  <p className="text-xs text-[#475467]">
+                                    11 Sep, 2023 | 12:24pm • 2MB
+                                  </p>
+                                </div>
+                                <EyeIcon
+                                  width={29}
+                                  height={20}
+                                  color="#475367"
+                                />
+                                <DownloadIcon
+                                  width={23.33}
+                                  height={24.5}
+                                  color="#475367"
+                                />
+                              </div>
                             </div>
                           </div>
-                          <div className="mt-4 flex flex-col">
-                            <p className="text-sm text-[#475467]">
-                              January 2025
-                            </p>
-                            <div className="text-sm flex items-center gap-2 justify-between">
-                              <p className="font-semibold">Paid ₦5,000,000</p>
-                              <button className="text-[#2B892B] underline">
-                                View Receipt
-                              </button>
+                          <div className="p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <p className="text-lg font-semibold">
+                                Rules & Policies
+                              </p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">Quiet Hours</p>
+                              <p className="font-semibold">
+                                10:00 PM - 4:00 AM*
+                              </p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">Pet Policy</p>
+                              <p className="font-semibold">None*</p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">Parking Rules</p>
+                              <p className="font-semibold">None*</p>
+                            </div>
+                          </div>
+                          <div className="p-4 border rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <p className="text-lg font-semibold">
+                                Emergency Contacts
+                              </p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">Landlord</p>
+                              <p className="font-semibold">
+                                {property?.ownerId?.phoneNumber}
+                              </p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">
+                                Maintenance Hotline
+                              </p>
+                              <p className="font-semibold">+234 81 32265445*</p>
+                            </div>
+                            <div className="mt-4 text-sm flex flex-col">
+                              <p className="text-[#475467]">
+                                Building Security
+                              </p>
+                              <p className="font-semibold">
+                                +234 81 6675 5303*
+                              </p>
                             </div>
                           </div>
                         </div>
-                        <div className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <p className="text-lg font-semibold">
-                              Signed Documents
-                            </p>
-                          </div>
-                          <div className="mt-4 flex flex-col">
-                            <p className="text-xs text-[#475467]">
-                              Signed Lease Agreement
-                            </p>
-                            <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                              <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                <PdfIcon width={20} height={20} />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold">
-                                  Signed Lease.pdf
-                                </p>
-                                <p className="text-xs text-[#475467]">
-                                  11 Sep, 2023 | 12:24pm • 2MB
-                                </p>
-                              </div>
-                              <EyeIcon width={29} height={20} color="#475367" />
-                              <DownloadIcon
-                                width={23.33}
-                                height={24.5}
-                                color="#475367"
-                              />
-                            </div>
-                          </div>
-                          <div className="mt-6 flex flex-col">
-                            <p className="text-xs text-[#475467]">
-                              Offer Letter
-                            </p>
-                            <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                              <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                <PdfIcon width={20} height={20} />
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold">
-                                  Signed Lease.pdf
-                                </p>
-                                <p className="text-xs text-[#475467]">
-                                  11 Sep, 2023 | 12:24pm • 2MB
-                                </p>
-                              </div>
-                              <EyeIcon width={29} height={20} color="#475367" />
-                              <DownloadIcon
-                                width={23.33}
-                                height={24.5}
-                                color="#475367"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <p className="text-lg font-semibold">
-                              Rules & Policies
-                            </p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">Quiet Hours</p>
-                            <p className="font-semibold">10:00 PM - 4:00 AM*</p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">Pet Policy</p>
-                            <p className="font-semibold">None*</p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">Parking Rules</p>
-                            <p className="font-semibold">None*</p>
-                          </div>
-                        </div>
-                        <div className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <p className="text-lg font-semibold">
-                              Emergency Contacts
-                            </p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">Landlord</p>
-                            <p className="font-semibold">
-                              {property?.ownerId?.phoneNumber}
-                            </p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">
-                              Maintenance Hotline
-                            </p>
-                            <p className="font-semibold">+234 81 32265445*</p>
-                          </div>
-                          <div className="mt-4 text-sm flex flex-col">
-                            <p className="text-[#475467]">Building Security</p>
-                            <p className="font-semibold">+234 81 6675 5303*</p>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </div>
-                    <div className="w-full mt-4 md:mt-0 md:w-1/5 md:pl-4 pb-5">
+                    <div className="w-full mt-4 md:mt-0 md:w-[30%] md:pl-4 pb-5">
                       <div className="w-full aspect-square rounded-lg p-3 bg-[#F9FAFB]">
                         <div className="h-full w-full aspect-square rounded-lg overflow-hidden">
                           <Image
@@ -386,292 +507,63 @@ const RentedPropertiesScreen = () => {
                           />
                         </div>
                       </div>
-                      <div className="mt-4 flex flex-col gap-2">
-                        <Button
-                          variant="darkPrimary"
-                          className="h-10 rounded-md w-full"
-                          onClick={() =>
-                            window.open(
-                              `mailto:${property?.propertyId?.owner?.email}`
-                            )
-                          }
-                        >
-                          <div className="flex gap-2 items-center">
-                            <MessageIcon />
-                            Contact Landlord
+                      {pathname.includes("applications") ? (
+                        <div className="mt-4 flex items-center justify-between text-sm gap-4">
+                          <div className="flex flex-col">
+                            <p className="text-sm text-[#475467]">
+                              Apartment Style
+                            </p>
+                            <p className="font-semibold">
+                              {property?.propertyId?.apartmentStyle}
+                            </p>
                           </div>
-                        </Button>
-                        <Button
-                          variant="mediumGrey"
-                          className="h-10 rounded-md w-full"
-                        >
-                          Renew Rent/Lease
-                        </Button>
-                        <Button
-                          variant="orangeOutline"
-                          className="h-10 rounded-md w-full"
-                          onClick={() =>
-                            router.push(
-                              `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
-                            )
-                          }
-                        >
-                          Request Maintainance
-                        </Button>
-                      </div>
+                          <div className="flex flex-col">
+                            <p className="text-sm text-[#475467]">
+                              Price Per Anum
+                            </p>
+                            <p className="font-semibold">{`₦${property?.propertyId?.rentAmount?.toLocaleString()}`}</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-4 flex flex-col gap-2">
+                          <Button
+                            variant="darkPrimary"
+                            className="h-10 rounded-md w-full"
+                            onClick={() =>
+                              window.open(
+                                `mailto:${property?.propertyId?.owner?.email}`
+                              )
+                            }
+                          >
+                            <div className="flex gap-2 items-center">
+                              <MessageIcon />
+                              Contact Landlord
+                            </div>
+                          </Button>
+                          <Button
+                            variant="mediumGrey"
+                            className="h-10 rounded-md w-full"
+                          >
+                            Renew Rent/Lease
+                          </Button>
+                          <Button
+                            variant="orangeOutline"
+                            className="h-10 rounded-md w-full"
+                            onClick={() =>
+                              router.push(
+                                `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
+                              )
+                            }
+                          >
+                            Request Maintainance
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-                {/* <div className="flex gap-6 flex-wrap mt-4">
-                  <div className="w-full md:w-1/4">
-                    <div
-                      className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
-                      onClick={() => {
-                        setIsOpen(!isOpen);
-                      }}
-                    >
-                      <MdAddHomeWork color="#153969" size={40} />
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Apartment Details
-                      </p>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/4">
-                    <div
-                      className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
-                      onClick={() => {
-                        setIsLandLordOpen(!isLandLordOpen);
-                      }}
-                    >
-                      <FaPersonShelter color="#153969" size={40} />
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Landlord Details
-                      </p>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="flex gap-6 flex-wrap mt-4">
-                  <div className="w-full md:w-1/4">
-                    <div
-                      className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
-                      onClick={() => {
-                        setIsUploadSignedDocsOpen(true);
-                      }}
-                    >
-                      <IoIosSend color="#153969" size={40} />
-
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Agreement Documents
-                      </p>
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/4">
-                    <div
-                      className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
-                      onClick={() => {
-                        router.push(
-                          `/dashboard/tenant/rented-properties/maintenance/${id}`
-                        );
-                      }}
-                    >
-                      <GrWorkshop color="#153969" size={40} />
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Maintenance Issued
-                      </p>
-                    </div>
-                  </div>
-                </div> */}
-
-                {/* <div className="flex gap-6 flex-wrap mt-4">
-                  <div className="w-full md:w-1/4">
-                    <div
-                      className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition"
-                      onClick={() => {
-                        router.push(
-                          `/dashboard/tenant/rented-properties/documents/${property.property._id}`
-                        );
-                      }}
-                    >
-                      <IoDocuments color="#153969" size={40} />
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Apartment Documents
-                      </p>
-                    </div>
-                  </div>
-                  <Link
-                    href={`/dashboard/tenant/rented-properties/maintenance/${id}`}
-                    className="w-full md:w-1/4"
-                  >
-                    <div className="flex flex-col items-center justify-center bg-white border border-nrvLightGray rounded-2xl p-4 cursor-pointer hover:bg-nrvLightGreyBg hover:border-black transition">
-                      <RiGitPullRequestFill color="#153969" size={40} />
-                      <p className="text-nrvGreyBlack text-md font-light mt-4">
-                        Request Maintenance
-                      </p>
-                    </div>
-                  </Link>
-                </div> */}
               </div>
             )}
-
-            <CenterModal
-              isOpen={isOpen}
-              onClose={() => {
-                setIsOpen(false);
-              }}
-            >
-              <div className="mx-auto  p-4">
-                <p className="text-nrvDarkGrey text-md font-medium">
-                  View your property full details
-                </p>
-                <p className="text-nrvDarkGrey mt-4 text-sm">
-                  {property?.propertyId?.propertyId?.streetAddress},{" "}
-                  {property?.propertyId?.propertyId?.city},{" "}
-                  {property?.propertyId?.propertyId?.state}
-                </p>
-
-                <div className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="text-nrvPrimaryGreen md:text-md text-sm">
-                    Property Type:{" "}
-                    <span className="text-nrvDarkGrey">
-                      {property?.propertyId?.propertyId?.propertyType}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mb-2 flex  mt-4">
-                  <div className="text-nrvPrimaryGreen md:text-md text-sm">
-                    {" "}
-                    Rent Amount:{" "}
-                    <span className="text-nrvDarkGrey">
-                      {" "}
-                      ₦{" "}
-                      {parseInt(
-                        property?.propertyId?.rentAmount
-                      ).toLocaleString()}
-                      /{property?.propertyId?.rentAmountMetrics}
-                    </span>
-                  </div>
-                </div>
-                <div className="mb-2 flex mt-4">
-                  <div className="">
-                    <span className="text-nrvPrimaryGreen md:text-md text-sm">
-                      {" "}
-                      Description:{" "}
-                    </span>
-                    <span className="text-nrvDarkGrey text-xs">
-                      {" "}
-                      {property?.propertyId?.description}
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  className="pt-4"
-                  style={{ maxHeight: "50px", minHeight: "50px" }}
-                >
-                  <div className="flex gap-2">
-                    <Button
-                      size="smaller"
-                      className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                      variant="ordinary"
-                      showIcon={false}
-                    >
-                      {property?.propertyId?.noOfRooms} Rooms
-                    </Button>
-                    <Button
-                      size="smaller"
-                      className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                      variant="ordinary"
-                      showIcon={false}
-                    >
-                      {property?.propertyId?.noOfBaths} Baths
-                    </Button>
-                    <Button
-                      size="smaller"
-                      className="rounded-md rounded text-nrvGreyBlack bg-nrvLightGreyBg"
-                      variant="ordinary"
-                      showIcon={false}
-                    >
-                      {property?.propertyId?.noOfPools} Pools
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
-                  <Button
-                    size="small"
-                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={() => {
-                      setIsOpen(false);
-                    }}
-                  >
-                    <div className="flex gap-3">Close</div>
-                  </Button>
-                </div>
-              </div>
-            </CenterModal>
-            <CenterModal
-              isOpen={isLandLordOpen}
-              onClose={() => {
-                setIsLandLordOpen(false);
-              }}
-            >
-              <div className="mx-auto text-center p-4">
-                <p className="text-nrvPrimaryGreen text-md font-medium">
-                  View Landlord Details
-                </p>
-                <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.propertyId?.propertyId?.createdBy?.firstName}{" "}
-                  {property?.propertyId?.propertyId?.createdBy?.lastName}
-                </p>
-
-                <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.propertyId?.propertyId?.createdBy?.phoneNumber}
-                </p>
-
-                <p className="text-nrvDarkGrey mt-4 text-md">
-                  {property?.propertyId?.propertyId?.createdBy?.email}
-                </p>
-                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
-                  <Button
-                    size="small"
-                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={() => {
-                      setIsLandLordOpen(false);
-                    }}
-                  >
-                    <div className="flex gap-3">Close</div>
-                  </Button>
-                </div>
-              </div>
-            </CenterModal>
-            <Modal
-              isOpen={isUploadSignedDocsOpen}
-              onClose={() => {
-                setIsUploadSignedDocsOpen(false);
-              }}
-            >
-              <div className="mx-auto text-center p-4">
-                <AgreementDocumentScreen data={property} />
-                <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
-                  <Button
-                    size="small"
-                    className="text-nrvPrimaryGreen  max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={() => {
-                      setIsUploadSignedDocsOpen(false);
-                    }}
-                  >
-                    <div className="flex gap-3">Close</div>
-                  </Button>
-                </div>
-              </div>
-            </Modal>
           </TenantLayout>
         </ProtectedRoute>
       )}

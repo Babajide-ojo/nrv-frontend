@@ -90,8 +90,6 @@ const TenantPropertiesScreen = () => {
     try {
       const response = await dispatch(getPropertyByIdForTenant(body) as any);
       const raw = response?.payload?.data?.property; // Pass page parameter
-      console.log({ raw });
-
       let mapped = {
         title: raw?.apartmentType + " • " + raw?.apartmentStyle,
         imageUrl: raw?.propertyId.file,
@@ -103,6 +101,7 @@ const TenantPropertiesScreen = () => {
         bedrooms: raw?.noOfRooms,
         bathrooms: raw?.noOfBaths,
         amenities: raw?.otherAmentities,
+        hasApplied:  response?.payload?.data.hasApplied,
         owner: {
           name: `${raw?.propertyId.createdBy.firstName} ${raw?.propertyId.createdBy.lastName}`,
           email: raw?.propertyId.createdBy.email,
@@ -112,9 +111,8 @@ const TenantPropertiesScreen = () => {
           imageUrl: "/owner.jpg", // placeholder
         },
       };
-
-      console.log({ mapped });
-
+      console.log({mapped});
+      
       setProperty(mapped);
       //setProperty(response?.payload?.data);
     } catch (error) {
@@ -262,8 +260,10 @@ const TenantPropertiesScreen = () => {
                         <Button
                           className="w-full mt-4 bg-white text-black text-lg py-2"
                           onClick={() => setCurrentStep(2)}
+                          disabled= {property.hasApplied == true ? true : false}
                         >
-                          Apply Now!
+                          {property.hasApplied == true ? "You have applied to this unit" : "      Apply Now!"}
+                    
                         </Button>
                       </div>
                     </div>
@@ -323,7 +323,7 @@ const TenantPropertiesScreen = () => {
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <p className="text-[#475367] text-[13px] font-light">
-                          Flat Number
+                          Apartment Number
                         </p>
                         <p className="text-[#1D2739] text-[14px]">
                           {property?.flatNumber}
@@ -435,7 +435,7 @@ const TenantPropertiesScreen = () => {
                         <div className="w-full gap-3">
                           <div className="w-full mt-8 md:mt-0">
                             <div>
-                              <Label>Desired Move In Date</Label>
+                       
                               <div className="h-11 rounded-sm border border-[#E0E0E6] mt-4 px-2">
                                 <LocalizationProvider
                                   dateAdapter={AdapterDateFns}

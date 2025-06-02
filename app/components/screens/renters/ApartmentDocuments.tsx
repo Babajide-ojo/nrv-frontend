@@ -140,7 +140,7 @@ export default function DocumentUpload({ propertyId }: { propertyId: any }) {
 
           uploadedFiles &&       <div className="w-full lg:w-1/3 space-y-4">
           <h2 className="text-lg font-semibold">
-            Uploaded Files ({uploadedFiles?.length ?? 0})
+            Uploaded Files ({uploadedFiles?.data?.length})
           </h2>
           <div className="space-y-3">
         {uploadedFiles?.data?.map((file: any, idx: number) => (

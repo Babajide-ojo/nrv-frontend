@@ -4,17 +4,21 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
+  createUploadAgreement,
   getApplicationsByLandlordId,
   inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { formatDateToWords } from "@/helpers/utils";
+import { formatDateToWords, getFileExtension } from "@/helpers/utils";
 import { RefreshCcw } from "lucide-react";
 import DataTable from "../../shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
+import { FormikHelpers } from "formik";
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import { assignDateTenancyTenure, createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -63,7 +67,219 @@ const TenantTable = () => {
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>("activeTenant");
+  const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
+  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
+    useState(false);
 
+  const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
+  const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
+  const [fileUrl, setFileUrl] = useState<string>("");
+  const [tenantDetails, setTenantDetails] = useState<any>({});
+  const [viewerVisible, setViewerVisible] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [pdf, setPdf] = useState<any>(null);
+  const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+
+
+
+
+  const formatDateToWords = (dateString: any) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  };
+
+  const calculateDateDifference = (
+    startDateString: string,
+    endDateString: string
+  ) => {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+
+    // // Ensure the end date is after the start date
+    // if (endDate < startDate) {
+    //   throw new Error("End date must be after start date.");
+    // }
+
+    // Calculate difference
+    let years = endDate.getFullYear() - startDate.getFullYear();
+    let months = endDate.getMonth() - startDate.getMonth();
+    let days = endDate.getDate() - startDate.getDate();
+
+    // Adjust months and years if necessary
+    if (days < 0) {
+      months--;
+      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate(); // days in the previous month
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    // Return formatted difference
+    return `${years} year${years !== 1 ? "s" : ""}, ${months} month${
+      months !== 1 ? "s" : ""
+    }, and ${days} day${days !== 1 ? "s" : ""}`;
+  };
+
+  type AddTenantFunction = (
+    values: any,
+    formikHelpers: FormikHelpers<any>,
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  ) => Promise<void>;
+
+  const extendTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(extendTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+
+  const assignDateToTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const uploadTenantAgreement: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(createUploadAgreement(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload ||
+              "Failed to upload agreement documents. Please try again."
+          );
+        } else {
+          toast.error(
+            "Failed to upload agreement documents. Please try again."
+          );
+        }
+      } else {
+        toast.success("Agreement document uploaded successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const viewDocument = (item: string) => {
+    const fileType = getFileExtension(item);
+    if (
+      fileType === "jpg" ||
+      fileType === "jpeg" ||
+      fileType === "png" ||
+      fileType === "gif"
+    ) {
+      setPdf("image");
+    } else if (fileType === "pdf") {
+      setPdf("pdf");
+    }
+    setFileUrl(item);
+  //  setViewDocs(true);
+    setViewerVisible(true); // Ensure viewer is visible when a document is viewed
+  };
+
+  const closeViewer = () => {
+    setViewerVisible(false);
+  //  setViewDocs(false);
+    setFileUrl(""); // Reset fileUrl
+    setPdf(""); // Reset pdf state
+  };
+
+  const endTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(endTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to end tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to end tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant ended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenTenancyModal(false);
+    }
+  };
   const handleSubmit = async (status: any) => {
     const payload = {
       id: application?._id,
@@ -259,7 +475,7 @@ const TenantTable = () => {
                   if (!start || !end) {
                     return (
                       <span className="text-[#D92D20] italic underline cursor-pointer">
-                        Lease hasn't started, click here to start lease
+                        Lease hasn&lsquo;t started, click here to start lease
                       </span>
                     );
                   }

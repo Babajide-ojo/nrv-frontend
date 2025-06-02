@@ -55,9 +55,6 @@ const RentedPropertiesScreen = () => {
     };
 
     try {
-      // const response = await dispatch(
-      //   getPropertyByIdForTenant(formData) as any
-      // );
       const response = await dispatch(getApplicationsById(formData) as any);
       setProperty(response?.payload?.data);
     } catch (error) {
@@ -72,38 +69,14 @@ const RentedPropertiesScreen = () => {
     ? [
         { name: "Application Status", value: property?.status },
         {
-          name: "Application Submitted",
-          value: property?.submitted
-            ? format(new Date(property?.submitted), "dd-MM-yyyy")
+          name: "Application Date",
+          value: property?.createdAt
+            ? format(new Date(property?.createdAt), "dd-MM-yyyy")
             : "NIL",
-        },
-        {
-          name: "Documents Verified",
-          value: property?.verified
-            ? format(new Date(property?.verified), "dd-MM-yyyy")
-            : "NIL",
-        },
-        {
-          name: "Background Check",
-          value: property?.backGroundCheck
-            ? format(new Date(property?.backGroundCheck), "dd-MM-yyyy")
-            : "NIL",
-        },
-        {
-          name: "Landlord Review",
-          value: property?.landlordReview
-            ? format(new Date(property?.landlordReview), "dd-MM-yyyy")
-            : "NIL",
-        },
-        {
-          name: "Decision Made",
-          value: property?.decision
-            ? format(new Date(property?.decision), "dd-MM-yyyy")
-            : "NIL",
-        },
+        }
       ]
     : [
-        { name: "Rent Status", value: property?.status },
+        { name: "Rent Status", value: property?.status === "activeTenant" ? "Active" : property?.status },
         {
           name: "Rent Start Date",
           value: property?.rentStartDate
@@ -120,18 +93,14 @@ const RentedPropertiesScreen = () => {
           name: "Rent Amount",
           value: `₦${property?.propertyId?.rentAmount?.toLocaleString() ?? 0}`,
         },
-        { name: "Security Deposit", value: "₦500,000*" },
         {
           name: "Landlord Contact",
           value: property?.ownerId?.phoneNumber,
         },
       ];
-
-  console.log("Property Data:", property);
-
   useEffect(() => {
     fetchData();
-  }, [id]); // Dependency on `id` to refetch when it changes
+  }, [id]); 
 
   return (
     <div className="min-h-screen bg-gray-100 ">
@@ -150,7 +119,7 @@ const RentedPropertiesScreen = () => {
             {property && (
               <div className="p-6 md:p-8 mb-40">
                 <div className="flex items-center gap-3 mb-4 text-nrvGreyBlack mb-8">
-                  <BackIcon width={24} height={24} />
+                  <BackIcon />
                   <div>
                     <h3 className="text-lg font-medium text-nrvPrimaryGreen">
                       <span className="font-semibold">
@@ -176,7 +145,7 @@ const RentedPropertiesScreen = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="px-4 py-4 gap-5 md:gap-0 flex justify-center items-center flex-col md:flex-row">
+                  <div className="px-4 py-4 gap-5 md:gap-0 flex flex-col md:flex-row">
                     {rentDetails.map((detail, i) => (
                       <div
                         key={i}
@@ -219,13 +188,7 @@ const RentedPropertiesScreen = () => {
                         <div className="w-60">
                           <p className="text-[#475367] text-sm">Flat Number</p>
                           <p className="text-semibold font-medium">
-                            No detail*
-                          </p>
-                        </div>
-                        <div className="sm:border-l sm:pl-5 mt-4 sm:mt-0">
-                          <p className="text-[#475367] text-sm">Floor Plan</p>
-                          <p className="text-semibold font-medium">
-                            No detail*
+                          {property?.propertyId?.roomId}
                           </p>
                         </div>
                       </div>
@@ -269,231 +232,7 @@ const RentedPropertiesScreen = () => {
                           </div>
                         </div>
                       </div>
-                      {pathname.includes("applications") ? (
-                        <div className="py-4 md:pr-4 pb-10 overflow-x-auto">
-                          <table className="w-full rounded-lg border overflow-hidden text-xs whitespace-nowrap">
-                            <thead className="bg-gray-100">
-                              <tr>
-                                <th className="text-start p-3 font-normal">
-                                  YOUR DOCUMENTS
-                                </th>
-                                <th className="text-start p-3 font-normal">
-                                  STATUS
-                                </th>
-                                <th className="text-start p-3 font-normal">
-                                  UPLOADED ON
-                                </th>
-                                <th> </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td className="p-3 flex items-center gap-2">
-                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                    <PdfIcon width={20} height={20} />
-                                  </div>
-                                  ID Card*
-                                </td>
-                                <td className="p-3">
-                                  <div className="bg-green-100 text-green-500 rounded-full py-1 px-3 w-fit">
-                                    Verified
-                                  </div>
-                                </td>
-                                <td className="p-3">12-12-2024 03:38PM*</td>
-                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline">
-                                  View
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="p-3 flex items-center gap-2">
-                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                    <PdfIcon width={20} height={20} />
-                                  </div>
-                                  Proof of Income*
-                                </td>
-                                <td className="p-3">
-                                  <div className="bg-green-100 text-green-500 rounded-full py-1 px-3 w-fit">
-                                    Verified
-                                  </div>
-                                </td>
-                                <td className="p-3">12-12-2024 03:38PM*</td>
-                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline">
-                                  View
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="p-3 flex items-center gap-2">
-                                  <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                    <PdfIcon width={20} height={20} />
-                                  </div>
-                                  Reference Letter*
-                                </td>
-                                <td className="p-3">
-                                  <div className="bg-yellow-100 text-yellow-500 rounded-full py-1 px-3 w-fit">
-                                    Not Uploaded
-                                  </div>
-                                </td>
-                                <td className="p-3"></td>
-                                <td className="p-3 text-nrvPrimaryGreen cursor-pointer hover:underline"></td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      ) : (
-                        <div className="py-4 md:pr-4 pb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="p-4 border rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <p className="text-lg font-semibold">
-                                Rent Payment Tracker
-                              </p>
-                            </div>
-                            <div className="mt-4 flex flex-col">
-                              <p className="text-sm text-[#475467]">
-                                January 2023
-                              </p>
-                              <div className="text-sm flex items-center gap-2 justify-between">
-                                <p className="font-semibold">Paid ₦5,000,000</p>
-                                <button className="text-[#2B892B] underline">
-                                  View Receipt
-                                </button>
-                              </div>
-                            </div>
-                            <div className="mt-4 flex flex-col">
-                              <p className="text-sm text-[#475467]">
-                                January 2024
-                              </p>
-                              <div className="text-sm flex items-center gap-2 justify-between">
-                                <p className="font-semibold">Paid ₦5,000,000</p>
-                                <button className="text-[#2B892B] underline">
-                                  View Receipt
-                                </button>
-                              </div>
-                            </div>
-                            <div className="mt-4 flex flex-col">
-                              <p className="text-sm text-[#475467]">
-                                January 2025
-                              </p>
-                              <div className="text-sm flex items-center gap-2 justify-between">
-                                <p className="font-semibold">Paid ₦5,000,000</p>
-                                <button className="text-[#2B892B] underline">
-                                  View Receipt
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-4 border rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <p className="text-lg font-semibold">
-                                Signed Documents
-                              </p>
-                            </div>
-                            <div className="mt-4 flex flex-col">
-                              <p className="text-xs text-[#475467]">
-                                Signed Lease Agreement
-                              </p>
-                              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                  <PdfIcon width={20} height={20} />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold">
-                                    Signed Lease.pdf
-                                  </p>
-                                  <p className="text-xs text-[#475467]">
-                                    11 Sep, 2023 | 12:24pm • 2MB
-                                  </p>
-                                </div>
-                                <EyeIcon
-                                  width={29}
-                                  height={20}
-                                  color="#475367"
-                                />
-                                <DownloadIcon
-                                  width={23.33}
-                                  height={24.5}
-                                  color="#475367"
-                                />
-                              </div>
-                            </div>
-                            <div className="mt-6 flex flex-col">
-                              <p className="text-xs text-[#475467]">
-                                Offer Letter
-                              </p>
-                              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                                  <PdfIcon width={20} height={20} />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold">
-                                    Signed Lease.pdf
-                                  </p>
-                                  <p className="text-xs text-[#475467]">
-                                    11 Sep, 2023 | 12:24pm • 2MB
-                                  </p>
-                                </div>
-                                <EyeIcon
-                                  width={29}
-                                  height={20}
-                                  color="#475367"
-                                />
-                                <DownloadIcon
-                                  width={23.33}
-                                  height={24.5}
-                                  color="#475367"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="p-4 border rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <p className="text-lg font-semibold">
-                                Rules & Policies
-                              </p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">Quiet Hours</p>
-                              <p className="font-semibold">
-                                10:00 PM - 4:00 AM*
-                              </p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">Pet Policy</p>
-                              <p className="font-semibold">None*</p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">Parking Rules</p>
-                              <p className="font-semibold">None*</p>
-                            </div>
-                          </div>
-                          <div className="p-4 border rounded-lg">
-                            <div className="flex items-center justify-between">
-                              <p className="text-lg font-semibold">
-                                Emergency Contacts
-                              </p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">Landlord</p>
-                              <p className="font-semibold">
-                                {property?.ownerId?.phoneNumber}
-                              </p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">
-                                Maintenance Hotline
-                              </p>
-                              <p className="font-semibold">+234 81 32265445*</p>
-                            </div>
-                            <div className="mt-4 text-sm flex flex-col">
-                              <p className="text-[#475467]">
-                                Building Security
-                              </p>
-                              <p className="font-semibold">
-                                +234 81 6675 5303*
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+        
                     </div>
                     <div className="w-full mt-4 md:mt-0 md:w-[30%] md:pl-4 pb-5">
                       <div className="w-full aspect-square rounded-lg p-3 bg-[#F9FAFB]">

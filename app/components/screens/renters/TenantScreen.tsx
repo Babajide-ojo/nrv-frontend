@@ -5,14 +5,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import {
+  createUploadAgreement,
   getApplicationsById,
   updateApplicationStatus,
 } from "@/redux/slices/propertySlice";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { format } from "date-fns";
-import PdfIcon from "../../icons/PdfIcon";
-import { DownloadIcon, EyeIcon } from "lucide-react";
+import { format, startOfToday } from "date-fns";
+`import PdfIcon from "../../icons/PdfIcon";
+import { DownloadIcon, EyeIcon } from "lucide-react";`
+import { Form, Formik, FormikHelpers } from "formik";
+import CustomDatePicker from "../../shared/CustomDatePicker";
+import Modal from "../../shared/modals/Modal";
+import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
+import {
+  assignDateTenancyTenure,
+  endTenancyTenure,
+  extendTenancyTenure,
+} from "@/redux/slices/userSlice";
+import { getFileExtension } from "@/helpers/utils";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { Label } from "@/components/ui/label";
+import BackIcon from "../../shared/icons/BackIcon";
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -57,6 +72,255 @@ const TenantScreen = () => {
   const [showNIN, setShowNIN] = useState(false);
   const application = useSelector((state: any) => state?.property?.data?.data);
   const [isLoading, setIsLoading] = useState(false);
+  const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
+  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
+    useState(false);
+
+  const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
+  const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
+  const [fileUrl, setFileUrl] = useState<string>("");
+  const [tenantDetails, setTenantDetails] = useState<any>({});
+  const [viewerVisible, setViewerVisible] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [pdf, setPdf] = useState<any>(null);
+  const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  const validateTenancyDateAssignment = (values: any) => {
+    const errors: { rentEndDate?: string; rentStartDate?: string } = {};
+
+    if (tenantDetails?.data?.finalResult?.rentEndDate) {
+      const currentEndDate = new Date(
+        tenantDetails?.data?.finalResult?.rentEndDate
+      );
+      const newEndDate = new Date(values.rentEndDate);
+
+      if (newEndDate <= currentEndDate) {
+        errors.rentEndDate =
+          "End date must be later than the current rent end date.";
+      }
+    }
+
+    const newStartDate = new Date(values.rentStartDate);
+    const newEndDate = new Date(values.rentEndDate);
+
+    if (newStartDate && newEndDate && newStartDate >= newEndDate) {
+      errors.rentStartDate = "Start date must be earlier than the end date.";
+      errors.rentEndDate = "End date must be later than the start date.";
+    }
+
+    return errors;
+  };
+
+  const formatDateToWords = (dateString: any) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })?.format(date);
+  };
+
+  const calculateDateDifference = (
+    startDateString: string,
+    endDateString: string
+  ) => {
+    const startDate = new Date(startDateString);
+    const endDate = new Date(endDateString);
+
+    // // Ensure the end date is after the start date
+    // if (endDate < startDate) {
+    //   throw new Error("End date must be after start date.");
+    // }
+
+    // Calculate difference
+    let years = endDate.getFullYear() - startDate.getFullYear();
+    let months = endDate.getMonth() - startDate.getMonth();
+    let days = endDate.getDate() - startDate.getDate();
+
+    // Adjust months and years if necessary
+    if (days < 0) {
+      months--;
+      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate(); // days in the previous month
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    // Return formatted difference
+    return `${years} year${years !== 1 ? "s" : ""}, ${months} month${
+      months !== 1 ? "s" : ""
+    }, and ${days} day${days !== 1 ? "s" : ""}`;
+  };
+
+  type AddTenantFunction = (
+    values: any,
+    formikHelpers: FormikHelpers<any>,
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  ) => Promise<void>;
+
+  const extendTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(extendTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const assignDateToTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to extend tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to extend tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant tenure extended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const uploadTenantAgreement: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(createUploadAgreement(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload ||
+              "Failed to upload agreement documents. Please try again."
+          );
+        } else {
+          toast.error(
+            "Failed to upload agreement documents. Please try again."
+          );
+        }
+      } else {
+        toast.success("Agreement document uploaded successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+    }
+  };
+
+  const viewDocument = (item: string) => {
+    const fileType = getFileExtension(item);
+    if (
+      fileType === "jpg" ||
+      fileType === "jpeg" ||
+      fileType === "png" ||
+      fileType === "gif"
+    ) {
+      setPdf("image");
+    } else if (fileType === "pdf") {
+      setPdf("pdf");
+    }
+    setFileUrl(item);
+    //  setViewDocs(true);
+    setViewerVisible(true); // Ensure viewer is visible when a document is viewed
+  };
+
+  const closeViewer = () => {
+    setViewerVisible(false);
+    //  setViewDocs(false);
+    setFileUrl(""); // Reset fileUrl
+    setPdf(""); // Reset pdf state
+  };
+
+  const endTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    try {
+      const result = (await dispatch(endTenancyTenure(values))) as any;
+      if (result.error) {
+        if (result.error.message === "Rejected") {
+          toast.error(
+            result.payload || "Failed to end tenancy. Please try again."
+          );
+        } else {
+          toast.error("Failed to end tenancy. Please try again.");
+        }
+      } else {
+        toast.success("Tenant ended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenTenancyModal(false);
+    }
+  };
+  const handleSubmit = async (status: any) => {
+    const payload = {
+      id: application?._id,
+      status: status,
+    };
+    try {
+      setIsLoading(true);
+      await dispatch(updateApplicationStatus(payload) as any).unwrap();
+      toast.success("Application accepted");
+      router.push("/dashboard/landlord/properties/renters");
+    } catch (error: any) {
+      toast.error(error);
+    }
+  };
+
   const handleAppApproval = async (status: any) => {
     const payload = {
       id: application?._id,
@@ -81,34 +345,20 @@ const TenantScreen = () => {
     }
   }, [id, dispatch]);
 
-  if (!application)
-    return <div className="p-4">Loading application details...</div>;
+  if (!application) return <div className="p-4">Loading lease details...</div>;
 
   return (
     <div className="mx-5 my-4">
       {/* Breadcrumb and Back Button */}
       <div className="flex items-center justify-between gap-5 mb-4">
         <div className="flex items-center gap-3 text-sm">
-          <button className="text-nrvGreyBlack">
-            <svg
-              width="22"
-              height="12"
-              viewBox="0 0 22 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 6.75C21.4142 6.75 21.75 6.41421 21.75 6C21.75 5.58579 21.4142 5.25 21 5.25V6.75ZM0.469669 5.46967C0.176777 5.76256 0.176777 6.23744 0.469669 6.53033L5.24264 11.3033C5.53553 11.5962 6.01041 11.5962 6.3033 11.3033C6.59619 11.0104 6.59619 10.5355 6.3033 10.2426L2.06066 6L6.3033 1.75736C6.59619 1.46447 6.59619 0.989593 6.3033 0.696699C6.01041 0.403806 5.53553 0.403806 5.24264 0.696699L0.469669 5.46967ZM21 5.25L1 5.25V6.75L21 6.75V5.25Z"
-                fill="#333333"
-              />
-            </svg>
-          </button>
-          <span className="text-nrvGreyBlack">Tenant Details</span>
+          <BackIcon />
+          <span className="text-nrvGreyBlack">Tenant Profile</span>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row flex-start gap-4">
-        <div className="w-full md:w-1/2 bg-white rounded-md">
+      <div className="flex flex-col gap-4">
+        <div className="w-full md:w-full bg-white rounded-md">
           <div className="border rounded-lg flex flex-col sm:flex-row overflow-hidden">
             {/* <div className="h-[168px] aspect-square" ></div> */}
             <Image
@@ -120,7 +370,10 @@ const TenantScreen = () => {
             />
             <div className="px-5 py-3">
               <div className="bg-[#E9F4E7] text-[#099137] w-fit text-xs py-1 px-4 rounded-full">
-                Lease Status: {application?.status}
+                Lease Status:{" "}
+                {application?.status == "activeTenant"
+                  ? "Active"
+                  : application?.status}
               </div>
               <div className="text-[20px] font-semibold mt-1">
                 {application?.propertyId?.description}
@@ -138,293 +391,278 @@ const TenantScreen = () => {
               </p>
             </div>
           </div>
-          {/* <div className="mb-4">
-            <img
-              src={application?.propertyId?.propertyId?.file}
-              alt="Property"
-              className="rounded-md w-full h-40 object-cover"
-            />
-            <div className="text-sm text-green-600 font-medium mt-2">
-              Tenant Status: Active
-            </div>
-            <div className="text-md font-semibold mt-1">
-              {application?.propertyTitle}
-            </div>
-            <div className="text-sm text-gray-500">
-              {application?.propertyLocation}
-            </div>
-            <div className="text-xs mt-1">
-              Applied on: {application?.appliedDate}
-            </div>
-          </div> */}
 
-          <div className="text-center mt-5 border rounded-lg p-5">
-            <div className="flex flex-col items-center">
-              <Image
-                src="/images/verified-user-icon.svg"
-                alt="Profile"
-                height={160}
-                width={160}
-                className="object-cover aspect-square rounded-lg"
-              />
-              <p className="text-[24px] text-[#03442C] font-semibold mt-3">
-                {application?.applicant?.firstName}{" "}
-                {application?.applicant?.lastName}
-              </p>
-              <p className="text-lg text-gray-500">
-                {application?.applicant?.email}
-              </p>
-            </div>
+          <div className="flex gap-4">
+            <div className="w-full text-center mt-5 border rounded-lg">
+              <div className="flex flex-col items-center">
+                <Image
+                  src="/images/verified-user-icon.svg"
+                  alt="Profile"
+                  height={160}
+                  width={160}
+                  className="object-cover aspect-square rounded-lg"
+                />
+                <p className="text-[24px] text-[#03442C] font-semibold mt-3">
+                  {application?.applicant?.firstName}{" "}
+                  {application?.applicant?.lastName}
+                </p>
+                <p className="text-lg text-gray-500">
+                  {application?.applicant?.email}
+                </p>
 
-            <div className="mt-4 bg-[#E9F4E7] p-4 text-[24px] font-semibold rounded flex justify-between items-center">
-              <span>
-                {showNIN ? application?.applicant?.nin : "**********"}
-              </span>
-              <button
-                onClick={() => setShowNIN(!showNIN)}
-                className="underline text-lg text-green-600"
-              >
-                {!showNIN ? "Show NIN" : "Hide NIN"}
-              </button>
-            </div>
-            <div className="flex items-center justify-between mt-4 px-4">
-              <p>Phone Number</p>
-              <p className=" text-gray-700">
-                {application?.applicant?.phoneNumber? application?.applicant?.phoneNumber: "Not provided" }
-              </p>
-            </div>
-            {application?.status == "active" || application?.status == "activeTenant" && (
-              <div className="flex gap-2 mt-5 justify-center">
+                <p className=" text-gray-700">
+                  {application?.applicant?.phoneNumber}
+                </p>
+              </div>
+
+              <div className="mt-4 bg-[#E9F4E7] p-4 text-[24px] font-semibold rounded flex justify-between items-center">
+                <span>
+                  {showNIN ? application?.applicant?.nin : "**********"}
+                </span>
+                <button
+                  onClick={() => setShowNIN(!showNIN)}
+                  className="underline text-lg text-green-600"
+                >
+                  {!showNIN ? "Show NIN" : "Hide NIN"}
+                </button>
+              </div>
+
+              {!(
+                application?.status == "active" ||
+                application?.status == "activeTenant"
+              ) && (
+                <div className="flex gap-2 mt-5 justify-center">
+                  <Button
+                    className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                    disabled={isLoading}
+                    onClick={() => handleAppApproval("activeTenant")}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
+                    onClick={() => {}}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              )}
+              {!application?.rentStartDate && !application?.rentStartDate && (
                 <Button
                   className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                   disabled={isLoading}
-                  onClick={() => handleAppApproval("activeTenant")}
+                  onClick={() => setOpenAssignDateModal(true)}
                 >
-                  Accept
+                  Set Lease Period
                 </Button>
-                <Button
-                  className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
-                  onClick={() => {}}
-                >
-                  Reject
-                </Button>
+              )}
+            </div>
+            <div className="w-full p-4 border rounded-lg mt-4">
+              <div className="flex">
+                <p className="text-lg font-semibold">Employment Details</p>
               </div>
-            )}
+              <div className="flex gap-4">
+                <div className="w-full mt-4 text-sm text-start">
+                  <p className="text-[#475467]">Employer</p>
+                  <p className="font-semibold">
+                    {application?.currentEmployer ?? "N/A"}
+                  </p>
+                </div>
+
+                <div className="w-full mt-4 text-sm flex flex-col  text-start">
+                  <p className=" text-[#475467]">Salary</p>
+                  <p className="font-semibold">{`₦${application?.monthlyIncome?.toLocaleString()}`}</p>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="p-4 border rounded-lg  mt-5">
             <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Rental Payment History</p>
+              <p className="text-lg font-semibold">Lease Period</p>
             </div>
-            <div className="mt-4 flex flex-col">
-              <p className="text-xs text-[#475467]">Timelines</p>
-              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                  <PdfIcon width={20} height={20} />
-                </div>
+            <div className="mt-4 flex gap-4">
+              <div className="w-full text-sm flex items-center gap-2 justify-between border rounded-md p-2">
                 <div>
-                  <p className="text-sm font-semibold">Proof of Payment.pdf</p>
-                  <p className="text-xs text-[#475467]">
-                    11 Sep, 2023 | 12:24pm • 2MB
+                  <p className="text-sm font-semibold">Lease Start Date</p>
+                  <p>
+                    {application?.rentStartDate &&
+                      formatDateToWords(
+                        application?.rentStartDate?.slice(0, 10)
+                      )}
                   </p>
                 </div>
-                <EyeIcon width={29} height={20} color="#475367" />
-                <DownloadIcon width={23.33} height={24.5} color="#475367" />
+              </div>
+              <div className="w-full text-sm flex items-center gap-2 justify-between border rounded-md p-2">
+                <div>
+                  <p className="text-sm font-semibold">Lease End Date</p>
+                  <p>
+                    {application?.rentStartDate &&
+                      formatDateToWords(application?.rentEndDate.slice(0, 10))}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 grid grid-cols-1 md:grid-cols-1 gap-4 h-fit">
-          {/* <div className="p-4 border rounded-lg h-fit">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Personal Information</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className="text-[#475467]">Marital Status</p>
-              <p className="font-semibold">Single*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Gender</p>
-              <p className="font-semibold">Male*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Date of Birth</p>
-              <p className="font-semibold">Friday, Sep 25, 1990*</p>
-            </div>
-          </div> */}
-          <div className="p-4 border rounded-lg h-fit">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Employment Details</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className="text-[#475467]">Employer</p>
-              <p className="font-semibold">
-                {application?.currentEmployer ?? "N/A"}
-              </p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Job Title</p>
-              <p className="font-semibold">Engineer*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Salary</p>
-              <p className="font-semibold">{`₦${application?.monthlyIncome?.toLocaleString()}`}</p>
-            </div>
-          </div>
-          {/* <div className="p-4 border rounded-lg h-fit">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Rental History</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className="text-[#475467]">Previous Address</p>
-              <p className="font-semibold">
-                12 Adeola Odeku Street, Victoria Island*
-              </p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Reason for moving</p>
-              <p className="font-semibold">Relocation for work*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Landlord/Agent Reference</p>
-              <p className="font-semibold">Name: Mrs. Adebayo - 08029876543*</p>
-            </div>
-          </div> */}
-          {/* <div className="p-4 border rounded-lg h-fit">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Background Check Status</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className="text-[#475467]">Criminal Record</p>
-              <p className="font-semibold">Clear*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Credit Score</p>
-              <p className="font-semibold">Excellent*</p>
-            </div>
-            <div className="mt-4 text-sm flex flex-col">
-              <p className=" text-[#475467]">Interview Notes</p>
-              <p className="font-semibold">
-                Tenant is reliable and has a stable income.*
-              </p>
-            </div>
-          </div> */}
-          <div className="p-4 border rounded-lg">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Identification</p>
-            </div>
-            <div className="mt-4 flex flex-col">
-              <p className="text-xs text-[#475467]">Government ID</p>
-              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                  <PdfIcon width={20} height={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Government NIN.pdf</p>
-                  <p className="text-xs text-[#475467]">
-                    11 Sep, 2023 | 12:24pm • 2MB
-                  </p>
-                </div>
-                <EyeIcon width={29} height={20} color="#475367" />
-                <DownloadIcon width={23.33} height={24.5} color="#475367" />
-              </div>
-            </div>
-            <div className="mt-6 flex flex-col">
-              <p className="text-xs text-[#475467]">Selfie for Verification</p>
-              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                  <PdfIcon width={20} height={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Selfie.pdf</p>
-                  <p className="text-xs text-[#475467]">
-                    11 Sep, 2023 | 12:24pm • 2MB
-                  </p>
-                </div>
-                <EyeIcon width={29} height={20} color="#475367" />
-                <DownloadIcon width={23.33} height={24.5} color="#475367" />
-              </div>
-            </div>
-          </div>
-          <div className="p-4 border rounded-lg">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Submitted</p>
-            </div>
-            <div className="mt-4 flex flex-col">
-              <p className="text-xs text-[#475467]">Proof of Income</p>
-              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                  <PdfIcon width={20} height={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Banks Statement.pdf</p>
-                  <p className="text-xs text-[#475467]">
-                    11 Sep, 2023 | 12:24pm • 2MB
-                  </p>
-                </div>
-                <EyeIcon width={29} height={20} color="#475367" />
-                <DownloadIcon width={23.33} height={24.5} color="#475367" />
-              </div>
-            </div>
-            <div className="mt-6 flex flex-col">
-              <p className="text-xs text-[#475467]">Reference Letter</p>
-              <div className="text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div className="h-[32px] w-[32px] rounded-full bg-[#E7F6EC] flex items-center justify-center">
-                  <PdfIcon width={20} height={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Reference Letter.pdf</p>
-                  <p className="text-xs text-[#475467]">
-                    11 Sep, 2023 | 12:24pm • 2MB
-                  </p>
-                </div>
-                <EyeIcon width={29} height={20} color="#475367" />
-                <DownloadIcon width={23.33} height={24.5} color="#475367" />
-              </div>
-            </div>
-          </div>
-          {/* <InfoCard
-            title="Employment Details"
-            data={[
-              ["Employer", application?.currentEmployer],
-              ["Job Title", application?.jobTitle || "null"],
-              [
-                "Monthly Income",
-                application?.monthlyIncome?.toLocaleString() + " NGN",
-              ],
-            ]}
-          />
-
-          <InfoCard
-            title="Recent Rental History"
-            data={[
-              ["Previous Address", application?.rental?.previousAddress],
-              ["Reason for Moving", application?.rental?.reasonForMoving],
-              ["Landlord Reference", application?.rental?.landlordReference],
-            ]}
-          /> */}
-
-          {/*<InfoCard title="Background Check Status" data={[
-            ['Criminal Record', application?.criminalRecord ? 'Yes' : 'Clear'],
-            ['Credit Score', application?.creditScore],
-            ['Interview Notes', application?.interviewNotes]
-          ]} />
-
-          <InfoCard title="Rental Payment History" data={[
-            ['Timelines', '100% On-Time Payments']
-          ]} fileUrl={application?.documents?.proofOfPayment} />
-
-          <InfoCard title="Identification" files={[
-            ['Government ID', application?.documents?.govtID],
-            ['Selfie', application?.documents?.selfie]
-          ]} />
-
-          <InfoCard title="Submitted Documents" files={[
-            ['Proof of Income', application?.documents?.bankStatement],
-            ['Reference Letter', application?.documents?.referenceLetter]
-          ]} /> */}
-        </div>
+        <div className="w-full md:w-full grid grid-cols-1 md:grid-cols-1 gap-4 h-fit"></div>
       </div>
+
+      <Modal
+        isOpen={openAssignDateModal}
+        onClose={() => setOpenAssignDateModal(false)}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
+            Assign Rent Start and End Date
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will assign a tenancy date frame to this
+            tenant.
+          </p>
+
+          <Formik
+            initialValues={{
+              id: tenantDetails?.data?.finalResult?._id || id,
+              rentStartDate: null,
+              rentEndDate: null,
+            }}
+            validate={validateTenancyDateAssignment}
+            onSubmit={(values, formikHelpers) =>
+              assignDateToTenancy(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors, setFieldValue }) => (
+              <Form>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <div>
+                    <Label>Lease Start Date</Label>
+
+                    <div className="w-full h-11 rounded-sm border border-[#E0E0E6] mt-2 px-2">
+                      <DatePicker
+                        value={values.rentStartDate}
+                        onChange={(newValue) =>
+                          setFieldValue("rentStartDate", newValue)
+                        }
+                        minDate={startOfToday()}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            variant: "standard",
+                            InputProps: { disableUnderline: true },
+                            sx: {
+                              fontSize: "12px",
+                              backgroundColor: "white",
+                              border: "red",
+                              boxShadow: "none",
+                              "& input": {
+                                color: "#807F94",
+                                padding: "8px 4px",
+                              },
+                            },
+                          },
+                          day: {
+                            sx: {
+                              backgroundColor: "#F5F5F5",
+                              "&.Mui-selected": {
+                                backgroundColor: "#007443",
+                                color: "#ffffff",
+                              },
+                              "&.MuiPickersDay-today": {
+                                border: "1px solid #3B82F6",
+                                backgroundColor: "#007443",
+                              },
+                              "&.MuiPickersDay-today.Mui-selected": {
+                                backgroundColor: "#007443",
+                                color: "#fff",
+                              },
+                              "&:hover": {
+                                backgroundColor: "#007443",
+                                color: "#ffffff",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="pt-4">
+                    <Label>Lease End Date</Label>
+                    <div className="w-full h-11 rounded-sm border border-[#E0E0E6] mt-2 px-2">
+                      <DatePicker
+                        value={values.rentEndDate}
+                        onChange={(newValue) =>
+                          setFieldValue("rentEndDate", newValue)
+                        }
+                        minDate={values.rentStartDate || startOfToday()}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            size: "small",
+                            variant: "standard",
+                            InputProps: { disableUnderline: true },
+                            sx: {
+                              fontSize: "12px",
+                              backgroundColor: "white",
+                              boxShadow: "none",
+                              "& input": {
+                                color: "#807F94",
+                                padding: "8px 4px",
+                              },
+                            },
+                          },
+                          day: {
+                            sx: {
+                              backgroundColor: "#F5F5F5",
+                              "&.Mui-selected": {
+                                backgroundColor: "#007443",
+                                color: "#ffffff",
+                              },
+                              "&.MuiPickersDay-today": {
+                                border: "1px solid #3B82F6",
+                                backgroundColor: "#007443",
+                              },
+                              "&.MuiPickersDay-today.Mui-selected": {
+                                backgroundColor: "#007443",
+                                color: "#fff",
+                              },
+                              "&:hover": {
+                                backgroundColor: "#007443",
+                                color: "#ffffff",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </div>
+                  </div>
+                </LocalizationProvider>
+
+                <div className="mt-8 flex gap-4 justify-between w-full">
+                  <Button
+                    type="button"
+                    className="block w-full"
+                    onClick={() => {
+                      resetForm();
+                      setOpenAssignDateModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="block w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
     </div>
   );
 };

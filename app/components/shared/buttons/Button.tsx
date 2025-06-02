@@ -90,7 +90,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        disabled={isLoading} // Disable button during loading
+        disabled={isLoading || disabled} // Disable button during loading
         type={type}
         className={cls(`
                 ${classes.base}

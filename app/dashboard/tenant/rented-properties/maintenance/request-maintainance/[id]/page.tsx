@@ -123,9 +123,10 @@ const RequestMaintainance = () => {
               </div>
               <div className="flex gap-5 flex-col justify-center items-center h-full mt-10 max-w-md w-full mx-auto">
                 <div className="w-full">
+                <p className="text-sm">Issue Title</p>
                   <InputField
                     css="bg-nrvLightGreyBg"
-                    label="Issue Title"
+                    label=""
                     name="title"
                     value={_formData.title}
                     onChange={handleInputChange}
@@ -139,7 +140,7 @@ const RequestMaintainance = () => {
                   </p>
                   <textarea
                     name="description"
-                    className="w-full rounded-lg border border-nrvLightGrey font-light w-full px-3 py-2 bg-nrvLightGreyBg focus:outline-none"
+                    className="w-full rounded-lg border border-nrvLightGrey font-light w-full px-3 py-2 bg-white focus:outline-none"
                     onChange={handleInputChange}
                     rows={5}
                     value={_formData.description}

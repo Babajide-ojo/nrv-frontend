@@ -208,7 +208,7 @@ const ApplicantScreen = () => {
                 }`}
                 onClick={() => handleTabClick("activeTenant")}
               >
-                Approved Tenants <span className="ml-2 font-semibold"></span>
+                Approved Applicants <span className="ml-2 font-semibold"></span>
               </Button>
             </div>
 

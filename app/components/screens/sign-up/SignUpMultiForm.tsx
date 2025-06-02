@@ -14,6 +14,7 @@ import { CheckCircle, Smile, User } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AccountSideBar from "./AccountSideBar";
+import { useRouter } from "next/navigation";
 
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
@@ -48,7 +49,7 @@ const SignUpMultiForm = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Checkbox state
-
+  const router = useRouter();
   const handleSubmit = async (values: any) => {
     if (!isChecked) {
       toast.error("You must agree to the Terms of Use and Privacy Policy");
@@ -152,6 +153,15 @@ const SignUpMultiForm = () => {
               >
                 Continue
               </Button>
+
+              <Button
+                size="large"
+                className="w-full mt-4"
+                variant="light"
+                onClick={() => router.push("/")}
+              >
+                Return to Home Page
+              </Button>
             </div>
           </div>
         </div>
@@ -233,6 +243,14 @@ const SignUpMultiForm = () => {
                       disabled={!isChecked} // Disable if not checked
                     >
                       Continue
+                    </Button>
+                    <Button
+                      size="large"
+                      className="w-full mt-4"
+                      variant="light"
+                      onClick={() => router.push("/")}
+                    >
+                      Return to Home Page
                     </Button>
                   </Form>
                 )}

@@ -135,11 +135,14 @@ const LoginScreen: React.FC = () => {
               Forgot Password? <span className="font-medium text-nrvPrimaryGreen">Recover</span>
             </Link>
           </div>
-          <div className="mt-6">
-            <button className="w-full flex items-center justify-center gap-3 border py-2 rounded-md">
-              <FcGoogle size={20} /> Continue with Google
-            </button>
-          </div>
+          <Button
+                      size="large"
+                      className="w-full mt-4"
+                      variant="light"
+                      onClick={() => router.push("/")}
+                    >
+                      Return to Home Page
+                    </Button>
           <div className="text-center mt-4">
             <Link href="/sign-up" className="text-sm text-[#645D5D] font-light">
               Are you new here? <span className="font-medium text-nrvPrimaryGreen">Create Account</span>

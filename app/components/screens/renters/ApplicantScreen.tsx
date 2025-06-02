@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
-  getApplicationsByLandlordId,
-  inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
 import { toast, ToastContainer } from "react-toastify";
@@ -62,7 +60,7 @@ const ApplicantScreen = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("New");
+  const [activeTab, setActiveTab] = useState<string>("");
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -126,7 +124,7 @@ const ApplicantScreen = () => {
               </Button>
             </div>
             {
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 border">
                 {[
                   {
                     title: "Active Applications",
@@ -141,21 +139,7 @@ const ApplicantScreen = () => {
                     change: "10%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Pending (Under Review)",
-                    value: `${0}`,
-                    change: "83%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Rejected (Declined Applications)",
-                    value: `${0}`,
-                    change: "10%",
-                    trend: "down",
-                    comparison: "compared to the last 6 months",
-                  },
+                  }
                 ].map((card, i) => (
                   <div key={i} className="border-r last:border-none px-4">
                     <p className="text-gray-500 text-sm">{card.title}</p>
@@ -179,26 +163,14 @@ const ApplicantScreen = () => {
               <Button
                 variant="default"
                 className={`${
-                  activeTab === "New"
+                  activeTab === ""
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("New")}
+                onClick={() => handleTabClick("")}
               >
                 All Applications{" "}
-                <span className="ml-2 font-semibold">
-                  {/* {maintenance?.summary?.New} */}
-                </span>
-              </Button>
-              <Button
-                className={`${
-                  activeTab === "Selected Applicant"
-                    ? "bg-green-700 text-white"
-                    : "bg-white text-gray-800 border"
-                }`}
-                onClick={() => handleTabClick("Selected Applicant")}
-              >
-                Selected Applicants <span className="ml-2 font-semibold"></span>
+      
               </Button>
               <Button
                 className={`${
@@ -208,7 +180,7 @@ const ApplicantScreen = () => {
                 }`}
                 onClick={() => handleTabClick("activeTenant")}
               >
-                Approved Applicants <span className="ml-2 font-semibold"></span>
+                Approved Applications <span className="ml-2 font-semibold"></span>
               </Button>
             </div>
 
@@ -247,21 +219,17 @@ const ApplicantScreen = () => {
               {
                 key: "status",
                 label: "Status",
+                render: (val) => (
+                  <span className="font-medium italic text-[#045D23]">
+                    {val === "activeTenant" ? "Active Tenancy" : val}
+                  </span>
+                ),
               },
               {
                 key: "createdAt",
                 label: "Applied Date & Time",
                 render: (val) => <span>{formatDateToWords(val)}</span>,
-              },
-              {
-                key: "status",
-                label: "Next Step",
-                render: (val) => (
-                  <span className="font-medium italic text-[#045D23]">
-                    {val === "New" ? "Background Check" : null}
-                  </span>
-                ),
-              },
+              }
             ]}
           />
         </div>

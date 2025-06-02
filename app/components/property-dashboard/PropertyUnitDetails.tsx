@@ -53,12 +53,12 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             </div>
 
             <div className="border-t py-4">
-              <p className="text-gray-500 text-xs">Apartment Type</p>
-              <p>{data?.apartmentType}</p>
-            </div>
-            <div className="border-t py-4">
               <p className="text-gray-500 text-xs">Apartment Style</p>
               <p>{data?.apartmentStyle}</p>
+            </div>
+            <div className="border-t py-4">
+              <p className="text-gray-500 text-xs">Lease Terms</p>
+              <p>{data?.leaseTerms}</p>
             </div>
             <div className="border-t py-4">
               <p className="text-gray-500 text-xs ">Rental Collection Preference</p>

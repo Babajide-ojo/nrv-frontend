@@ -341,7 +341,7 @@ const TenantTable = () => {
               </Button>
             </div>
             {
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 border">
                 {[
                   {
                     title: "Total Active Leases",
@@ -354,13 +354,6 @@ const TenantTable = () => {
                     title: "Total Lease Amount",
                     value: `${0}`,
                     change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Total Number of Past Tenant",
-                    value: `${0}`,
-                    change: "83%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
                   },

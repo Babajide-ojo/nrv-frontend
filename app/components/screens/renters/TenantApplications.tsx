@@ -141,20 +141,7 @@ const TenantApplications = () => {
                         trend: "up",
                         comparison: "compared to the last 6 months",
                       },
-                      {
-                        title: "Pending (Under Review)",
-                        value: `${0}`,
-                        change: "83%",
-                        trend: "up",
-                        comparison: "compared to the last 6 months",
-                      },
-                      {
-                        title: "Rejected (Declined Applications)",
-                        value: `${0}`,
-                        change: "10%",
-                        trend: "down",
-                        comparison: "compared to the last 6 months",
-                      },
+        
                     ].map((card, i) => (
                       <div key={i} className="border-r last:border-none px-4">
                         <p className="text-gray-500 text-sm">{card.title}</p>
@@ -180,11 +167,11 @@ const TenantApplications = () => {
                   <Button
                     variant="default"
                     className={`${
-                      activeTab === "New"
+                      activeTab === ""
                         ? "bg-green-700 text-white"
                         : "bg-white text-gray-800 border"
                     }`}
-                    onClick={() => handleTabClick("New")}
+                    onClick={() => handleTabClick("")}
                   >
                     All Applications{" "}
                     <span className="ml-2 font-semibold">
@@ -193,11 +180,11 @@ const TenantApplications = () => {
                   </Button>
                   <Button
                     className={`${
-                      activeTab === "In Progress"
+                      activeTab === "New"
                         ? "bg-green-700 text-white"
                         : "bg-white text-gray-800 border"
                     }`}
-                    onClick={() => handleTabClick("In Progress")}
+                    onClick={() => handleTabClick("New")}
                   >
                     Pending Applications{" "}
                     <span className="ml-2 font-semibold">
@@ -206,11 +193,11 @@ const TenantApplications = () => {
                   </Button>
                   <Button
                     className={`${
-                      activeTab === "Approved"
+                      activeTab === "activeTenant"
                         ? "bg-green-700 text-white"
                         : "bg-white text-gray-800 border"
                     }`}
-                    onClick={() => handleTabClick("Approved")}
+                    onClick={() => handleTabClick("activeTenant")}
                   >
                     Approved Applications{" "}
                     <span className="ml-2 font-semibold">

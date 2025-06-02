@@ -72,13 +72,6 @@ const TenantPropertiesScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const defaultProps = {
-    center: {
-      lat: 10.99835602,
-      lng: 77.01502627,
-    },
-    zoom: 11,
-  };
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -100,6 +93,8 @@ const TenantPropertiesScreen = () => {
         flatNumber: raw?.roomId,
         bedrooms: raw?.noOfRooms,
         bathrooms: raw?.noOfBaths,
+        apartmentStyle: raw?.apartmentStyle,
+        leaseTerms: raw?.leaseTerms,
         amenities: raw?.otherAmentities,
         hasApplied:  response?.payload?.data.hasApplied,
         owner: {
@@ -111,8 +106,6 @@ const TenantPropertiesScreen = () => {
           imageUrl: "/owner.jpg", // placeholder
         },
       };
-      console.log({mapped});
-      
       setProperty(mapped);
       //setProperty(response?.payload?.data);
     } catch (error) {
@@ -295,10 +288,10 @@ const TenantPropertiesScreen = () => {
                     <div className="flex gap-4">
                       <div className="w-1/3">
                         <p className="text-[#475367] text-[13px] font-light">
-                          Apartment Name
+                          Apartment Style
                         </p>
                         <p className="text-[#1D2739] text-[14px]">
-                          {property?.apartmentName}
+                          {property?.apartmentStyle}
                         </p>
                       </div>
                       <div className="w-2/3">
@@ -310,15 +303,27 @@ const TenantPropertiesScreen = () => {
                         </p>
                       </div>
                     </div>
-
-                    <div>
+                    <div className="flex gap-4">
+                      <div className="w-1/3">
+                        <p className="text-[#475367] text-[13px] font-light">
+                         Lease Term
+                        </p>
+                        <p className="text-[#1D2739] text-[14px]">
+                          {property?.leaseTerms}
+                        </p>
+                      </div>
+                      <div className="w-2/3">
+               
                       <p className="text-[#475367] text-[13px] font-light">
                         Description
                       </p>
                       <p className="text-[#1D2739] text-[14px] leading-8">
                         {property?.description}
                       </p>
+       
+                      </div>
                     </div>
+               
 
                     <div className="grid grid-cols-3 gap-4">
                       <div>
@@ -433,13 +438,15 @@ const TenantPropertiesScreen = () => {
                         style={{ display: "flex", flexDirection: "column" }}
                       >
                         <div className="w-full gap-3">
-                          <div className="w-full mt-8 md:mt-0">
+                          <div className="w-full mt-8">
                             <div>
-                       
-                              <div className="h-11 rounded-sm border border-[#E0E0E6] mt-4 px-2">
+                            <Label>Desired Move In Date</Label>
+                              <div className="h-11 rounded-sm border border-[#E0E0E6] px-2">
+
                                 <LocalizationProvider
                                   dateAdapter={AdapterDateFns}
                                 >
+
                                   <DatePicker
                                     value={values.desiredMoveInDate}
                                     minDate={startOfToday()}

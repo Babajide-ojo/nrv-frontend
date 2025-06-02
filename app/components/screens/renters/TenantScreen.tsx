@@ -131,12 +131,7 @@ const TenantScreen = () => {
     const startDate = new Date(startDateString);
     const endDate = new Date(endDateString);
 
-    // // Ensure the end date is after the start date
-    // if (endDate < startDate) {
-    //   throw new Error("End date must be after start date.");
-    // }
 
-    // Calculate difference
     let years = endDate.getFullYear() - startDate.getFullYear();
     let months = endDate.getMonth() - startDate.getMonth();
     let days = endDate.getDate() - startDate.getDate();
@@ -190,6 +185,7 @@ const TenantScreen = () => {
     } finally {
       setSubmitting(false);
       setOpenAddTenantModal(false);
+      window.location.reload();
     }
   };
 
@@ -219,6 +215,7 @@ const TenantScreen = () => {
     } finally {
       setSubmitting(false);
       setOpenAddTenantModal(false);
+      setOpenAssignDateModal(false);
     }
   };
 

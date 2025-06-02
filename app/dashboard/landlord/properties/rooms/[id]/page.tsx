@@ -22,6 +22,7 @@ import DataTable from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
 
 const SingleRoom = () => {
   const dispatch = useDispatch();
@@ -76,7 +77,7 @@ const SingleRoom = () => {
       toast.error("An error occurred while performing update");
     } finally {
       setIsLoading(false);
-      setIsOpen(false);
+      setIsModalOpen(false);
     }
   };
 
@@ -119,7 +120,8 @@ const SingleRoom = () => {
                 {currentState === 1 && (
                   <div>
                     <div className="mb-4">
-                      <div className="text-lg font-medium text-gray-900">
+                      <div className="text-lg font-medium text-gray-900 flex gap-4">
+                        <BackIcon />
                         View Apartment Details
                       </div>
                       <div className="text-xs text-gray-500 mt-2">

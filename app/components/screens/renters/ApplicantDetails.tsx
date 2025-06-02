@@ -467,15 +467,17 @@ const ApplicationDetails = () => {
                   </Button>
                 </div>
               )}
-              {!application?.rentStartDate && !application?.rentStartDate && (
-                <Button
-                  className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
-                  disabled={isLoading}
-                  onClick={() => setOpenAssignDateModal(true)}
-                >
-                  Set Lease Period
-                </Button>
-              )}
+              <div className="mt-8">
+                {!application?.rentStartDate && !application?.rentStartDate &&  (application?.status == "activeTenant" || application?.status == "active") && (
+                  <Button
+                    className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                    disabled={isLoading}
+                    onClick={() => setOpenAssignDateModal(true)}
+                  >
+                    Set Lease Period
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="w-full p-4 border rounded-lg mt-4">
               <div className="flex">

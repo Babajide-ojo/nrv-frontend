@@ -168,10 +168,10 @@ const RentedPropertiesScreen = () => {
                       <div className="py-4 flex flex-col sm:flex-row border-b">
                         <div className="w-60">
                           <p className="text-[#475367] text-sm">
-                            Apartment Name
+                            Apartment Style
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.propertyId?.description}
+                            {property?.apartmentStyle}
                           </p>
                         </div>
                         <div className="sm:border-l sm:pl-5 mt-4 sm:mt-0">
@@ -253,7 +253,7 @@ const RentedPropertiesScreen = () => {
                               Apartment Style
                             </p>
                             <p className="font-semibold">
-                              {property?.propertyId?.apartmentStyle}
+                              {property?.propertyId?.propertyId.apartmentStyle}
                             </p>
                           </div>
                           <div className="flex flex-col">
@@ -278,12 +278,6 @@ const RentedPropertiesScreen = () => {
                               <MessageIcon />
                               Contact Landlord
                             </div>
-                          </Button>
-                          <Button
-                            variant="mediumGrey"
-                            className="h-10 rounded-md w-full"
-                          >
-                            Renew Rent/Lease
                           </Button>
                           <Button
                             variant="orangeOutline"

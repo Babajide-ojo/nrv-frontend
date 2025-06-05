@@ -44,7 +44,7 @@ const links = [
   {
     name: "Applications",
     route: "/dashboard/tenant/properties/applications",
-    icon: <PiFileDocDuotone />
+    icon: <PiFileDocDuotone />,
   },
   {
     name: "Rented Apartments",
@@ -87,10 +87,13 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   }, []);
 
   return (
+    // <div
+    //   className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#0D3520] text-white flex flex-col justify-between transition-transform ${
+    //     isOpen ? "translate-x-0" : "-translate-x-full"
+    //   }`}
+    // >
     <div
-      className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#0D3520] text-white flex flex-col justify-between transition-transform ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
+      className={`inset-y-0 left-0 z-50 w-full h-screen bg-[#0D3520] text-white flex flex-col justify-between transition-transform`}
     >
       <div>
         {/* Logo */}

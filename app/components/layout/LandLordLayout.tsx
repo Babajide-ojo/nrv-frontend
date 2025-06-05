@@ -64,9 +64,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   }, []);
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen !overflow-hidden">
       {/* Mobile Bottom Nav */}
-      <div className="fixed bottom-0 left-0 w-full bg-white shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           {!showMore ? (
             <>
@@ -86,7 +86,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/landlord/properties/renters")}
+                onClick={() =>
+                  router.push("/dashboard/landlord/properties/renters")
+                }
               >
                 <IoPeopleCircleOutline size={24} color="white" />
                 <span className="text-[11px] text-white">Renters</span>
@@ -117,14 +119,18 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/landlord/properties/maintenance")}
+                onClick={() =>
+                  router.push("/dashboard/landlord/properties/maintenance")
+                }
               >
                 <IoSettings size={24} color="white" />
                 <span className="text-[11px] text-white">Maintenance</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/landlord/properties/verification")}
+                onClick={() =>
+                  router.push("/dashboard/landlord/properties/verification")
+                }
               >
                 <FaCheck size={24} color="white" />
                 <span className="text-[11px] text-white">Verification</span>
@@ -142,11 +148,21 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       </div>
 
       {/* Layout Content */}
-      <div className="flex w-full min-h-screen bg-white" style={{ paddingBottom: "40px" }}>
-        <div className={isSidebarOpen ? "w-1/5" : "hidden md:block w-1/10"}>
+      <div
+        className="flex w-full h-screen bg-white overflow-hidden"
+        style={{ paddingBottom: "40px" }}
+      >
+        <div className={"hidden lg:block w-1/10"}>
+          {/* <div className={isSidebarOpen ? "w-1/5" : "hidden lg:block w-1/10"}> */}
           <LandLordSideBar isOpen={isSidebarOpen} />
         </div>
-        <div className={isSidebarOpen ? "w-9/10 flex-1 overflow-y-auto" : "w-full flex-1 overflow-y-auto"}>
+        <div
+          className={
+            isSidebarOpen
+              ? "w-9/10 flex-1 overflow-y-auto"
+              : "w-full lg:w-1/10 flex-1 overflow-y-auto"
+          }
+        >
           {/* Header */}
           <div className="p-4 bg-white shadow-md">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -169,14 +185,21 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
 
                 <span className="mx-2 hidden sm:inline">&gt;</span>
                 {path && <span className="text-sm text-[#333333]">{path}</span>}
-                {subMainPath && <span className="mx-2 hidden sm:inline">/</span>}
-                <a href="#" className="text-sm hover:text-gray-900 text-[#333333]">
+                {subMainPath && (
+                  <span className="mx-2 hidden sm:inline">/</span>
+                )}
+                <a
+                  href="#"
+                  className="text-sm hover:text-gray-900 text-[#333333]"
+                >
                   {mainPath}
                 </a>
                 {subMainPath && (
                   <>
                     <span className="mx-2 hidden sm:inline">/</span>
-                    <span className="text-sm text-[#333333]">{subMainPath}</span>
+                    <span className="text-sm text-[#333333]">
+                      {subMainPath}
+                    </span>
                   </>
                 )}
               </nav>
@@ -192,7 +215,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           </div>
 
           {/* Main Content */}
-          <main className="bg-white w-full">{children}</main>
+          <main className="bg-white w-full pb-24 lg:pb-0">{children}</main>
         </div>
       </div>
     </div>

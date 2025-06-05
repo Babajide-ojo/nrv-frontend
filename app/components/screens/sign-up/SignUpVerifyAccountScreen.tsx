@@ -53,7 +53,7 @@ const SignUpVerifyAccount: React.FC = () => {
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
       setData(response);
       localStorage.removeItem("stepToLoad");
-      setStep(2); 
+      setStep(2);
     } catch (error: any) {
       setIsLoading(false);
       toast.error(error);
@@ -177,21 +177,17 @@ const SignUpVerifyAccount: React.FC = () => {
             )}
 
             {data.user.accountType === "landlord" && (
-              <div className="flex w-full">
+              <div className="h-screen flex w-full overflow-hidden">
                 <div className="w-1/2 bg-[#E9F4E7]">
                   <AddPropertySideBar />
                 </div>
-                <div className="w-1/2 flex-col justify-center">
+                <div className="w-1/2 flex-col justify-center overflow-y-auto">
                   <div className="max-w-xl mx-auto">
                     <MultiStepForm />
                   </div>
                 </div>
               </div>
-
-              
             )}
-
-           
           </div>
         )}
       </div>

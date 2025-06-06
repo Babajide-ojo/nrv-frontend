@@ -183,7 +183,6 @@ const MultiStepForm = () => {
   };
 
   const handleNextAndVerify = async (e: any) => {
-
     e.preventDefault();
     if (!validateForm()) return;
 
@@ -301,7 +300,10 @@ const MultiStepForm = () => {
       <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
         {step === 1 && (
           <div className="space-y-8">
-            <div>
+            <h1 className="text-2xl font-bold text-green-600 lg:hidden mb-10">
+              NaijaRentVerify
+            </h1>
+            <div className="flex justify-end items-center">
               <button
                 className="text-center text-gray-500 mt-2 cursor-pointer"
                 onClick={() => router.push("/dashboard/landlord")}

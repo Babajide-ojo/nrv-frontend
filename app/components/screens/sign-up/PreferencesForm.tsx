@@ -87,6 +87,9 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({
   return (
     <div className="flex flex-col w-full justify-center h-screen">
       <div className="bg-white p-6 rounded-2xl w-full">
+        <h1 className="text-2xl font-bold text-green-600 md:hidden mb-10">
+          NaijaRentVerify
+        </h1>
         <h2 className="text-2xl font-semibold text-center mb-2">
           Complete Your Profile
         </h2>
@@ -297,8 +300,10 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
         </Button>
 
         <div className="mt-4 text-center">
-             <Link href="/dashboard/tenant" className="text-[#807F94] text-xs">Skip for Now</Link>
-             </div>
+          <Link href="/dashboard/tenant" className="text-[#807F94] text-xs">
+            Skip for Now
+          </Link>
+        </div>
       </div>
 
       <CenterModal isOpen={showModal} onClose={() => !showModal}>

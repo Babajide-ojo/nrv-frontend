@@ -70,12 +70,14 @@ const SignUpVerifyAccount: React.FC = () => {
       <div className="w-full bg-white">
         {step === 1 ? (
           <div className="w-full flex">
-            <div className="w-1/2 bg-[#E9F4E7]">
-              {" "}
+            <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
               <VerifyAccountSideBar />
             </div>
-            <div className="w-1/2 flex flex-col justify-center">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
               <div className="max-w-md mx-auto">
+                <h1 className="text-2xl font-bold text-green-600 my-10">
+                  NaijaRentVerify
+                </h1>
                 <h2 className="text-2xl font-semibold text-gray-900">
                   Verify Your Email Address
                 </h2>
@@ -165,10 +167,10 @@ const SignUpVerifyAccount: React.FC = () => {
           <div>
             {data.user.accountType === "tenant" && (
               <div className="flex w-full">
-                <div className="w-1/2 bg-[#E9F4E7]">
+                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
                   <CompleteProfileSideBar />
                 </div>
-                <div className="w-1/2 flex-col justify-center">
+                <div className="w-full lg:w-1/2 p-5 flex-col justify-center">
                   <div className="max-w-md mx-auto">
                     <PreferencesForm />
                   </div>
@@ -178,10 +180,10 @@ const SignUpVerifyAccount: React.FC = () => {
 
             {data.user.accountType === "landlord" && (
               <div className="h-screen flex w-full overflow-hidden">
-                <div className="w-1/2 bg-[#E9F4E7]">
+                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
                   <AddPropertySideBar />
                 </div>
-                <div className="w-1/2 flex-col justify-center overflow-y-auto">
+                <div className="w-full lg:w-1/2 p-5 flex-col justify-center overflow-y-auto">
                   <div className="max-w-xl mx-auto">
                     <MultiStepForm />
                   </div>

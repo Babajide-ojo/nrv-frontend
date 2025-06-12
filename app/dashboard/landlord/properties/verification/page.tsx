@@ -140,7 +140,7 @@
 //                             type="submit"
 //                             size="large"
 //                             className="w-full"
-//                             variant="lightGrey" 
+//                             variant="lightGrey"
 //                             showIcon={false}
 //                             disabled={isSubmitting || true || false}
 //                           >
@@ -300,75 +300,176 @@
 // export default VerificationScreen;
 
 // TenantVerification.tsx
+
+"use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { verifyNIN } from "@/redux/slices/verificationSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 
 export default function TenantVerification() {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [tenantNin, setTenantNin] = useState("");
+  const [ninDetails, setNinDetails] = useState<{
+    [key: string]: string;
+  }>({
+    image: "",
+    full_name: "",
+    nin: "",
+    date_of_birth: "",
+    country: "",
+    sex: "",
+    birth_country: "",
+    birth_state: "",
+    birth_lga: "",
+    religion: "",
+    phone_number: "",
+    address: "",
+    "add._state": "",
+    "add._city": "",
+    "add._town": "",
+    "add._lga": "",
+  });
+
+  const handleNinVerification = async () => {
+    setLoading(true);
+    try {
+      const res = await dispatch(verifyNIN({ nin: tenantNin }) as any).unwrap();
+      console.log("NIN Verification Response:", res?.data);
+      toast.success(res?.message);
+      setNinDetails({
+        image: res?.data?.image || "",
+        full_name:
+          `${res?.data?.firstName} ${res?.data?.middleName} ${res?.data?.lastName}` ||
+          "",
+        nin: res?.data?.idNumber || "",
+        date_of_birth: res?.data?.dateOfBirth || "",
+        country: res?.data?.country || "",
+        sex:
+          res?.data?.gender === "f"
+            ? "Female"
+            : res?.data?.gender === "m"
+            ? "Male"
+            : "",
+        birth_country: res?.data?.birthCountry || "",
+        birth_state: res?.data?.birthState || "",
+        birth_lga: res?.data?.birthLGA || "",
+        religion: res?.data?.religion || "",
+        phone_number: res?.data?.mobile || "",
+        address: res?.data?.address?.addressLine || "",
+        "add._state": res?.data?.address?.state || "",
+        "add._city": res?.data?.address?.city || "",
+        "add._town": res?.data?.address?.town || "",
+        "add._lga": res?.data?.address?.lga || "",
+      });
+      setTenantNin("");
+    } catch (error: any) {
+      toast.error(error || "An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <LandLordLayout path="Tenant Verification">
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Verify your Tenant/New Applicant</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Verify your new applicant or tenant information.
-        </p>
-      </div>
-
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Verify Tenant & View Screening Report</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Verify your tenant or applicant via NIN and have access to their screening report
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row items-start md:items-end gap-4">
-            <div className="flex-1 w-full">
-              <label className="text-sm font-medium mb-1 block">Tenant NIN</label>
-              <Input placeholder="Enter Tenant National Identification Number" />
-            </div>
-            <Button className="bg-green-900 text-white">Submit</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>View Tenant Verification Result</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 p-4 bg-green-100 rounded-md">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-              <span className="text-xl">👤</span>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Full Name</p>
-              <p className="text-lg font-medium">-</p>
-            </div>
+    <>
+      <ToastContainer />
+      <LandLordLayout path="Tenant Verification">
+        <div className="p-6 max-w-7xl mx-auto">
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold">
+              Verify your Tenant/New Applicant
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Verify your new applicant or tenant information.
+            </p>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mt-6 text-sm">
-            {[
-              "NIN",
-              "Date of Birth",
-              "Nationality",
-              "Sex",
-              "Height",
-              "Expiry",
-            ].map((label) => (
-              <div key={label} className="flex flex-col">
-                <span className="text-muted-foreground">{label}</span>
-                <span className="font-medium">-</span>
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Verify Tenant & View Screening Report</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Verify your tenant or applicant via NIN and have access to their
+                screening report
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row items-start md:items-end gap-4">
+                <div className="flex-1 w-full">
+                  <label className="text-sm font-medium mb-1 block">
+                    Tenant NIN
+                  </label>
+                  <Input
+                    value={tenantNin}
+                    onChange={(e) => setTenantNin(e.target.value)}
+                    placeholder="Enter Tenant National Identification Number"
+                  />
+                </div>
+                <Button
+                  onClick={handleNinVerification}
+                  disabled={!tenantNin || loading}
+                  className="bg-green-900 text-white"
+                >
+                  Submit
+                </Button>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-    </LandLordLayout>
+            </CardContent>
+          </Card>
 
+          <Card>
+            <CardHeader>
+              <CardTitle>View Tenant Verification Result</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4 p-4 bg-green-100 rounded-md">
+                {ninDetails?.image ? (
+                  <Image
+                    src={ninDetails?.image}
+                    alt="NIN Image"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-cover rounded-full"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                    <span className="text-xl">👤</span>
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Full Name</p>
+                  <p className="text-lg font-medium">
+                    {ninDetails?.full_name ? ninDetails?.full_name : "-"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mt-6 text-sm">
+                {Object.keys(ninDetails).map((label) => {
+                  if (label === "image" || label === "full_name") {
+                    return null;
+                  }
+                  return (
+                    <div key={label} className="flex flex-col">
+                      <span className="text-muted-foreground capitalize">
+                        {label.replaceAll("_", " ")}
+                      </span>
+                      <span className="font-medium capitalize">
+                        {ninDetails[label] ? ninDetails[label] : "-"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </LandLordLayout>
+    </>
   );
 }
-

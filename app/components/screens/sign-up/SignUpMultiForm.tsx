@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AccountSideBar from "./AccountSideBar";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
@@ -87,11 +88,22 @@ const SignUpMultiForm = () => {
       <ToastContainer />
       {currentStep === 1 && (
         <div className="flex w-full">
-          <div className="w-full md:w-1/2 justify-center">
+          <div className="hidden md:block md:w-1/2 justify-center">
             <Carousel />
           </div>
           <div className="w-full md:w-1/2 flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
             <div className="max-w-md w-full">
+              {/* <div className="md:hidden my-10">
+                <Image
+                  src="/images/light-green-logo.svg"
+                  alt="Background"
+                  width={200}
+                  height={50}
+                />
+              </div> */}
+              <h1 className="text-2xl font-bold text-green-600 md:hidden my-10">
+                NaijaRentVerify
+              </h1>
               <h1 className="text-2xl font-bold text-black">
                 Create an Account!
               </h1>
@@ -168,11 +180,14 @@ const SignUpMultiForm = () => {
       )}
       {currentStep === 2 && (
         <div className="flex w-full h-screen overflow-hidden">
-          <div className="w-1/2 bg-[#E9F4E7]">
+          <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
             <AccountSideBar />
           </div>
-          <div className="w-1/2 bg-white p-12 pb-20 overflow-y-auto">
+          <div className="w-full lg:w-1/2 bg-white p-12 pb-20 overflow-y-auto">
             <div className="max-w-md mx-auto ">
+              <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
+                NaijaRentVerify
+              </h1>
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
               <Formik
                 initialValues={{
@@ -233,6 +248,15 @@ const SignUpMultiForm = () => {
                       checked={isChecked}
                       onChange={() => setIsChecked(!isChecked)}
                     />
+                    <p className="text-gray-600 text-sm lg:hidden">
+                      Already have an account?{" "}
+                      <a
+                        href="/sign-in"
+                        className="font-semibold text-green-900"
+                      >
+                        Log in here.
+                      </a>
+                    </p>
                     {/* Submit Button */}
                     <Button
                       variant="darkPrimary"

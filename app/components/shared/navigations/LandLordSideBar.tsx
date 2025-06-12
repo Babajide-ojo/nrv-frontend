@@ -41,7 +41,11 @@ const links = [
     route: "/dashboard/landlord/properties/renters",
     icon: <FiFileText />,
   },
-  { name: "Tenants", route: "/dashboard/landlord/properties/tenants", icon: <FiUsers /> },
+  {
+    name: "Tenants",
+    route: "/dashboard/landlord/properties/renters",
+    icon: <FiUsers />,
+  },
   {
     name: "Tenant Verification",
     route: "/dashboard/landlord/properties/verification",
@@ -89,10 +93,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
   return (
     <div
+      className={`inset-y-0 left-0 z-50 w-full h-screen bg-[#0D3520] text-white flex flex-col justify-between transition-transform`}
+    >
+      {/* <div
       className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#0D3520] text-white flex flex-col justify-between transition-transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
-    >
+    > */}
       <div>
         {/* Logo */}
         <div

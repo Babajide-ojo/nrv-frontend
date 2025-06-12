@@ -12,6 +12,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FcGoogle } from "react-icons/fc";
 import { FaCheck } from "react-icons/fa";
+import Image from "next/image";
 
 interface FormData {
   email: string;
@@ -60,18 +61,19 @@ const LoginScreen: React.FC = () => {
       localStorage.setItem("emailToVerify", JSON.stringify(userData));
       const userAccountType = userData?.user?.accountType || "";
       //const userData = await dispatch(loginUser(formData) as any).unwrap();
-      if(userData.user.status === "inactive"){
+      if (userData.user.status === "inactive") {
         localStorage.setItem("stepToLoad", JSON.stringify(3));
-        router.push("/sign-up")
+        router.push("/sign-up");
       }
       if (userAccountType === "landlord" && userData.user.status === "active") {
         router.push("/dashboard/landlord");
-      } else if (userAccountType === "tenant" && userData.user.status === "active") {
+      } else if (
+        userAccountType === "tenant" &&
+        userData.user.status === "active"
+      ) {
         router.push("/dashboard/tenant");
       }
     } catch (error: any) {
-
-
       toast.error(error);
     } finally {
       setIsLoading(false);
@@ -81,12 +83,26 @@ const LoginScreen: React.FC = () => {
   return (
     <div className="font-jakarta flex justify-center h-screen bg-gray-100">
       <ToastContainer />
-      <Carousel />
+      <div className="hidden lg:block">
+        <Carousel />
+      </div>
       <div className="w-full sm:w-1/2 p-8 flex flex-col justify-center">
         <div className="max-w-md mx-auto w-full">
+          {/* <div className="lg:hidden mb-10">
+            <Image
+              src="/images/light-green-logo.svg"
+              alt="Background"
+              width={200}
+              height={50}
+            />
+          </div> */}
+          <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
+            NaijaRentVerify
+          </h1>
           <h1 className="text-3xl font-semibold">Welcome back!</h1>
           <p className="text-gray-500 text-[16px] mt-2 font-light leading-8">
-            Nice having you here again, Kindly enter the email address and password you used to create your account with us. 🔐
+            Nice having you here again, Kindly enter the email address and
+            password you used to create your account with us. 🔐
           </p>
           <div className="mt-6">
             <InputField
@@ -114,7 +130,9 @@ const LoginScreen: React.FC = () => {
                 rememberMe ? "bg-[#03442C] border-[#03442]" : "border-gray-400"
               }`}
               onClick={() => setRememberMe(!rememberMe)}
-            ><FaCheck size={10} color={rememberMe ? "white": "#03442"} /></button>
+            >
+              <FaCheck size={10} color={rememberMe ? "white" : "#03442"} />
+            </button>
             <label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer">
               Remember this Device
             </label>
@@ -131,21 +149,28 @@ const LoginScreen: React.FC = () => {
             {isLoading ? "Loading..." : "Login"}
           </Button>
           <div className="text-center mt-4">
-            <Link href="/forgot-password" className="text-sm text-[#645D5D] font-light">
-              Forgot Password? <span className="font-medium text-nrvPrimaryGreen">Recover</span>
+            <Link
+              href="/forgot-password"
+              className="text-sm text-[#645D5D] font-light"
+            >
+              Forgot Password?{" "}
+              <span className="font-medium text-nrvPrimaryGreen">Recover</span>
             </Link>
           </div>
           <Button
-                      size="large"
-                      className="w-full mt-4"
-                      variant="light"
-                      onClick={() => router.push("/")}
-                    >
-                      Return to Home Page
-                    </Button>
+            size="large"
+            className="w-full mt-4"
+            variant="light"
+            onClick={() => router.push("/")}
+          >
+            Return to Home Page
+          </Button>
           <div className="text-center mt-4">
             <Link href="/sign-up" className="text-sm text-[#645D5D] font-light">
-              Are you new here? <span className="font-medium text-nrvPrimaryGreen">Create Account</span>
+              Are you new here?{" "}
+              <span className="font-medium text-nrvPrimaryGreen">
+                Create Account
+              </span>
             </Link>
           </div>
         </div>

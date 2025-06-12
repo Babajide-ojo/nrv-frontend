@@ -43,8 +43,8 @@ const links = [
   },
   { name: "Tenants", route: "/dashboard/landlord/properties/tenants", icon: <FiUsers /> },
   {
-    name: "Rent Collection",
-    route: "/dashboard/landlord/rent",
+    name: "Tenant Verification",
+    route: "/dashboard/landlord/properties/verification",
     icon: <FiDollarSign />,
   },
   {

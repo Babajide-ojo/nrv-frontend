@@ -27,7 +27,34 @@ const navItems = [
 const DesktopNavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
   const [currentUser, setCurrentUser] = useState<any>({});
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
+
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      router.push('sign-in');
+      // Optionally await a delay or animation if needed
+    } catch (error) {
+      console.error('Navigation error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const handleGetStarted = async () => {
+    setLoading(true);
+    try {
+      router.push('sign-up');
+      // Optionally await a delay or animation if needed
+    } catch (error) {
+      console.error('Navigation error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     if (user) {
@@ -143,9 +170,7 @@ const DesktopNavBar: React.FC = () => {
                 size="large"
                 variant="darkPrimary"
                 showIcon={false}
-                onClick={() => {
-                  router.push('sign-up')
-                }}
+                onClick={handleGetStarted}
               >
                 Get Started
               </Button>
@@ -154,9 +179,7 @@ const DesktopNavBar: React.FC = () => {
                 size="large"
                 variant="primary"
                 showIcon={false}
-                onClick={() => {
-                  router.push('sign-in')
-                }}
+                onClick={handleClick}
               >
                 Sign In
               </Button>

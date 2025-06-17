@@ -30,9 +30,15 @@ import CheckMark from "@/app/components/icons/CheckMark";
 import MessageIcon from "@/app/components/icons/MessageIcon";
 import PdfIcon from "@/app/components/icons/PdfIcon";
 import EyeIcon from "@/app/components/icons/EyeIcon";
-import { DownloadIcon } from "lucide-react";
+import { DownloadIcon, Mail, Phone, User } from "lucide-react";
 import { format } from "date-fns";
 import Status from "@/app/components/shared/Status";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const RentedPropertiesScreen = () => {
   const pathname = usePathname();
@@ -43,7 +49,7 @@ const RentedPropertiesScreen = () => {
   const [isLandLordOpen, setIsLandLordOpen] = useState<boolean>(false);
   const [isUploadSignedDocsOpen, setIsUploadSignedDocsOpen] =
     useState<boolean>(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
   const { id } = useParams();
@@ -152,6 +158,13 @@ const RentedPropertiesScreen = () => {
                         Apartment ID: {property?.propertyId?.roomId}
                       </p>
                     </div>
+                    <Button
+                      variant="darkPrimary"
+                      className="p-0 text-green-600"
+                      onClick={() => setIsModalOpen(true)}
+                    >
+                      View Property Owner Contact
+                    </Button>
                   </div>
                   <div className="px-4 py-4 gap-5 md:gap-0 flex flex-col md:flex-row">
                     {rentDetails.map((detail, i) => (
@@ -305,6 +318,74 @@ const RentedPropertiesScreen = () => {
               </div>
             )}
           </TenantLayout>
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Contact Information
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <User className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Name</p>
+                    <p className="font-medium">{property?.ownerId?.firstName} {property?.ownerId?.lastName}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Mail className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Email</p>
+                    <p className="font-medium">{property?.ownerId?.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <p className="text-sm text-gray-600">Phone Number</p>
+                    <p className="font-medium">
+                      {property?.ownerId?.phoneNumber}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Link
+                  className="flex-1"
+                  href={`tel:${property?.ownerId?.phoneNumber}`}
+                >
+                  <Button
+                    // variant="outline"
+                    className="w-full"
+                  >
+                    <div className="flex items-center gap-2 py-1">
+                      <Phone className="h-4 w-4 mr-2" />
+                      Call
+                    </div>
+                  </Button>
+                </Link>
+                <Link
+                  className="flex-1"
+                  href={`mailto:${property?.ownerId?.email}`}
+                >
+                  <Button
+                    className="w-full"
+                    // onClick={() => window.open(`mailto:${property?.owner?.email}`)}
+                  >
+                    <div className="flex items-center gap-2 py-1">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </div>
+                  </Button>
+                </Link>
+              </div>
+            </DialogContent>
+          </Dialog>
         </ProtectedRoute>
       )}
     </div>

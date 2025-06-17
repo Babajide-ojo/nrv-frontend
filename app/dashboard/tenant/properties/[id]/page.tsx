@@ -272,15 +272,15 @@ const TenantPropertiesScreen = () => {
                         </h3>
                       </div>
                       <div>
-                        <p className="text-[#475367] text-[13px] font-light">
+                        {/* <p className="text-[#475367] text-[13px] font-light">
                           Property Owner Contact Info
-                        </p>
+                        </p> */}
                         <Button
-                          variant="ordinary"
+                          variant="darkPrimary"
                           className="p-0 text-green-600"
                           onClick={() => setIsModalOpen(true)}
                         >
-                          View Contact Information
+                          View Property Owner Contact
                         </Button>
                       </div>
                     </div>

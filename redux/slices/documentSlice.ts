@@ -119,8 +119,6 @@ export const fetchUploadedDocuments = createAsyncThunk(
           }))
         : []),
     ];
-    console.log({files});
-    
 
     return files;
   }

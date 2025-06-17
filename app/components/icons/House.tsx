@@ -1,8 +1,8 @@
 import * as React from "react";
 const House = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
-    width={21}
-    height={21}
+    width={props.width || 21}
+    height={props.height || 21}
     viewBox="0 0 21 21"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

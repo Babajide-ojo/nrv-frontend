@@ -18,6 +18,7 @@ import { formatDateToWords } from "@/helpers/utils";
 import LoadingPage from "../../loaders/LoadingPage";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
+import Status from "../../shared/Status";
 
 const TenantApplications = () => {
   const dispatch = useDispatch();
@@ -96,169 +97,186 @@ const TenantApplications = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    
+
     setUser(user?.user);
   }, []);
 
   return (
-    <div>
+    <div className="pb-16">
       <ToastContainer />
       {currentStep === 1 && (
-
-        
-            <div>
-              <ToastContainer />
-              <div className="space-y-12 p-4 font-jakarta">
-                {/* Header */}
-                <div className="flex items-center justify-between w-full">
-                  <div>
-                    <h2 className="text-xl font-semibold">
-                      View Rental Applications
-                    </h2>
-                    <p className="text-gray-500 font-light">
-                      View and update your rental applications
+        <div>
+          <ToastContainer />
+          <div className="space-y-12 p-4 font-jakarta">
+            {/* Header */}
+            <div className="flex items-center justify-between w-full">
+              <div>
+                <h2 className="text-xl font-semibold">
+                  View Rental Applications
+                </h2>
+                <p className="text-gray-500 font-light">
+                  View and update your rental applications
+                </p>
+              </div>
+              <Button variant="outline" size="sm" className="gap-2">
+                <RefreshCcw className="w-4 h-4" />
+                Refresh
+              </Button>
+            </div>
+            {
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+                {[
+                  {
+                    title: "Active Applications",
+                    value: `${18}`,
+                    change: "0%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Approved Applications",
+                    value: `${0}`,
+                    change: "10%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Pending (Under Review)",
+                    value: `${0}`,
+                    change: "10%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                  {
+                    title: "Rejected Applications",
+                    value: `${0}`,
+                    change: "10%",
+                    trend: "up",
+                    comparison: "compared to the last 6 months",
+                  },
+                ].map((card, i) => (
+                  <div
+                    key={i}
+                    className="border-b md:border-b-0 pb-4 md:pb-0 md:border-r last:border-none px-4"
+                  >
+                    <p className="text-gray-500 text-sm">{card.title}</p>
+                    <h3 className="text-xl font-semibold text-green-900">
+                      {card.value}
+                    </h3>
+                    <p
+                      className={`text-xs mt-1 ${
+                        card.trend === "up" ? "text-green-600" : "text-red-500"
+                      }`}
+                    >
+                      {card.trend === "up" ? "↑" : "↓"} {card.change}{" "}
+                      {card.comparison}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <RefreshCcw className="w-4 h-4" />
-                    Refresh
-                  </Button>
-                </div>
-                {
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
-                    {[
-                      {
-                        title: "Active Applications",
-                        value: `${0}`,
-                        change: "0%",
-                        trend: "up",
-                        comparison: "compared to the last 6 months",
-                      },
-                      {
-                        title: "Approved Applications",
-                        value: `${0}`,
-                        change: "10%",
-                        trend: "up",
-                        comparison: "compared to the last 6 months",
-                      },
-        
-                    ].map((card, i) => (
-                      <div key={i} className="border-r last:border-none px-4">
-                        <p className="text-gray-500 text-sm">{card.title}</p>
-                        <h3 className="text-xl font-semibold text-green-900">
-                          {card.value}
-                        </h3>
-                        <p
-                          className={`text-xs mt-1 ${
-                            card.trend === "up"
-                              ? "text-green-600"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {card.trend === "up" ? "↑" : "↓"} {card.change}{" "}
-                          {card.comparison}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                }
-
-                <div className="flex gap-3">
-                  <Button
-                    variant="default"
-                    className={`${
-                      activeTab === ""
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-800 border"
-                    }`}
-                    onClick={() => handleTabClick("")}
-                  >
-                    All Applications{" "}
-                    <span className="ml-2 font-semibold">
-                      {/* {maintenance?.summary?.New} */}
-                    </span>
-                  </Button>
-                  <Button
-                    className={`${
-                      activeTab === "New"
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-800 border"
-                    }`}
-                    onClick={() => handleTabClick("New")}
-                  >
-                    Pending Applications{" "}
-                    <span className="ml-2 font-semibold">
-                      {/* {maintenance?.summary?.InProgress} */}
-                    </span>
-                  </Button>
-                  <Button
-                    className={`${
-                      activeTab === "activeTenant"
-                        ? "bg-green-700 text-white"
-                        : "bg-white text-gray-800 border"
-                    }`}
-                    onClick={() => handleTabClick("activeTenant")}
-                  >
-                    Approved Applications{" "}
-                    <span className="ml-2 font-semibold">
-                      {/* {maintenance?.summary?.Approved} */}
-                    </span>
-                  </Button>
-                </div>
-
-                {/* Section Title */}
-                <div className="flex-col items-center gap-4 mt-2">
-                  <h4 className="text-lg font-semibold">Active Application</h4>
-                  <span className="text-gray-400 text-sm">
-                    View and manage active applications
-                  </span>
-                </div>
+                ))}
               </div>
+            }
 
-              <DataTable
-                rowActions={handleRowAction}
-                key={activeTab}
-                endpoint={`${API_URL}/properties/tenant-applications/${JSON.parse(localStorage.getItem("nrv-user") as any)?.user?._id}`}
-                status={activeTab}
-                columns={[
-                  {
-                    key: "propertyId",
-                    label: "Apartment Name & Address",
-                    render: (val) => (
-                      <div>
-                        <div className="text-[#101828] font-medium text-[13px]">
-                          {val?.apartmentStyle || "N/A"}
-                        </div>
-                        <div className="text-[#667085] font-light">
-                          {val?.propertyId?.streetAddress},{" "}
-                          {val?.propertyId?.state}, Nigeria
-                        </div>
-                      </div>
-                    ),
-                  },
-                  {
-                    key: "status",
-                    label: "Status",
-                  },
-                  {
-                    key: "createdAt",
-                    label: "Applied Date & Time",
-                    render: (val) => <span>{formatDateToWords(val)}</span>,
-                  },
-                  {
-                    key: "status",
-                    label: "Next Step",
-                    render: (val) => (
-                      <span className="font-medium italic text-[#045D23]">
-                        {val === "New" ? "Background Check" : null}
-                      </span>
-                    ),
-                  },
-                ]}
-              />
+            <div className="flex gap-3">
+              <Button
+                variant="default"
+                className={`${
+                  activeTab === ""
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("")}
+              >
+                All Applications{" "}
+                <span className="ml-2 font-semibold">
+                  {/* {maintenance?.summary?.New} */}
+                </span>
+              </Button>
+              <Button
+                className={`${
+                  activeTab === "New"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("New")}
+              >
+                Pending Applications{" "}
+                <span className="ml-2 font-semibold">
+                  {/* {maintenance?.summary?.InProgress} */}
+                </span>
+              </Button>
+              <Button
+                className={`${
+                  activeTab === "activeTenant"
+                    ? "bg-green-700 text-white"
+                    : "bg-white text-gray-800 border"
+                }`}
+                onClick={() => handleTabClick("activeTenant")}
+              >
+                Approved Applications{" "}
+                <span className="ml-2 font-semibold">
+                  {/* {maintenance?.summary?.Approved} */}
+                </span>
+              </Button>
             </div>
-  
-    
+
+            {/* Section Title */}
+            <div className="flex-col items-center gap-4 mt-2">
+              <h4 className="text-lg font-semibold">Active Application</h4>
+              <span className="text-gray-400 text-sm">
+                View and manage active applications
+              </span>
+            </div>
+          </div>
+
+          <DataTable
+            rowActions={handleRowAction}
+            key={activeTab}
+            endpoint={`${API_URL}/properties/tenant-applications/${
+              JSON.parse(localStorage.getItem("nrv-user") as any)?.user?._id
+            }`}
+            status={activeTab}
+            columns={[
+              {
+                key: "propertyId",
+                label: "Apartment Name & Address",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#101828] font-medium text-[13px]">
+                      {val?.apartmentStyle || "N/A"}
+                    </div>
+                    <div className="text-[#667085] font-light">
+                      {val?.propertyId?.streetAddress}, {val?.propertyId?.state}
+                      , Nigeria
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "status",
+                label: "Status",
+                render: (val) => <Status status={val} />,
+              },
+              {
+                key: "createdAt",
+                label: "Applied Date & Time",
+                render: (val) => <span>{formatDateToWords(val)}</span>,
+              },
+              {
+                key: "status",
+                label: "Next Step",
+                render: (val) => (
+                  <span
+                    className={`font-medium italic ${
+                      val === "New" ? "text-[#045D23]" : ""
+                    }`}
+                  >
+                    {val === "New" ? "Background Check" : "Null"}
+                  </span>
+                ),
+              },
+            ]}
+          />
+        </div>
       )}
       {currentStep === 2 && (
         <div>

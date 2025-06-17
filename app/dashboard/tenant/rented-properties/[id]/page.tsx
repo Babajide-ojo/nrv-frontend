@@ -32,6 +32,7 @@ import PdfIcon from "@/app/components/icons/PdfIcon";
 import EyeIcon from "@/app/components/icons/EyeIcon";
 import { DownloadIcon } from "lucide-react";
 import { format } from "date-fns";
+import Status from "@/app/components/shared/Status";
 
 const RentedPropertiesScreen = () => {
   const pathname = usePathname();
@@ -67,16 +68,23 @@ const RentedPropertiesScreen = () => {
 
   const rentDetails = pathname.includes("applications")
     ? [
-        { name: "Application Status", value: property?.status },
+        {
+          name: "Application Status",
+          value: <Status status={property?.status} />,
+        },
         {
           name: "Application Date",
           value: property?.createdAt
             ? format(new Date(property?.createdAt), "dd-MM-yyyy")
             : "NIL",
-        }
+        },
       ]
     : [
-        { name: "Rent Status", value: property?.status === "activeTenant" ? "Active" : property?.status },
+        {
+          name: "Rent Status",
+          value:
+            property?.status === "activeTenant" ? "Active" : property?.status,
+        },
         {
           name: "Rent Start Date",
           value: property?.rentStartDate
@@ -100,7 +108,7 @@ const RentedPropertiesScreen = () => {
       ];
   useEffect(() => {
     fetchData();
-  }, [id]); 
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-gray-100 ">
@@ -188,7 +196,7 @@ const RentedPropertiesScreen = () => {
                         <div className="w-60">
                           <p className="text-[#475367] text-sm">Flat Number</p>
                           <p className="text-semibold font-medium">
-                          {property?.propertyId?.roomId}
+                            {property?.propertyId?.roomId}
                           </p>
                         </div>
                       </div>
@@ -232,7 +240,6 @@ const RentedPropertiesScreen = () => {
                           </div>
                         </div>
                       </div>
-        
                     </div>
                     <div className="w-full mt-4 md:mt-0 md:w-[30%] md:pl-4 pb-5">
                       <div className="w-full aspect-square rounded-lg p-3 bg-[#F9FAFB]">

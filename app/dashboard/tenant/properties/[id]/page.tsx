@@ -199,7 +199,7 @@ const TenantPropertiesScreen = () => {
   }, []);
 
   return (
-    <div>
+    <div className="pb-10">
       {isLoading ? (
         <LoadingPage />
       ) : (

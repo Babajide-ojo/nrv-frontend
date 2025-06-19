@@ -146,7 +146,7 @@ const RentedPropertiesScreen = () => {
                   </div>
                 </div>
                 <div className="mt-5 flex flex-col border border-nrvLightGray rounded-2xl bg-white overflow-hidden">
-                  <div className="px-10 py-4 bg-[#E4E7EC] flex items-center gap-6">
+                  <div className="px-10 py-4 bg-[#E4E7EC] flex items-center gap-5 flex-wrap">
                     <div className="rounded-full h-12 w-12 bg-[#429634] flex items-center justify-center">
                       <House width={20} height={20} />
                     </div>

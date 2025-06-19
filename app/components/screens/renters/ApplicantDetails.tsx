@@ -366,7 +366,7 @@ const ApplicationDetails = () => {
               width={168}
               src={application?.propertyId?.propertyId?.file}
               alt="property"
-              className="object-cover aspect-square h-full"
+              className="object-cover aspect-square h-full hidden md:block"
             />
             <div className="px-5 py-3">
               <div className="bg-[#E9F4E7] text-[#099137] w-fit text-xs py-1 px-4 rounded-full">
@@ -412,7 +412,7 @@ const ApplicationDetails = () => {
             </div>
           </div> */}
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="w-full text-center mt-5 border rounded-lg">
               <div className="flex flex-col items-center">
                 <Image
@@ -451,7 +451,7 @@ const ApplicationDetails = () => {
                 application?.status == "active" ||
                 application?.status == "activeTenant"
               ) && (
-                <div className="flex gap-2 mt-5 justify-center">
+                <div className="flex gap-2 mt-5 justify-center px-4">
                   <Button
                     className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                     disabled={isLoading}
@@ -468,15 +468,18 @@ const ApplicationDetails = () => {
                 </div>
               )}
               <div className="mt-8">
-                {!application?.rentStartDate && !application?.rentStartDate &&  (application?.status == "activeTenant" || application?.status == "active") && (
-                  <Button
-                    className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
-                    disabled={isLoading}
-                    onClick={() => setOpenAssignDateModal(true)}
-                  >
-                    Set Lease Period
-                  </Button>
-                )}
+                {!application?.rentStartDate &&
+                  !application?.rentStartDate &&
+                  (application?.status == "activeTenant" ||
+                    application?.status == "active") && (
+                    <Button
+                      className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                      disabled={isLoading}
+                      onClick={() => setOpenAssignDateModal(true)}
+                    >
+                      Set Lease Period
+                    </Button>
+                  )}
               </div>
             </div>
             <div className="w-full p-4 border rounded-lg mt-4">
@@ -507,10 +510,11 @@ const ApplicationDetails = () => {
                 <div>
                   <p className="text-sm font-semibold">Lease Start Date</p>
                   <p>
-                    {application?.rentStartDate &&
-                      formatDateToWords(
-                        application?.rentStartDate?.slice(0, 10)
-                      )}
+                    {application?.rentStartDate
+                      ? formatDateToWords(
+                          application?.rentStartDate?.slice(0, 10)
+                        )
+                      : "N/A"}
                   </p>
                 </div>
               </div>
@@ -518,8 +522,9 @@ const ApplicationDetails = () => {
                 <div>
                   <p className="text-sm font-semibold">Lease End Date</p>
                   <p>
-                    {application?.rentStartDate &&
-                      formatDateToWords(application?.rentEndDate.slice(0, 10))}
+                    {application?.rentStartDate
+                      ? formatDateToWords(application?.rentEndDate.slice(0, 10))
+                      : "N/A"}
                   </p>
                 </div>
               </div>

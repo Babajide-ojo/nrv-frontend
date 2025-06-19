@@ -362,7 +362,7 @@ const TenantDashboardScreen = () => {
                         </div> */}
                       </div>
                       <div
-                        className={`flex items-center justify-center rounded-full h-[40px] w-[40px] bg-nrvPrimaryGreen ${
+                        className={`flex items-center justify-center rounded-full h-[40px] w-[40px] ${
                           index === 0
                             ? "bg-[#429634]"
                             : index === 1

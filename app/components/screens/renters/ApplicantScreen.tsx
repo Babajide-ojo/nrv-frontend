@@ -3,9 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  updateApplicationStatus,
-} from "../../../../redux/slices/propertySlice";
+import { updateApplicationStatus } from "../../../../redux/slices/propertySlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDateToWords } from "@/helpers/utils";
@@ -109,7 +107,7 @@ const ApplicantScreen = () => {
           <ToastContainer />
           <div className="space-y-12 p-4 font-jakarta">
             {/* Header */}
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full gap-5 flex-wrap">
               <div>
                 <h2 className="text-xl font-semibold">
                   View & Manage Your Leads & Applications
@@ -139,9 +137,14 @@ const ApplicantScreen = () => {
                     change: "10%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
-                  }
+                  },
                 ].map((card, i) => (
-                  <div key={i} className="border-r last:border-none px-4">
+                  <div
+                    key={i}
+                    className={`${
+                      i === 0 && "max-md:pb-4"
+                    } md:border-r max-md:border-b last:border-none px-4`}
+                  >
                     <p className="text-gray-500 text-sm">{card.title}</p>
                     <h3 className="text-xl font-semibold text-green-900">
                       {card.value}
@@ -170,7 +173,6 @@ const ApplicantScreen = () => {
                 onClick={() => handleTabClick("")}
               >
                 All Applications{" "}
-      
               </Button>
               <Button
                 className={`${
@@ -180,7 +182,8 @@ const ApplicantScreen = () => {
                 }`}
                 onClick={() => handleTabClick("activeTenant")}
               >
-                Approved Applications <span className="ml-2 font-semibold"></span>
+                Approved Applications{" "}
+                <span className="ml-2 font-semibold"></span>
               </Button>
             </div>
 
@@ -229,7 +232,7 @@ const ApplicantScreen = () => {
                 key: "createdAt",
                 label: "Applied Date & Time",
                 render: (val) => <span>{formatDateToWords(val)}</span>,
-              }
+              },
             ]}
           />
         </div>

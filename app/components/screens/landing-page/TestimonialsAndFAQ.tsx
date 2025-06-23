@@ -26,7 +26,7 @@ const TestimonialsAndFAQs: React.FC = () => {
       <section className="md:h-[400px] bg-[#E6F0E9] m-16 md:w-4/5 md:flex justify-center p-8 rounded-lg mx-auto">
         <div className="text-start mx-auto pt-16">
           <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
-           / Testimonials
+            / Testimonials
           </span>
           <h2 className="my-8 text-4xl font-medium text-[#03442C]">
             Why They Love Us
@@ -40,7 +40,7 @@ const TestimonialsAndFAQs: React.FC = () => {
         <div className="relative w-full max-w-2xl p-6 bg-white shadow-md rounded-lg h-96 flex items-end md:m-0 mt-12">
           <div>
             <p className="text-[20px] font-light text-[#03442C] leading-8 m-4">
-            &rdquo;As a tenant, I appreciate the transparency{" "}
+              &rdquo;As a tenant, I appreciate the transparency{" "}
               <strong>NaijaRentVerify</strong> provides. The application process
               was smooth, and the screening report gave me confidence in my
               landlord&rdquo;s selection process.&rdquo;
@@ -72,12 +72,12 @@ const TestimonialsAndFAQs: React.FC = () => {
 
       {/* FAQ Section */}
       <div className="bg-[#03442C]">
-        <section className="text-white md:p-10 p-4 rounded-lg md:flex gap-3 md:w-4/5 mx-auto">
+        <section className="text-white md:p-10 p-4 rounded-lg md:flex gap-3 max-w-[1400px] mx-auto">
           <div className="md:w-1/2 w-full flex items-center">
             <div>
               <div className="mb-6">
                 <span className="my-4 text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 px-8 bg-[#E6F0E9]">
-                 / FAQs
+                  / FAQs
                 </span>
                 <h2 className="my-8 md:text-3xl text-xl font-bold">
                   Frequently Asked Questions

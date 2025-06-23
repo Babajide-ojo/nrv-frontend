@@ -10,12 +10,16 @@ import RentedPropertiesScreen from "./RentedPropertiesScreen";
 import { useDispatch } from "react-redux";
 import { getTenantMetrics } from "@/redux/slices/propertySlice";
 import { FcComboChart, FcHome, FcParallelTasks } from "react-icons/fc";
-import { FaChartLine } from "react-icons/fa";
+import { FaBed, FaPaintRoller, FaBath, FaChartLine } from "react-icons/fa";
 import DashboardOverview from "../../screens/dashboard-screens/DashboardOverview";
 import InputField from "../../shared/input-fields/InputFields";
 import House from "../../icons/House";
 import Notes from "../../icons/Notes";
 import Users from "../../icons/Users";
+import { BiShapeSquare } from "react-icons/bi";
+import { IoFilter } from "react-icons/io5";
+import { LuMapPin } from "react-icons/lu";
+
 //import RentedPropertiesScreen from "@/app/dashboard/tenant/rented-properties/page";
 
 const RentedApartments = () => {
@@ -35,22 +39,23 @@ const RentedApartments = () => {
       <h2 className="text-xl font-semibold">My Rented Apartments</h2>
 
       {/* Search and Filter */}
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex justify-between items-start gap-4">
         <div className="w-1/2">
           <InputField
             name="search"
             inputType="text"
             placeholder="Search anything or type a command"
-            css="p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+            css="px-3 rounded-md border border-gray-300 text-[14px] h-[36px] focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
-        <button className="border border-gray-300 rounded-md px-4 py-2 text-xs">
+        <button className="border border-gray-200 rounded-lg text-[#67667A]  px-4 h-[36px] text-[14px] font-medium flex gap-1 items-center">
+          <IoFilter />
           Advanced Filter
         </button>
       </div>
 
       {/* Apartment Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {apartmentImages.map((img, index) => (
           <div
             key={index}
@@ -58,7 +63,7 @@ const RentedApartments = () => {
               index === 1 ? "" : ""
             }`}
           >
-            <div className="relative h-52">
+            <div className="relative h-58">
               <img
                 src={img}
                 alt="Apartment"
@@ -77,31 +82,41 @@ const RentedApartments = () => {
               )}
             </div>
             <div className="p-4 space-y-3 text-sm">
-              <p className="text-green-600 font-semibold text-base">
+              <p className="text-[#03442C] font-semibold text-base">
                 ₦250,095{" "}
                 <span className="text-gray-500 text-sm">/ Per Annum</span>
               </p>
-              <p className="text-gray-500">
+              <p className="text-gray-500 text-[12px] font-light -mt-2">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit...
               </p>
-              <div className="flex justify-between text-xs text-gray-600 mt-2">
+              <div className="flex justify-between text-xs text-[#03442C] mt-2 p-3 bg-[#ECECEE]">
                 <div>
-                  <p className="font-medium text-[#03442C] text-xs">Bedroom</p>
-                  <p>4 Beds</p>
+                  <p className="font-medium text-[8px]">Bedroom</p>
+                  <div className="flex items-center gap-1">
+                    <FaBed />
+                    <p className="text-[10px] font-medium">4 Beds</p>
+                  </div>
                 </div>
                 <div>
-                  <p className="font-medium text-[#03442C] text-xs">Bathroom</p>
-                  <p>4 rooms</p>
+                  <p className="font-medium text-[8px]">Bathroom</p>
+                  <div className="flex items-center gap-1">
+                    <FaBath />
+                    <p className="text-[10px] font-medium">4 rooms</p>
+                  </div>
                 </div>
                 <div>
-                  <p className="font-medium text-[#03442C] text-xs">
-                    Square Area
-                  </p>
-                  <p>12 x 12 m²</p>
+                  <p className="font-medium text-[8px]">Square Area</p>
+                  <div className="flex items-center gap-1">
+                    <BiShapeSquare />
+                    <p className="text-[10px] font-medium">12 x 12 m²</p>
+                  </div>
                 </div>
                 <div>
-                  <p className="font-medium text-[#03442C] text-xs">Style</p>
-                  <p>🏙️ Modern</p>
+                  <p className="font-medium text-[8px]">Style</p>
+                  <div className="flex items-center gap-1">
+                    <FaPaintRoller />
+                    <p className="text-[10px] font-medium">Modern</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -117,35 +132,38 @@ const RentedApartments = () => {
             See all
           </button>
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
           {thumbImages.map((thumb, index) => (
             <div
               key={index}
-              className="min-w-[240px] rounded-xl border shadow p-3 flex bg-white"
+              className="min-w-[340px] max-w-[340px] h-[100px] rounded-xl border shadow p-2 flex items-center bg-white"
             >
-              <div className="relative h-16 rounded-md overflow-hidden">
+              <div className="relative h-[83px] w-[83px] min-w-[83px] rounded-md overflow-hidden">
                 <img
                   src={thumb}
                   alt="Thumbnail"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute top-2 right-2">
-                  {index === 0 ? (
-                    <span className="text-red-500 text-xl">❤️</span>
-                  ) : (
-                    <span className="text-gray-400 text-xl">🤍</span>
-                  )}
-                </div>
               </div>
-              <div className="ml-3 space-y-1">
-                <p className="text-sm font-medium text-[#263245]">
-                  Luxury Apartment
+              <div className="ml-3 w-full space-y-1">
+                <div className="flex w-full justify-between items-center">
+                  <p className="text-[14px] font-medium text-[#263245]">
+                    Luxury Apartment
+                  </p>
+                  <div className="">
+                    {index === 0 ? (
+                      <span className="text-red-500 text-xl">❤️</span>
+                    ) : (
+                      <span className="text-gray-400 text-xl">🤍</span>
+                    )}
+                  </div>
+                </div>
+                <p className="text-[10px] font-light text-[#737D8C] flex items-center gap-1">
+                  <LuMapPin /> Victoria Island
                 </p>
-                <p className="text-[11px] font-light text-[#737D8C] flex items-center gap-1">
-                  📍 Victoria Island
-                </p>
-                <p className="text-[#263245] text-[11px]">
-                  ₦10,000,000 / Per Annum
+                <p className="text-[#263245] text-[14px] font-semibole">
+                  ₦10,000,000 /{" "}
+                  <span className="text-[10px] font-normal">Per Annum</span>
                 </p>
               </div>
             </div>

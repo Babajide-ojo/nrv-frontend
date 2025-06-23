@@ -122,3 +122,19 @@ export const formatDateToWords = (dateString: any) => {
     }
   };
   
+export const formatDisplayValue = (value: string) => {
+  // Return raw value for empty, decimal point, or partial decimals
+  if (value === "" || value === "." || /^\d+\.$/.test(value)) {
+    return value;
+  }
+  // Remove commas for parsing
+  const cleanedValue = value.toString().replace(/,/g, "");
+  const num = parseFloat(cleanedValue);
+  if (isNaN(num)) {
+    return value; // Return raw value if not a valid number
+  }
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2, // Allow up to 2 decimal places
+  });
+};

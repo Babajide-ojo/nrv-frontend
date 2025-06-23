@@ -19,6 +19,8 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
 import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
+import { formatDisplayValue, preventNonNumeric } from "@/helpers/utils";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 interface UnitData {
   description: string;
@@ -29,6 +31,7 @@ interface UnitData {
   leaseTerms: string;
   rentAmountMetrics: string;
   paymentOption: string;
+  // availableUnits: string;
   otherAmentities: string[];
 }
 
@@ -51,6 +54,7 @@ const CreatePropertyScreen = () => {
   const [properties, setProperties] = useState([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [currentAmountStep, setCurrentAmountStep] = useState(0);
+  const [showDescription, setShowDescription] = useState(false);
   const [buildingType, setBuildingType] = useState<any>({
     label: "Residential",
     value: "Residential",
@@ -74,6 +78,7 @@ const CreatePropertyScreen = () => {
         apartmentStyle: "",
         leaseTerms: "",
         rentAmountMetrics: "",
+        // availableUnits: "1",
         paymentOption: "",
         otherAmentities: [],
       },
@@ -158,6 +163,7 @@ const CreatePropertyScreen = () => {
             apartmentStyle: "",
             leaseTerms: "",
             rentAmountMetrics: "",
+            // availableUnits: "1",
             paymentOption: "",
             otherAmentities: [],
           },
@@ -200,6 +206,30 @@ const CreatePropertyScreen = () => {
     }));
   };
 
+  const handleUnitChangeWithComma = (
+    index: number,
+    field: keyof UnitData,
+    value: string
+  ) => {
+    // Remove commas for thousands separators
+    const cleanedValue = value.replace(/,/g, "");
+
+    // Allow empty input, decimal point, or valid decimal numbers
+    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
+      setPropertyData((prevData) => {
+        const updatedUnits = [...prevData.units];
+        updatedUnits[index] = {
+          ...updatedUnits[index],
+          [field]: cleanedValue,
+        };
+        return {
+          ...prevData,
+          units: updatedUnits,
+        };
+      });
+    }
+  };
+
   const addUnit = () => {
     setPropertyData((prevData) => ({
       ...prevData,
@@ -213,6 +243,7 @@ const CreatePropertyScreen = () => {
           apartmentStyle: "",
           leaseTerms: "",
           rentAmountMetrics: "",
+          // availableUnits: "1",
           paymentOption: "",
           otherAmentities: [],
         },
@@ -318,6 +349,7 @@ const CreatePropertyScreen = () => {
                       <InputField
                         label="Name of Property"
                         name="nameOfProperty"
+                        required
                         value={propertyData.nameOfProperty}
                         onChange={handleInputChange}
                         error={errors.nameOfProperty}
@@ -326,6 +358,7 @@ const CreatePropertyScreen = () => {
                       <InputField
                         label="Property Address/Location"
                         name="location"
+                        required
                         value={propertyData.location}
                         onChange={handleInputChange}
                         error={errors.location}
@@ -334,6 +367,7 @@ const CreatePropertyScreen = () => {
                       <SelectField
                         label="Building Type"
                         value={buildingType}
+                        required
                         onChange={(val: any) => setBuildingType(val)}
                         options={[
                           { label: "Residential", value: "Residential" },
@@ -345,6 +379,7 @@ const CreatePropertyScreen = () => {
                       <InputField
                         label="Zip Code"
                         name="zipCode"
+                        required
                         value={propertyData.zipCode}
                         onChange={handleInputChange}
                         error={errors.zipCode}
@@ -353,6 +388,7 @@ const CreatePropertyScreen = () => {
                       <InputField
                         label="City"
                         name="city"
+                        required
                         value={propertyData.city}
                         onChange={handleInputChange}
                         error={errors.city}
@@ -360,6 +396,7 @@ const CreatePropertyScreen = () => {
                       />
                       <SelectField
                         label="State"
+                        required
                         value={{
                           label: propertyData.state,
                           value: propertyData.state,
@@ -411,6 +448,26 @@ const CreatePropertyScreen = () => {
                               <InputField
                                 label="Description"
                                 value={unit?.description}
+                                required
+                                icon={
+                                  <div className="relative">
+                                    <IoMdInformationCircleOutline
+                                      onMouseEnter={() =>
+                                        setShowDescription(true)
+                                      }
+                                      onMouseLeave={() =>
+                                        setShowDescription(false)
+                                      }
+                                      size={20}
+                                    />
+                                    {showDescription && (
+                                      <div className="absolute text-start -right-3 bottom-full p-2 text-xs mb-1 rounded-md bg-white border w-[250px]">
+                                        Describe the apartment, its features,
+                                        and any unique selling points.
+                                      </div>
+                                    )}
+                                  </div>
+                                }
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -423,9 +480,11 @@ const CreatePropertyScreen = () => {
 
                               <InputField
                                 label="Rent Amount"
-                                value={unit.rentAmount}
+                                value={formatDisplayValue(unit.rentAmount)}
+                                required
+                                // onKeyPress={preventNonNumeric}
                                 onChange={(e) =>
-                                  handleUnitChange(
+                                  handleUnitChangeWithComma(
                                     index,
                                     "rentAmount",
                                     e.target.value
@@ -437,6 +496,7 @@ const CreatePropertyScreen = () => {
                               <InputField
                                 label="Bedrooms"
                                 value={unit.noOfRooms}
+                                required
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -450,6 +510,7 @@ const CreatePropertyScreen = () => {
                               <InputField
                                 label="Bathrooms"
                                 value={unit.noOfBaths}
+                                required
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -465,6 +526,7 @@ const CreatePropertyScreen = () => {
                                   label: unit.apartmentStyle,
                                   value: unit.apartmentStyle,
                                 }}
+                                required
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -489,6 +551,7 @@ const CreatePropertyScreen = () => {
                                   label: unit.leaseTerms,
                                   value: unit.leaseTerms,
                                 }}
+                                required
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -515,6 +578,7 @@ const CreatePropertyScreen = () => {
                                   label: unit.rentAmountMetrics,
                                   value: unit.rentAmountMetrics,
                                 }}
+                                required
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -536,6 +600,7 @@ const CreatePropertyScreen = () => {
                                   label: unit.paymentOption,
                                   value: unit.paymentOption,
                                 }}
+                                required
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -555,6 +620,34 @@ const CreatePropertyScreen = () => {
                                 ]}
                                 name={`paymentOption-${index}`}
                               />
+
+                              {/* <SelectField
+                                label="No of Available Units"
+                                value={{
+                                  label: unit.availableUnits,
+                                  value: unit.availableUnits,
+                                }}
+                                required
+                                onChange={(val: any) =>
+                                  handleUnitChange(
+                                    index,
+                                    "availableUnits",
+                                    val.value
+                                  )
+                                }
+                                options={[
+                                  { label: "1", value: "1" },
+                                  { label: "2", value: "2" },
+                                  { label: "3", value: "3" },
+                                  { label: "4", value: "4" },
+                                  { label: "5", value: "5" },
+                                  { label: "6", value: "6" },
+                                  { label: "7", value: "7" },
+                                  { label: "8", value: "8" },
+                                  { label: "9", value: "9" },
+                                ]}
+                                name={`availableUnits-${index}`}
+                              /> */}
                             </div>
 
                             <p className="text-sm font-medium mb-2">
@@ -648,7 +741,7 @@ const CreatePropertyScreen = () => {
                   message={`Do you want to add a new property Listings?`}
                   subMessage="If you leave this page, any changes you made will be lost if you do not save them."
                   onCancel={() => setShowModal(false)}
-                  onConfirm={()=>handleNextAndVerify}
+                  onConfirm={() => handleNextAndVerify}
                 />
               </form>
             )}

@@ -31,15 +31,16 @@ const shortLets = [
 
 export default function ShortLets() {
   return (
-    <section className="py-12 px-6 md:px-16 w-4/5 mx-auto">
+    <section className="py-12 px-5 max-w-[1400px] mx-auto">
       <div className="flex justify-between items-start flex-wrap md:flex-nowrap">
         <div className="mb-6 md:mb-0">
-        <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 ">
+          <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 ">
             / FEATURED
           </span>
           <h2 className="text-3xl md:text-[50px] font-medium mt-3 text-green-900 leading-8 mt-8">
-          Explore our  Perfect <br></br><br></br>
-          Vacation Rentals
+            Explore our Perfect <br></br>
+            <br></br>
+            Vacation Rentals
           </h2>
         </div>
         <div>
@@ -67,10 +68,12 @@ export default function ShortLets() {
               <p className="text-md font-medium text-[#045D23] flex items-center gap-2">
                 <IoCalendarClearOutline size={16} /> {letItem.date}
               </p>
-              <h3 className="text-[24px] font-semibold text-green-900 mt-2">
+              <h3 className="text-[21px] font-semibold text-green-900 mt-2">
                 {letItem.title}
               </h3>
-              <p className="text-[#67667A] font-light mt-2 leading-8">{letItem.description}</p>
+              <p className="text-[#67667A] font-light mt-2 leading-8">
+                {letItem.description}
+              </p>
             </div>
           </div>
         ))}

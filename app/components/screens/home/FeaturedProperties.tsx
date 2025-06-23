@@ -79,7 +79,7 @@ const FeaturedProperties = () => {
 
   return (
     <div className="bg-[#0D3520] flex items-center justify-center p-5">
-      <div className="max-w-6xl w-full my-16">
+      <div className="max-w-[1400px] w-full my-16">
         <div className="flex justify-between items-center mb-4">
           <span className="text-white font-normal rounded-full border border-[#BBFF37] p-2">
             / FEATURED PROPERTIES

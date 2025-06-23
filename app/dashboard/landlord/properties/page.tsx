@@ -56,26 +56,25 @@ const PropertiesScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const storedUser = JSON.parse(
-          localStorage.getItem("nrv-user") || "null"
-        );
-        if (!storedUser?.user?._id) return;
-        setUser(storedUser.user);
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("nrv-user") || "null");
+      if (!storedUser?.user?._id) return;
+      setUser(storedUser.user);
 
-        const response = await dispatch(
-          getPropertyByUserId({ id: storedUser.user._id, page }) as any
-        );
-        setProperties(response?.payload?.data || []);
-        setTotalPages(response?.payload?.totalPages || 1);
-      } catch (error) {
-        console.error("Error fetching properties", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const response = await dispatch(
+        getPropertyByUserId({ id: storedUser.user._id, page }) as any
+      );
+      setProperties(response?.payload?.data || []);
+      setTotalPages(response?.payload?.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching properties", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, [dispatch, page]);
 
@@ -137,9 +136,7 @@ const PropertiesScreen = () => {
               <Button
                 variant="light"
                 className="px-6 py-2 rounded-md flex justify-center items-center gap-2 w-full sm:w-auto"
-                onClick={() =>
-                  router.push("/dashboard/landlord/properties/create")
-                }
+                onClick={fetchData}
               >
                 <div className="flex gap-2">
                   <svg

@@ -65,7 +65,7 @@ const HowItWorks = () => {
 
   return (
     <section className="bg-[#E6F0E9] py-16 px-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1400px] mx-auto">
         <div className="flex justify-between items-center mb-4">
           <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
             / HOW IT WORKS

@@ -14,6 +14,8 @@ import { useRouter } from "next/navigation";
 import ImageUploader from "../../shared/ImageUploader";
 import { toast } from "react-toastify";
 import { nigerianStates } from "@/helpers/data";
+import { formatDisplayValue } from "@/helpers/utils";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 // const propertyTypes = [
 //   { value: "apartment", label: "Residential – Apartment" },
@@ -90,6 +92,7 @@ interface UnitData {
   leaseTerms: string;
   rentAmountMetrics: string;
   paymentOption: string;
+  // availableUnits: string;
   otherAmentities: string[];
 }
 
@@ -109,6 +112,7 @@ const MultiStepForm = () => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<any>(false);
+  const [showDescription, setShowDescription] = useState(false);
   // const [selectedState, setSelectedState] = useState<string | null>(null);
   // const [lgaOptions, setLgaOptions] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -133,6 +137,7 @@ const MultiStepForm = () => {
         apartmentStyle: "",
         leaseTerms: "",
         rentAmountMetrics: "",
+        // availableUnits: "1",
         paymentOption: "",
         otherAmentities: [],
       },
@@ -217,6 +222,7 @@ const MultiStepForm = () => {
             noOfRooms: "",
             noOfBaths: "",
             apartmentStyle: "",
+            // availableUnits: "1",
             leaseTerms: "",
             rentAmountMetrics: "",
             paymentOption: "",
@@ -262,6 +268,30 @@ const MultiStepForm = () => {
     }));
   };
 
+  const handleUnitChangeWithComma = (
+    index: number,
+    field: keyof UnitData,
+    value: string
+  ) => {
+    // Remove commas for thousands separators
+    const cleanedValue = value.replace(/,/g, "");
+
+    // Allow empty input, decimal point, or valid decimal numbers
+    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
+      setPropertyData((prevData) => {
+        const updatedUnits = [...prevData.units];
+        updatedUnits[index] = {
+          ...updatedUnits[index],
+          [field]: cleanedValue,
+        };
+        return {
+          ...prevData,
+          units: updatedUnits,
+        };
+      });
+    }
+  };
+
   const addUnit = () => {
     setPropertyData((prevData) => ({
       ...prevData,
@@ -273,6 +303,7 @@ const MultiStepForm = () => {
           noOfRooms: "",
           noOfBaths: "",
           apartmentStyle: "",
+          // availableUnits: "1",
           leaseTerms: "",
           rentAmountMetrics: "",
           paymentOption: "",
@@ -319,6 +350,7 @@ const MultiStepForm = () => {
             <InputField
               label="Name of Property"
               name="nameOfProperty"
+              required
               value={propertyData.nameOfProperty}
               onChange={handleInputChange}
               error={errors.nameOfProperty}
@@ -327,6 +359,7 @@ const MultiStepForm = () => {
             <InputField
               label="Property Address/Location"
               name="location"
+              required
               value={propertyData.location}
               onChange={handleInputChange}
               error={errors.location}
@@ -336,6 +369,7 @@ const MultiStepForm = () => {
             <div className="grid grid-cols-2 gap-4">
               <SelectField
                 label="Building Type"
+                required
                 value={buildingType}
                 onChange={(val: any) => setBuildingType(val)}
                 options={[
@@ -349,6 +383,7 @@ const MultiStepForm = () => {
               <InputField
                 label="Zip Code"
                 name="zipCode"
+                required
                 value={propertyData.zipCode}
                 onChange={handleInputChange}
                 error={errors.zipCode}
@@ -360,6 +395,7 @@ const MultiStepForm = () => {
               <InputField
                 label="City"
                 name="city"
+                required
                 value={propertyData.city}
                 onChange={handleInputChange}
                 error={errors.city}
@@ -371,6 +407,7 @@ const MultiStepForm = () => {
                   label: propertyData.state,
                   value: propertyData.state,
                 }}
+                required
                 onChange={(val: any) =>
                   setPropertyData({
                     ...propertyData,
@@ -436,6 +473,22 @@ const MultiStepForm = () => {
                   <InputField
                     label="Description"
                     value={unit?.description}
+                    required
+                    icon={
+                      <div className="relative ">
+                        <IoMdInformationCircleOutline
+                          onMouseEnter={() => setShowDescription(true)}
+                          onMouseLeave={() => setShowDescription(false)}
+                          size={20}
+                        />
+                        {showDescription && (
+                          <div className="absolute text-start -right-3 bottom-full p-2 text-xs mb-1 rounded-md bg-white border w-[250px]">
+                            Describe the apartment, its features, and any unique
+                            selling points.
+                          </div>
+                        )}
+                      </div>
+                    }
                     onChange={(e) =>
                       handleUnitChange(index, "description", e.target.value)
                     }
@@ -444,9 +497,14 @@ const MultiStepForm = () => {
 
                   <InputField
                     label="Rent Amount"
-                    value={unit.rentAmount}
+                    value={formatDisplayValue(unit.rentAmount)}
+                    required
                     onChange={(e) =>
-                      handleUnitChange(index, "rentAmount", e.target.value)
+                      handleUnitChangeWithComma(
+                        index,
+                        "rentAmount",
+                        e.target.value
+                      )
                     }
                     name={`rentAmount-${index}`}
                   />
@@ -454,6 +512,7 @@ const MultiStepForm = () => {
                   <InputField
                     label="Bedrooms"
                     value={unit.noOfRooms}
+                    required
                     onChange={(e) =>
                       handleUnitChange(index, "noOfRooms", e.target.value)
                     }
@@ -463,6 +522,7 @@ const MultiStepForm = () => {
                   <InputField
                     label="Bathrooms"
                     value={unit.noOfBaths}
+                    required
                     onChange={(e) =>
                       handleUnitChange(index, "noOfBaths", e.target.value)
                     }
@@ -474,6 +534,7 @@ const MultiStepForm = () => {
                       label: unit.apartmentStyle,
                       value: unit.apartmentStyle,
                     }}
+                    required
                     onChange={(val: any) =>
                       handleUnitChange(index, "apartmentStyle", val?.value)
                     }
@@ -494,6 +555,7 @@ const MultiStepForm = () => {
                       label: unit.leaseTerms,
                       value: unit.leaseTerms,
                     }}
+                    required
                     onChange={(val: any) =>
                       handleUnitChange(index, "leaseTerms", val?.value)
                     }
@@ -516,6 +578,7 @@ const MultiStepForm = () => {
                       label: unit.rentAmountMetrics,
                       value: unit.rentAmountMetrics,
                     }}
+                    required
                     onChange={(val: any) =>
                       handleUnitChange(index, "rentAmountMetrics", val?.value)
                     }
@@ -533,6 +596,7 @@ const MultiStepForm = () => {
                       label: unit.paymentOption,
                       value: unit.paymentOption,
                     }}
+                    required
                     onChange={(val: any) =>
                       handleUnitChange(index, "paymentOption", val.value)
                     }
@@ -548,6 +612,30 @@ const MultiStepForm = () => {
                     ]}
                     name={`paymentOption-${index}`}
                   />
+
+                  {/* <SelectField
+                    label="No of Available Units"
+                    value={{
+                      label: unit.availableUnits,
+                      value: unit.availableUnits,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "availableUnits", val.value)
+                    }
+                    options={[
+                      { label: "1", value: "1" },
+                      { label: "2", value: "2" },
+                      { label: "3", value: "3" },
+                      { label: "4", value: "4" },
+                      { label: "5", value: "5" },
+                      { label: "6", value: "6" },
+                      { label: "7", value: "7" },
+                      { label: "8", value: "8" },
+                      { label: "9", value: "9" },
+                    ]}
+                    name={`availableUnits-${index}`}
+                  /> */}
                 </div>
 
                 <p className="text-sm font-medium my-2">Other Amenities</p>

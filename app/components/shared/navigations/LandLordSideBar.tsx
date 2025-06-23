@@ -43,7 +43,7 @@ const links = [
   },
   {
     name: "Tenants",
-    route: "/dashboard/landlord/properties/renters",
+    route: "/dashboard/landlord/tenants",
     icon: <FiUsers />,
   },
   {

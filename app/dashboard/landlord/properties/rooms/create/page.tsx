@@ -16,9 +16,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
+import { formatDisplayValue } from "@/helpers/utils";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showDescription, setShowDescription] = useState(false);
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [roomData, setRoomData] = useState<any>({
@@ -32,6 +35,7 @@ const CreateRoom = () => {
     apartmentType: "",
     leaseTerms: "",
     paymentOption: "",
+    // availableUnits: "1",
     otherAmentities: [],
     propertyId:
       typeof window !== "undefined"
@@ -48,6 +52,23 @@ const CreateRoom = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleInputChangeWithComma = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target as HTMLInputElement;
+
+    // Remove commas for thousands separators
+    const cleanedValue = value.replace(/,/g, "");
+
+    // Allow empty input, decimal point, or valid decimal numbers
+    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
+      setRoomData((prevData: any) => ({
+        ...prevData,
+        [name]: cleanedValue,
+      }));
+    }
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
@@ -75,13 +96,12 @@ const CreateRoom = () => {
     const updated = currentAmenities.includes(amenity)
       ? currentAmenities.filter((a: string) => a !== amenity)
       : [...currentAmenities, amenity];
-  
+
     setRoomData((prev: any) => ({
       ...prev,
       otherAmentities: updated,
     }));
   };
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,9 +174,11 @@ const CreateRoom = () => {
         <LoadingPage />
       ) : (
         <ProtectedRoute>
-          <LandLordLayout    path="Apartment"
-          mainPath="Manage Apartment"
-          subMainPath="Add New Apartment">
+          <LandLordLayout
+            path="Apartment"
+            mainPath="Manage Apartment"
+            subMainPath="Add New Apartment"
+          >
             <ToastContainer />
             <form onSubmit={handleSubmit}>
               <div className="max-w-6xl w-full mx-auto p-8">
@@ -175,10 +197,10 @@ const CreateRoom = () => {
                   not connected to Rent Payments or Lease Agreements.
                 </p>
                 <div className="max-w-6xl mx-auto border rounded-md py-8 rounded-[#ECECEE] bg-[#FDFDFC]">
-                <div className="md:flex md:justify-between block p-4 md:p-4 max-w-4xl mx-auto">
+                  <div className="md:flex md:justify-between block p-4 md:p-4 max-w-4xl mx-auto">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">
-                      Apartment Information
+                        Apartment Information
                       </h2>
                       <p className="text-sm text-gray-500 mb-6">
                         Add the correct property information to keep it accurate
@@ -208,6 +230,7 @@ const CreateRoom = () => {
                     <SelectField
                       placeholder="Select Apartment Type"
                       label="Apartment Type"
+                      required
                       value={
                         roomData.apartmentType
                           ? {
@@ -267,6 +290,7 @@ const CreateRoom = () => {
                     <SelectField
                       placeholder="Select Apartment Style"
                       label="Apartment Style"
+                      required
                       value={
                         roomData.apartmentStyle
                           ? {
@@ -287,6 +311,22 @@ const CreateRoom = () => {
                     />
                     <InputField
                       label="Description"
+                      required
+                      icon={
+                        <div className="relative ">
+                          <IoMdInformationCircleOutline
+                            onMouseEnter={() => setShowDescription(true)}
+                            onMouseLeave={() => setShowDescription(false)}
+                            size={20}
+                          />
+                          {showDescription && (
+                            <div className="absolute text-start -right-3 bottom-full p-2 text-xs mb-1 rounded-md bg-white border w-[250px]">
+                              Describe the apartment, its features, and any
+                              unique selling points.
+                            </div>
+                          )}
+                        </div>
+                      }
                       placeholder="Spacious 2-bedroom apartment with sea view"
                       value={roomData.description}
                       onChange={handleInputChange}
@@ -295,14 +335,16 @@ const CreateRoom = () => {
 
                     <InputField
                       label="Rent Amount"
-                      placeholder="250000"
-                      value={roomData.rentAmount}
-                      onChange={handleInputChange}
+                      required
+                      placeholder="250,000"
+                      value={formatDisplayValue(roomData.rentAmount)}
+                      onChange={handleInputChangeWithComma}
                       name="rentAmount"
                     />
 
                     <InputField
                       label="Bedrooms"
+                      required
                       placeholder="2"
                       value={roomData.noOfRooms}
                       onChange={handleInputChange}
@@ -311,6 +353,7 @@ const CreateRoom = () => {
 
                     <InputField
                       label="Bathrooms"
+                      required
                       placeholder="2"
                       value={roomData.noOfBaths}
                       onChange={handleInputChange}
@@ -320,6 +363,7 @@ const CreateRoom = () => {
                     <SelectField
                       label="Lease Terms"
                       placeholder="Select Lease Terms"
+                      required
                       value={
                         roomData.leaseTerms
                           ? {
@@ -341,6 +385,7 @@ const CreateRoom = () => {
 
                     <SelectField
                       label="Rent Collection Preference"
+                      required
                       placeholder="Select Rent Collection Preference"
                       value={
                         roomData.rentAmountMetrics
@@ -363,6 +408,7 @@ const CreateRoom = () => {
 
                     <SelectField
                       label="Payment Option"
+                      required
                       placeholder="Select Payment Option"
                       value={
                         roomData.paymentOption
@@ -381,6 +427,34 @@ const CreateRoom = () => {
                       ]}
                       name=""
                     />
+                    {/* <SelectField
+                      label="Available Units"
+                      required
+                      // placeholder=""
+                      value={
+                        roomData.availableUnits
+                          ? {
+                              label: roomData.availableUnits,
+                              value: roomData.availableUnits,
+                            }
+                          : null
+                      }
+                      onChange={(val) =>
+                        handleSelectChange(val, "availableUnits")
+                      }
+                      options={[
+                        { label: "1", value: "1" },
+                        { label: "2", value: "2" },
+                        { label: "3", value: "3" },
+                        { label: "4", value: "4" },
+                        { label: "5", value: "5" },
+                        { label: "6", value: "6" },
+                        { label: "7", value: "7" },
+                        { label: "8", value: "8" },
+                        { label: "9", value: "9" },
+                      ]}
+                      name=""
+                    /> */}
                   </div>
 
                   <div className="mt-6 max-w-4xl mx-auto">

@@ -24,7 +24,11 @@ const validationSchema = yup.object({
     .string()
     .email("Invalid email address")
     .required("Email is required"),
-  nin: yup.string().optional(),
+    nin: yup.string().when("accountType", {
+      is: "tenant", // condition
+      then: (schema) => schema.required("NIN is required for tenant accounts"),
+      otherwise: (schema) => schema.optional(),
+    }),
   phoneNumber: yup.string().required("Phone Number is required"),
   accountType: yup.string().required("Account Type is required"),
   password: yup

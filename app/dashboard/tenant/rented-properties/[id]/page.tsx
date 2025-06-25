@@ -331,7 +331,10 @@ const RentedPropertiesScreen = () => {
                   <User className="h-5 w-5 text-gray-600" />
                   <div>
                     <p className="text-sm text-gray-600">Name</p>
-                    <p className="font-medium">{property?.ownerId?.firstName} {property?.ownerId?.lastName}</p>
+                    <p className="font-medium">
+                      {property?.ownerId?.firstName}{" "}
+                      {property?.ownerId?.lastName}
+                    </p>
                   </div>
                 </div>
 

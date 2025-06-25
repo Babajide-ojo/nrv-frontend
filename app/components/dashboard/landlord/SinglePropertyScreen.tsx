@@ -101,9 +101,9 @@ const SinglePropertyScreen = () => {
     if (!propertyData.state.trim()) {
       errors.state = "State is required";
     }
-    if (!propertyData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
-    }
+    // if (!propertyData.zipCode.trim()) {
+    //   errors.zipCode = "Zip code is required";
+    // }
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };

@@ -370,10 +370,8 @@ const ApplicationDetails = () => {
             />
             <div className="px-5 py-3">
               <div className="bg-[#E9F4E7] text-[#099137] w-fit text-xs py-1 px-4 rounded-full">
-                Lease Status:{" "}
-                {application?.status == "activeTenant"
-                  ? "Active"
-                  : application?.status}
+                Application Status:{" "}
+                {application?.status === "Active_lease" ? "Active Lease" : application?.status }
               </div>
               <div className="text-[20px] font-semibold mt-1">
                 {application?.propertyId?.description}
@@ -449,13 +447,14 @@ const ApplicationDetails = () => {
 
               {!(
                 application?.status == "active" ||
-                application?.status == "activeTenant"
+                application?.status == "Accepted" ||
+                application?.status == "Active_lease"
               ) && (
                 <div className="flex gap-2 mt-5 justify-center px-4">
                   <Button
                     className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                     disabled={isLoading}
-                    onClick={() => handleAppApproval("activeTenant")}
+                    onClick={() => handleAppApproval("Accepted")}
                   >
                     Accept
                   </Button>
@@ -471,7 +470,7 @@ const ApplicationDetails = () => {
                 {!application?.rentStartDate &&
                   !application?.rentStartDate &&
                   (application?.status == "activeTenant" ||
-                    application?.status == "active") && (
+                    application?.status == "Accepted") && (
                     <Button
                       className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                       disabled={isLoading}

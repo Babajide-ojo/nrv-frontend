@@ -72,7 +72,8 @@ const SingleRoom = () => {
       const properties = await dispatch(
         updateRoomStatus(payload) as any
       ).unwrap();
-      setRoomDetails(properties?.data);
+      fetchData();
+
     } catch (error) {
       toast.error("An error occurred while performing update");
     } finally {
@@ -298,6 +299,7 @@ const SingleRoom = () => {
                 className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
                 variant="bluebg"
                 showIcon={false}
+                isLoading={isLoading}
               >
                 <div className="flex gap-3" onClick={updateRoom}>
                   Continue

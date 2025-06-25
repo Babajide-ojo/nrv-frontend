@@ -8,17 +8,9 @@ import SignUpScreen from '@/app/components/screens/sign-up/SignUpScreen';
 const SignIn = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000); 
-
-    return () => clearTimeout(timer); 
-  }, [null]);
-
   return (
     <div>
-      {isLoading ? <LoadingPage /> : <SignUpScreen />} 
+    <SignUpScreen />
     </div>
   );
 };

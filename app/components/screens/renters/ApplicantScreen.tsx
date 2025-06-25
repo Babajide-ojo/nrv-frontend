@@ -58,7 +58,7 @@ const ApplicantScreen = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("New");
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -116,10 +116,7 @@ const ApplicantScreen = () => {
                   View and update your property leads and application.
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <RefreshCcw className="w-4 h-4" />
-                Refresh
-              </Button>
+              
             </div>
             {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 border">
@@ -132,7 +129,7 @@ const ApplicantScreen = () => {
                     comparison: "compared to the last 6 months",
                   },
                   {
-                    title: "Approved Applications",
+                    title: "Accepted Applications",
                     value: `${0}`,
                     change: "10%",
                     trend: "up",
@@ -166,23 +163,23 @@ const ApplicantScreen = () => {
               <Button
                 variant="default"
                 className={`${
-                  activeTab === ""
+                  activeTab === "New"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("")}
+                onClick={() => handleTabClick("New")}
               >
-                All Applications{" "}
+                Pending Applications{" "}
               </Button>
               <Button
                 className={`${
-                  activeTab === "activeTenant"
+                  activeTab === "Accepted"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("activeTenant")}
+                onClick={() => handleTabClick("Accepted")}
               >
-                Approved Applications{" "}
+                Accepted Applications{" "}
                 <span className="ml-2 font-semibold"></span>
               </Button>
             </div>

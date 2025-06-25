@@ -33,7 +33,7 @@ const DashboardOverview = () => {
   return (
     <div className="space-y-4 font-jakarta">
       {/* Property Setup Progress */}
-      {openVerification && (
+      {/* {openVerification && (
         <div className="p-4 bg-[#E9F4E7] rounded-sm flex items-center justify-between gap-8">
           <div>
             <h3 className="text-[#03442C] font-medium">
@@ -59,7 +59,7 @@ const DashboardOverview = () => {
           </div>
           <ProgressCircle progress={80} />
         </div>
-      )}
+      )} */}
 
       {/* Quick Links */}
       <div className="p-4 border rounded-lg shadow-sm">

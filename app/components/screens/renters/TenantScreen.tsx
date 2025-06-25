@@ -426,7 +426,8 @@ const TenantScreen = () => {
 
               {!(
                 application?.status == "active" ||
-                application?.status == "activeTenant"
+                application?.status == "activeTenant" ||
+                application?.status == "Active_lease"
               ) && (
                 <div className="flex gap-2 mt-5 justify-center">
                   <Button

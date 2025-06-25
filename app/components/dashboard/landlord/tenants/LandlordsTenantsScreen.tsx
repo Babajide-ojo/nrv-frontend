@@ -60,7 +60,7 @@ const LandlordsTenantsScreen = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("Active_lease");
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -86,7 +86,7 @@ const LandlordsTenantsScreen = () => {
             router.push(`/dashboard/landlord/properties/renters/${id}`)
           }
         >
-          view applicant
+          View lease details
         </p>
       </div>
     );
@@ -118,10 +118,7 @@ const LandlordsTenantsScreen = () => {
                   View and manage your tentant directory.
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <RefreshCcw className="w-4 h-4" />
-                Refresh
-              </Button>
+              
             </div>
             {
               <div className="grid md:grid-cols-4 grid-cols-1 gap-4  mb-6 border border-gray-300 py-4">
@@ -182,34 +179,23 @@ const LandlordsTenantsScreen = () => {
               <Button
                 variant="default"
                 className={`${
-                  activeTab === ""
+                  activeTab === "Active_lease"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("")}
+                onClick={() => handleTabClick("Active_lease")}
               >
-                Active Tenants{" "}
+                Active Leases/Tenants{" "}
               </Button>
               <Button
                 className={`${
-                  activeTab === "pastTenants"
+                  activeTab === "ended"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("pastTenants")}
+                onClick={() => handleTabClick("ended")}
               >
-                Past Tenants{" "}
-                <span className="ml-2 font-semibold"></span>
-              </Button>
-              <Button
-                className={`${
-                  activeTab === "ongoingMaintainance"
-                    ? "bg-green-700 text-white"
-                    : "bg-white text-gray-800 border"
-                }`}
-                onClick={() => handleTabClick("ongoingMaintainance")}
-              >
-                Ongoing Maintainance{" "}
+                Past Leases{" "}
                 <span className="ml-2 font-semibold"></span>
               </Button>
             </div>
@@ -246,18 +232,23 @@ const LandlordsTenantsScreen = () => {
                   </div>
                 ),
               },
+              // {
+              //   key: "status",
+              //   label: "Status",
+              //   render: (val) => (
+              //     <span className="font-medium italic text-[#045D23]">
+              //       {val === "activeTenant" ? "Active Tenancy" : val}
+              //     </span>
+              //   ),
+              // },
               {
-                key: "status",
-                label: "Status",
-                render: (val) => (
-                  <span className="font-medium italic text-[#045D23]">
-                    {val === "activeTenant" ? "Active Tenancy" : val}
-                  </span>
-                ),
+                key: "rentStartDate",
+                label: "Lease Start Date",
+                render: (val) => <span>{formatDateToWords(val)}</span>,
               },
               {
-                key: "createdAt",
-                label: "Applied Date & Time",
+                key: "rentEndDate",
+                label: "Lease End Date",
                 render: (val) => <span>{formatDateToWords(val)}</span>,
               },
             ]}

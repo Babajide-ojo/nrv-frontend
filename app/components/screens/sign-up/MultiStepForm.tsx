@@ -153,9 +153,9 @@ const MultiStepForm = () => {
     if (!propertyData.location.trim()) {
       errors.location = "Address/Location is required";
     }
-    if (!propertyData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
-    }
+    // if (!propertyData.zipCode.trim()) {
+    //   errors.zipCode = "Zip code is required";
+    // }
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
     }

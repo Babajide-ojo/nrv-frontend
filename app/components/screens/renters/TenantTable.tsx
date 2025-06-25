@@ -66,11 +66,7 @@ const TenantTable = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("activeTenant");
-  const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
-  const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
-    useState(false);
-
+  const [activeTab, setActiveTab] = useState<string>("Active_lease");
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
   const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState<string>("");
@@ -335,10 +331,7 @@ const TenantTable = () => {
                   View & Manage Tenant Directoy
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <RefreshCcw className="w-4 h-4" />
-                Refresh
-              </Button>
+              
             </div>
             {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 border">
@@ -391,7 +384,7 @@ const TenantTable = () => {
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}
-                onClick={() => handleTabClick("activeTenant")}
+                onClick={() => handleTabClick("Active_lease")}
               >
                 Active Tenants{" "}
                 <span className="ml-2 font-semibold">

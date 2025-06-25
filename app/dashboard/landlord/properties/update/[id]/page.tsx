@@ -95,9 +95,9 @@ const UpdatePropertyScreen = () => {
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
     }
-    if (!propertyData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
-    }
+    // if (!propertyData.zipCode.trim()) {
+    //   errors.zipCode = "Zip code is required";
+    // }
     if (!propertyData.state.value) {
       errors.state = "State is required";
     }

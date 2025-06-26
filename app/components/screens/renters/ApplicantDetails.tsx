@@ -12,8 +12,6 @@ import {
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { format, startOfToday } from "date-fns";
-import PdfIcon from "../../icons/PdfIcon";
-import { DownloadIcon, EyeIcon } from "lucide-react";
 import { Form, Formik, FormikHelpers } from "formik";
 import CustomDatePicker from "../../shared/CustomDatePicker";
 import Modal from "../../shared/modals/Modal";
@@ -24,6 +22,7 @@ import {
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
 import { getFileExtension } from "@/helpers/utils";
+import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
@@ -467,10 +466,9 @@ const ApplicationDetails = () => {
                 </div>
               )}
               <div className="mt-8">
-                {!application?.rentStartDate &&
-                  !application?.rentStartDate &&
-                  (application?.status == "activeTenant" ||
-                    application?.status == "Accepted") && (
+                {
+                  
+                    application?.status == "Accepted" && (
                     <Button
                       className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                       disabled={isLoading}

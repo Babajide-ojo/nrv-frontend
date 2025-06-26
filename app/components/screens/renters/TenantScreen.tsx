@@ -9,61 +9,26 @@ import {
   getApplicationsById,
   updateApplicationStatus,
 } from "@/redux/slices/propertySlice";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Image from "next/image";
 import { format, startOfToday } from "date-fns";
 `import PdfIcon from "../../icons/PdfIcon";
-import { DownloadIcon, EyeIcon } from "lucide-react";`
+import { DownloadIcon, EyeIcon } from "lucide-react";`;
 import { Form, Formik, FormikHelpers } from "formik";
-import CustomDatePicker from "../../shared/CustomDatePicker";
-import Modal from "../../shared/modals/Modal";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import {
   assignDateTenancyTenure,
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
-import { getFileExtension } from "@/helpers/utils";
+import "react-toastify/dist/ReactToastify.css";
+import { ApplicationStatus, getFileExtension } from "@/helpers/utils";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
 import BackIcon from "../../shared/icons/BackIcon";
-
-const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
-  <div className="bg-white p-4 rounded-md">
-    <div className="font-semibold text-md text-nrvGreyBlack mb-2">{title}</div>
-    {data.map(([label, value]: any, idx: number) => (
-      <div key={idx} className="text-sm mb-2">
-        <span className="font-medium text-nrvGreyBlack">{label}:</span> {value}
-      </div>
-    ))}
-    {files.map(([label, url]: any, idx: number) => (
-      <div key={idx} className="text-sm mb-2">
-        <span className="font-medium text-nrvGreyBlack">{label}:</span>{" "}
-        <a
-          href={url}
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View
-        </a>
-      </div>
-    ))}
-    {fileUrl && (
-      <div className="text-sm">
-        <a
-          href={fileUrl}
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Download Proof
-        </a>
-      </div>
-    )}
-  </div>
-);
+import Modal from "../../shared/modals/Modal";
+import CustomDatePicker from "../../shared/CustomDatePicker";
 
 const TenantScreen = () => {
   const dispatch = useDispatch();
@@ -77,16 +42,73 @@ const TenantScreen = () => {
     useState(false);
 
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
-  const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
+  const [viewDocs, setViewDocs] = useState<boolean>(false);
   const [fileUrl, setFileUrl] = useState<string>("");
   const [tenantDetails, setTenantDetails] = useState<any>({});
   const [viewerVisible, setViewerVisible] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState(false);
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
+
+
+  const statusStyles: Record<ApplicationStatus, { bg: string; text: string }> =
+    {
+      [ApplicationStatus.NEW]: { bg: "bg-[#FFF4E5]", text: "text-[#D97706]" },
+      [ApplicationStatus.ACCEPTED]: {
+        bg: "bg-[#E5F6FD]",
+        text: "text-[#0369A1]",
+      },
+      [ApplicationStatus.ACTIVE_LEASE]: {
+        bg: "bg-[#E9F4E7]",
+        text: "text-[#099137]",
+      },
+      [ApplicationStatus.EXPIRED]: {
+        bg: "bg-[#FEE2E2]",
+        text: "text-[#B91C1C]",
+      },
+      [ApplicationStatus.ENDED]: { bg: "bg-[#F3F4F6]", text: "text-[#4B5563]" },
+      [ApplicationStatus.REJECTED]: {
+        bg: "bg-[#FEE2E2]",
+        text: "text-[#B91C1C]",
+      },
+    };
+
+  const status = application?.status as ApplicationStatus;
+  const style = statusStyles[status];
+
+  const endTenancy: AddTenantFunction = async (
+    values,
+    { resetForm, setSubmitting },
+    dispatch
+  ) => {
+    const formData = { id };
+  
+    const refreshApplication = () => {
+      if (id) dispatch(getApplicationsById(formData as any) as any);
+    };
+  
+    try {
+      const result = await dispatch(endTenancyTenure(values)) as any;
+  
+      if (result.error) {
+        const errorMessage = result.payload || "Failed to end tenancy. Please try again.";
+        toast.error(errorMessage);
+      } else {
+        toast.success("Tenant ended successfully");
+        resetForm();
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message || "An unexpected error occurred."
+      );
+    } finally {
+      setSubmitting(false);
+      setOpenAddTenantModal(false);
+      refreshApplication();
+    }
   };
+  
+
 
   const validateTenancyDateAssignment = (values: any) => {
     const errors: { rentEndDate?: string; rentStartDate?: string } = {};
@@ -124,41 +146,6 @@ const TenantScreen = () => {
     })?.format(date);
   };
 
-  const calculateDateDifference = (
-    startDateString: string,
-    endDateString: string
-  ) => {
-    const startDate = new Date(startDateString);
-    const endDate = new Date(endDateString);
-
-
-    let years = endDate.getFullYear() - startDate.getFullYear();
-    let months = endDate.getMonth() - startDate.getMonth();
-    let days = endDate.getDate() - startDate.getDate();
-
-    // Adjust months and years if necessary
-    if (days < 0) {
-      months--;
-      days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate(); // days in the previous month
-    }
-
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
-
-    // Return formatted difference
-    return `${years} year${years !== 1 ? "s" : ""}, ${months} month${
-      months !== 1 ? "s" : ""
-    }, and ${days} day${days !== 1 ? "s" : ""}`;
-  };
-
-  type AddTenantFunction = (
-    values: any,
-    formikHelpers: FormikHelpers<any>,
-    dispatch: ThunkDispatch<any, any, AnyAction>
-  ) => Promise<void>;
-
   const extendTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
@@ -177,69 +164,7 @@ const TenantScreen = () => {
       } else {
         toast.success("Tenant tenure extended successfully");
         resetForm();
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
-      );
-    } finally {
-      setSubmitting(false);
-      setOpenAddTenantModal(false);
-      window.location.reload();
-    }
-  };
-
-  const assignDateToTenancy: AddTenantFunction = async (
-    values,
-    { resetForm, setSubmitting },
-    dispatch
-  ) => {
-    try {
-      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
-      if (result.error) {
-        if (result.error.message === "Rejected") {
-          toast.error(
-            result.payload || "Failed to extend tenancy. Please try again."
-          );
-        } else {
-          toast.error("Failed to extend tenancy. Please try again.");
-        }
-      } else {
-        toast.success("Tenant tenure extended successfully");
-        resetForm();
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
-      );
-    } finally {
-      setSubmitting(false);
-      setOpenAddTenantModal(false);
-      setOpenAssignDateModal(false);
-    }
-  };
-
-  const uploadTenantAgreement: AddTenantFunction = async (
-    values,
-    { resetForm, setSubmitting },
-    dispatch
-  ) => {
-    try {
-      const result = (await dispatch(createUploadAgreement(values))) as any;
-      if (result.error) {
-        if (result.error.message === "Rejected") {
-          toast.error(
-            result.payload ||
-              "Failed to upload agreement documents. Please try again."
-          );
-        } else {
-          toast.error(
-            "Failed to upload agreement documents. Please try again."
-          );
-        }
-      } else {
-        toast.success("Agreement document uploaded successfully");
-        resetForm();
+        // fetchData();
       }
     } catch (error: any) {
       toast.error(
@@ -264,34 +189,33 @@ const TenantScreen = () => {
       setPdf("pdf");
     }
     setFileUrl(item);
-    //  setViewDocs(true);
+    setViewDocs(true);
     setViewerVisible(true); // Ensure viewer is visible when a document is viewed
   };
 
-  const closeViewer = () => {
-    setViewerVisible(false);
-    //  setViewDocs(false);
-    setFileUrl(""); // Reset fileUrl
-    setPdf(""); // Reset pdf state
-  };
+  type AddTenantFunction = (
+    values: any,
+    formikHelpers: FormikHelpers<any>,
+    dispatch: ThunkDispatch<any, any, AnyAction>
+  ) => Promise<void>;
 
-  const endTenancy: AddTenantFunction = async (
+  const assignDateToTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
     dispatch
   ) => {
     try {
-      const result = (await dispatch(endTenancyTenure(values))) as any;
+      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
       if (result.error) {
         if (result.error.message === "Rejected") {
           toast.error(
-            result.payload || "Failed to end tenancy. Please try again."
+            result.payload || "Failed to activate lease. Please try again."
           );
         } else {
-          toast.error("Failed to end tenancy. Please try again.");
+          toast.error("Failed to activate lease. Please try again.");
         }
       } else {
-        toast.success("Tenant ended successfully");
+        toast.success("Active lease activated");
         resetForm();
       }
     } catch (error: any) {
@@ -300,25 +224,12 @@ const TenantScreen = () => {
       );
     } finally {
       setSubmitting(false);
-      setOpenTenancyModal(false);
-    }
-  };
-  const handleSubmit = async (status: any) => {
-    const payload = {
-      id: application?._id,
-      status: status,
-    };
-    try {
-      setIsLoading(true);
-      await dispatch(updateApplicationStatus(payload) as any).unwrap();
-      toast.success("Application accepted");
-      router.push("/dashboard/landlord/properties/renters");
-    } catch (error: any) {
-      toast.error(error);
+      setOpenAddTenantModal(false);
+      setOpenAssignDateModal(false);
     }
   };
 
-  const handleAppApproval = async (status: any) => {
+  const handleApplicationStatus = async (status: any) => {
     const payload = {
       id: application?._id,
       status: status,
@@ -326,12 +237,19 @@ const TenantScreen = () => {
     try {
       setIsLoading(true);
       await dispatch(updateApplicationStatus(payload) as any).unwrap();
-      toast.success("Application accepted");
-      router.push("/dashboard/landlord/properties/renters");
+      if (payload.status == "Accepted") {
+        toast.success("Application accepted");
+      } else {
+        toast.error("Application declined");
+      }
     } catch (error: any) {
       toast.error(error);
     } finally {
       setIsLoading(false);
+      const formData = { id: application?._id };
+      if (id) {
+        dispatch(getApplicationsById(formData as any) as any);
+      }
     }
   };
 
@@ -346,6 +264,7 @@ const TenantScreen = () => {
 
   return (
     <div className="mx-5 my-4">
+      <ToastContainer />
       {/* Breadcrumb and Back Button */}
       <div className="flex items-center justify-between gap-5 mb-4">
         <div className="flex items-center gap-3 text-sm">
@@ -366,11 +285,12 @@ const TenantScreen = () => {
               className="object-cover aspect-square h-full"
             />
             <div className="px-5 py-3">
-              <div className="bg-[#E9F4E7] text-[#099137] w-fit text-xs py-1 px-4 rounded-full">
-                Lease Status:{" "}
-                {application?.status == "activeTenant"
-                  ? "Active"
-                  : application?.status}
+              <div
+                className={`${style?.bg} ${style?.text} w-fit text-xs py-1 px-4 rounded-full`}
+              >
+                {status === ApplicationStatus.ACTIVE_LEASE
+                  ? "Active Lease"
+                  : status}
               </div>
               <div className="text-[20px] font-semibold mt-1">
                 {application?.propertyId?.description}
@@ -425,35 +345,55 @@ const TenantScreen = () => {
               </div>
 
               {!(
-                application?.status == "active" ||
+                application?.status == "Accepted" ||
                 application?.status == "activeTenant" ||
+                application?.status == "Ended" ||
                 application?.status == "Active_lease"
               ) && (
                 <div className="flex gap-2 mt-5 justify-center">
                   <Button
                     className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                     disabled={isLoading}
-                    onClick={() => handleAppApproval("activeTenant")}
+                    onClick={() => handleApplicationStatus("Accepted")}
                   >
                     Accept
                   </Button>
                   <Button
                     className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
-                    onClick={() => {}}
+                    onClick={() => handleApplicationStatus("Rejected")}
                   >
                     Reject
                   </Button>
                 </div>
               )}
-              {!application?.rentStartDate && !application?.rentStartDate && (
+              {application?.status == "Accepted" && (
                 <Button
-                  className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                  className="mt-4 bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                   disabled={isLoading}
                   onClick={() => setOpenAssignDateModal(true)}
                 >
                   Set Lease Period
                 </Button>
               )}
+
+              {application?.status == "Active_lease" && (
+               <div className="flex flex-col md:flex-row gap-4 mt-6 w-full">
+               <div
+                 onClick={() => setOpenAddTenantModal(true)}
+                 className="flex-1 flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 cursor-pointer transition duration-300"
+               >
+                 <span className="text-sm font-medium text-nrvGreyBlack">
+                   End Lease Tenure
+                 </span>
+                 <span className="text-nrvPrimaryGreen hover:underline text-sm">
+                   Click here
+                 </span>
+               </div>
+           
+             </div>
+              )}
+
+       
             </div>
             <div className="w-full p-4 border rounded-lg mt-4">
               <div className="flex">
@@ -644,6 +584,53 @@ const TenantScreen = () => {
                     onClick={() => {
                       resetForm();
                       setOpenAssignDateModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="block w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Loading..." : "Submit"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={openAddTenantModal}
+        onClose={() => {
+          setOpenAddTenantModal(false);
+        }}
+      >
+        <div className="mx-auto md:p-16 p-8 w-full h-full">
+          <h2 className="text-red-500 font-semibold text-2xl">
+            End Tenancy Tenure
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will end the tenancy tenure
+          </p>
+          <Formik
+            initialValues={{
+              id:  tenantDetails?.data?.finalResult?._id || id,
+            }}
+            onSubmit={(values, formikHelpers) =>
+              endTenancy(values, formikHelpers, dispatch)
+            }
+          >
+            {({ isSubmitting, resetForm, values, errors }) => (
+              <Form>
+                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
+                  <Button
+                    type="button"
+                    className="block w-full"
+                    onClick={() => {
+                      setOpenAddTenantModal(false);
                     }}
                   >
                     Cancel

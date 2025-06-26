@@ -15,11 +15,11 @@ const initialState: VerificationState = {
   error: null,
 };
 
-export const verifyNIN = createAsyncThunk<any, { nin: string }>(
-  "verification/verifyNIN",
+export const requestVerification = createAsyncThunk<any, {}>(
+  "verification/request",
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/users/nin`, payload);
+      const response = await axios.post(`${API_URL}/verification/tenant`, payload);
       return response.data;
     } catch (error: any) {
       const message =
@@ -42,15 +42,15 @@ const verificationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(verifyNIN.pending, (state) => {
+      .addCase(requestVerification.pending, (state) => {
         state.loading = "pending";
         state.error = null;
       })
-      .addCase(verifyNIN.fulfilled, (state, action: PayloadAction<any>) => {
+      .addCase(requestVerification.fulfilled, (state, action: PayloadAction<any>) => {
         state.loading = "succeeded";
         state.data = action.payload;
       })
-      .addCase(verifyNIN.rejected, (state, action) => {
+      .addCase(requestVerification.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload as string;
       });

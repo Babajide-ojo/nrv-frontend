@@ -138,3 +138,12 @@ export const formatDisplayValue = (value: string) => {
     maximumFractionDigits: 2, // Allow up to 2 decimal places
   });
 };
+
+export enum ApplicationStatus {
+  NEW = 'New',
+  ACCEPTED = 'Accepted',
+  ACTIVE_LEASE = 'Active_lease',
+  EXPIRED = 'Expired',
+  ENDED = 'Ended',
+  REJECTED = 'Rejected',
+}

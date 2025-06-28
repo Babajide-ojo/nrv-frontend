@@ -398,7 +398,7 @@ const LeadScreen = () => {
               <div
                 className="flex gap-3"
                 onClick={() => {
-                  handleSubmit("activeTenant")
+                  handleSubmit("Active_lease")
                 }}
               >
                 Submit

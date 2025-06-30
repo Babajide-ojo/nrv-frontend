@@ -57,7 +57,7 @@ const Maintainance = () => {
                     Maintenance Requests
                   </div>
                 </div>
-                <Button
+                {/* <Button
                   onClick={() =>
                     router.push(
                       `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
@@ -67,7 +67,7 @@ const Maintainance = () => {
                   showIcon={false}
                 >
                   Create Request
-                </Button>
+                </Button> */}
               </div>
               {maintenance.length < 1 ? (
                 <div>

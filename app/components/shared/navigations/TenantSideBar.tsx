@@ -58,12 +58,12 @@ const links = [
   },
   {
     name: "Messages",
-    route: "/dashboard/landlord/messages",
+    route: "/dashboard/tenant/messages",
     icon: <FiMessageSquare />,
   },
   {
     name: "Notifications",
-    route: "/dashboard/landlord/notifications",
+    route: "/dashboard/tenant/notifications",
     icon: <FiBell />,
   },
 ];

@@ -6,7 +6,7 @@ import EyeOpenIcon from "../icons/EyeOpenIcon";
 import EyeIcon from "../icons/EyeIcon";
 
 interface InputFieldProps {
-  label?: string;
+  label?: string | React.ReactNode;
   placeholder?: string;
   name: string;
   password?: boolean;

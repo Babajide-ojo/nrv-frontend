@@ -1,27 +1,26 @@
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
-import SelectDate from "@/app/components/shared/SelectDate";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
 import { useState } from "react";
 import { FiInfo } from "react-icons/fi";
 
-const PersonalInfoVerification = () => {
-  const [openDate, setOpenDate] = useState(false);
+const GuarantorInfoVerification = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
-    dateOfBirth: "",
-    maritalStatus: "",
-    homeAddress: "",
+    company: "",
+    employmentStatus: "",
+    guarantorHomeAddress: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const maritalStatusOptions = [
-    { label: "Single", value: "Single" },
-    { label: "Married", value: "Married" },
+  const employmentStatusOptions = [
+    { label: "Employed", value: "Employed" },
+    { label: "Self Employed", value: "Self Employed" },
+    { label: "UnEmployed", value: "UnEmployed" },
+    { label: "Student", value: "Student" },
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,11 +39,9 @@ const PersonalInfoVerification = () => {
   return (
     <div className="">
       <div className="pb-4 border-b border-gray-200 mb-5">
-        <h3 className="font-medium">
-          Let&apos;s start with a few personal details
-        </h3>
+        <h3 className="font-medium">Who is your guarantor?</h3>
         <p className="text-xs text-[#667085]">
-          We would like to know a few things about you
+          Tell us who your guarantor is and how to reach out to them
         </p>
       </div>
       <div className="">
@@ -79,53 +76,46 @@ const PersonalInfoVerification = () => {
               onChange={handleInputChange}
               error={errors.phoneNumber}
             />
-            <InputField
-              label="Date of Birth"
-              name="dateOfBirth"
-              placeholder="Select Date of Birth"
-              value={formData.dateOfBirth}
-              onClick={() => setOpenDate(true)}
-              onChange={() => {}}
-              error={errors.dateOfBirth}
-              readOnly
-            />
             <SelectField
-              label="Marital Status"
-              name="maritalStatus"
-              value={maritalStatusOptions.find(
-                (option) => option.value === formData.maritalStatus
+              label="Employment Status"
+              name="employmentStatus"
+              value={employmentStatusOptions.find(
+                (option) => option.value === formData.employmentStatus
               )}
               onChange={(e) => {
                 setFormData((prevData) => ({
                   ...prevData,
-                  maritalStatus: e.value,
+                  employmentStatus: e.value,
                 }));
                 setErrors((prevErrors) => ({
                   ...prevErrors,
-                  maritalStatus: "",
+                  employmentStatus: "",
                 }));
               }}
-              options={maritalStatusOptions}
+              options={employmentStatusOptions}
               error={errors.state}
               // css="bg-nrvLightGreyBg"
+            />
+            <InputField
+              label="Company"
+              name="company"
+              value={formData.company}
+              onChange={handleInputChange}
+              error={errors.company}
             />
           </div>
           <div className="pt-3 pb-6 border-t border-[#ECECEE] mt-5">
             <InputField
               label={
                 <p className="flex items-center gap-1">
-                  Home Address <FiInfo />
+                  Guarantor&apos;s Home Address <FiInfo />
                 </p>
               }
-              name="homeAddress"
-              value={formData.homeAddress}
+              name="guarantorHomeAddress"
+              value={formData.guarantorHomeAddress}
               onChange={handleInputChange}
-              error={errors.homeAddress}
+              error={errors.guarantorHomeAddress}
             />
-
-            <p className="text-xs text-[#807F94] mt-1">
-              Your address at the time of filling this form.
-            </p>
           </div>
         </div>
 
@@ -135,19 +125,8 @@ const PersonalInfoVerification = () => {
           </Button>
         </div>
       </div>
-      <SelectDate
-        isOpen={openDate}
-        onClose={() => setOpenDate(false)}
-        value={formData.dateOfBirth}
-        onChange={(selectedDate: any) => {
-          setFormData((prevData) => ({
-            ...prevData,
-            dateOfBirth: format(new Date(selectedDate), "yyyy-MM-dd"),
-          }));
-        }}
-      />
     </div>
   );
 };
 
-export default PersonalInfoVerification;
+export default GuarantorInfoVerification;

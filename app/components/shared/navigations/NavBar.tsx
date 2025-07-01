@@ -40,7 +40,7 @@ const NavBar: React.FC = () => {
         backdropFilter: scrolling ? "backdrop-filter" : "none", // Optional: Add blur effect when scrolled
       }}
     >
-      <div className="w-full gap-2 flex flex-col md:flex-row py-4 px-6 md:px-12">
+      <div className="w-full gap-2 flex flex-col md:flex-row py-4">
         {isMobile ? <MobileNavBar /> : <DesktopNavBar />}
       </div>
     </div>

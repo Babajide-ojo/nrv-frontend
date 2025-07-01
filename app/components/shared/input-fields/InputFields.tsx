@@ -24,6 +24,7 @@ interface InputFieldProps {
   css?: string;
   ariaLabel?: any;
   required?: boolean;
+  readOnly?: boolean;
 }
 
 const countryOptions: any = [{ code: "+234", country: "NG" }]; // Nigeria only
@@ -47,6 +48,7 @@ export default function InputField({
   ariaLabel,
   css,
   required,
+  readOnly,
 }: InputFieldProps) {
   const [isValid, setIsValid] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(countryOptions[0]); // Default: Nigeria (+234)
@@ -55,14 +57,14 @@ export default function InputField({
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const inputValue = e.target.value;
-    
+
     if (onChange) onChange(e);
-  
+
     // Clear error when user starts typing
     if (inputError) {
       setInputError(null);
     }
-  
+
     // Email Validation
     if (inputType === "email") {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,7 +72,7 @@ export default function InputField({
       setIsValid(isValidEmail);
       setInputError(isValidEmail ? null : "Invalid email format.");
     }
-  
+
     // NIN Validation (Nigeria)
     if (inputType === "nin") {
       if (/^\d{11}$/.test(inputValue)) {
@@ -81,11 +83,11 @@ export default function InputField({
         setInputError("NIN must be exactly 11 digits.");
       }
     }
-  
+
     // Phone Number Validation (Nigeria)
     if (inputType === "phone") {
       const phoneNumber = inputValue.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
       if (phoneNumber.startsWith("0")) {
         if (phoneNumber.length === 11) {
           setIsValid(true);
@@ -109,7 +111,6 @@ export default function InputField({
       }
     }
   };
-  
 
   return (
     <div className="font-jakarta flex flex-col w-full">
@@ -122,7 +123,7 @@ export default function InputField({
       {/* Phone Number Input */}
       {inputType === "phone" ? (
         <div
-          className={`flex items-center px-3 py-3 mt-1 w-full rounded-lg border transition-all
+          className={`flex items-center px-3 py-3 mt-1 w-full rounded-lg bg-white border transition-all
             ${
               inputError
                 ? "border-red-700"
@@ -188,7 +189,7 @@ export default function InputField({
       ) : (
         // Standard Input Field (including Email & Password)
         <div
-          className={`flex gap-5 items-center px-3 py-3 mt-1 w-full rounded-lg border transition-all
+          className={`flex gap-5 items-center px-3 py-3 mt-1 w-full rounded-lg bg-white border transition-all
             ${
               inputError
                 ? "border-red-700"
@@ -196,6 +197,7 @@ export default function InputField({
                 ? "border-green-500 shadow-lg"
                 : "border-gray-300"
             }`}
+          onClick={onClick}
         >
           {startIcon && inputType === "phone" && (
             <Flag code={startIcon} className="w-5 h-4 rounded" />
@@ -221,7 +223,7 @@ export default function InputField({
             placeholder={placeholder}
             className="w-full font-light text-black bg-transparent border-none focus:outline-none"
             disabled={disabled}
-            onClick={onClick}
+            readOnly={readOnly}
             aria-label={ariaLabel}
           />
 

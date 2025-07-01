@@ -7,7 +7,7 @@ import NavLink from "./NavLink";
 import Logo from "../../../../public/images/nrv-logo.png";
 import Image from "next/image";
 import { IoPersonCircle } from "react-icons/io5";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import ShortletBadge from "./ShortletBadge";
 
 interface NavItem {
@@ -25,6 +25,7 @@ const navItems = [
 ];
 
 const DesktopNavBar: React.FC = () => {
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [loading, setLoading] = useState(false);
@@ -34,23 +35,22 @@ const DesktopNavBar: React.FC = () => {
   const handleClick = async () => {
     setLoading(true);
     try {
-      router.push('sign-in');
+      router.push("sign-in");
       // Optionally await a delay or animation if needed
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error("Navigation error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-
   const handleGetStarted = async () => {
     setLoading(true);
     try {
-      router.push('sign-up');
+      router.push("sign-up");
       // Optionally await a delay or animation if needed
     } catch (error) {
-      console.error('Navigation error:', error);
+      console.error("Navigation error:", error);
     } finally {
       setLoading(false);
     }
@@ -63,8 +63,9 @@ const DesktopNavBar: React.FC = () => {
     }
   }, []);
   return (
-    <div className="w-full p-2 flex flex-row gap-2 md:mx-12 xl:mx-0">
-      <div className="md:w-1/4 flex justify-between md:justify-start nrv-nrvPrimaryGreen">
+    <div className="w-full px-5 md:px-10">
+      <div className="max-w-[1300px] mx-auto w-full p-2 flex flex-row items-center justify-between gap-2">
+        {/* <div className="flex justify-between md:justify-start nrv-nrvPrimaryGreen"> */}
         <svg
           width="166"
           height="24"
@@ -134,57 +135,58 @@ const DesktopNavBar: React.FC = () => {
           />
           ``
         </svg>
-      </div>
-      <div className="md:w-2/4 w-full bg-white px-8 my-auto py-2 rounded-full">
-        <nav className="flex justify-between gap-4 text-['14px']">
-          {navItems.map(({ text, targetId }, index) => (
-            <div key={index}>
-              <div>
-                <NavLink targetId={targetId}>{text}</NavLink>
+        {/* </div> */}
+        <div className="max-w-[750px] w-full bg-white px-8 my-auto py-2 rounded-full">
+          <nav className="flex justify-between gap-4 text-['14px']">
+            {navItems.map(({ text, targetId }, index) => (
+              <div key={index}>
+                <div>
+                  <NavLink targetId={targetId}>{text}</NavLink>
+                </div>
               </div>
-            </div>
-          ))}
-          <ShortletBadge />
-        </nav>
-      </div>
-      <div className="md:w-1/4">
-        <div className="flex justify-end">
-          {isLoggedIn ? (
-            <div
-              onClick={() => {
-                if (currentUser?.accountType === "landlord") {
-                  router.push("/dashboard/landlord");
-                }
-                if (currentUser?.accountType === "tenant") {
-                  router.push("/dashboard/tenant");
-                }
-              }}
-              className="cursor-pointer"
-            >
-              <IoPersonCircle size={50} color="#153969" />
-            </div>
-          ) : (
-            <div className="md:flex gap-4 justify-end ">
-              <Button
-                className="w-36 text-[14px]"
-                size="large"
-                variant="darkPrimary"
-                showIcon={false}
-                onClick={handleGetStarted}
+            ))}
+            {!pathname.includes("verification") && <ShortletBadge />}
+          </nav>
+        </div>
+        <div className="">
+          <div className="flex justify-end">
+            {isLoggedIn ? (
+              <div
+                onClick={() => {
+                  if (currentUser?.accountType === "landlord") {
+                    router.push("/dashboard/landlord");
+                  }
+                  if (currentUser?.accountType === "tenant") {
+                    router.push("/dashboard/tenant");
+                  }
+                }}
+                className="cursor-pointer"
               >
-                Get Started
-              </Button>
-              <Button
-                className="w-36 text-[14px]"
-                size="large"
-                variant="primary"
-                showIcon={false}
-                onClick={handleClick}
-              >
-                Sign In
-              </Button>
-            </div>
-          )}
+                <IoPersonCircle size={50} color="#153969" />
+              </div>
+            ) : (
+              <div className="md:flex gap-4 justify-end ">
+                <Button
+                  className="w-36 text-[14px]"
+                  size="large"
+                  variant="darkPrimary"
+                  showIcon={false}
+                  onClick={handleGetStarted}
+                >
+                  Get Started
+                </Button>
+                <Button
+                  className="w-36 text-[14px]"
+                  size="large"
+                  variant="primary"
+                  showIcon={false}
+                  onClick={handleClick}
+                >
+                  Sign In
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

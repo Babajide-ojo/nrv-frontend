@@ -26,7 +26,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
         onClick={handleScroll}
         ref={ref}
         className={cls(
-          `text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen cursor-pointer
+          `whitespace-nowrap text-[14px] text-nrvLightGreyText font-light hover:font-medium hover:text-nrvPrimaryGreen cursor-pointer
           ${className} 
           ${activeClassName ? activeClassName : ""}`
         )}

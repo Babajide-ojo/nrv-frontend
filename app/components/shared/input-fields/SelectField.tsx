@@ -89,7 +89,7 @@ const SelectField: React.FC<Props> = ({
         <span className="text-[#807F94] text-[14px] font-medium">{label}</span>
         {required && <span className="text-red-600">*</span>}
       </label>
-      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1.5">
+      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1.5 bg-white">
         <Select
           name={name}
           isDisabled={disabled}

@@ -3,10 +3,12 @@ import SelectField from "@/app/components/shared/input-fields/SelectField";
 import SelectDate from "@/app/components/shared/SelectDate";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiInfo } from "react-icons/fi";
 
 const PersonalInfoVerification = () => {
+  const router = useRouter()
   const [openDate, setOpenDate] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -130,7 +132,12 @@ const PersonalInfoVerification = () => {
         </div>
 
         <div className="mt-10 flex justify-end">
-          <Button className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10">
+          <Button
+            onClick={() =>
+              router.push("/dashboard/tenant/verification/employment-info")
+            }
+            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
+          >
             Save and Continue
           </Button>
         </div>

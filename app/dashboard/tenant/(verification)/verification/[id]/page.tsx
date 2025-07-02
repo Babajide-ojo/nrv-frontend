@@ -7,6 +7,7 @@ import { FaCheck } from "react-icons/fa";
 import EmploymentInfoVerification from "@/app/components/dashboard/tenant/verification/EmploymentInfoVerification";
 import GuarantorInfoVerification from "@/app/components/dashboard/tenant/verification/GuarantorInfoVerification";
 import IdentificationVerification from "@/app/components/dashboard/tenant/verification/IdentificationVerification";
+import IncomeAssessmentVerification from "@/app/components/dashboard/tenant/verification/IncomeAssessmentVerifivation";
 
 const TenantVerificationIdPage = () => {
   const { id } = useParams();
@@ -91,6 +92,7 @@ const TenantVerificationIdPage = () => {
           {id === "employment-info" && <EmploymentInfoVerification />}
           {id === "guarantor-info" && <GuarantorInfoVerification />}
           {id === "self-id" && <IdentificationVerification />}
+          {id === "income-assessment" && <IncomeAssessmentVerification />}
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 "use client";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SlCloudUpload } from "react-icons/sl";
 
 const IdentificationVerification = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({ id: null });
   const [selectedFiles, setSelectedFiles] = useState<any>([]);
   const [fileError, setFileError] = useState("");
@@ -83,7 +85,12 @@ const IdentificationVerification = () => {
           </label>
         </div>
         <div className="mt-10 flex justify-end">
-          <Button className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10">
+          <Button
+            onClick={() =>
+              router.push("/dashboard/tenant/verification/income-assessment")
+            }
+            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
+          >
             Save and Continue
           </Button>
         </div>

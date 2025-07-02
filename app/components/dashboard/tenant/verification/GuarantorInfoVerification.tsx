@@ -1,10 +1,12 @@
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiInfo } from "react-icons/fi";
 
 const GuarantorInfoVerification = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -120,7 +122,12 @@ const GuarantorInfoVerification = () => {
         </div>
 
         <div className="mt-10 flex justify-end">
-          <Button className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10">
+          <Button
+            onClick={() =>
+              router.push("/dashboard/tenant/verification/self-id")
+            }
+            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
+          >
             Save and Continue
           </Button>
         </div>

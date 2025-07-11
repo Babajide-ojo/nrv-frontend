@@ -5,10 +5,10 @@ import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
-import DataTable from "@/app/components/shared/tables/DataTable";
+import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function TenantVerification() {
@@ -16,6 +16,7 @@ export default function TenantVerification() {
   const dispatch = useDispatch();
 
   const [userId, setUserId] = useState<string | null>(null);
+  const [statusOptions, setStatusOptions] = useState<Array<{ value: string; label: string }>>([]);
 
   // Use effect to safely access localStorage in browser
   useEffect(() => {
@@ -25,17 +26,41 @@ export default function TenantVerification() {
     }
   }, []);
 
-  const handleRowAction = (id: string) => {
+  // Fetch status options from backend
+  useEffect(() => {
+    const fetchStatusOptions = async () => {
+      try {
+        const response = await fetch(`${API_URL}/verification/statuses`);
+        if (response.ok) {
+          const data = await response.json();
+          setStatusOptions(data.data || []);
+        } else {
+          console.error('Failed to fetch status options:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching status options:', error);
+        // Fallback to default options if API fails
+        setStatusOptions([
+          { value: '', label: 'All Status' },
+          { value: 'pending', label: 'Pending' },
+          { value: 'approved', label: 'Approved' },
+          { value: 'rejected', label: 'Rejected' },
+        ]);
+      }
+    };
+
+    fetchStatusOptions();
+  }, []);
+
+  const handleRowAction = (row: BaseRow) => {
     return (
       <div className="flex items-center gap-2">
-        <button onClick={() => {}} className="p-1 hover:bg-gray-100 rounded">
-          <Eye size={16} />
-        </button>
-        <button onClick={() => {}} className="p-1 hover:bg-gray-100 rounded">
-          <Pencil size={16} />
-        </button>
-        <button onClick={() => {}} className="p-1 hover:bg-red-100 rounded">
-          <Trash2 size={16} className="text-red-600" />
+        <button 
+          onClick={() => router.push(`/dashboard/landlord/properties/verification/response/${row._id}?email=${encodeURIComponent(row.email)}`)} 
+          className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-200"
+          title="View verification details"
+        >
+          <Eye size={16} className="text-blue-600" />
         </button>
       </div>
     );
@@ -62,9 +87,9 @@ export default function TenantVerification() {
             </button>
           </div>
 
-          <div className="bg-white border rounded-lg shadow-sm">
-            <div className="px-4 py-3 border-b flex justify-between items-center">
-              <h4 className="text-md font-medium">Tenant Screening Report</h4>
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h4 className="text-lg font-semibold text-gray-900">Tenant Screening Report</h4>
             </div>
 
             {/* Render DataTable only when userId is available */}
@@ -72,6 +97,14 @@ export default function TenantVerification() {
               <DataTable
                 rowActions={handleRowAction}
                 endpoint={`${API_URL}/verification/user/${userId}`}
+                filters={[
+                  {
+                    name: 'status',
+                    label: 'Status',
+                    options: statusOptions,
+                  },
+                ]}
+
                 columns={[
                   {
                     key: "fullName",

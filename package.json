@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
@@ -23,6 +22,7 @@
     "@radix-ui/react-tabs": "^1.1.4",
     "@reduxjs/toolkit": "^2.2.3",
     "@svgr/webpack": "^8.1.0",
+    "@tanstack/react-query": "^5.81.5",
     "@types/axios": "^0.14.0",
     "@types/form-data": "^2.5.0",
     "axios": "^1.6.8",
@@ -57,6 +57,7 @@
     "react-viewer": "^3.2.2",
     "react-world-flags": "^1.6.0",
     "recharts": "^2.15.1",
+    "redux-persist": "^6.0.0",
     "styled-components": "^6.1.13",
     "swiper": "^11.2.5",
     "tailwind-merge": "^3.2.0",
@@ -66,13 +67,16 @@
   "devDependencies": {
     "@types/google-map-react": "^2.1.10",
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.3.23",
     "@types/react-dom": "^18",
     "@types/react-world-flags": "^1.6.0",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.1",
     "postcss": "^8",
+    "prettier": "^3.0.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

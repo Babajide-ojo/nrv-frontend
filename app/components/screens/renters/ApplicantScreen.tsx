@@ -8,7 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDateToWords } from "@/helpers/utils";
 import { RefreshCcw } from "lucide-react";
-import DataTable from "../../shared/tables/DataTable";
+import DataTable, { BaseRow } from "../../shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
 
@@ -75,13 +75,13 @@ const ApplicantScreen = () => {
     }
   };
 
-  const handleRowAction = (id: string) => {
+  const handleRowAction = (row: BaseRow) => {
     return (
       <div className="flex gap-2">
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
           onClick={() =>
-            router.push(`/dashboard/landlord/properties/renters/${id}`)
+            router.push(`/dashboard/landlord/properties/renters/${row._id}`)
           }
         >
           view applicant

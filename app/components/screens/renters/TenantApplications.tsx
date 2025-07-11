@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CenterModal from "../../shared/modals/CenterModal";
 import InputField from "../../shared/input-fields/InputFields";
 import { RefreshCcw } from "lucide-react";
-import DataTable from "../../shared/tables/DataTable";
+import DataTable, { BaseRow } from "../../shared/tables/DataTable";
 import { formatDateToWords } from "@/helpers/utils";
 import LoadingPage from "../../loaders/LoadingPage";
 import { API_URL } from "@/config/constant";
@@ -75,14 +75,13 @@ const TenantApplications = () => {
     }));
   };
 
-  const handleRowAction = (id: string) => {
+  const handleRowAction = (row: BaseRow) => {
     return (
       <div className="flex gap-2">
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
           onClick={() =>
-            // setCurrentStep(2)
-            router.push(`/dashboard/tenant/properties/applications/${id}`)
+            router.push(`/dashboard/tenant/properties/applications/${row._id}`)
           }
         >
           view

@@ -248,7 +248,7 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
                     label="Upload your document"
                   />
 
-                  {errors.signedDocument && (
+                  {typeof errors.signedDocument === "string" && (
                     <div className="text-red-500 text-sm mt-2">
                       {errors.signedDocument}
                     </div>

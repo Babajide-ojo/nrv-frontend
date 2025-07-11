@@ -15,6 +15,8 @@ import {
   FiBell,
   FiHeadphones,
   FiSettings,
+  FiCheckCircle,
+  FiSearch,
 } from "react-icons/fi";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { FaPerson } from "react-icons/fa6";
@@ -75,14 +77,22 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
 
   useEffect(() => {
     setActiveLink(window.location.pathname);
-    const storedUser = localStorage.getItem("nrv-user");
-    if (storedUser) {
-      const userInfo = JSON.parse(storedUser);
-      setUser({
-        name:
-          `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
-        role: userInfo?.user?.accountType || "Property Owner",
-      });
+    try {
+      const storedUser = localStorage.getItem("nrv-user");
+      if (storedUser) {
+        const userInfo = JSON.parse(storedUser);
+        if (userInfo) {
+          setUser({
+            name:
+              `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
+            role: userInfo?.user?.accountType || "Property Owner",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      // Clear invalid data
+      localStorage.removeItem("nrv-user");
     }
   }, []);
 
@@ -128,6 +138,23 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
                 {icon} {name}
               </li>
             ))}
+          </ul>
+
+          {/* Verification Section */}
+          <div className="mt-8 mb-2 px-6 text-xs text-[#BBFF37] font-semibold uppercase tracking-wider">Verification</div>
+          <ul className="font-lighter text-[12px] text-[#98A2B3]">
+            <li
+              onClick={() => router.push("/dashboard/tenant/verification/requests")}
+              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/verification/requests" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
+            >
+              <FiCheckCircle /> Start Verification
+            </li>
+            <li
+              onClick={() => router.push("/dashboard/tenant/(verification)/verification")}
+              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/(verification)/verification" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
+            >
+              <FiCheckCircle /> View My Verification Submission
+            </li>
           </ul>
         </nav>
       </div>

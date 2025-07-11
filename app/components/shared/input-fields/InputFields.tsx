@@ -116,14 +116,14 @@ export default function InputField({
     <div className="font-jakarta flex flex-col w-full">
       {/* Label */}
       <label htmlFor={name} className="flex gap-1 items-center w-full">
-        <span className="text-[#807F94] text-[14px] font-medium">{label}</span>
+        <span className="text-[#807F94] text-[12px] font-medium">{label}</span>
         {required && <span className="text-red-600">*</span>}
       </label>
 
       {/* Phone Number Input */}
       {inputType === "phone" ? (
         <div
-          className={`flex items-center px-3 py-3 mt-1 w-full rounded-lg bg-white border transition-all
+          className={`flex items-center px-3 py-2 mt-1 w-full rounded-lg bg-white border transition-all
             ${
               inputError
                 ? "border-red-700"
@@ -135,7 +135,7 @@ export default function InputField({
           {/* Country Code & Flag */}
           <div className="flex items-center gap-2 pr-4">
             <Flag code={selectedCountry.country} className="w-5 h-4 rounded" />
-            <span className="text-green-700 font-medium">
+            <span className="text-green-700 font-medium text-sm">
               {selectedCountry.code}
             </span>
           </div>
@@ -150,7 +150,7 @@ export default function InputField({
             onWheel={onWheel}
             onBlur={onBlur}
             placeholder={placeholder}
-            className="w-full font-light text-black bg-transparent border-none focus:outline-none pl-2"
+            className="w-full font-light text-black bg-transparent border-none focus:outline-none pl-2 text-sm"
             disabled={disabled}
             onClick={onClick}
             aria-label={ariaLabel}
@@ -159,7 +159,7 @@ export default function InputField({
       ) : inputType === "nin" ? (
         // NIN Input (Nigeria Only)
         <div
-          className={`flex gap-5 items-center px-3 py-3 mt-1 w-full rounded-lg border transition-all
+          className={`flex gap-5 items-center px-3 py-2 mt-1 w-full rounded-lg border transition-all
             ${
               inputError
                 ? "border-red-700"
@@ -176,7 +176,7 @@ export default function InputField({
             placeholder="Enter your NIN"
             maxLength={11}
             pattern="\d{11}"
-            className="w-full font-light text-black bg-transparent border-none focus:outline-none"
+            className="w-full font-light text-black bg-transparent border-none focus:outline-none text-sm"
             disabled={disabled}
             aria-label={ariaLabel}
           />
@@ -189,7 +189,7 @@ export default function InputField({
       ) : (
         // Standard Input Field (including Email & Password)
         <div
-          className={`flex gap-5 items-center px-3 py-3 mt-1 w-full rounded-lg bg-white border transition-all
+          className={`flex gap-5 items-center px-3 py-2 mt-1 w-full rounded-lg bg-white border transition-all
             ${
               inputError
                 ? "border-red-700"
@@ -221,7 +221,7 @@ export default function InputField({
             onWheel={onWheel}
             onBlur={onBlur}
             placeholder={placeholder}
-            className="w-full font-light text-black bg-transparent border-none focus:outline-none"
+            className="w-full font-light text-black bg-transparent border-none focus:outline-none text-sm"
             disabled={disabled}
             readOnly={readOnly}
             aria-label={ariaLabel}
@@ -257,11 +257,11 @@ export default function InputField({
 
       {/* Error Message */}
       {inputError && (
-        <div className="text-sm text-red-700 mt-1">{inputError}</div>
+        <div className="text-xs text-red-700 mt-1">{inputError}</div>
       )}
 
       {/* Error Message */}
-      {error && <div className="text-sm text-red-700 mt-1">{error}</div>}
+      {error && <div className="text-xs text-red-700 mt-1">{error}</div>}
     </div>
   );
 }

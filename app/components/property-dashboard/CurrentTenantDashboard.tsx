@@ -545,7 +545,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <CustomDatePicker
                       label="Rent End Date"
                       name="rentEndDate"
-                      errorMessage={errors.rentEndDate}
+                      errorMessage={typeof errors.rentEndDate === 'string' ? errors.rentEndDate : ''}
                     />
                   </div>
                 </div>
@@ -612,7 +612,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <CustomDatePicker
                       label="Rent Start Date"
                       name="rentStartDate"
-                      errorMessage={errors.rentStartDate}
+                      errorMessage={typeof errors.rentStartDate === 'string' ? errors.rentStartDate : ''}
                     />
                   </div>
                 </div>
@@ -621,7 +621,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     <CustomDatePicker
                       label="Rent End Date"
                       name="rentEndDate"
-                      errorMessage={errors.rentEndDate}
+                      errorMessage={typeof errors.rentEndDate === 'string' ? errors.rentEndDate : ''}
                     />
                                       {/* Replace CustomDatePicker with SelectDate for Rent Start Date */}
                   <div className="w-full md:flex flex-row gap-3">
@@ -778,7 +778,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     label="Upload your document"
                   />
 
-                  {errors.unsignedDocument && (
+                  {typeof errors.unsignedDocument === 'string' && (
                     <div className="text-red-500 text-sm mt-2">
                       {errors.unsignedDocument}
                     </div>

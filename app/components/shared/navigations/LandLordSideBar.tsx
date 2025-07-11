@@ -80,14 +80,22 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
   useEffect(() => {
     setActiveLink(window.location.pathname);
-    const storedUser = localStorage.getItem("nrv-user");
-    if (storedUser) {
-      const userInfo = JSON.parse(storedUser);
-      setUser({
-        name:
-          `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
-        role: userInfo?.user?.accountType || "Property Owner",
-      });
+    try {
+      const storedUser = localStorage.getItem("nrv-user");
+      if (storedUser) {
+        const userInfo = JSON.parse(storedUser);
+        if (userInfo) {
+          setUser({
+            name:
+              `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
+            role: userInfo?.user?.accountType || "Property Owner",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      // Clear invalid data
+      localStorage.removeItem("nrv-user");
     }
   }, []);
 

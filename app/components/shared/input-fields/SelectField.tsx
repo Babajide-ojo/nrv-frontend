@@ -29,11 +29,11 @@ const customStyles = {
     boxShadow: "none", // Remove blue border on focus
     backgroundColor: "transparent",
     borderRadius: "5px",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: 400,
     color: "#807F94",
     padding: "2px",
-    height: "48px",
+    height: "40px",
   }),
 
   option: (provided: any, state: any) => ({
@@ -42,7 +42,7 @@ const customStyles = {
     color: "#807F94",
     borderRadius: "5px",
     cursor: "pointer",
-    fontSize: "14px",
+    fontSize: "13px",
   }),
 
   placeholder: (provided: any) => ({
@@ -86,10 +86,10 @@ const SelectField: React.FC<Props> = ({
   return (
     <div>
     <label htmlFor={name} className="flex gap-1 items-center w-full">
-        <span className="text-[#807F94] text-[14px] font-medium">{label}</span>
+        <span className="text-[#807F94] text-[12px] font-medium">{label}</span>
         {required && <span className="text-red-600">*</span>}
       </label>
-      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1.5 bg-white">
+      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1 bg-white">
         <Select
           name={name}
           isDisabled={disabled}
@@ -105,7 +105,7 @@ const SelectField: React.FC<Props> = ({
         />
       </div>
             {/* Error Message */}
-            {error && <div className="text-sm text-red-700 mt-1">{error}</div>}
+            {error && <div className="text-xs text-red-700 mt-1">{error}</div>}
     </div>
   );
 };

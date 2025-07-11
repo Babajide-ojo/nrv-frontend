@@ -19,7 +19,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
 import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
-import { formatDisplayValue, preventNonNumeric } from "@/helpers/utils";
+import { formatDisplayValue } from "@/helpers/utils";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 interface UnitData {

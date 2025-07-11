@@ -1,9 +1,7 @@
 "use client";
-import React, { forwardRef, useState, ReactElement } from "react";
+import React, { forwardRef, memo, ReactElement } from "react";
 import { cls } from "../../../../helpers/utils";
 import { IconType } from "react-icons";
-import { BsDownload } from "react-icons/bs";
-import { FaSpinner } from "react-icons/fa"; // Import spinner icon
 import { FaCircleNotch } from "react-icons/fa6";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -23,14 +21,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | "lemonPrimary";
   size?: "small" | "normal" | "large" | "smaller" | "minLarge";
   pill?: boolean;
-  icon?: IconType | ReactElement; // Allowing IconType or JSX elements
+  icon?: IconType | ReactElement;
   showIcon?: boolean;
-  isLoading?: boolean; // New prop to indicate loading state
+  isLoading?: boolean;
+  loadingText?: string;
 }
 
+// Memoized classes object to prevent recreation on every render
 const classes = {
   base: "focus:outline-none transition ease-in-out duration-300",
-  disabled: "cursor-not-allowed",
+  disabled: "cursor-not-allowed opacity-60",
   pill: "rounded",
   size: {
     smaller: "px-2 py-1.5 text-xs",
@@ -65,61 +65,93 @@ const classes = {
     roundedRec:
       "font-light rounded-lg border border-nrvLightGrey hover:text-white hover:bg-nrvPrimaryGreen",
   },
+} as const;
+
+// Memoized loading spinner component
+const LoadingSpinner = memo(() => (
+  <FaCircleNotch
+    className="h-[25px] w-[25px] animate-spin"
+    aria-label="Loading"
+  />
+));
+
+LoadingSpinner.displayName = "LoadingSpinner";
+
+// Helper function to render icon
+const renderIcon = (icon: IconType | ReactElement | undefined, showIcon: boolean) => {
+  if (!showIcon || !icon) return null;
+  
+  if (React.isValidElement(icon)) {
+    return icon;
+  }
+  
+  const IconComponent = icon as IconType;
+  return <IconComponent className="mr-2" />;
 };
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      type = "button",
-      className,
-      variant = "primary",
-      size = "normal",
-      pill,
-      disabled = false,
-      icon: Icon = BsDownload,
-      showIcon = true,
-      isLoading = false, // New loading prop
-      onClick = () => {},
-      ...props
-    },
-    ref
-  ) => {
-    const [isHovered, setIsHovered] = useState(false);
+const Button = memo(
+  forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+      {
+        children,
+        type = "button",
+        className,
+        variant = "primary",
+        size = "normal",
+        pill = false,
+        disabled = false,
+        icon,
+        showIcon = false,
+        isLoading = false,
+        loadingText,
+        onClick,
+        ...props
+      },
+      ref
+    ) => {
+      const isDisabled = isLoading || disabled;
+      const buttonText = isLoading && loadingText ? loadingText : children;
 
-    return (
-      <button
-        ref={ref}
-        disabled={isLoading || disabled} // Disable button during loading
-        type={type}
-        className={cls(`
-                ${classes.base}
-                ${classes.size[size]}
-                ${classes.variant[variant]}
-                ${pill && classes.pill}
-                ${(disabled || isLoading) && classes.disabled}
-                ${className}
-            `)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={onClick}
-        {...props}
-      >
-        <div className="flex items-center justify-center">
-          {isLoading ? (
-            <FaCircleNotch
-              color="#ffffff"
-              className="h-[25px] w-[25px] animate-spin"
-            /> // Show the Spinner component
-          ) : (
-            <>
-              <span>{children}</span>
-            </>
-          )}
-        </div>
-      </button>
-    );
-  }
+      const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (isDisabled) return;
+        onClick?.(event);
+      };
+
+      return (
+        <button
+          ref={ref}
+          disabled={isDisabled}
+          type={type}
+          className={cls(`
+            ${classes.base}
+            ${classes.size[size]}
+            ${classes.variant[variant]}
+            ${pill ? classes.pill : ''}
+            ${isDisabled ? classes.disabled : ''}
+            ${className || ''}
+          `)}
+          onClick={handleClick}
+          aria-disabled={isDisabled}
+          aria-busy={isLoading}
+          {...props}
+        >
+          <div className="flex items-center justify-center gap-2">
+            {isLoading ? (
+              <>
+                <LoadingSpinner />
+                {buttonText && <span>{buttonText}</span>}
+              </>
+            ) : (
+              <>
+                {renderIcon(icon, showIcon)}
+                {buttonText && <span>{buttonText}</span>}
+              </>
+            )}
+          </div>
+        </button>
+      );
+    }
+  )
 );
 
 Button.displayName = "Button";

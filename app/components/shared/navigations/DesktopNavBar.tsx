@@ -32,34 +32,27 @@ const DesktopNavBar: React.FC = () => {
 
   const router = useRouter();
 
-  const handleClick = async () => {
-    setLoading(true);
-    try {
-      router.push("sign-in");
-      // Optionally await a delay or animation if needed
-    } catch (error) {
-      console.error("Navigation error:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleClick =  () => {
+      router.push("/sign-in");
   };
 
-  const handleGetStarted = async () => {
-    setLoading(true);
-    try {
-      router.push("sign-up");
-      // Optionally await a delay or animation if needed
-    } catch (error) {
-      console.error("Navigation error:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleGetStarted =  () => {
+ router.push("/sign-up");
   };
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    if (user) {
-      setIsLoggedIn(true);
-      setCurrentUser(user?.user);
+    try {
+      const userData = localStorage.getItem("nrv-user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user) {
+          setIsLoggedIn(true);
+          setCurrentUser(user?.user);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      // Clear invalid data
+      localStorage.removeItem("nrv-user");
     }
   }, []);
   return (

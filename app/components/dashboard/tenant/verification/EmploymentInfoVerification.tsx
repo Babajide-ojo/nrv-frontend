@@ -4,26 +4,84 @@ import SelectField from "@/app/components/shared/input-fields/SelectField";
 import SelectDate from "@/app/components/shared/SelectDate";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+import { apiService } from "@/lib/api";
 
-const EmploymentInfoVerification = () => {
+interface EmploymentInfoVerificationProps {
+  initialData?: any;
+}
+
+const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [openDate, setOpenDate] = useState(false);
   const [formData, setFormData] = useState({
     employmentStatus: "",
     nameOfCompany: "",
     role: "",
-    currentEmployer: "",
     dateJoined: "",
     companyAddress: "",
     monthlyIncome: "",
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isPrefilled, setIsPrefilled] = useState(false);
+  const [verificationResponseId, setVerificationResponseId] = useState<string | null>(null);
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [prefilledData, setPrefilledData] = useState(formData);
+
+  const formKeys: (keyof typeof formData)[] = [
+    "employmentStatus",
+    "nameOfCompany",
+    "role",
+    "dateJoined",
+    "companyAddress",
+    "monthlyIncome",
+  ];
+
+  useEffect(() => {
+    const idFromQuery = searchParams.get("verificationId");
+    if (idFromQuery) {
+      setVerificationResponseId(idFromQuery);
+    }
+    const fetchVerification = async () => {
+      let verificationIdParam = idFromQuery || verificationId || "";
+      let tenantEmail = null;
+      if (typeof window !== "undefined") {
+        const userStr = localStorage.getItem("nrv-user");
+        if (userStr) {
+          try {
+            const userObj = JSON.parse(userStr);
+            tenantEmail = userObj?.user?.email || userObj?.email;
+          } catch {}
+        }
+      }
+      if (!tenantEmail || !verificationIdParam) return;
+      try {
+        const res = await apiService.get(`/verification/response/by-request/${verificationIdParam}?email=${encodeURIComponent(tenantEmail)}`);
+        const data = res?.data?.data || res?.data || null;
+        if (data) {
+          const prefill = {
+            employmentStatus: data.employmentStatus || "",
+            nameOfCompany: data.companyName || data.nameOfCompany || "",
+            role: data.roleInCompany || data.role || "",
+            dateJoined: data.dateJoined ? format(new Date(data.dateJoined), "yyyy-MM-dd") : "",
+            companyAddress: data.companyAddress || "",
+            monthlyIncome: data.monthlyIncome ? String(data.monthlyIncome) : "",
+          };
+          setFormData(prefill);
+          setPrefilledData(prefill);
+          setIsPrefilled(!!data._id);
+          setVerificationId(data.verificationId || verificationIdParam);
+        }
+      } catch {}
+    };
+    fetchVerification();
+  }, [searchParams, verificationId]);
 
   const employmentStatusOptions = [
-    { label: "Single", value: "Single" },
-    { label: "Married", value: "Married" },
+    { label: "Employed", value: "Employed" },
+    { label: "Self Employed", value: "Self Employed" },
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +95,46 @@ const EmploymentInfoVerification = () => {
       [name]: "",
     }));
   };
+
+  const allFieldsFilled = useMemo(() => {
+    return Object.values(formData).every((val) => val && val !== "");
+  }, [formData]);
+
+  const isDirty = useMemo(() => {
+    return formKeys.some(key => formData[key] !== prefilledData[key]);
+  }, [formData, prefilledData]);
+
+  const handleSubmit = async () => {
+    if (allFieldsFilled && isPrefilled) {
+      if (!verificationId) {
+        alert('Verification ID missing.');
+        return;
+      }
+      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+      return;
+    }
+    if (!verificationResponseId) {
+      alert('Verification response ID missing.');
+      return;
+    }
+    // Always update employment info
+    const payload = {
+      employmentStatus: formData.employmentStatus,
+      roleInCompany: formData.role,
+      companyName: formData.nameOfCompany,
+      companyAddress: formData.companyAddress,
+      monthlyIncome: Number(formData.monthlyIncome),
+      dateJoined: formData.dateJoined,
+      verificationId: verificationId,
+    };
+    try {
+      await apiService.put(`/verification/${verificationResponseId}/employment`, payload);
+      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+    } catch (error: any) {
+      alert(error.message || "Failed to update employment info.");
+    }
+  };
+
   console.log(formData);
   return (
     <div className="">
@@ -84,13 +182,6 @@ const EmploymentInfoVerification = () => {
               error={errors.role}
             />
             <InputField
-              label="Current Employer"
-              name="currentEmployer"
-              value={formData.currentEmployer}
-              onChange={handleInputChange}
-              error={errors.currentEmployer}
-            />
-            <InputField
               label="Company Address"
               name="companyAddress"
               value={formData.companyAddress}
@@ -107,7 +198,6 @@ const EmploymentInfoVerification = () => {
             <InputField
               label="Date Joined"
               name="dateJoined"
-              placeholder="Select Date of Birth"
               value={formData.dateJoined}
               onClick={() => setOpenDate(true)}
               onChange={() => {}}
@@ -116,15 +206,25 @@ const EmploymentInfoVerification = () => {
             />
           </div>
         </div>
-
-        <div className="mt-10 flex justify-end">
+        <div className="mt-10 flex justify-end gap-4">
           <Button
-            onClick={() =>
-              router.push("/dashboard/tenant/verification/guarantor-info")
-            }
+            onClick={handleSubmit}
             className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
+            disabled={isPrefilled && allFieldsFilled && !isDirty}
           >
             Save and Continue
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              if (!verificationResponseId) {
+                alert('Verification ID missing.');
+                return;
+              }
+              router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+            }}
+          >
+            Next
           </Button>
         </div>
       </div>

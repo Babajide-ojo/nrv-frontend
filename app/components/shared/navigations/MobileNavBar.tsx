@@ -29,10 +29,19 @@ const MobileNavBar: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>({});
   const router = useRouter();
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    if (user) {
-      setIsLoggedIn(true);
-      setCurrentUser(user?.user);
+    try {
+      const userData = localStorage.getItem("nrv-user");
+      if (userData) {
+        const user = JSON.parse(userData);
+        if (user) {
+          setIsLoggedIn(true);
+          setCurrentUser(user?.user);
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      // Clear invalid data
+      localStorage.removeItem("nrv-user");
     }
   }, []);
 

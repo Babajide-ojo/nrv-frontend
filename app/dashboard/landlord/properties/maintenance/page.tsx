@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getMaintenanceByOwnerId } from "@/redux/slices/maintenanceSlice";
 import LandLordLayout from "../../../../components/layout/LandLordLayout";
-import DataTable from "@/app/components/shared/tables/DataTable";
+import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { formatDateToWords } from "@/helpers/utils";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
@@ -51,13 +51,12 @@ const Maintainance = () => {
   };
 
 
-  const handleRowAction = (id: string) => {
+  const handleRowAction = (row: BaseRow) => {
     return (
       <div className="flex gap-2">
-        <p className="text-xs text-[#2B892B] font-medium cursor-pointer"  onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${id}`)}>
+        <p className="text-xs text-[#2B892B] font-medium cursor-pointer" onClick={() => router.push(`/dashboard/landlord/properties/maintenance/${row._id}`)}>
           view
         </p>
-  
       </div>
     );
   };

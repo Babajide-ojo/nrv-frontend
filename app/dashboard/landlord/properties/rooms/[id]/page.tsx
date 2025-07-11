@@ -18,7 +18,7 @@ import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@radix-ui/react-tabs";
-import DataTable from "@/app/components/shared/tables/DataTable";
+import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
@@ -199,14 +199,14 @@ const SingleRoom = () => {
                       </TabsContent>
                       <TabsContent value="maintenance">
                         <DataTable
-                          rowActions={(id: string) => {
+                          rowActions={(row: BaseRow) => {
                             return (
                               <div className="flex gap-2">
                                 <p
                                   className="text-xs text-[#2B892B] font-medium cursor-pointer"
                                   onClick={() =>
                                     router.push(
-                                      `/dashboard/landlord/properties/maintenance/${id}`
+                                      `/dashboard/landlord/properties/maintenance/${row._id}`
                                     )
                                   }
                                 >

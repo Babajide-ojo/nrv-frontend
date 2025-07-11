@@ -40,7 +40,7 @@ const VerificationRequestsPage = () => {
   const fetchRequests = async (email: string) => {
     setLoading(true);
     try {
-      const res = await apiService.get(`/verification?email=${email}`);
+      const res = await apiService.get(`/verification/by-email?email=${email}`);
       console.log({ res });
       setRequests(Array.isArray(res?.data) ? res.data : []);
     } catch (err: any) {

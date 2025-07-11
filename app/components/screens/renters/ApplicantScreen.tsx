@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { updateApplicationStatus } from "../../../../redux/slices/propertySlice";
+import { useDispatch, useSelector } from "react-redux";
+import { updateApplicationStatus, getApplicationCount } from "../../../../redux/slices/propertySlice";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDateToWords } from "@/helpers/utils";
@@ -48,7 +48,7 @@ const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   </div>
 );
 
-const ApplicantScreen = () => {
+const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -59,6 +59,9 @@ const ApplicantScreen = () => {
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>("New");
+
+  // Get metrics from Redux state
+  const { data: metricsData } = useSelector((state: any) => state.property);
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -94,10 +97,30 @@ const ApplicantScreen = () => {
     setActiveTab(status);
   };
 
+  // Fetch metrics data only if not provided via props
+  const fetchMetrics = async () => {
+    if (!metricsFromProps) {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem("nrv-user") as any);
+        if (currentUser?.user?._id) {
+          await dispatch(getApplicationCount({ id: currentUser.user._id }) as any);
+        }
+      } catch (error) {
+        console.error("Error fetching metrics:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
-  }, []);
+    fetchMetrics();
+  }, [dispatch, metricsFromProps]);
+
+  // Extract metrics from props or Redux state
+  const metrics = metricsFromProps || metricsData?.data || {};
+  const activeApplications = metrics.totalNew || 0;
+  const acceptedApplications = metrics.totalAccepted || 0;
 
   return (
     <div>
@@ -123,14 +146,14 @@ const ApplicantScreen = () => {
                 {[
                   {
                     title: "Active Applications",
-                    value: `${0}`,
+                    value: `${activeApplications}`,
                     change: "0%",
                     trend: "up",
                     comparison: "compared to the last 6 months",
                   },
                   {
                     title: "Accepted Applications",
-                    value: `${0}`,
+                    value: `${acceptedApplications}`,
                     change: "10%",
                     trend: "up",
                     comparison: "compared to the last 6 months",

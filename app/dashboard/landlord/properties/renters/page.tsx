@@ -46,7 +46,7 @@ const Page = () => {
       ) : (
         <ProtectedRoute>
           <LandLordLayout mainPath="Leads Applicant" subMainPath="Leads">
-          <ApplicantScreen />
+          <ApplicantScreen metricsFromProps={count} />
           </LandLordLayout>
         </ProtectedRoute>
       )}

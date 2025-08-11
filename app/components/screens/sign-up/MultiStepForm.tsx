@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 // import FormikSelectField from "../../shared/input-fields/FormikSelectField";
 // import { nigerianStatesAndLGAs } from "@/helpers/data";
 import ImageUploader from "../../shared/ImageUploader";
+import MultiImageUploader from "../../shared/MultiImageUploader";
 import { toast } from "react-toastify";
 import { nigerianStates } from "@/helpers/data";
 import { formatDisplayValue } from "@/helpers/utils";
@@ -94,6 +95,7 @@ interface UnitData {
   paymentOption: string;
   // availableUnits: string;
   otherAmentities: string[];
+  images?: File[];
 }
 
 interface PropertyData {
@@ -117,6 +119,7 @@ const MultiStepForm = () => {
   // const [lgaOptions, setLgaOptions] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [selectedFiles, setSelectedFiles] = useState<any>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [buildingType, setBuildingType] = useState<any>({
     label: "Residential",
     value: "Residential",
@@ -140,6 +143,7 @@ const MultiStepForm = () => {
         // availableUnits: "1",
         paymentOption: "",
         otherAmentities: [],
+        images: [],
       },
     ],
   });
@@ -199,6 +203,7 @@ const MultiStepForm = () => {
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
     formData.append("file", selectedFiles);
+    
     formData.append(
       "createdBy",
       JSON.parse(localStorage.getItem("nrv-user") as string)?.user?._id
@@ -308,6 +313,7 @@ const MultiStepForm = () => {
           rentAmountMetrics: "",
           paymentOption: "",
           otherAmentities: [],
+          images: [],
         },
       ],
     }));
@@ -324,6 +330,22 @@ const MultiStepForm = () => {
 
   const handleImageChange = (file: File) => {
     setSelectedFiles(file);
+  };
+
+  const handleImagesChange = (files: File[]) => {
+    setSelectedImages(files);
+  };
+
+  const handleUnitImagesChange = (index: number, files: File[]) => {
+    const updatedUnits = [...propertyData.units];
+    updatedUnits[index] = {
+      ...updatedUnits[index],
+      images: files,
+    };
+    setPropertyData((prevData) => ({
+      ...prevData,
+      units: updatedUnits,
+    }));
   };
 
   return (
@@ -427,6 +449,8 @@ const MultiStepForm = () => {
                 <ImageUploader label="" onChange={handleImageChange} />
               </div>
             </div>
+
+
 
             <Button
               type="button"
@@ -700,6 +724,16 @@ const MultiStepForm = () => {
                       </label>
                     );
                   })}
+                </div>
+
+                {/* Unit Images */}
+                <div className="mt-6">
+                  <MultiImageUploader 
+                    label={`Unit ${index + 1} Images`}
+                    onChange={(files) => handleUnitImagesChange(index, files)}
+                    value={unit.images || []}
+                    maxFiles={5}
+                  />
                 </div>
               </div>
             ))}

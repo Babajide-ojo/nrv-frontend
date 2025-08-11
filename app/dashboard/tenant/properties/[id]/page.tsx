@@ -36,6 +36,12 @@ import {
   Star,
   Twitter,
   User,
+  MapPin,
+  Calendar,
+  Bed,
+  Bath,
+  Home,
+  Building,
 } from "lucide-react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Label } from "@/components/ui/label";
@@ -68,6 +74,10 @@ const TenantPropertiesScreen = () => {
     reasonForLeaving: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -83,9 +93,10 @@ const TenantPropertiesScreen = () => {
     try {
       const response = await dispatch(getPropertyByIdForTenant(body) as any);
       const raw = response?.payload?.data?.property; // Pass page parameter
-      let mapped = {
+            let mapped = {
         title: raw?.apartmentType + " • " + raw?.apartmentStyle,
         imageUrl: raw?.propertyId.file,
+        imageUrls: raw?.imageUrls || [],
         price: raw?.rentAmount,
         apartmentName: raw?.apartmentType,
         address: `${raw?.propertyId.streetAddress}, ${raw?.propertyId.city}, ${raw.propertyId.state}`,
@@ -198,170 +209,343 @@ const TenantPropertiesScreen = () => {
     fetchData();
   }, []);
 
+  // Keyboard navigation for image gallery
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!showImageModal || !property.imageUrls || property.imageUrls.length <= 1) return;
+      
+      if (event.key === 'ArrowLeft') {
+        setSelectedImageIndex(prev => 
+          prev === 0 ? property.imageUrls.length - 1 : prev - 1
+        );
+      } else if (event.key === 'ArrowRight') {
+        setSelectedImageIndex(prev => 
+          prev === property.imageUrls.length - 1 ? 0 : prev + 1
+        );
+      } else if (event.key === 'Escape') {
+        setShowImageModal(false);
+      }
+    };
+
+    if (showImageModal) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showImageModal, property.imageUrls]);
+
+  // Reset image states when property changes
+  useEffect(() => {
+    if (property.imageUrls && property.imageUrls.length > 0) {
+      setSelectedImageIndex(0);
+      setImageLoading(true);
+      setImageError(false);
+    }
+  }, [property.imageUrls]);
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+  };
+
   return (
-    <div className="pb-10">
+    <div className="pb-10 bg-gray-50 min-h-screen">
       {isLoading ? (
         <LoadingPage />
       ) : (
         <ProtectedRoute>
-          <TenantLayout>
+          <TenantLayout mainPath="/dashboard/tenant/properties">
             <ToastContainer />
             {currentStep === 1 && (
-              <div className="p-6 max-w-6xl mx-auto">
-                <div className="flex justify-between items-start md:items-center flex-col md:flex-row p-6 border-b border-gray-200">
-                  {/* Left Side: Back + Titles */}
-                  <div className="flex items-start md:items-center gap-4">
-                    <BackIcon />
-                    <div className="border-l h-6 mx-2 hidden md:block"></div>
-                    <div>
-                      <h2 className="text-xl font-semibold">
-                        View Property Listings
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        Two Master Bedroom All En–Suite Apartment
-                      </p>
+              <div className="p-4 md:p-8 max-w-7xl mx-auto">
+                {/* Enhanced Header Section */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+                  <div className="flex justify-between items-start md:items-center flex-col md:flex-row">
+                    {/* Left Side: Back + Titles */}
+                    <div className="flex items-start md:items-center gap-4">
+                      <BackIcon />
+                      <div className="border-l h-6 mx-2 hidden md:block"></div>
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">
+                          View Property Details
+                        </h2>
+                        <p className="text-gray-600 text-base">
+                          {property?.apartmentName} • {property?.apartmentStyle}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Right Side: Actions */}
-                  <div className="flex items-center gap-6 mt-4 md:mt-0">
-                    <Button
-                      variant="ordinary"
-                      className="text-green-700 border-green-600"
-                    >
-                      Add to Favourite
-                    </Button>
+                    {/* Right Side: Actions */}
+                    <div className="flex items-center gap-4 mt-4 md:mt-0">
+            
 
-                    <Copy className="w-4 h-4" />
-
-                    <Twitter className="w-4 h-4 text-gray-500" />
-
-                    <Facebook className="w-4 h-4 text-gray-500" />
-
-                    <Linkedin className="w-4 h-4 text-gray-500" />
+                      <div className="flex items-center gap-3">
+                        <Copy className="w-5 h-5 text-gray-500 hover:text-gray-700 cursor-pointer transition-colors" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                  <div className="rounded-2xl">
-                    <img
-                      src={property.imageUrl}
-                      alt="property"
-                      className="w-full h-full object-cover rounded-2xl"
-                    />
-                    <div className="mt-[-60px] flex justify-center">
-                      <div className="w-3/5">
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Left Column: Image and Apply Button */}
+                  <div className="lg:col-span-1">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      {/* Image Gallery */}
+                      <div className="relative">
+                        {/* Main Image */}
+                        <div className="relative h-80 overflow-hidden">
+                          {imageLoading && (
+                            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                            </div>
+                          )}
+                          
+                          {imageError && (
+                            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                              <div className="text-center text-gray-500">
+                                <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p className="text-sm">Image failed to load</p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {!property.imageUrls || property.imageUrls.length === 0 ? (
+                            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                              <div className="text-center text-gray-500">
+                                <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p className="text-sm">No images available</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <img
+                              src={property.imageUrls[selectedImageIndex]}
+                              alt="property"
+                              className={`w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105 ${
+                                imageLoading || imageError ? 'opacity-0' : 'opacity-100'
+                              }`}
+                              onClick={() => setShowImageModal(true)}
+                              onLoad={handleImageLoad}
+                              onError={handleImageError}
+                            />
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                          
+                          {/* Image Navigation Arrows */}
+                          {property.imageUrls && property.imageUrls.length > 1 && (
+                            <>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedImageIndex(prev => 
+                                    prev === 0 ? property.imageUrls.length - 1 : prev - 1
+                                  );
+                                }}
+                                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                              >
+                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                              </button>
+                              
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedImageIndex(prev => 
+                                    prev === property.imageUrls.length - 1 ? 0 : prev + 1
+                                  );
+                                }}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                              >
+                                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </button>
+                            </>
+                          )}
+                        </div>
+                        
+                        {/* Image Thumbnails */}
+                        {property.imageUrls && property.imageUrls.length > 1 && (
+                          <div className="p-4 bg-gray-50">
+                            <div className="flex gap-2 overflow-x-auto pb-2">
+                              {property.imageUrls.map((imageUrl: string, index: number) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setSelectedImageIndex(index)}
+                                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                                    index === selectedImageIndex 
+                                      ? 'border-green-500 ring-2 ring-green-200' 
+                                      : 'border-gray-200 hover:border-gray-300'
+                                  }`}
+                                >
+                                  <div className="relative w-full h-full">
+                                    <img
+                                      src={imageUrl}
+                                      alt={`Property ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                      onLoad={() => {
+                                        if (index === selectedImageIndex) {
+                                          setImageLoading(false);
+                                          setImageError(false);
+                                        }
+                                      }}
+                                      onError={() => {
+                                        if (index === selectedImageIndex) {
+                                          setImageLoading(false);
+                                          setImageError(true);
+                                        }
+                                      }}
+                                    />
+                                    {index === selectedImageIndex && (
+                                      <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            <p className="text-center text-sm text-gray-600 mt-2">
+                              {selectedImageIndex + 1} of {property.imageUrls.length} images
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Apply Button */}
+                      <div className="p-6">
                         <Button
-                          className="w-full mt-4 bg-white text-black text-lg py-2"
+                         variant="darkPrimary"
+                          className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-4 rounded-xl font-semibold transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg"
                           onClick={() => setCurrentStep(2)}
-                          disabled= {property.hasApplied == true ? true : false}
+                          disabled={property.hasApplied === true}
                         >
-                          {property.hasApplied == true ? "You have applied to this unit" : "      Apply Now!"}
-                    
+                          {property.hasApplied === true ? "You have applied to this unit" : "Apply Now!"}
                         </Button>
+                        
+                        {property.hasApplied && (
+                          <p className="text-center text-green-600 text-sm mt-3 font-medium">
+                             Application submitted successfully
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="space-y-8">
-                    <div className="flex justify-between">
-                      <div>
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Price (Per Annum):
-                        </p>
-                        <h3 className="text-[#1D2739] text-[14px]">
-                          ₦{property?.price?.toLocaleString()}
-                        </h3>
-                      </div>
-                      <div>
-                        {/* <p className="text-[#475367] text-[13px] font-light">
-                          Property Owner Contact Info
-                        </p> */}
+
+                  {/* Right Column: Property Details */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Price and Contact Section */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                      <div className="flex justify-between items-start mb-6">
+                        <div>
+                          <p className="text-gray-500 text-sm font-medium mb-1">Price (Per Annum)</p>
+                          <h3 className="text-3xl font-bold text-green-700">
+                            ₦{property?.price?.toLocaleString()}
+                          </h3>
+                        </div>
                         <Button
                           variant="darkPrimary"
-                          className="p-0 text-green-600"
+                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl transition-colors"
                           onClick={() => setIsModalOpen(true)}
                         >
-                          View Property Owner Contact
+   
+                          Contact Owner
                         </Button>
                       </div>
-                    </div>
 
-                    <div className="flex gap-4">
-                      <div className="w-1/3">
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Apartment Style
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.apartmentStyle}
-                        </p>
-                      </div>
-                      <div className="w-2/3">
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Apartment Address/Location
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.address}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-1/3">
-                        <p className="text-[#475367] text-[13px] font-light">
-                         Lease Term
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.leaseTerms}
-                        </p>
-                      </div>
-                      <div className="w-2/3">
-               
-                      <p className="text-[#475367] text-[13px] font-light">
-                        Description
-                      </p>
-                      <p className="text-[#1D2739] text-[14px] leading-8">
-                        {property?.description}
-                      </p>
-       
-                      </div>
-                    </div>
-               
-
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Apartment Number
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.flatNumber}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Number of Bedrooms
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.bedrooms}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[#475367] text-[13px] font-light">
-                          Number of Bathrooms
-                        </p>
-                        <p className="text-[#1D2739] text-[14px]">
-                          {property?.bathrooms}
-                        </p>
+                      {/* Key Features Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center p-4 bg-gray-50 rounded-xl">
+                          <div className="flex justify-center mb-2">
+                            <Home className="w-6 h-6 text-green-600" />
+                          </div>
+                          <p className="text-gray-500 text-xs font-medium mb-1">Style</p>
+                          <p className="text-gray-800 font-semibold">{property?.apartmentStyle}</p>
+                        </div>
+                        
+                        <div className="text-center p-4 bg-gray-50 rounded-xl">
+                          <div className="flex justify-center mb-2">
+                            <Bed className="w-6 h-6 text-green-600" />
+                          </div>
+                          <p className="text-gray-500 text-xs font-medium mb-1">Bedrooms</p>
+                          <p className="text-gray-800 font-semibold">{property?.bedrooms}</p>
+                        </div>
+                        
+                        <div className="text-center p-4 bg-gray-50 rounded-xl">
+                          <div className="flex justify-center mb-2">
+                            <Bath className="w-6 h-6 text-green-600" />
+                          </div>
+                          <p className="text-gray-500 text-xs font-medium mb-1">Bathrooms</p>
+                          <p className="text-gray-800 font-semibold">{property?.bathrooms}</p>
+                        </div>
+                        
+                        <div className="text-center p-4 bg-gray-50 rounded-xl">
+                          <div className="flex justify-center mb-2">
+                            <Building className="w-6 h-6 text-green-600" />
+                          </div>
+                          <p className="text-gray-500 text-xs font-medium mb-1">Unit #</p>
+                          <p className="text-gray-800 font-semibold">{property?.flatNumber}</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <p className="text-[#475367] text-[13px] font-light mb-2">
-                        Apartment Facilities/Amenities
-                      </p>
-                      <div className="flex flex-wrap gap-2">
+                    {/* Location and Description */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                      <div className="space-y-6">
+                        <div className="flex gap-4">
+                          <div className="w-1/3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <MapPin className="w-4 h-4 text-green-600" />
+                              <p className="text-gray-500 text-sm font-medium">Location</p>
+                            </div>
+                            <p className="text-gray-800 font-medium leading-relaxed">
+                              {property?.address}
+                            </p>
+                          </div>
+                          <div className="w-2/3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Calendar className="w-4 h-4 text-green-600" />
+                              <p className="text-gray-500 text-sm font-medium">Lease Terms</p>
+                            </div>
+                            <p className="text-gray-800 font-medium">
+                              {property?.leaseTerms}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <p className="text-gray-500 text-sm font-medium mb-3">Description</p>
+                          <p className="text-gray-800 leading-relaxed text-sm font-light ">
+                            {property?.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Amenities */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                      <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+                        Apartment Facilities & Amenities
+                      </h4>
+                      <div className="flex flex-wrap gap-3">
                         {property?.amenities?.map((amenity: any, idx: any) => (
                           <Badge
                             key={idx}
                             variant="outline"
-                            className="text-green-700 border-green-400"
+                            className="text-green-700 border-green-400 bg-green-50 px-4 py-2 text-sm font-medium hover:bg-green-100 transition-colors"
                           >
                             {amenity}
                           </Badge>
@@ -369,492 +553,587 @@ const TenantPropertiesScreen = () => {
                       </div>
                     </div>
 
-                    <Card className="flex items-center gap-4 p-4 mt-4">
-                      {/* <img
-                        src={property?.owner?.imageUrl}
-                        alt="owner"
-                        className="w-14 h-14 rounded-full object-cover"
-                      /> */}
-                      <div>
-                        <p className="font-semibold">{property?.owner?.name}</p>
-                        <p className="text-sm text-gray-600">
-                          {property?.owner?.email}
-                        </p>
-                        <div className="flex items-center text-sm text-yellow-500">
-                          <Star className="w-4 h-4 mr-1" fill="currentColor" />
-                          {property?.owner?.reviews} Reviews
+                    {/* Owner Information */}
+                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-100 p-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                          <User className="w-8 h-8 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                            {property?.owner?.name}
+                          </h4>
+                          <p className="text-gray-600 text-sm mb-2">
+                            {property?.owner?.email}
+                          </p>
+                          <div className="flex items-center text-sm text-yellow-600">
+                            <Star className="w-4 h-4 mr-1" fill="currentColor" />
+                            {property?.owner?.reviews} Reviews
+                          </div>
                         </div>
                       </div>
-                    </Card>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
+
+            {/* Application Form Step */}
             {currentStep === 2 && (
-              <div className="p-3 md:p-8 mb-20 md:m-4">
-                <Formik
-                  initialValues={{
-                    currentResidence: "",
-                    monthlyIncome: "",
-                    desiredMoveInDate: new Date(),
-                    currentEmployer: "",
-                    reasonForLeaving: "",
-                    jobTitle: "",
-                    ownerId: user?._id,
-                  }}
-                  // validationSchema={validationSchema}
-                  onSubmit={(values, formikHelpers) => handleSubmit(values)}
-                >
-                  {({ isSubmitting, resetForm, values }) => (
-                    <Form className="w-1/2 mx-auto">
-                      <div className="flex gap-4">
-                        <div onClick={() => setCurrentStep(1)}>
-                          <svg
-                            width="30"
-                            height="30"
-                            viewBox="0 0 30 30"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M19.6548 5L10.8333 13.8215C10.2778 14.377 10 14.6548 10 15C10 15.3452 10.2778 15.623 10.8333 16.1785L19.6548 25"
-                              stroke="#333333"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            />
-                          </svg>
+              <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
+                <div className="max-w-4xl mx-auto">
+                  {/* Progress Indicator */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-green-600">Property Selected</p>
+                          </div>
                         </div>
-                        <div className="text-2xl">
-                          Tenant Screening Report 🏘️
+                        
+                        <div className="w-12 h-0.5 bg-green-200"></div>
+                        
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-green-600">Application Form</p>
+                          </div>
+                        </div>
+                        
+                        <div className="w-12 h-0.5 bg-gray-200"></div>
+                        
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-gray-400">Review & Submit</p>
+                          </div>
                         </div>
                       </div>
-                      <p className="text-sm text-nrvLightGrey mt-4">
-                        Kindly fill the necessary boxes, this is the tenant
-                        application process.
-                      </p>
-                      <div
-                        className=""
-                        style={{ display: "flex", flexDirection: "column" }}
-                      >
-                        <div className="w-full gap-3">
-                          <div className="w-full mt-8">
-                            <div>
-                            <Label>Desired Move In Date</Label>
-                              <div className="h-11 rounded-sm border border-[#E0E0E6] px-2">
+                    </div>
+                  </div>
 
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-
-                                  <DatePicker
-                                    value={values.desiredMoveInDate}
-                                    minDate={startOfToday()}
-                                    slotProps={{
-                                      textField: {
-                                        fullWidth: true,
-                                        size: "small",
-                                        variant: "standard",
-                                        InputProps: {
-                                          disableUnderline: true,
-                                        },
-                                        sx: {
-                                          fontSize: "12px",
-                                          // backgroundColor: "white",
-                                          boxShadow: "none",
-                                          "&:hover": {
-                                            boxShadow: "none",
-                                            borderColor: "#E0E0E6",
-                                          },
-                                          "& .Mui-focused": {
-                                            boxShadow: "none",
-                                          },
-                                          "& input": {
-                                            color: "#807F94",
-                                            padding: "8px 4px",
-                                          },
-                                        },
-                                      },
-                                      day: {
-                                        sx: {
-                                          backgroundColor: "#F5F5F5",
-                                          "&.Mui-selected": {
-                                            backgroundColor: "#007443", // selected day
-                                            color: "#ffffff",
-                                          },
-                                          "&.MuiPickersDay-today": {
-                                            border: "1px solid #3B82F6",
-                                            backgroundColor: "#007443",
-                                          },
-                                          "&.MuiPickersDay-today.Mui-selected":
-                                            {
-                                              backgroundColor: "#007443",
-                                              color: "#fff",
-                                            },
-                                          "&:hover": {
-                                            backgroundColor: "#007443",
-                                            color: "#ffffff",
-                                          },
-                                        },
-                                      },
-                                    }}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="w-full mt-8 md:mt-0">
-                            <FormikInputField
-                              name="currentResidence"
-                              placeholder="Current Residence Address"
-                              label="Current Residence Address"
-                              value={values.currentResidence}
-                              css="bg-nrvLightGreyBg"
-                            />
-                          </div>
-                        </div>
-                        <div className="w-full gap-3">
-                          <div className=" w-full mt-8 md:mt-0">
-                            <FormikInputField
-                              name="currentEmployer"
-                              placeholder="Current Employer"
-                              label="Current Employer"
-                              value={values.currentEmployer}
-                              css="bg-nrvLightGreyBg"
-                            />
-                          </div>
-
-                          <div className="w-full mt-8 md:mt-0">
-                            <FormikInputField
-                              name="monthlyIncome"
-                              placeholder="Current Salary Per Month"
-                              label="Current Salary Per Month"
-                              value={values.monthlyIncome}
-                              css="bg-nrvLightGreyBg"
-                            />
-                          </div>
-
-                          <div className="w-full mt-8 md:mt-0">
-                            <FormikInputField
-                              name="reasonForLeaving"
-                              placeholder="Reason for leaving"
-                              label="Reason for Leaving/Relocation"
-                              value={values.reasonForLeaving}
-                              css="bg-nrvLightGreyBg"
-                            />
-                          </div>
-
-                          <div className="w-full mt-8 md:mt-0">
-                            <FormikInputField
-                              name="jobTitle"
-                              placeholder="Job Title/Business Type"
-                              label="Job Title/Business Type"
-                              value={values.jobTitle}
-                              css="bg-nrvLightGreyBg"
-                            />
-                          </div>
-                          {/* <div className="w-full mt-4">
-                            <label className="text-nrvGreyBlack mb-2 text-sm">
-                              Upload an Identification Card
-                            </label>
-                            <div
-                              className="text-center w-full mt-2"
-                              //onDrop={handleFileDrop}
-                              onDragOver={(e) => e.preventDefault()}
-                            >
-                              <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
-                                <input
-                                  type="file"
-                                  id="file"
-                                  className="hidden"
-                                  accept=".png, .jpg , .jpeg"
-                                  name="file"
-                                  onChange={handleFileInputChange}
-                                />
-                                <label
-                                  htmlFor="file"
-                                  className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
-                                >
-                                  <div className="text-center flex justify-center">
-                                    {selectedFiles ? (
-                                      selectedFiles.name
-                                    ) : (
-                                      <SlCloudUpload
-                                        size={30}
-                                        fontWeight={900}
-                                      />
-                                    )}
-                                  </div>
-                                  {selectedFiles
-                                    ? "Change file"
-                                    : "Click to upload"}
-                                </label>
-                              </div>
-                            </div>
-                          </div> */}
-                        </div>
-
-                        <div className="w-full md:flex flex-row gap-3"></div>
-                      </div>
-                      <div className="mt-4  mx-auto md:w-1/2 w-full mt-8 flex gap-4 justify-between">
-                        <Button
+                  {/* Form Container */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <button
                           type="button"
-                          size="large"
-                          className="block w-full"
-                          variant="lightGrey"
-                          showIcon={false}
-                          onClick={() => {
-                            resetForm();
-                            // setOpenAddTenantModal(false);
-                          }}
+                          onClick={() => setCurrentStep(1)}
+                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105"
                         >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          size="large"
-                          className="block w-full"
-                          variant="lightGrey"
-                          showIcon={false}
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? "Loading..." : "Submit"}
-                        </Button>
+                          <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <div>
+                          <h2 className="text-xl font-bold">
+                            Tenant Application Form 🏘️
+                          </h2>
+                          <p className="text-green-100 text-sm mt-1">
+                            Complete your application for {property?.apartmentType} • {property?.apartmentStyle}
+                          </p>
+                        </div>
                       </div>
-                    </Form>
-                  )}
-                </Formik>
+                    </div>
+
+                    {/* Form Content */}
+                    <div className="p-6">
+                      <Formik
+                        initialValues={{
+                          currentResidence: "",
+                          monthlyIncome: "",
+                          desiredMoveInDate: new Date(),
+                          currentEmployer: "",
+                          reasonForLeaving: "",
+                          jobTitle: "",
+                          ownerId: user?._id,
+                        }}
+                        onSubmit={(values, formikHelpers) => handleSubmit(values)}
+                      >
+                        {({ isSubmitting, resetForm, values }) => (
+                          <Form className="w-full">
+                            {/* Property Summary Card */}
+                            <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <Building className="w-6 h-6 text-green-600" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-bold text-gray-800">
+                                      {property?.apartmentType} • {property?.apartmentStyle}
+                                    </h3>
+                                    <p className="text-gray-600 text-sm">{property?.address}</p>
+                                    <p className="text-xl font-bold text-green-600 mt-1">
+                                      ₦{property?.price?.toLocaleString()}/year
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-xs text-gray-500">Unit Number</div>
+                                  <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Form Fields */}
+                            <div className="space-y-4">
+                              {/* Personal Information Section */}
+                              <div className="bg-gray-50 rounded-xl p-4">
+                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                  Personal Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      Current Residence Address
+                                    </Label>
+                                    <FormikInputField
+                                      name="currentResidence"
+                                      placeholder="Enter your current address"
+                                      value={values.currentResidence}
+                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      Job Title / Business Type
+                                    </Label>
+                                    <FormikInputField
+                                      name="jobTitle"
+                                      placeholder="e.g., Software Engineer, Business Owner"
+                                      value={values.jobTitle}
+                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Employment Section */}
+                              <div className="bg-gray-50 rounded-xl p-4">
+                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                  Employment & Income
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      Current Employer
+                                    </Label>
+                                    <FormikInputField
+                                      name="currentEmployer"
+                                      placeholder="Company or organization name"
+                                      value={values.currentEmployer}
+                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      Monthly Income
+                                    </Label>
+                                    <FormikInputField
+                                      name="monthlyIncome"
+                                      placeholder="₦0.00"
+                                      value={values.monthlyIncome}
+                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Move-in Details Section */}
+                              <div className="bg-gray-50 rounded-xl p-4">
+                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                                  Move-in Details
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-8 block">
+                                      Desired Move-in Date
+                                    </Label>
+                                    <div className="h-10 rounded-lg border border-gray-200 px-3 bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/20 transition-all duration-200">
+                                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                          value={values.desiredMoveInDate}
+                                          minDate={startOfToday()}
+                                          slotProps={{
+                                            textField: {
+                                              fullWidth: true,
+                                              size: "small",
+                                              variant: "standard",
+                                              InputProps: {
+                                                disableUnderline: true,
+                                              },
+                                              sx: {
+                                                fontSize: "13px",
+                                                boxShadow: "none",
+                                                "&:hover": {
+                                                  boxShadow: "none",
+                                                  borderColor: "#10B981",
+                                                },
+                                                "& .Mui-focused": {
+                                                  boxShadow: "none",
+                                                },
+                                                "& input": {
+                                                  color: "#374151",
+                                                  padding: "8px 4px",
+                                                },
+                                              },
+                                            },
+                                            day: {
+                                              sx: {
+                                                backgroundColor: "#F9FAFB",
+                                                "&.Mui-selected": {
+                                                  backgroundColor: "#10B981",
+                                                  color: "#ffffff",
+                                                },
+                                                "&.MuiPickersDay-today": {
+                                                  border: "2px solid #10B981",
+                                                  backgroundColor: "#10B981",
+                                                },
+                                                "&.MuiPickersDay-today.Mui-selected": {
+                                                  backgroundColor: "#10B981",
+                                                  color: "#fff",
+                                                },
+                                                "&:hover": {
+                                                  backgroundColor: "#10B981",
+                                                  color: "#ffffff",
+                                                },
+                                              },
+                                            },
+                                          }}
+                                        />
+                                      </LocalizationProvider>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                      Reason for Moving
+                                    </Label>
+                                    <FormikInputField
+                                      name="reasonForLeaving"
+                                      placeholder="e.g., Job relocation, lease ending"
+                                      value={values.reasonForLeaving}
+                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                              <Button
+                                type="button"
+                                size="large"
+                                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                                variant="lightGrey"
+                                showIcon={false}
+                                onClick={() => {
+                                  resetForm();
+                                  setCurrentStep(1);
+                                }}
+                              >
+                            
+                                Back to Property
+                              </Button>
+                              <Button
+                                type="submit"
+                                size="large"
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                                variant="darkPrimary"
+                                showIcon={false}
+                                disabled={isSubmitting}
+                              >
+                                {isSubmitting ? (
+                                  <div className="flex items-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    Submitting...
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center">
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Submit Application
+                                  </div>
+                                )}
+                              </Button>
+                            </div>
+
+                            {/* Application Tips */}
+                            <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                              <div className="flex items-start gap-3">
+                                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </div>
+                                <div>
+                                  <h5 className="font-medium text-blue-800 mb-2 text-sm">Application Tips</h5>
+                                  <ul className="text-xs text-blue-700 space-y-1">
+                                    <li>• Ensure all information is accurate and up-to-date</li>
+                                    <li>• Provide complete contact details for verification</li>
+                                    <li>• Be honest about your income and employment status</li>
+                                    <li>• The landlord will review your application within 24-48 hours</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
+                          </Form>
+                        )}
+                      </Formik>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </TenantLayout>
+
+          {/* Enhanced Contact Modal */}
           <CenterModal
             isOpen={isOpen}
             onClose={() => {
               setIsOpen(false);
             }}
           >
-            <div className="flex justify-end" onClick={() => {}}>
-              <svg
-                onClick={() => {
-                  copyToClipboard(
-                    `https://nrv-frontend.vercel.app/dashboard/tenant/properties/${property._id}`
-                  );
-                }}
-                className="cursor-pointer"
-                width="54"
-                height="54"
-                viewBox="0 0 54 54"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <rect
-                  x="1.25"
-                  y="1.25"
-                  width="51.5"
-                  height="51.5"
-                  rx="25.75"
-                  stroke="#153969"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M22.5 31.5001C22.5 27.2574 22.5 25.1361 23.818 23.818C25.1361 22.5 27.2574 22.5 31.5001 22.5H33.0001C37.2427 22.5 39.364 22.5 40.6821 23.818C42.0001 25.1361 42.0001 27.2574 42.0001 31.5001V33.0001C42.0001 37.2427 42.0001 39.364 40.6821 40.6821C39.364 42.0001 37.2427 42.0001 33.0001 42.0001H31.5001C27.2574 42.0001 25.1361 42.0001 23.818 40.6821C22.5 39.364 22.5 37.2427 22.5 33.0001V31.5001Z"
-                  stroke="#153969"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M34.5 22.5001C34.4964 18.0644 34.4294 15.7668 33.1381 14.1937C32.8888 13.8898 32.6103 13.6113 32.3065 13.3619C30.6469 12 28.1814 12 23.2501 12C18.3188 12 15.8532 12 14.1937 13.3619C13.8898 13.6113 13.6113 13.8898 13.3619 14.1937C12 15.8532 12 18.3188 12 23.2501C12 28.1814 12 30.6469 13.3619 32.3065C13.6113 32.6103 13.8898 32.8888 14.1937 33.1381C15.7668 34.4294 18.0644 34.4964 22.5001 34.5"
-                  stroke="#153969"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-            </div>
-            <div className="mx-auto text-center p-4 md:w-4/5 w-full">
-              <div className="flex justify-center">
-                <svg
-                  width="38"
-                  height="37"
-                  viewBox="0 0 38 37"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            <div className="bg-white rounded-2xl p-8 max-w-md mx-auto">
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => {
+                    copyToClipboard(
+                      `https://nrv-frontend.vercel.app/dashboard/tenant/properties/${property._id}`
+                    );
+                  }}
+                  className="p-3 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <path
-                    d="M20.75 1L1.5 9.75"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M19 2.75V36H10.25C6.95017 36 5.30025 36 4.27513 34.9748C3.25 33.9497 3.25 32.2998 3.25 29V9.75"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M19 9.75L36.5 18.5"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M15.5 35.9995H27.75C31.0498 35.9995 32.6997 35.9995 33.7248 34.9743C34.75 33.9492 34.75 32.2993 34.75 28.9995V17.625"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M29.5 15V9.75"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M10.25 16.75H12M10.25 23.75H12"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M26 22H27.75"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M26.875 36V29"
-                    stroke="#153969"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                  <Copy className="w-5 h-5 text-gray-600" />
+                </button>
               </div>
-              <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
-                Contact Info
-              </h2>
-              <p className="text-nrvLightGrey text-md">
-                Here are the contact details of this landlord
-              </p>
+              
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="w-8 h-8 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Contact Information
+                </h2>
+                <p className="text-gray-600">
+                  Get in touch with the property owner
+                </p>
+              </div>
 
-              <ul className="list-disc">
-                <li className="mb-2 flex md:items-center items-start mt-4">
-                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvPrimaryGreen md:text-md text-sm pr-3 font-medium">
-                    Phone Number :
-                    <span className="text-nrvLightGrey pl-1.5">
-                      {property?.owner?.phoneNumber}
-                    </span>
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Phone className="w-5 h-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">Phone Number</p>
+                    <p className="text-gray-800 font-semibold">{property?.owner?.phoneNumber}</p>
                   </div>
-                </li>
-
-                <li className="mb-2 flex items-center mt-4">
-                  <div className="h-2 w-2 bg-nrvPrimaryGreen rounded-full mr-2 text-sm"></div>
-                  <div className="text-nrvPrimaryGreen md:text-md text-sm pr-3 font-medium">
-                    Mail Address :
-                    <span className="text-nrvLightGrey pl-1.5">
-                      {property?.owner?.email}
-                    </span>
-                  </div>
-                </li>
-                <div className="mt-4">
-                  <Button
-                    size="large"
-                    variant="primary"
-                    showIcon={false}
-                    className="block w-full"
-                  >
-                    Message
-                  </Button>
                 </div>
 
-                <div className="mt-4">
-                  <Button
-                    onClick={() => {
-                      setIsOpen(false);
-                    }}
-                    size="large"
-                    variant="lightGrey"
-                    showIcon={false}
-                    className="block w-full"
-                  >
-                    Close
-                  </Button>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <Mail className="w-5 h-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">Email Address</p>
+                    <p className="text-gray-800 font-semibold">{property?.owner?.email}</p>
+                  </div>
                 </div>
-              </ul>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  size="large"
+                  variant="primary"
+                  showIcon={false}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  Send Message
+                </Button>
+                <Button
+                  onClick={() => setIsOpen(false)}
+                  size="large"
+                  variant="lightGrey"
+                  showIcon={false}
+                  className="w-full"
+                >
+                  Close
+                </Button>
+              </div>
             </div>
           </CenterModal>
+
+          {/* Enhanced Dialog Modal */}
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-gray-800">
+                  <User className="h-5 w-5 text-green-600" />
+                  Contact Information
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                  <User className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Name</p>
+                    <p className="font-semibold text-gray-800">{property?.owner?.name}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                  <Mail className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Email</p>
+                    <p className="font-semibold text-gray-800">{property?.owner?.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                  <Phone className="h-5 w-5 text-green-600" />
+                  <div>
+                    <p className="text-sm text-gray-600 font-medium">Phone Number</p>
+                    <p className="font-semibold text-gray-800">{property?.owner?.phoneNumber}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Link className="flex-1" href={`tel:${property?.owner?.phoneNumber}`}>
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                    <div className="flex items-center gap-2 py-1">
+                      <Phone className="h-4 w-4" />
+                      Call
+                    </div>
+                  </Button>
+                </Link>
+                <Link className="flex-1" href={`mailto:${property?.owner?.email}`}>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <div className="flex items-center gap-2 py-1">
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </div>
+                  </Button>
+                </Link>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Image Modal */}
+          <Dialog open={showImageModal} onOpenChange={setShowImageModal}>
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden">
+              <DialogHeader>
+                <DialogTitle className="flex items-center justify-between text-gray-800">
+                  <span>Property Images</span>
+                  <button
+                    onClick={() => setShowImageModal(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="relative">
+                {/* Main Image Display */}
+                <div className="relative h-96 md:h-[500px] overflow-hidden rounded-lg">
+                  {!property.imageUrls || property.imageUrls.length === 0 ? (
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <div className="text-center text-gray-500">
+                        <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <p className="text-sm">No images available</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={property.imageUrls[selectedImageIndex]}
+                      alt="property"
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                  
+                  {/* Navigation Arrows */}
+                  {property.imageUrls && property.imageUrls.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => setSelectedImageIndex(prev => 
+                          prev === 0 ? property.imageUrls.length - 1 : prev - 1
+                        )}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                      >
+                        <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      
+                      <button
+                        onClick={() => setSelectedImageIndex(prev => 
+                          prev === property.imageUrls.length - 1 ? 0 : prev + 1
+                        )}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                      >
+                        <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
+                
+                {/* Thumbnail Navigation */}
+                {property.imageUrls && property.imageUrls.length > 1 && (
+                  <div className="mt-4">
+                    <div className="flex gap-3 justify-center overflow-x-auto pb-2">
+                      {property.imageUrls.map((imageUrl: string, index: number) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImageIndex(index)}
+                          className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                            index === selectedImageIndex 
+                              ? 'border-green-500 ring-2 ring-green-200' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={imageUrl}
+                            alt={`Property ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-center text-sm text-gray-600 mt-3">
+                      {selectedImageIndex + 1} of {property.imageUrls.length} images
+                    </p>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </ProtectedRoute>
       )}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Contact Information
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <User className="h-5 w-5 text-gray-600" />
-              <div>
-                <p className="text-sm text-gray-600">Name</p>
-                <p className="font-medium">{property?.owner?.name}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Mail className="h-5 w-5 text-gray-600" />
-              <div>
-                <p className="text-sm text-gray-600">Email</p>
-                <p className="font-medium">{property?.owner?.email}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <Phone className="h-5 w-5 text-gray-600" />
-              <div>
-                <p className="text-sm text-gray-600">Phone Number</p>
-                <p className="font-medium">{property?.owner?.phoneNumber}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex gap-2 pt-4">
-            <Link className="flex-1" href={`tel:${property?.owner?.phoneNumber}`}>
-              <Button
-                // variant="outline"
-                className="w-full"
-              >
-                <div className="flex items-center gap-2 py-1">
-                  <Phone className="h-4 w-4 mr-2" />
-                  Call
-                </div>
-              </Button>
-            </Link>
-            <Link className="flex-1" href={`mailto:${property?.owner?.email}`}>
-              <Button
-                className="w-full"
-                // onClick={() => window.open(`mailto:${property?.owner?.email}`)}
-              >
-                <div className="flex items-center gap-2 py-1">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Email
-                </div>
-              </Button>
-            </Link>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

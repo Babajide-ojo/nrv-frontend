@@ -18,11 +18,13 @@ import SelectField from "@/app/components/shared/input-fields/SelectField";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
+import MultiImageUploader from "../../../shared/MultiImageUploader";
 
 const UpdatePropertyScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [fileError, setFileError] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<any>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -123,6 +125,12 @@ const UpdatePropertyScreen = () => {
     formData.append("state", propertyData.state);
     formData.append("zipCode", propertyData.zipCode);
     formData.append("file", selectedFiles);
+    
+    // Append multiple images
+    selectedImages.forEach((image) => {
+      formData.append("images", image);
+    });
+    
     formData.append("createdBy", user?._id);
 
     try {
@@ -137,6 +145,7 @@ const UpdatePropertyScreen = () => {
         zipCode: "",
       });
       setSelectedFiles([]);
+      setSelectedImages([]);
       setLoading(false);
       setCurrentAmountStep(1);
     } catch (error: any) {
@@ -159,6 +168,10 @@ const UpdatePropertyScreen = () => {
 
   const handleImageChange = (file: File) => {
     setSelectedFiles(file);
+  };
+
+  const handleImagesChange = (files: File[]) => {
+    setSelectedImages(files);
   };
 
   return (
@@ -240,6 +253,16 @@ const UpdatePropertyScreen = () => {
                       //selectedFiles={selectedFiles}
                       onChange={handleImageChange}
                      // error={errors.file}
+                    />
+                  </div>
+                  
+                  {/* Additional Property Images */}
+                  <div className="max-w-4xl mx-auto mt-8">
+                    <MultiImageUploader 
+                      label="Additional Property Images" 
+                      onChange={handleImagesChange}
+                      value={selectedImages}
+                      maxFiles={10}
                     />
                   </div>
                   <div className="flex justify-end mt-8">

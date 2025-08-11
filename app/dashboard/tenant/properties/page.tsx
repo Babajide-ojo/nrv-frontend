@@ -117,10 +117,10 @@ const TenantPropertiesScreen = () => {
               <div className="flex gap-5 items-center justify-between flex-wrap">
                 <div>
                   <div className="text-2xl text-nrvGreyBlack font-semibold">
-                    Explore Properties 🏠
+                    Available Rooms & Apartments 🏠
                   </div>
                   <div className="text-nrvLightGrey">
-                    View and apply for new property listed
+                    Browse and apply for available rooms and apartments
                   </div>
                 </div>
                 <Btn variant="outline" size="sm" className="gap-2">
@@ -238,24 +238,24 @@ const TenantPropertiesScreen = () => {
                 </div>
               </div>
               <div className="pt-8 text-nrvGreyBlack text-lg font-semibold">
-                Explore Properties
+                Available Rooms & Apartments
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                {properties?.map((property: any) => (
+                {properties?.map((room: any) => (
                   <div
-                    key={property.id}
+                    key={room._id}
                     className=""
                     onClick={() => {
                       router.push(
-                        `/dashboard/tenant/properties/${property._id}`
+                        `/dashboard/tenant/properties/${room._id}`
                       );
                     }}
                   >
                     <PropertyCard
-                      imageUrl={property?.file}
-                      address={property?.propertyId?.street}
-                      rentAmount={property?.rentAmount}
-                      property={property}
+                      imageUrl={room?.imageUrls?.[0] || room?.file || room?.propertyId?.file}
+                      address={`${room?.propertyId?.streetAddress || ''} ${room?.propertyId?.city || ''} ${room?.propertyId?.state || ''}`}
+                      rentAmount={room?.rentAmount}
+                      property={room}
                     />
                   </div>
                 ))}

@@ -18,6 +18,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { formatDisplayValue } from "@/helpers/utils";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
 
 const CreateRoom = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -37,11 +38,14 @@ const CreateRoom = () => {
     paymentOption: "",
     // availableUnits: "1",
     otherAmentities: [],
+    images: [],
     propertyId:
       typeof window !== "undefined"
         ? JSON.parse(localStorage.getItem("property") as any)?._id
         : "",
   });
+
+  console.log({roomData});
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -103,17 +107,52 @@ const CreateRoom = () => {
     }));
   };
 
+  const handleImagesChange = (files: File[]) => {
+    console.log('handleImagesChange called with:', files);
+    
+    // Validate file types
+    const validFiles = files.filter(file => {
+      const fileType = file.type.toLowerCase();
+      return fileType.startsWith('image/');
+    });
+    
+    if (validFiles.length !== files.length) {
+      toast.error("Some files were skipped. Only image files are allowed.");
+    }
+    
+    setRoomData((prevData: any) => ({
+      ...prevData,
+      images: validFiles,
+    }));
+    console.log('roomData.images updated to:', validFiles);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { description, rentAmount, noOfRooms, noOfBaths, file, propertyId } =
-      roomData;
+    const { 
+      description, 
+      rentAmount, 
+      noOfRooms, 
+      noOfBaths, 
+      propertyId,
+      apartmentStyle,
+      leaseTerms,
+      paymentOption,
+      apartmentType,
+      rentAmountMetrics
+    } = roomData;
 
     if (
       !description ||
       !rentAmount ||
       !noOfRooms ||
       !noOfBaths ||
-      !propertyId
+      !propertyId ||
+      !apartmentStyle ||
+      !leaseTerms ||
+      !paymentOption ||
+      !apartmentType ||
+      !rentAmountMetrics
     ) {
       toast.error("Please fill in all required fields.");
       return;
@@ -125,10 +164,24 @@ const CreateRoom = () => {
         formData.append("otherAmentities", JSON.stringify(value));
       } else if (key === "file" && value) {
         formData.append("file", value);
+      } else if (key === "images") {
+        // Skip here; images are appended as files below
       } else {
         formData.append(key, value as string);
       }
     });
+
+    // Add multiple images to formData
+    console.log('Submitting with roomData.images:', roomData.images);
+    roomData.images.forEach((file) => {
+      formData.append("images", file);
+    });
+    
+    // Debug: Log all FormData entries
+    console.log('FormData entries:');
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
 
     try {
       setLoading(true);
@@ -494,6 +547,16 @@ const CreateRoom = () => {
                         </label>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="mt-6 max-w-4xl mx-auto">
+                    <MultiImageUploader 
+                      label="Room Images" 
+                      onChange={handleImagesChange} 
+                      value={roomData.images}
+                      maxFiles={10}
+                      acceptedTypes=".png, .jpg, .jpeg, .gif"
+                    />
                   </div>
                 </div>
 

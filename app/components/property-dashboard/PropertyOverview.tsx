@@ -16,10 +16,11 @@ const PropertyOverview: React.FC<Data> = ({ data, img }) => {
   const router = useRouter();
   return (
     <div className="font-jakarta">
-      <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl">
-        <div className="grid grid-col-1 md:grid-cols-3 gap-4">
+      {/* Truncate long content instead of scrolling */}
+      <div className="bg-white max-w-full rounded-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data &&
-            data?.rooms?.map((item: any, index: any) => (
+            data?.rooms?.map((item: any) => (
               <div
                 key={item._id}
                 className="bg-white border border-[#F0F2F5] rounded-lg p-4 transition relative cursor-pointer"
@@ -33,7 +34,7 @@ const PropertyOverview: React.FC<Data> = ({ data, img }) => {
                   <div>
                     <img
                       src={data?.file}
-                      className="h-16 w-16 rounded-lg"
+                      className="h-16 w-16 rounded-lg object-cover"
                       alt="Property"
                     />
                   </div>
@@ -51,28 +52,30 @@ const PropertyOverview: React.FC<Data> = ({ data, img }) => {
                     </button>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <h3 className="text-md font-medium mb-2">
-                    {item?.propertyType}
-                  </h3>
-                  <p className="text-[13px] font-light text-[#101928] h-14">
-                    <span className="font-semibold text-[13px]">
-                      Description :
-                    </span>{" "}
+                <div className="mt-4 space-y-2">
+                  <h3 className="text-md font-medium">{item?.propertyType}</h3>
+                  {/* Clamp description to two lines with ellipsis */}
+                  <p
+                    className="text-[13px] font-light text-[#101928] break-words"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: "2",
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <span className="font-semibold text-[13px]">Description :</span>{" "}
                     {item?.description}
                   </p>
                   <p className="text-xs text-gray-400">
                     Added on {formatDateToWords(item.createdAt)}
                   </p>
-                  <div className="flex gap-2 w-full mt-4 justify-between border-t pt-2">
-                    <div className="text-[13px] font-medium text-[#1D2227]">
-                      ₦{item.rentAmount.toLocaleString()}{" "}
-                      <span className="text-[11px] text-[#646D75]">
-                        per annum
-                      </span>
+                  <div className="flex gap-2 w-full mt-2 justify-between border-t pt-2">
+                    <div className="text-[13px] font-medium text-[#1D2227] whitespace-nowrap">
+                      ₦{item.rentAmount.toLocaleString()} {" "}
+                      <span className="text-[11px] text-[#646D75]">per annum</span>
                     </div>
-                    <div className="text-[13px] font-medium italic text-[#045D23]">
-                      {" "}
+                    <div className="text-[13px] font-medium italic text-[#045D23] whitespace-nowrap">
                       View Details
                     </div>
                   </div>

@@ -41,20 +41,18 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
 
   useEffect(() => {
     const idFromQuery = searchParams.get("verificationId");
-    if (idFromQuery) {
-      setVerificationResponseId(idFromQuery);
-    }
     const fetchVerification = async () => {
       let verificationIdParam = idFromQuery || verificationId || "";
-      let tenantEmail = null;
+      let tenantEmail: string | null = null;
       if (typeof window !== "undefined") {
         const userStr = localStorage.getItem("nrv-user");
         if (userStr) {
           try {
             const userObj = JSON.parse(userStr);
-            tenantEmail = userObj?.user?.email || userObj?.email;
+            tenantEmail = userObj?.user?.email || userObj?.email || null;
           } catch {}
         }
+        if (!tenantEmail) tenantEmail = sessionStorage.getItem("verification-request-email");
       }
       if (!tenantEmail || !verificationIdParam) return;
       try {
@@ -73,6 +71,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
           setPrefilledData(prefill);
           setIsPrefilled(!!data._id);
           setVerificationId(data.verificationId || verificationIdParam);
+          if (data._id) setVerificationResponseId(data._id);
         }
       } catch {}
     };
@@ -110,14 +109,13 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
         alert('Verification ID missing.');
         return;
       }
-      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
       return;
     }
     if (!verificationResponseId) {
       alert('Verification response ID missing.');
       return;
     }
-    // Always update employment info
     const payload = {
       employmentStatus: formData.employmentStatus,
       roleInCompany: formData.role,
@@ -129,7 +127,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
     };
     try {
       await apiService.put(`/verification/${verificationResponseId}/employment`, payload);
-      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
     } catch (error: any) {
       alert(error.message || "Failed to update employment info.");
     }

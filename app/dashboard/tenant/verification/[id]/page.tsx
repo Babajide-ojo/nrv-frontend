@@ -1,6 +1,6 @@
 "use client";
 import PersonalInfoVerification from "@/app/components/dashboard/tenant/verification/PersonalInfoVerification";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdArrowBackIos } from "react-icons/md";
 import { FaCheck } from "react-icons/fa";
@@ -11,44 +11,82 @@ import IncomeAssessmentVerification from "@/app/components/dashboard/tenant/veri
 import { apiService } from "@/lib/api";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 
+const isRequestId = (s: string | null) => s && /^[a-f0-9]{24}$/i.test(s);
+
 const TenantVerificationIdPage = () => {
   const params = useParams();
-  const { id } = params;
+  const searchParams = useSearchParams();
+  const stepId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const verificationRequestId = searchParams.get("verificationId");
   const router = useRouter();
   const [verificationData, setVerificationData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [verificationRequest, setVerificationRequest] = useState<any>(null);
+
   useEffect(() => {
     const fetchVerificationData = async () => {
       setLoading(true);
+      setError(null);
       try {
-        let tenantEmail = null;
+        const requestIdForApi = verificationRequestId && isRequestId(verificationRequestId) ? verificationRequestId : null;
+        if (!requestIdForApi) {
+          setVerificationData(null);
+          setVerificationRequest(null);
+          setLoading(false);
+          setError("Verification link required. Please use the link from your landlord's email.");
+          return;
+        }
+        // 1) GET verification request first – populates form with landlord invite (email, names)
+        let requestData: any = null;
+        try {
+          const reqRes = await apiService.get(`/verification/${requestIdForApi}`);
+          requestData = reqRes?.data?.data ?? reqRes?.data ?? null;
+          setVerificationRequest(requestData);
+          if (requestData?.email && typeof window !== "undefined") {
+            sessionStorage.setItem("verification-request-email", requestData.email);
+          }
+        } catch {
+          setVerificationRequest(null);
+        }
+        // Allow form to render with request data first (loading done after request is set)
+        setLoading(false);
+
+        let tenantEmail: string | null = null;
         if (typeof window !== "undefined") {
           const userStr = localStorage.getItem("nrv-user");
           if (userStr) {
             try {
               const userObj = JSON.parse(userStr);
-              tenantEmail = userObj?.user?.email || userObj?.email;
+              tenantEmail = userObj?.user?.email || userObj?.email || null;
             } catch {}
           }
+          if (!tenantEmail) tenantEmail = sessionStorage.getItem("verification-request-email");
+          if (!tenantEmail && requestData?.email) tenantEmail = requestData.email;
         }
         if (!tenantEmail) {
           setVerificationData(null);
-          setLoading(false);
-          setError("Tenant email not found. Please sign in again.");
+          setError("Tenant email not found. Please use the link from your verification email or sign in.");
           return;
         }
-        const res = await apiService.get(`/verification/response/by-request/${id}?email=${encodeURIComponent(tenantEmail)}`);
-        setVerificationData(res?.data?.data || res?.data || null);
+        // 2) GET verification response by request + email (existing submission) – overlays form if present
+        try {
+          const res = await apiService.get(
+            `/verification/response/by-request/${requestIdForApi}?email=${encodeURIComponent(tenantEmail)}`
+          );
+          setVerificationData(res?.data?.data || res?.data || null);
+        } catch {
+          setVerificationData(null);
+        }
       } catch (err: any) {
         setVerificationData(null);
       } finally {
         setLoading(false);
       }
     };
-    if (id) fetchVerificationData();
-  }, [id]);
+    if (stepId) fetchVerificationData();
+  }, [stepId, verificationRequestId]);
 
   const stages = [
     { label: "Personal Information", value: "personal-info" },
@@ -57,11 +95,11 @@ const TenantVerificationIdPage = () => {
     { label: "Income Assessment", value: "income-assessment" },
   ];
 
-  const currentStageIndex = stages.findIndex((stage) => stage.value === id);
+  const currentStageIndex = stages.findIndex((stage) => stage.value === stepId);
 
   // Dynamic title function
   const getTitle = () => {
-    switch (id) {
+    switch (stepId) {
       case "personal-info":
         return "Your Personal Information";
       case "employment-info":
@@ -75,8 +113,11 @@ const TenantVerificationIdPage = () => {
     }
   };
 
-  // Ensure verificationId is always a string
-  const verificationId = Array.isArray(id) ? id.join("") : id;
+  // Use verification REQUEST id from query (for API and child). stepId is the step name (personal-info, etc.)
+  const verificationId =
+    verificationRequestId && isRequestId(verificationRequestId)
+      ? verificationRequestId
+      : stepId || "";
 
   if (loading) {
     return <div className="p-8 text-center">Loading...</div>;
@@ -115,13 +156,13 @@ const TenantVerificationIdPage = () => {
                       : "border-gray-200"
                   }`}
                 >
-                  <div
-                    className={`w-[18px] h-[18px] rounded-full flex items-center border justify-center text-[10px] font-medium ${
+                <div
+                  className={`w-[18px] h-[18px] rounded-full flex items-center border justify-center text-[10px] font-medium ${
                       index < currentStageIndex
                         ? "border-[#2B892B] bg-[#2B892B] text-white"
                         : index === currentStageIndex
-                        ? "border-[#2B892B] text-[#2B892B]"
-                        : "border-gray-200 text-gray-500"
+                          ? "border-[#2B892B] text-[#2B892B]"
+                          : "border-gray-200 text-gray-500"
                     }`}
                   >
                     {index < currentStageIndex ? (
@@ -150,12 +191,16 @@ const TenantVerificationIdPage = () => {
               </div>
             ))}
           </div>
-          {!["employment-info", "guarantor-info", "income-assessment"].includes(verificationId) && (
-            <PersonalInfoVerification verificationId={verificationId} initialData={verificationData} />
+          {stepId && !["employment-info", "guarantor-info", "income-assessment"].includes(stepId) && (
+            <PersonalInfoVerification
+              verificationId={verificationId}
+              initialData={verificationData}
+              requestData={verificationRequest}
+            />
           )}
-          {id === "employment-info" && <EmploymentInfoVerification initialData={verificationData} />}
-          {id === "guarantor-info" && <GuarantorInfoVerification initialData={verificationData} />}
-          {id === "income-assessment" && <IncomeAssessmentVerification initialData={verificationData} />}
+          {stepId === "employment-info" && <EmploymentInfoVerification initialData={verificationData} />}
+          {stepId === "guarantor-info" && <GuarantorInfoVerification initialData={verificationData} />}
+          {stepId === "income-assessment" && <IncomeAssessmentVerification initialData={verificationData} />}
         </div>
       </div>
     </div>

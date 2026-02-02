@@ -11,9 +11,11 @@ import { apiService } from "@/lib/api";
 interface PersonalInfoVerificationProps {
   verificationId: string | string[];
   initialData?: any;
+  /** Verification request (firstName, lastName, email) from parent - avoids duplicate API calls */
+  requestData?: { firstName?: string; lastName?: string; email?: string } | null;
 }
 
-const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialData }: PersonalInfoVerificationProps) => {
+const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialData, requestData: requestDataProp }: PersonalInfoVerificationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [openDate, setOpenDate] = useState(false);
@@ -51,27 +53,103 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     }));
   };
 
+  const prefillFromRequest = (req: { firstName?: string; lastName?: string; email?: string }) => {
+    if (!req) return;
+    setFormData((prev) => ({
+      ...prev,
+      firstName: req.firstName || prev.firstName,
+      lastName: req.lastName || prev.lastName,
+      email: req.email || prev.email,
+    }));
+    setPrefilledData((prev) => ({
+      ...prev,
+      firstName: req.firstName || prev.firstName,
+      lastName: req.lastName || prev.lastName,
+      email: req.email || prev.email,
+    }));
+  };
+
   useEffect(() => {
-    const idFromQuery = searchParams.get("verificationId");
-    if (idFromQuery) {
-      setVerificationResponseId(idFromQuery);
+    // Parent already fetched request + response: use them and skip API calls
+    if (requestDataProp !== undefined) {
+      // 1) Populate form first from GET /verification/:id (verification request – landlord invite)
+      if (requestDataProp) {
+        prefillFromRequest(requestDataProp);
+      }
+      // 2) Overlay GET /verification/response/by-request/:id data if present (saved submission)
+      if (initialData) {
+        let firstName = initialData.firstName || "";
+        let lastName = initialData.lastName || "";
+        if ((!firstName || !lastName) && initialData.fullName) {
+          const [first, ...rest] = initialData.fullName.split(" ");
+          firstName = first || "";
+          lastName = rest.join(" ") || rest.join(" ");
+        }
+        setFormData((prev) => ({
+          ...prev,
+          firstName: firstName || prev.firstName,
+          lastName: lastName || prev.lastName,
+          email: initialData.email || prev.email,
+          phoneNumber: initialData.phone || prev.phoneNumber,
+          dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
+          gender: initialData.gender || prev.gender,
+          address: initialData.address || prev.address,
+        }));
+        setPrefilledData((prev) => ({
+          ...prev,
+          firstName: firstName || prev.firstName,
+          lastName: lastName || prev.lastName,
+          email: initialData.email || prev.email,
+          phoneNumber: initialData.phone || prev.phoneNumber,
+          dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
+          gender: initialData.gender || prev.gender,
+          address: initialData.address || prev.address,
+        }));
+        setIsPrefilled(!!initialData._id);
+        setVerificationId(initialData.verificationId || verificationId);
+        if (initialData._id) setVerificationResponseId(initialData._id);
+      }
+      return;
     }
+
+    const idFromQuery = searchParams.get("verificationId");
+    const verificationIdParam = idFromQuery || verificationId || "";
+
     const fetchVerification = async () => {
-      let verificationIdParam = idFromQuery || verificationId || "";
-      let tenantEmail = null;
+      let tenantEmail: string | null = null;
       if (typeof window !== "undefined") {
         const userStr = localStorage.getItem("nrv-user");
         if (userStr) {
           try {
             const userObj = JSON.parse(userStr);
-            tenantEmail = userObj?.user?.email || userObj?.email;
+            tenantEmail = userObj?.user?.email || userObj?.email || null;
           } catch {}
         }
+        if (!tenantEmail) {
+          tenantEmail = sessionStorage.getItem("verification-request-email");
+        }
       }
-      if (!tenantEmail || !verificationIdParam) return;
+
+      if (!verificationIdParam) return;
+
+      // Fetch verification request once to get firstName, lastName, email for prefill (and tenantEmail if missing)
+      let requestData: { firstName?: string; lastName?: string; email?: string } | null = null;
+      try {
+        const reqRes = await apiService.get(`/verification/${verificationIdParam}`);
+        requestData = reqRes?.data?.data ?? reqRes?.data ?? null;
+        if (requestData?.email) {
+          if (!tenantEmail) tenantEmail = requestData.email;
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("verification-request-email", requestData.email);
+          }
+        }
+      } catch {}
+
+      if (!tenantEmail) return;
+
       try {
         const res = await apiService.get(`/verification/response/by-request/${verificationIdParam}?email=${encodeURIComponent(tenantEmail)}`);
-        const data = res?.data?.data || res?.data || null;
+        const data = res?.data?.data ?? res?.data ?? null;
         if (data) {
           let firstName = data.firstName || "";
           let lastName = data.lastName || "";
@@ -93,11 +171,18 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           setPrefilledData(prefill);
           setIsPrefilled(!!data._id);
           setVerificationId(data.verificationId || verificationIdParam);
+          if (data._id) setVerificationResponseId(data._id);
+        } else {
+          // No existing response yet: prefill first name, last name, email from the verification request
+          if (requestData) prefillFromRequest(requestData);
         }
-      } catch {}
+      } catch {
+        // 404 or network error: no response yet, still prefill from request
+        if (requestData) prefillFromRequest(requestData);
+      }
     };
     fetchVerification();
-  }, [searchParams, verificationId]);
+  }, [searchParams, verificationId, initialData, requestDataProp]);
 
   const formKeys = [
     "firstName",
@@ -123,7 +208,8 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
         alert('Verification ID missing.');
         return;
       }
-      router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationResponseId}`);
+      // Keep REQUEST id in URL so next step can fetch by-request/requestId?email=
+      router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
       return;
     }
     // Always create a new verification response
@@ -133,7 +219,16 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       const date = new Date(formData.dateOfBirth);
       dateOfBirthISO = date.toISOString();
     }
-    const createdBy = JSON.parse(localStorage.getItem("nrv-user") as any).user?._id || "";
+    let createdBy = "";
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = localStorage.getItem("nrv-user");
+        if (userStr) {
+          const userObj = JSON.parse(userStr);
+          createdBy = userObj?.user?._id || userObj?._id || "";
+        }
+      } catch {}
+    }
     const payload = {
       fullName,
       dateOfBirth: dateOfBirthISO,
@@ -146,13 +241,12 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     };
     try {
       const response: any = await apiService.post("/verification", payload);
-      const returnedVerificationId = response?.data?._id || response?._id;
-      if (returnedVerificationId) {
-        localStorage.setItem("verificationResponseId", returnedVerificationId);
-        router.push(`/dashboard/tenant/verification/employment-info?verificationId=${returnedVerificationId}`);
-      } else {
-        alert("Verification ID not returned from server.");
+      const returnedResponseId = response?.data?._id || response?._id;
+      if (returnedResponseId) {
+        localStorage.setItem("verificationResponseId", returnedResponseId);
       }
+      // Pass REQUEST id in URL so employment step can fetch by-request/requestId?email=
+      router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
     } catch (error: any) {
       alert(error.message || "Failed to submit verification.");
     }

@@ -206,10 +206,8 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
 
   useEffect(() => {
     const idFromQuery = searchParams.get("verificationId");
-    if (idFromQuery) {
-      setVerificationResponseId(idFromQuery);
-    }
     if (initialData) {
+      if (initialData._id) setVerificationResponseId(initialData._id);
       setFormData({
         bankStatement: null,
         utilityBill: null,
@@ -225,21 +223,23 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
     }
     const fetchVerification = async () => {
       let verificationIdParam = idFromQuery || verificationId || "";
-      let tenantEmail = null;
+      let tenantEmail: string | null = null;
       if (typeof window !== "undefined") {
         const userStr = localStorage.getItem("nrv-user");
         if (userStr) {
           try {
             const userObj = JSON.parse(userStr);
-            tenantEmail = userObj?.user?.email || userObj?.email;
+            tenantEmail = userObj?.user?.email || userObj?.email || null;
           } catch {}
         }
+        if (!tenantEmail) tenantEmail = sessionStorage.getItem("verification-request-email");
       }
       if (!tenantEmail || !verificationIdParam) return;
       try {
         const res = await apiService.get(`/verification/response/by-request/${verificationIdParam}?email=${encodeURIComponent(tenantEmail)}`);
         const data = res?.data?.data || res?.data || null;
         if (data) {
+          if (data._id) setVerificationResponseId(data._id);
           setFormData({
             bankStatement: null,
             utilityBill: null,

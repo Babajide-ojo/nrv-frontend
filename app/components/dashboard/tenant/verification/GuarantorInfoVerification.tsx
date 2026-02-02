@@ -37,10 +37,8 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
 
   useEffect(() => {
     const idFromQuery = searchParams.get("verificationId");
-    if (idFromQuery) {
-      setVerificationResponseId(idFromQuery);
-    }
     if (initialData) {
+      if (initialData._id) setVerificationResponseId(initialData._id);
       const prefill = {
         firstName: initialData.guarantorFirstName || "",
         lastName: initialData.guarantorLastName || "",
@@ -67,21 +65,23 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
     }
     const fetchVerification = async () => {
       let verificationIdParam = idFromQuery || verificationId || "";
-      let tenantEmail = null;
+      let tenantEmail: string | null = null;
       if (typeof window !== "undefined") {
         const userStr = localStorage.getItem("nrv-user");
         if (userStr) {
           try {
             const userObj = JSON.parse(userStr);
-            tenantEmail = userObj?.user?.email || userObj?.email;
+            tenantEmail = userObj?.user?.email || userObj?.email || null;
           } catch {}
         }
+        if (!tenantEmail) tenantEmail = sessionStorage.getItem("verification-request-email");
       }
       if (!tenantEmail || !verificationIdParam) return;
       try {
         const res = await apiService.get(`/verification/response/by-request/${verificationIdParam}?email=${encodeURIComponent(tenantEmail)}`);
         const data = res?.data?.data || res?.data || null;
         if (data) {
+          if (data._id) setVerificationResponseId(data._id);
           const prefill = {
             firstName: data.guarantorFirstName || "",
             lastName: data.guarantorLastName || "",
@@ -149,14 +149,13 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
         alert('Verification ID missing.');
         return;
       }
-      router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationResponseId}`);
+      router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
       return;
     }
     if (!verificationResponseId) {
       alert('Verification response ID missing.');
       return;
     }
-    // Always update guarantor info
     const payload = {
       guarantorFirstName: formData.firstName,
       guarantorLastName: formData.lastName,
@@ -169,7 +168,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
     };
     try {
       await apiService.put(`/verification/${verificationResponseId}/guarantor`, payload);
-      router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationResponseId}`);
+      router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
     } catch (error: any) {
       alert(error.message || "Failed to update guarantor info.");
     }
@@ -273,7 +272,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
                 alert('Verification ID missing.');
                 return;
               }
-              router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationResponseId}`);
+              router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
             }}
           >
             Next

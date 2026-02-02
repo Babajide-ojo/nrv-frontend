@@ -1,58 +1,99 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { apiService } from "@/lib/api";
 
 const TenantVerificationSummaryPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const verificationIdFromUrl = searchParams.get("verificationId");
   const [response, setResponse] = useState<any>(null);
+  const [request, setRequest] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get user email from localStorage
-    let userEmail = null;
-    if (typeof window !== "undefined") {
-      const userStr = localStorage.getItem("nrv-user");
-      if (userStr) {
+    const run = async () => {
+      setLoading(true);
+      // If we have verificationId from the invite link, fetch the verification request and use its email
+      if (verificationIdFromUrl) {
         try {
-          const userObj = JSON.parse(userStr);
-          userEmail = userObj?.user?.email || userObj?.email;
-        } catch {}
+          const reqRes = await apiService.get(`/verification/${verificationIdFromUrl}`);
+          const req = reqRes?.data?.data ?? reqRes?.data ?? null;
+          setRequest(req);
+          if (req && typeof window !== "undefined") {
+            if (req.email) sessionStorage.setItem("verification-request-email", req.email);
+            if (req.firstName) sessionStorage.setItem("verification-request-firstName", req.firstName);
+            if (req.lastName) sessionStorage.setItem("verification-request-lastName", req.lastName);
+          }
+          // Check if tenant already submitted a response for this request
+          if (req?.email) {
+            try {
+              const resRes = await apiService.get(
+                `/verification/response/by-request/${verificationIdFromUrl}?email=${encodeURIComponent(req.email)}`
+              );
+              const resData = resRes?.data?.data ?? resRes?.data ?? null;
+              setResponse(resData);
+            } catch {
+              setResponse(null);
+            }
+          } else {
+            setResponse(null);
+          }
+        } catch {
+          setRequest(null);
+          setResponse(null);
+        } finally {
+          setLoading(false);
+          return;
+        }
       }
-    }
-    if (!userEmail) {
-      setLoading(false);
-      setResponse(null);
-      return;
-    }
-    fetchResponse(userEmail);
-    // eslint-disable-next-line
-  }, []);
-
-  const fetchResponse = async (email: string) => {
-    setLoading(true);
-    try {
-      const res = await apiService.get(`/verification/response/user/${email}`);
-      setResponse(res?.data || null);
-    } catch (error) {
-      setResponse(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+      // No verificationId: use logged-in user email
+      let userEmail: string | null = null;
+      if (typeof window !== "undefined") {
+        const userStr = localStorage.getItem("nrv-user");
+        if (userStr) {
+          try {
+            const userObj = JSON.parse(userStr);
+            userEmail = userObj?.user?.email || userObj?.email || null;
+          } catch {}
+        }
+      }
+      if (!userEmail) {
+        setLoading(false);
+        setResponse(null);
+        return;
+      }
+      try {
+        const res = await apiService.get(`/verification/response/user/${userEmail}`);
+        setResponse(res?.data ?? null);
+      } catch {
+        setResponse(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
+  }, [verificationIdFromUrl]);
 
   if (loading) {
     return <div className="p-8 text-center">Loading...</div>;
   }
 
   if (!response) {
+    const startUrl = verificationIdFromUrl
+      ? `/dashboard/tenant/verification/personal-info?verificationId=${verificationIdFromUrl}`
+      : "/dashboard/tenant/verification/personal-info";
     return (
       <div className="max-w-xl mx-auto w-full p-3 bg-white rounded-lg text-center">
         <h2 className="text-2xl font-bold mb-4">No Verification Found</h2>
-        <p className="mb-4">You have not started or completed a verification yet.</p>
+        <p className="mb-4">
+          {request
+            ? "Complete the form below to submit your verification to your landlord."
+            : "You have not started or completed a verification yet."}
+        </p>
         <button
           className="bg-nrvPrimaryGreen text-white px-6 py-2 rounded"
-          onClick={() => router.push("/dashboard/tenant/verification/personal-info")}
+          onClick={() => router.push(startUrl)}
         >
           Start Verification
         </button>

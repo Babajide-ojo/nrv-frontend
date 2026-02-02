@@ -72,12 +72,16 @@ const TenantPropertiesScreen = () => {
     monthlyIncome: "",
     currentResidence: "",
     reasonForLeaving: "",
+    jobTitle: "",
+    desiredMoveInDate: new Date(),
+    ownerId: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [formData, setFormData] = useState<any>(null);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -839,45 +843,41 @@ const TenantPropertiesScreen = () => {
                               </div>
                             </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
-                              <Button
-                                type="button"
-                                size="large"
-                                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
-                                variant="lightGrey"
-                                showIcon={false}
-                                onClick={() => {
-                                  resetForm();
-                                  setCurrentStep(1);
-                                }}
-                              >
-                            
-                                Back to Property
-                              </Button>
-                              <Button
-                                type="submit"
-                                size="large"
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
-                                variant="darkPrimary"
-                                showIcon={false}
-                                disabled={isSubmitting}
-                              >
-                                {isSubmitting ? (
-                                  <div className="flex items-center">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    Submitting...
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center">
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    Submit Application
-                                  </div>
-                                )}
-                              </Button>
-                            </div>
+                                                         {/* Action Buttons */}
+                             <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                               <Button
+                                 type="button"
+                                 size="large"
+                                 className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                                 variant="lightGrey"
+                                 showIcon={false}
+                                 onClick={() => {
+                                   resetForm();
+                                   setCurrentStep(1);
+                                 }}
+                               >
+                             
+                                 Back to Property
+                               </Button>
+                               <Button
+                                 type="button"
+                                 size="large"
+                                 className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                                 variant="darkPrimary"
+                                 showIcon={false}
+                                 onClick={() => {
+                                   setFormData(values);
+                                   setCurrentStep(3);
+                                 }}
+                               >
+                                 <div className="flex items-center">
+                                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                   </svg>
+                                   Continue to Review
+                                 </div>
+                               </Button>
+                             </div>
 
                             {/* Application Tips */}
                             <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
@@ -906,7 +906,224 @@ const TenantPropertiesScreen = () => {
                 </div>
               </div>
             )}
-          </TenantLayout>
+
+            {/* Review & Submit Step */}
+            {currentStep === 3 && (
+              <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
+                <div className="max-w-4xl mx-auto">
+                  {/* Progress Indicator */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-center mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-green-600">Property Selected</p>
+                          </div>
+                        </div>
+                        
+                        <div className="w-12 h-0.5 bg-green-200"></div>
+                        
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-green-600">Application Form</p>
+                          </div>
+                        </div>
+                        
+                        <div className="w-12 h-0.5 bg-gray-200"></div>
+                        
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div className="ml-2">
+                            <p className="text-xs font-medium text-gray-400">Review & Submit</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Review Container */}
+                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 text-white">
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setCurrentStep(2)}
+                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105"
+                        >
+                          <ArrowLeft className="w-5 h-5" />
+                        </button>
+                        <div>
+                          <h2 className="text-xl font-bold">
+                            Review & Submit Application 📋
+                          </h2>
+                          <p className="text-green-100 text-sm mt-1">
+                            Review your application details before final submission
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Review Content */}
+                    <div className="p-6">
+                      {/* Property Summary Card */}
+                      <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                              <Building className="w-6 h-6 text-green-600" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-gray-800">
+                                {property?.apartmentType} • {property?.apartmentStyle}
+                              </h3>
+                              <p className="text-gray-600 text-sm">{property?.address}</p>
+                              <p className="text-xl font-bold text-green-600 mt-1">
+                                ₦{property?.price?.toLocaleString()}/year
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-xs text-gray-500">Unit Number</div>
+                            <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Application Details Review */}
+                      <div className="space-y-6">
+                        {/* Personal Information Review */}
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                            Personal Information
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Current Residence Address</p>
+                              <p className="text-gray-800 font-semibold">{formData?.currentResidence || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Job Title / Business Type</p>
+                              <p className="text-gray-800 font-semibold">{formData?.jobTitle || 'Not provided'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Employment Review */}
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                            Employment & Income
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Current Employer</p>
+                              <p className="text-gray-800 font-semibold">{formData?.currentEmployer || 'Not provided'}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Monthly Income</p>
+                              <p className="text-gray-800 font-semibold">₦{formData?.monthlyIncome || 'Not provided'}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Move-in Details Review */}
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                            <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+                            Move-in Details
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Desired Move-in Date</p>
+                              <p className="text-gray-800 font-semibold">
+                                {formData?.desiredMoveInDate ? new Date(formData.desiredMoveInDate).toLocaleDateString() : 'Not provided'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-500 font-medium mb-1">Reason for Moving</p>
+                              <p className="text-gray-800 font-semibold">{formData?.reasonForLeaving || 'Not provided'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                        <Button
+                          type="button"
+                          size="large"
+                          className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                          variant="lightGrey"
+                          showIcon={false}
+                          onClick={() => setCurrentStep(2)}
+                        >
+                          Back to Edit
+                        </Button>
+                        <Button
+                          type="button"
+                          size="large"
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                          variant="darkPrimary"
+                          showIcon={false}
+                          onClick={() => handleSubmit(formData)}
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <div className="flex items-center">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Submitting...
+                            </div>
+                          ) : (
+                            <div className="flex items-center">
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              Submit Application
+                            </div>
+                          )}
+                        </Button>
+                      </div>
+
+                      {/* Final Review Tips */}
+                      <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h5 className="font-medium text-blue-800 mb-2 text-sm">Final Review Checklist</h5>
+                            <ul className="text-xs text-blue-700 space-y-1">
+                              <li>• All personal information is accurate and complete</li>
+                              <li>• Employment details are up-to-date</li>
+                              <li>• Move-in date is realistic and works for you</li>
+                              <li>• You're ready to proceed with the application</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
           {/* Enhanced Contact Modal */}
           <CenterModal
@@ -1132,6 +1349,7 @@ const TenantPropertiesScreen = () => {
               </div>
             </DialogContent>
           </Dialog>
+        </TenantLayout>
         </ProtectedRoute>
       )}
     </div>

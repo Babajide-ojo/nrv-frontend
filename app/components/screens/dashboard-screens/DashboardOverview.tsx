@@ -1,8 +1,10 @@
 import { Avatar } from "@mui/material";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { AvatarGenerator } from "random-avatar-generator";
+import { API_URL } from "@/config/constant";
+import { getRelativeTime } from "@/helpers/utils";
 
 // Types
 interface Activity {
@@ -11,35 +13,17 @@ interface Activity {
   time: string;
 }
 
+interface ApiActivity {
+  type: string;
+  details: string;
+  createdAt: string;
+}
+
 interface QuickLink {
   title: string;
   description: string;
   buttonText: string;
 }
-
-// Constants
-const RECENT_ACTIVITIES: Activity[] = [
-  {
-    name: "New Tenant Approved",
-    details: "Tunde Adeyemi approved for Property A",
-    time: "3 hours ago",
-  },
-  {
-    name: "Rent Payment Received",
-    details: "₦200,000 received for Property B",
-    time: "4 hours ago",
-  },
-  {
-    name: "Maintenance Request Submitted",
-    details: "Plumbing issue reported for Property C",
-    time: "4 hours ago",
-  },
-  {
-    name: "Rent Payment Received",
-    details: "₦2,700,000 received for Property G",
-    time: "4 hours ago",
-  },
-];
 
 const QUICK_LINK: QuickLink = {
   title: "Tenant Verification",
@@ -148,22 +132,76 @@ const ActivityItem: React.FC<Activity> = ({ name, details, time }) => (
   </li>
 );
 
-const RecentActivitiesSection: React.FC = () => (
+const RecentActivitiesSection: React.FC<{
+  activities: Activity[];
+  isLoading: boolean;
+}> = ({ activities, isLoading }) => (
   <div className="p-4 border rounded-lg shadow-sm">
     <h3 className="font-semibold">Recent Activities</h3>
     <ul className="mt-3 space-y-6">
-      {RECENT_ACTIVITIES.map((activity, index) => (
-        <ActivityItem key={index} {...activity} />
-      ))}
+      {isLoading ? (
+        <li className="text-sm text-gray-500">Loading activities...</li>
+      ) : activities.length === 0 ? (
+        <li className="text-sm text-gray-500">No recent activities yet</li>
+      ) : (
+        activities.map((activity, index) => (
+          <ActivityItem key={index} {...activity} />
+        ))
+      )}
     </ul>
   </div>
 );
 
-const DashboardOverview: React.FC = () => {
-  const [showVerification, setShowVerification] = useState<boolean>(false);
+interface DashboardOverviewProps {
+  activities?: Activity[];
+  isLoading?: boolean;
+}
 
-  // Memoized avatar generator to prevent unnecessary re-renders
-  const avatarGenerator = useMemo(() => new AvatarGenerator(), []);
+const DashboardOverview: React.FC<DashboardOverviewProps> = ({
+  activities: activitiesProp = [],
+  isLoading: isLoadingProp = false,
+}) => {
+  const [showVerification, setShowVerification] = useState<boolean>(false);
+  const [localActivities, setLocalActivities] = useState<Activity[]>([]);
+  const [localLoading, setLocalLoading] = useState(true);
+
+  // Use props when provided (from parent dashboard), otherwise fetch
+  const activities = activitiesProp.length > 0 ? activitiesProp : localActivities;
+  const activitiesLoading =
+    activitiesProp.length > 0 ? isLoadingProp : localLoading;
+
+  useEffect(() => {
+    if (activitiesProp.length > 0) return;
+
+    const fetchActivities = async () => {
+      try {
+        const userData = localStorage.getItem("nrv-user");
+        const userId = userData ? JSON.parse(userData)?.user?._id : null;
+        if (!userId) {
+          setLocalActivities([]);
+          return;
+        }
+        const response = await fetch(
+          `${API_URL}/activities?userId=${userId}&limit=20`
+        );
+        const result = await response.json();
+        if (result.status === "success" && result.data) {
+          const mapped: Activity[] = result.data.map((a: ApiActivity) => ({
+            name: a.type,
+            details: a.details,
+            time: getRelativeTime(a.createdAt),
+          }));
+          setLocalActivities(mapped);
+        }
+      } catch (error) {
+        console.error("Error fetching activities:", error);
+        setLocalActivities([]);
+      } finally {
+        setLocalLoading(false);
+      }
+    };
+    fetchActivities();
+  }, [activitiesProp.length]);
 
   const handleDismissVerification = () => {
     setShowVerification(false);
@@ -180,7 +218,10 @@ const DashboardOverview: React.FC = () => {
       <QuickLinksSection />
 
       {/* Recent Activities */}
-      <RecentActivitiesSection />
+      <RecentActivitiesSection
+        activities={activities}
+        isLoading={activitiesLoading}
+      />
     </div>
   );
 };

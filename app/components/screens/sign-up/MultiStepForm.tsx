@@ -358,7 +358,8 @@ const MultiStepForm = () => {
             </h1>
             <div className="flex justify-end items-center">
               <button
-                className="text-center text-gray-500 mt-2 cursor-pointer"
+                type="button"
+                className="text-center text-gray-500 mt-2 cursor-pointer hover:text-gray-700"
                 onClick={() => router.push("/dashboard/landlord")}
               >
                 Skip for Now →

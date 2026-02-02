@@ -25,6 +25,8 @@ import {
   FaUserShield,
 } from "react-icons/fa";
 import DashboardOverview from "./DashboardOverview";
+import { API_URL } from "@/config/constant";
+import { getRelativeTime } from "@/helpers/utils";
 
 // Types
 interface User {
@@ -37,6 +39,10 @@ interface DashboardCounts {
   totalNew?: number;
   totalAccepted?: number;
   totalActiveTenants?: number;
+  totalPropertiesLastMonth?: number;
+  totalNewLastMonth?: number;
+  totalAcceptedLastMonth?: number;
+  totalActiveTenantsLastMonth?: number;
 }
 
 interface MetricCard {
@@ -60,20 +66,32 @@ interface ChartDataPoint {
   expenses: number;
 }
 
-// Constants
-const CHART_DATA: ChartDataPoint[] = [
+interface DashboardActivity {
+  type: string;
+  details: string;
+  createdAt: string;
+}
+
+interface DashboardActivityDisplay {
+  name: string;
+  details: string;
+  time: string;
+}
+
+// Fallback when no backend data
+const EMPTY_CHART_DATA: ChartDataPoint[] = [
   { month: "Jan", income: 0, expenses: 0 },
-  { month: "Feb", income: 30000000, expenses: 15000000 },
-  { month: "Mar", income: 40000000, expenses: 12000000 },
-  { month: "Apr", income: 42000000, expenses: 14000000 },
-  { month: "May", income: 35000000, expenses: 13000000 },
-  { month: "Jun", income: 38000000, expenses: 12500000 },
-  { month: "Jul", income: 39000000, expenses: 13500000 },
-  { month: "Aug", income: 40000000, expenses: 14000000 },
-  { month: "Sept", income: 37000000, expenses: 12000000 },
-  { month: "Oct", income: 36000000, expenses: 13000000 },
-  { month: "Nov", income: 38000000, expenses: 14000000 },
-  { month: "Dec", income: 39000000, expenses: 12500000 },
+  { month: "Feb", income: 0, expenses: 0 },
+  { month: "Mar", income: 0, expenses: 0 },
+  { month: "Apr", income: 0, expenses: 0 },
+  { month: "May", income: 0, expenses: 0 },
+  { month: "Jun", income: 0, expenses: 0 },
+  { month: "Jul", income: 0, expenses: 0 },
+  { month: "Aug", income: 0, expenses: 0 },
+  { month: "Sept", income: 0, expenses: 0 },
+  { month: "Oct", income: 0, expenses: 0 },
+  { month: "Nov", income: 0, expenses: 0 },
+  { month: "Dec", income: 0, expenses: 0 },
 ];
 
 const DASHBOARD_ACTIONS: ActionCard[] = [
@@ -125,6 +143,13 @@ const formatCurrency = (amount: number): string => {
   return `₦${(amount / 1000000).toFixed(1)}M`;
 };
 
+const getPercentChange = (current: number, previous: number): string => {
+  if (previous === 0) return current > 0 ? "+100%" : "0%";
+  const change = Math.round(((current - previous) / previous) * 100);
+  const sign = change >= 0 ? "+" : "";
+  return `${sign}${change}%`;
+};
+
 const getStoredUser = (): User | null => {
   try {
     const userData = localStorage.getItem("nrv-user");
@@ -136,22 +161,34 @@ const getStoredUser = (): User | null => {
 };
 
 // Components
-const MetricCard: React.FC<MetricCard> = ({ title, count, change, icon }) => (
-  <div className="p-3 border bg-white flex items-start">
-    <div>
-      <p className="text-[#767484] text-sm">{title}</p>
-      <p className="text-3xl font-semibold my-6">{count || 0}</p>
-      <div className="flex items-center gap-2 mt-2 text-xs text-[#8D8B99]">
-        <FaChartLine
-          className="bg-green-100 p-1 rounded text-green-600"
-          size={18}
-        />
-        <span>{change} compared to last month</span>
+const MetricCard: React.FC<MetricCard> = ({ title, count, change, icon }) => {
+  const isPositive = change.startsWith("+") && change !== "+0%";
+  const isNegative = change.startsWith("-");
+  const changeColor = isPositive
+    ? "text-green-600"
+    : isNegative
+    ? "text-red-600"
+    : "text-[#8D8B99]";
+
+  return (
+    <div className="p-3 border bg-white flex items-start">
+      <div>
+        <p className="text-[#767484] text-sm">{title}</p>
+        <p className="text-3xl font-semibold my-6">{count || 0}</p>
+        <div className={`flex items-center gap-2 mt-2 text-xs ${changeColor}`}>
+          <FaChartLine
+            className={`p-1 rounded ${
+              isPositive ? "bg-green-100 text-green-600" : isNegative ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
+            }`}
+            size={18}
+          />
+          <span>{change} compared to last month</span>
+        </div>
       </div>
+      <img src={icon} alt={title} />
     </div>
-    <img src={icon} alt={title} />
-  </div>
-);
+  );
+};
 
 const ActionCard: React.FC<ActionCard & { onClick: () => void }> = ({ 
   title, 
@@ -251,47 +288,82 @@ const DashboardScreen: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [counts, setCounts] = useState<DashboardCounts>({});
+  const [chartData, setChartData] = useState<ChartDataPoint[]>(EMPTY_CHART_DATA);
+  const [activities, setActivities] = useState<DashboardActivityDisplay[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Memoized metrics data
-  const metrics = useMemo((): MetricCard[] => [
-    {
-      title: "Total Properties",
-      count: counts.totalProperties || 0,
-      change: "+15%",
-      icon: METRIC_ICONS.properties,
-    },
-    {
-      title: "Total Leads & Applicants",
-      count: (counts.totalNew || 0) + (counts.totalAccepted || 0),
-      change: "+15%",
-      icon: METRIC_ICONS.leads,
-    },
-    {
-      title: "Total Tenants",
-      count: counts.totalActiveTenants || 0,
-      change: "-15%",
-      icon: METRIC_ICONS.tenants,
-    },
-  ], [counts]);
+  // Memoized metrics data with real % change from backend
+  const metrics = useMemo((): MetricCard[] => {
+    const totalProperties = counts.totalProperties ?? 0;
+    const totalLeads = (counts.totalNew ?? 0) + (counts.totalAccepted ?? 0);
+    const totalTenants = counts.totalActiveTenants ?? 0;
+    const totalPropertiesLastMonth = counts.totalPropertiesLastMonth ?? 0;
+    const totalLeadsLastMonth = (counts.totalNewLastMonth ?? 0) + (counts.totalAcceptedLastMonth ?? 0);
+    const totalTenantsLastMonth = counts.totalActiveTenantsLastMonth ?? 0;
 
-  // Fetch dashboard data
+    return [
+      {
+        title: "Total Properties",
+        count: totalProperties,
+        change: getPercentChange(totalProperties, totalPropertiesLastMonth),
+        icon: METRIC_ICONS.properties,
+      },
+      {
+        title: "Total Leads & Applicants",
+        count: totalLeads,
+        change: getPercentChange(totalLeads, totalLeadsLastMonth),
+        icon: METRIC_ICONS.leads,
+      },
+      {
+        title: "Total Tenants",
+        count: totalTenants,
+        change: getPercentChange(totalTenants, totalTenantsLastMonth),
+        icon: METRIC_ICONS.tenants,
+      },
+    ];
+  }, [counts]);
+
+  // Fetch dashboard data (metrics, activities, financial)
   const fetchDashboardData = useCallback(async () => {
     const currentUser = getStoredUser();
     if (!currentUser?._id) {
       setIsLoading(false);
+      setActivitiesLoading(false);
       return;
     }
 
     setUser(currentUser);
 
     try {
-      const response = await dispatch(getApplicationCount({ id: currentUser._id }) as any);
-      setCounts(response.payload.data || {});
+      const [metricsResponse, dashboardResponse] = await Promise.all([
+        dispatch(getApplicationCount({ id: currentUser._id }) as any),
+        fetch(`${API_URL}/dashboard?userId=${currentUser._id}&limit=20`),
+      ]);
+
+      setCounts(metricsResponse.payload?.data || {});
+
+      const dashboardResult = await dashboardResponse.json();
+      if (dashboardResult.status === "success" && dashboardResult.data) {
+        const { activities: apiActivities, financialData } = dashboardResult.data;
+        if (apiActivities?.length) {
+          setActivities(
+            apiActivities.map((a: DashboardActivity) => ({
+              name: a.type,
+              details: a.details,
+              time: getRelativeTime(a.createdAt),
+            }))
+          );
+        }
+        if (financialData?.length) {
+          setChartData(financialData);
+        }
+      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
       setIsLoading(false);
+      setActivitiesLoading(false);
     }
   }, [dispatch]);
 
@@ -351,11 +423,14 @@ const DashboardScreen: React.FC = () => {
           </div>
 
           {/* Financial Chart */}
-          <FinancialChart data={CHART_DATA} />
+          <FinancialChart data={chartData} />
         </div>
 
         <div className="w-full md:w-1/3">
-          <DashboardOverview />
+          <DashboardOverview
+            activities={activities}
+            isLoading={activitiesLoading}
+          />
         </div>
       </div>
     </div>

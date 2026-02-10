@@ -39,6 +39,12 @@ interface VerificationResponse {
   createdAt?: string;
   updatedAt?: string;
   maritalStatus?: string;
+  employerName?: string;
+  previousLandlordComments?: Array<{ comment: string; landlordName: string }>;
+  videoSelfieVerified?: string;
+  personalReport?: { status: string; comment?: string };
+  documentsReport?: { status: string; comment?: string };
+  phoneVerificationStatus?: string;
 }
 
 const VerificationResponsePage = () => {
@@ -189,29 +195,24 @@ const VerificationResponsePage = () => {
                   <div className="font-medium text-[12px] text-[#344054]">{verificationData.email || "-"}</div>
                 </div>
               </div>
-              {/* Previous Landlord Comments - moved here */}
-              <div className="w-full mt-4">
-                <div className="bg-[#F9FAFB] rounded-xl p-3 flex flex-col gap-2 border border-gray-100">
-                  <div className="flex items-center gap-2 mb-1 text-[12px] font-semibold text-[#101828]">
-                    <span className="text-lg">😍</span>
-                    Previous Overall Experience with this Tenant!
-                  </div>
-                  <div className="text-[10px] text-[#344054]">
-                    <div className="mb-1">
-                      <span className="font-medium text-[#98A2B3]">Previous Landlord Comments</span>
-                      <div className="text-[#667085]">Tenant is reliable and has a stable income – Mr Adedayo</div>
+              {verificationData.previousLandlordComments && verificationData.previousLandlordComments.length > 0 && (
+                <div className="w-full mt-4">
+                  <div className="bg-[#F9FAFB] rounded-xl p-3 flex flex-col gap-2 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-1 text-[12px] font-semibold text-[#101828]">
+                      <span className="text-lg">😍</span>
+                      Previous Overall Experience with this Tenant!
                     </div>
-                    <div className="mb-1">
-                      <span className="font-medium text-[#98A2B3]">Previous Landlord Comments</span>
-                      <div className="text-[#667085]">Tomiwa is a really good tenant – Mr Dolapo</div>
-                    </div>
-                    <div className="mb-1">
-                      <span className="font-medium text-[#98A2B3]">Previous Landlord Comments</span>
-                      <div className="text-[#667085]">Tomiwa does not owe me rent for like 5 years – Mr Oyeledu</div>
+                    <div className="text-[10px] text-[#344054] flex flex-col gap-2">
+                      {verificationData.previousLandlordComments.map((item, idx) => (
+                        <div key={idx}>
+                          <span className="font-medium text-[#98A2B3]">Previous Landlord Comments</span>
+                          <div className="text-[#667085]">{item.comment}{item.landlordName ? ` – ${item.landlordName}` : ""}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Info Cards Section - matches reference image */}
@@ -227,7 +228,7 @@ const VerificationResponsePage = () => {
                     <HiOutlineUser className="text-gray-400 text-lg" />
                     <div>
                       <div className="text-[10px] text-[#667085]">Marital Status</div>
-                      <div className="font-semibold text-[12px] text-[#101828]">{verificationData.maritalStatus || "Single"}</div>
+                      <div className="font-semibold text-[12px] text-[#101828]">{verificationData.maritalStatus || "-"}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -246,27 +247,44 @@ const VerificationResponsePage = () => {
                   </div>
                 </div>
               </div>
-              {/* Identity Verification */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col min-h-[180px] relative">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-semibold text-[13px] text-[#101828]">Identity Verification</span>
-                  <BsThreeDotsVertical className="text-gray-400 text-base" />
+              {/* Identity Verification - only show items with backend data */}
+              {(verificationData.videoSelfieVerified || verificationData.personalReport?.status || verificationData.documentsReport?.status || verificationData.identificationDocumentUrl || verificationData.phoneVerificationStatus) && (
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col min-h-[180px] relative">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-semibold text-[13px] text-[#101828]">Identity Verification</span>
+                    <BsThreeDotsVertical className="text-gray-400 text-base" />
+                  </div>
+                  <div className="flex flex-col gap-4 mt-1">
+                    {verificationData.videoSelfieVerified && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-[#101828]">Video Selfie Identification</span>
+                        <span className={`flex items-center gap-1 font-medium text-[11px] ${verificationData.videoSelfieVerified?.toLowerCase() === "approved" || verificationData.videoSelfieVerified?.toLowerCase() === "verified" ? "text-green-600" : "text-gray-600"}`}>
+                          {getStatusIcon(verificationData.videoSelfieVerified)}
+                          {verificationData.videoSelfieVerified}
+                        </span>
+                      </div>
+                    )}
+                    {(verificationData.documentsReport?.status || verificationData.identificationDocumentUrl) && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-[#101828]">Identification Documents</span>
+                        <span className={`flex items-center gap-1 font-medium text-[11px] ${(verificationData.documentsReport?.status || "")?.toLowerCase() === "approved" ? "text-green-600" : "text-gray-600"}`}>
+                          {getStatusIcon(verificationData.documentsReport?.status || "pending")}
+                          {verificationData.documentsReport?.status || "-"}
+                        </span>
+                      </div>
+                    )}
+                    {(verificationData.personalReport?.status || verificationData.phoneVerificationStatus) && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-[#101828]">Personal / Phone Verification</span>
+                        <span className={`flex items-center gap-1 font-medium text-[11px] ${(verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "")?.toLowerCase() === "approved" || (verificationData.phoneVerificationStatus || "")?.toLowerCase() === "completed" ? "text-green-600" : "text-gray-600"}`}>
+                          {getStatusIcon(verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "pending")}
+                          {verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "-"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-col gap-4 mt-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] text-[#101828]">Video Selfie Identification</span>
-                    <span className="flex items-center gap-1 text-green-600 font-medium text-[11px]"><FaCheckCircle className="text-green-600" size={13}/> Verified</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] text-[#101828]">Identification Documents</span>
-                    <span className="flex items-center gap-1 text-green-600 font-medium text-[11px]"><FaCheckCircle className="text-green-600" size={13}/> Verified</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[12px] text-[#101828]">Personal Identity Verification</span>
-                    <span className="flex items-center gap-1 text-green-600 font-medium text-[11px]"><FaCheckCircle className="text-green-600" size={13}/> Verified</span>
-                  </div>
-                </div>
-              </div>
+              )}
               {/* Employment Information - spans both columns */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col col-span-1 md:col-span-2 min-h-[180px] relative">
                 <div className="flex items-center justify-between mb-3">
@@ -276,27 +294,27 @@ const VerificationResponsePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                   <div>
                     <div className="text-[10px] text-[#667085]">Employment Status</div>
-                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.employmentStatus || "Self - Employed"}</div>
+                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.employmentStatus || "-"}</div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Name of Company</div>
-                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.companyName || "Tech Solutions Ltd."}</div>
+                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.companyName || "-"}</div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Role in the Company</div>
-                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.roleInCompany || "Software Engineer"}</div>
+                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.roleInCompany || "-"}</div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Employer Name</div>
-                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.companyName || "Mr. Adedayo"}</div>
+                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.employerName || "-"}</div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Company Address</div>
-                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.companyAddress || "12 Adeola Odeku Street, Victoria Island"}</div>
+                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.companyAddress || "-"}</div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Monthly Income Range /annum</div>
-                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.monthlyIncome ? `> ${formatCurrency(verificationData.monthlyIncome)}` : "> 10,000,000"}</div>
+                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.monthlyIncome ? formatCurrency(verificationData.monthlyIncome) : "-"}</div>
                   </div>
                 </div>
               </div>
@@ -309,30 +327,30 @@ const VerificationResponsePage = () => {
                 <div className="flex flex-col gap-2">
                   <div>
                     <div className="text-[10px] text-[#667085]">Guarantor's Full Name</div>
-                    <div className="font-semibold text-[12px] text-[#101828]">{verificationData.guarantorFirstName || "Samuel"} {verificationData.guarantorLastName || "Adeyemi Adeojo"}</div>
+                    <div className="font-semibold text-[12px] text-[#101828]">{[verificationData.guarantorFirstName, verificationData.guarantorLastName].filter(Boolean).join(" ") || "-"}</div>
                   </div>
                   <div className="flex gap-4">
                     <div>
                       <div className="text-[10px] text-[#667085]">Phone Number</div>
-                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorPhone || verificationData.phone || "+234 813226 5445"}</div>
+                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorPhone || "-"}</div>
                     </div>
                     <div>
                       <div className="text-[10px] text-[#667085]">Email Address</div>
-                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorEmail || "sakinniyi@gmail.com"}</div>
+                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorEmail || "-"}</div>
                     </div>
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085]">Guarantor Home Address</div>
-                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorAddress || verificationData.companyAddress || "12 Adeola Odeku Street, Victoria Island"}</div>
+                    <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorAddress || "-"}</div>
                   </div>
                   <div className="flex gap-4">
                     <div>
                       <div className="text-[10px] text-[#667085]">Employment Status</div>
-                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorEmploymentStatus || "Employed"}</div>
+                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorEmploymentStatus || "-"}</div>
                     </div>
                     <div>
                       <div className="text-[10px] text-[#667085]">Company</div>
-                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorCompany || verificationData.companyName || "Tech Solutions Ltd."}</div>
+                      <div className="font-normal text-[12px] text-[#101828]">{verificationData.guarantorCompany || "-"}</div>
                     </div>
                   </div>
                 </div>
@@ -346,27 +364,35 @@ const VerificationResponsePage = () => {
                 <div className="flex flex-col gap-3">
                   <div>
                     <div className="text-[10px] text-[#667085] mb-1">Proof of Income (For the last 3 Months)</div>
-                    <div className="flex items-center bg-[#F9FAFB] rounded-lg px-3 py-1 gap-3">
-                      <FaFilePdf className="text-[#F04438]" size={16}/>
-                      <div className="flex-1">
-                        <div className="font-semibold text-[12px] text-[#101828]">Access Bank Statement.pdf</div>
-                        <div className="text-[10px] text-[#667085]">11 Sep., 2023  12:24pm  •  1.3MB</div>
+                    {verificationData.bankStatementUrl ? (
+                      <div className="flex items-center bg-[#F9FAFB] rounded-lg px-3 py-2 gap-3">
+                        <FaFilePdf className="text-[#F04438]" size={16}/>
+                        <div className="flex-1">
+                          <div className="font-semibold text-[12px] text-[#101828]">Bank Statement</div>
+                          <div className="text-[10px] text-[#667085] truncate max-w-[200px]">{verificationData.bankStatementUrl}</div>
+                        </div>
+                        <a href={verificationData.bankStatementUrl} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-100 rounded-full"><FaEye className="text-[#667085]" size={13}/></a>
+                        <a href={verificationData.bankStatementUrl} download className="p-1 hover:bg-gray-100 rounded-full"><FaDownload className="text-[#667085]" size={13}/></a>
                       </div>
-                      <a href={verificationData.bankStatementUrl || "#"} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-100 rounded-full"><FaEye className="text-[#667085]" size={13}/></a>
-                      <a href={verificationData.bankStatementUrl || "#"} download className="p-1 hover:bg-gray-100 rounded-full"><FaDownload className="text-[#667085]" size={13}/></a>
-                    </div>
+                    ) : (
+                      <div className="text-[12px] text-[#667085] py-2">No document uploaded</div>
+                    )}
                   </div>
                   <div>
                     <div className="text-[10px] text-[#667085] mb-1">Utility Bills (For the last 3 Months)</div>
-                    <div className="flex items-center bg-[#F9FAFB] rounded-lg px-3 py-1 gap-3">
-                      <FaFilePdf className="text-[#F04438]" size={16}/>
-                      <div className="flex-1">
-                        <div className="font-semibold text-[12px] text-[#101828]">Electricity Bill.pdf</div>
-                        <div className="text-[10px] text-[#667085]">11 Sep., 2023  12:24pm  •  1.3MB</div>
+                    {verificationData.utilityBillUrl ? (
+                      <div className="flex items-center bg-[#F9FAFB] rounded-lg px-3 py-2 gap-3">
+                        <FaFilePdf className="text-[#F04438]" size={16}/>
+                        <div className="flex-1">
+                          <div className="font-semibold text-[12px] text-[#101828]">Utility Bill</div>
+                          <div className="text-[10px] text-[#667085] truncate max-w-[200px]">{verificationData.utilityBillUrl}</div>
+                        </div>
+                        <a href={verificationData.utilityBillUrl} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-100 rounded-full"><FaEye className="text-[#667085]" size={13}/></a>
+                        <a href={verificationData.utilityBillUrl} download className="p-1 hover:bg-gray-100 rounded-full"><FaDownload className="text-[#667085]" size={13}/></a>
                       </div>
-                      <a href={verificationData.utilityBillUrl || "#"} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-gray-100 rounded-full"><FaEye className="text-[#667085]" size={13}/></a>
-                      <a href={verificationData.utilityBillUrl || "#"} download className="p-1 hover:bg-gray-100 rounded-full"><FaDownload className="text-[#667085]" size={13}/></a>
-                    </div>
+                    ) : (
+                      <div className="text-[12px] text-[#667085] py-2">No document uploaded</div>
+                    )}
                   </div>
                 </div>
               </div>

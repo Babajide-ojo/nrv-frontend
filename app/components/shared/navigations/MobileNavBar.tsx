@@ -95,7 +95,7 @@ const MobileNavBar: React.FC = () => {
               }}
               className="cursor-pointer"
             >
-              <IoPersonCircle size={50} color="#153969" />
+              <IoPersonCircle size={50} className="text-nrvPrimaryGreen" />
             </div>
           ) : (
             <div className="flex justify-between mt-4">

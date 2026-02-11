@@ -5,6 +5,8 @@ import { useState, useEffect, useMemo } from "react";
 import { SlCloudUpload } from "react-icons/sl";
 import { FiX } from "react-icons/fi";
 import { apiService } from "@/lib/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormData {
   bankStatement: File | null;
@@ -303,40 +305,43 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
 
   const handleSubmit = async () => {
     if (!verificationResponseId) {
-      alert('Verification response ID missing.');
+      toast.error("Verification response ID missing.");
       return;
     }
-    console.log('Form data before submission:', formData);
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
     const fd = new FormData();
     if (formData.bankStatement) {
       fd.append('bankStatement', formData.bankStatement);
-      console.log('Added bankStatement to FormData');
     }
     if (formData.utilityBill) {
       fd.append('utilityBill', formData.utilityBill);
-      console.log('Added utilityBill to FormData');
     }
     if (formData.identificationDocument) {
       fd.append('identificationDocument', formData.identificationDocument);
       fd.append('identificationDocumentType', formData.identificationDocumentType);
-      console.log('Added identificationDocument to FormData');
-    }
-    console.log('FormData entries:');
-    for (let [key, value] of fd.entries()) {
-      console.log(key, value);
     }
     try {
-      await apiService.post(`/verification/${verificationResponseId}/affordability`, fd, {
+      const res: any = await apiService.post(`/verification/${verificationResponseId}/affordability`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      // Optionally navigate or show success
+      const updated = res?.data?.data ?? res?.data ?? null;
+      if (updated) {
+        setUploadedDocuments(updated);
+      }
+      setIsPrefilled(true);
+      toast.success("Documents submitted successfully.");
     } catch (error: any) {
-      alert(error.message || 'Failed to upload documents.');
+      toast.error(error?.message || 'Failed to upload documents.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="pb-4 border-b border-gray-200 mb-5">
         <h3 className="font-medium">Verify your Affordability Check</h3>
         <p className="text-xs text-[#667085] mt-1">
@@ -403,9 +408,9 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
             <Button
               onClick={handleSubmit}
               className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
-              disabled={!allFieldsFilled}
+              disabled={!allFieldsFilled || isSubmitting}
             >
-              Save and Continue
+              {isSubmitting ? "Saving..." : "Save and Continue"}
             </Button>
           )}
         </div>

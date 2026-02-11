@@ -10,7 +10,7 @@ const CompleteProfileSideBar = () => {
             <h1 className="text-2xl font-bold text-black">NaijaRentVerify</h1>
             <p className="text-gray-600 text-sm">
               Already have an account?{" "}
-              <a href="/login" className="font-semibold text-green-900">
+              <a href="/sign-in" className="font-semibold text-green-900">
                 Log in here.
               </a>
             </p>

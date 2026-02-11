@@ -56,7 +56,6 @@ const LoginScreen: React.FC = () => {
     try {
       const userData = await dispatch(loginUser(formData) as any).unwrap();
       console.log({p: userData})
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
       // Handle remember me functionality
       if (rememberMe) {
         localStorage.setItem("rememberMe", "true");

@@ -12,8 +12,12 @@ export interface UserData {
   user: {
     accountType: string;
     status: string;
+    email?: string;
   };
-  token: string;
+  // Current API shape uses `accessToken`; keep `token` optional for legacy usage.
+  accessToken?: string;
+  token?: string;
+  notificationSettings?: any;
 }
 
 export interface SocialLoginProvider {

@@ -153,8 +153,17 @@ console.log({response})
       };
 
       console.log({userData})
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
-      localStorage.removeItem("emailToVerify");
+      // Only persist a session for verified/active users.
+      // For inactive users, store the email so they can verify, but don't create a session token.
+      if (userData?.user?.status === "inactive") {
+        localStorage.removeItem("nrv-user");
+        if (userData?.user?.email) {
+          localStorage.setItem("emailToVerify", JSON.stringify({ data: { email: userData.user.email } }));
+        }
+      } else {
+        localStorage.setItem("nrv-user", JSON.stringify(userData));
+        localStorage.removeItem("emailToVerify");
+      }
       return userData;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));

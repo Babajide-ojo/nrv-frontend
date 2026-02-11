@@ -13,7 +13,13 @@ import CompleteProfileSideBar from "./CompleteProfileSideBar";
 import AddPropertySideBar from "./AddPropertySideBar";
 import MultiStepForm from "./MultiStepForm";
 
-const SignUpVerifyAccount: React.FC = () => {
+type VerifyMode = "signup" | "login";
+
+interface SignUpVerifyAccountProps {
+  mode?: VerifyMode;
+}
+
+const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signup" }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
@@ -51,8 +57,21 @@ const SignUpVerifyAccount: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
-      setData(response);
       localStorage.removeItem("stepToLoad");
+      if (mode === "login") {
+        toast.success("Account verified. Redirecting...");
+        const accountType = response?.user?.accountType;
+        if (accountType === "tenant") {
+          router.push("/dashboard/tenant");
+        } else if (accountType === "landlord") {
+          router.push("/dashboard/landlord");
+        } else {
+          router.push("/");
+        }
+        return;
+      }
+
+      setData(response);
       setStep(2);
     } catch (error: any) {
       setIsLoading(false);

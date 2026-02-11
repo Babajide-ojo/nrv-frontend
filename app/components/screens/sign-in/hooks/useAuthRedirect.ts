@@ -13,8 +13,12 @@ export const useAuthRedirect = () => {
 
     // Handle inactive users
     if (userStatus === "inactive") {
-      localStorage.setItem("stepToLoad", JSON.stringify(3));
-      router.push(ROUTES.SIGN_UP);
+      // Keep verification inside the sign-in flow (not the sign-up onboarding).
+      // Ensure the verification screen can read the email.
+      if (userData?.user?.email) {
+        localStorage.setItem("emailToVerify", JSON.stringify({ data: { email: userData.user.email } }));
+      }
+      router.push(ROUTES.VERIFY_ACCOUNT);
       return;
     }
 

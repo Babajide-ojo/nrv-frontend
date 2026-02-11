@@ -43,7 +43,7 @@ apiClient.interceptors.response.use(
     // Handle common errors
     if (error.response?.status === 401) {
       // Unauthorized - clear user data and redirect to login
-      localStorage.removeItem('nrv-user');
+      localStorage.clear();
       window.location.href = '/sign-in';
     } else if (error.response?.status === 403) {
       // Forbidden

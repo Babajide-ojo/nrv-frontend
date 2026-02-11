@@ -22,6 +22,7 @@ import Logo from "../../../../public/images/nrv-logo.png";
 import { FaPerson } from "react-icons/fa6";
 import { BsPersonFill } from "react-icons/bs";
 import { PiFileDocDuotone } from "react-icons/pi";
+import { clearAllStoredData } from "@/helpers/utils";
 
 interface User {
   name: string;
@@ -182,8 +183,8 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
             </div>
             <BiLogOut
               onClick={() => {
-                localStorage.removeItem("nrv-user");
-                router.push("/");
+                clearAllStoredData();
+                router.push("/sign-in");
               }}
               className="text-xl cursor-pointer"
             />

@@ -424,6 +424,18 @@ export function removeStoredData(key: string): void {
   }
 }
 
+/**
+ * Clears ALL localStorage keys for this origin.
+ * Use on logout to prevent stale keys (persisted redux, onboarding steps, etc.).
+ */
+export function clearAllStoredData(): void {
+  try {
+    localStorage.clear();
+  } catch (error) {
+    console.error("Error clearing localStorage:", error);
+  }
+}
+
 // ============================================================================
 // ARRAY UTILITIES
 // ============================================================================

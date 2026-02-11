@@ -5,7 +5,7 @@ import Button from "../../shared/buttons/Button";
 import ToggleSwitch from "../../shared/input-fields/ToggleSwitch";
 import VerifyEmailScreen from "../sign-in/VerifyEmailScreen";
 import InputField from "../../shared/input-fields/InputFields";
-import { cls } from "../../../../helpers/utils";
+import { clearAllStoredData, cls } from "../../../../helpers/utils";
 import { useRouter } from "next/navigation";
 
 const SettingsMainScreen = () => {
@@ -305,8 +305,8 @@ Be notified when you receive a new application and when a screening report is av
             <Button
               className="p-3 mt-8 rounded-full border-nrvGreyMediumBg"
               onClick={() => {
-                localStorage.removeItem("nrv-user");
-                router.push("/");
+                clearAllStoredData();
+                router.push("/sign-in");
               }}
               variant="lightGrey"
               size="large"

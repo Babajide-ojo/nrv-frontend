@@ -9,7 +9,7 @@ import {
   clearError
 } from '@/redux/slices/userSlice';
 import { LoginFormData, SignUpFormData, UserToken } from '@/types';
-import { getStoredData, removeStoredData } from '@/helpers/utils';
+import { getStoredData, removeStoredData, clearAllStoredData } from '@/helpers/utils';
 
 interface UseAuthReturn {
   user: UserToken | null;
@@ -60,8 +60,7 @@ export const useAuth = (): UseAuthReturn => {
 
   const logout = useCallback(() => {
     dispatch(clearUserToken());
-    removeStoredData('nrv-user');
-    removeStoredData('emailToVerify');
+    clearAllStoredData();
     router.push('/sign-in');
   }, [dispatch, router]);
 

@@ -148,13 +148,13 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
               onClick={() => router.push("/dashboard/tenant/verification/requests")}
               className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/verification/requests" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
             >
-              <FiCheckCircle /> Start Verification
+              <FiCheckCircle /> My Verifications
             </li>
             <li
               onClick={() => router.push("/dashboard/tenant/verification")}
               className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/verification" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
             >
-              <FiCheckCircle /> View My Verification Submission
+              <FiCheckCircle /> My Submissions
             </li>
           </ul>
         </nav>

@@ -14,35 +14,56 @@ const statusColors: Record<string, string> = {
 const VerificationRequestsPage = () => {
   const router = useRouter();
   const [requests, setRequests] = useState<any[]>([]);
+  const [submissionByRequestId, setSubmissionByRequestId] = useState<Record<string, any | null>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    let userEmail = null;
+    let email = null;
     if (typeof window !== "undefined") {
       const userStr = localStorage.getItem("nrv-user");
       if (userStr) {
         try {
           const userObj = JSON.parse(userStr);
-          userEmail = userObj?.user?.email || userObj?.email;
+          email = userObj?.user?.email || userObj?.email;
         } catch {}
       }
     }
-    if (!userEmail) {
+    if (!email) {
       setLoading(false);
       setError("User email not found. Please sign in again.");
       return;
     }
-    fetchRequests(userEmail);
+    setUserEmail(email);
+    fetchRequests(email);
     // eslint-disable-next-line
   }, []);
 
   const fetchRequests = async (email: string) => {
     setLoading(true);
     try {
-      const res = await apiService.get(`/verification/by-email?email=${email}`);
-      console.log({ res });
-      setRequests(Array.isArray(res?.data) ? res.data : []);
+      const res: any = await apiService.get(`/verification/by-email?email=${encodeURIComponent(email)}`);
+      const list = Array.isArray(res?.data) ? res.data : [];
+      setRequests(list);
+
+      // For each verification request, check whether a submission exists for this tenant email.
+      const pairs = await Promise.allSettled(
+        list.map(async (req: any) => {
+          const r: any = await apiService.get(
+            `/verification/response/by-request/${req._id}?email=${encodeURIComponent(email)}`,
+          );
+          return [req._id, r?.data ?? null] as const;
+        }),
+      );
+      const map: Record<string, any | null> = {};
+      for (const p of pairs) {
+        if (p.status === "fulfilled") {
+          const [id, submission] = p.value;
+          map[id] = submission;
+        }
+      }
+      setSubmissionByRequestId(map);
     } catch (err: any) {
       setError(err.message || "Failed to fetch verification requests.");
     } finally {
@@ -51,10 +72,10 @@ const VerificationRequestsPage = () => {
   };
 
   return (
-    <TenantLayout>
+    <TenantLayout path="Verification" mainPath=" / My Verifications">
       <div className="max-w-3xl mx-auto w-full p-3 bg-white rounded-lg mt-8">
         <h2 className="text-2xl font-bold mb-6 text-nrvPrimaryGreen flex items-center gap-2">
-          <FiUserCheck className="inline-block" /> Verification Requests
+          <FiUserCheck className="inline-block" /> My Verifications
         </h2>
         {loading ? (
           <div className="text-center py-8">Loading...</div>
@@ -66,12 +87,24 @@ const VerificationRequestsPage = () => {
               <div
                 key={req._id}
                 className="border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-gray-50 p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-nrvPrimaryGreen"
-                onClick={() => router.push(`/dashboard/tenant/verification/${req._id}`)}
+                onClick={() => {
+                  const hasSubmission = !!submissionByRequestId[req._id];
+                  if (hasSubmission) {
+                    router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
+                    return;
+                  }
+                  router.push(`/dashboard/tenant/verification/personal-info?verificationId=${req._id}`);
+                }}
                 tabIndex={0}
                 aria-label={`Open verification request ${req._id}`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    router.push(`/dashboard/tenant/verification/${req._id}`);
+                    const hasSubmission = !!submissionByRequestId[req._id];
+                    if (hasSubmission) {
+                      router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
+                      return;
+                    }
+                    router.push(`/dashboard/tenant/verification/personal-info?verificationId=${req._id}`);
                   }
                 }}
               >
@@ -80,11 +113,25 @@ const VerificationRequestsPage = () => {
                     <FiUser className="text-nrvPrimaryGreen" />
                     {req.firstName} {req.lastName} <span className="text-xs text-gray-400">(You)</span>
                   </div>
-                  <span
-                    className={`inline-block px-3 py-1 rounded-full border text-xs font-medium capitalize ${statusColors[req.status] || "bg-gray-100 text-gray-700 border-gray-300"}`}
-                  >
-                    {req.status || "-"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium capitalize ${
+                        statusColors[req.status] || "bg-gray-100 text-gray-700 border-gray-300"
+                      }`}
+                    >
+                      {req.status || "-"}
+                    </span>
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${
+                        submissionByRequestId[req._id]
+                          ? "bg-green-50 text-green-700 border-green-200"
+                          : "bg-gray-50 text-gray-600 border-gray-200"
+                      }`}
+                      title={submissionByRequestId[req._id] ? "Submission found" : "No submission yet"}
+                    >
+                      {submissionByRequestId[req._id] ? "Submitted" : "Not submitted"}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-2">
                   <div className="flex items-center gap-1">

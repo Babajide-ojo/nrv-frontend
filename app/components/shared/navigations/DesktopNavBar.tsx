@@ -8,8 +8,6 @@ import Logo from "../../../../public/images/nrv-logo.png";
 import Image from "next/image";
 import { IoPersonCircle } from "react-icons/io5";
 import { usePathname, useRouter } from "next/navigation";
-import ShortletBadge from "./ShortletBadge";
-
 interface NavItem {
   text: string;
   route: string;
@@ -138,7 +136,6 @@ const DesktopNavBar: React.FC = () => {
                 </div>
               </div>
             ))}
-            {!pathname.includes("verification") && <ShortletBadge />}
           </nav>
         </div>
         <div className="">

@@ -26,7 +26,7 @@ const TestimonialsAndFAQs: React.FC = () => {
       <section className="md:h-[400px] bg-[#E6F0E9] m-16 md:w-4/5 md:flex justify-center p-8 rounded-lg mx-auto">
         <div className="text-start mx-auto pt-16">
           <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
-            / Testimonials
+             Testimonials
           </span>
           <h2 className="my-8 text-4xl font-medium text-[#03442C]">
             Why They Love Us
@@ -45,18 +45,11 @@ const TestimonialsAndFAQs: React.FC = () => {
               was smooth, and the screening report gave me confidence in my
               landlord&rdquo;s selection process.&rdquo;
             </p>
-            <div className="mt-4 flex items-center gap-3">
-              <img
-                src="https://s3-alpha-sig.figma.com/img/ddb3/b48c/134527f0bdfe0af081ee3998bf2c2660?Expires=1742774400&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=WiUgJRLmKBZtqMdo3q5MRBxGUONHbhaWwQpNMTl3erm-PksYHI-UJEQI0cGdj1l55j3ajzaB~tNgZoImCyIvoGS~MTeY3cwIv4tIAWHRQ4E8CXtDls9AqVOAdX4DAXRPooej3eeLwWO9H5tIR98iShRZ9X8dLwvTB1CndptYLctYzLcQKV-8~bnP1qtu-7YQ5NYq9UfaDPXt2WhUXwwKFbrGK~-ZWL76GbOW~AGxma0sRTLzBIFuZaNrqbIKb86iX06PSb8hGEXnGiLMVOZ~wVkQpTf7sKy9pkBNb5AX5iipxVED9PQe1PFxS9Kvx0zNzAMAhiACCVB6eUNmjAgW4w__"
-                alt="Emily Turner"
-                className="w-10 h-10 rounded-full"
-              />
-              <div>
-                <p className="font-semibold">Emily Turner</p>
-                <p className="text-sm text-gray-500">
-                  Landlord, Lagos, Nigeria
-                </p>
-              </div>
+            <div className="mt-4">
+              <p className="font-semibold">Emily Turner</p>
+              <p className="text-sm text-gray-500">
+                Landlord, Lagos, Nigeria
+              </p>
             </div>
             <div className="absolute bottom-6 right-6 flex gap-3">
               <button className="p-2 border rounded-full bg-gray-200">
@@ -77,7 +70,7 @@ const TestimonialsAndFAQs: React.FC = () => {
             <div>
               <div className="mb-6">
                 <span className="my-4 text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 px-8 bg-[#E6F0E9]">
-                  / FAQs
+                   FAQs
                 </span>
                 <h2 className="my-8 md:text-3xl text-xl font-bold">
                   Frequently Asked Questions

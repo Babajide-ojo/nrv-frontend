@@ -4,12 +4,12 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#03442C] text-white  flex justify-center items-center py-32 w-full">
-      <div className="w-4/5 mx-auto">
-        <div className="max-w-9xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10 p-4">
+    <footer className="bg-[#03442C] text-white flex justify-center items-center py-12 sm:py-16 md:py-24 lg:py-32 w-full overflow-x-hidden">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 md:w-4/5">
+        <div className="max-w-9xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-8 sm:gap-10 p-2 sm:p-4">
           {/* Newsletter Section */}
           <div>
-            <h3 className="text-[42px] font-medium">Explore with Us Now!</h3>
+            <h3 className="text-2xl sm:text-3xl md:text-[42px] font-medium">Explore with Us Now!</h3>
             <p className="mt-2 font-light text-[#FFFFFFB2] leading-8 text-[16px] max-w-xs">
               Stay updated with <strong>NaijaRentVerify</strong> by subscribing
               to our newsletter for updates and tips!

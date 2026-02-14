@@ -4,12 +4,12 @@ import { Mail, Clock, MapPin, Phone } from "lucide-react";
 const ContactSection: React.FC = () => {
   //
   return (
-    <section className="sticky bg-white">
+    <section className="sticky bg-white overflow-x-hidden">
       <div className="absolute top-0 left-0 w-full h-full bg-cover bg-[url('/images/contact-us.jpeg')] bg-cover bg-center z-0"></div>
       <div className="absolute top-0 left-0 w-full h-full bg-[#045D23CC] opacity-80 z-10"></div>
-      <div className="relative z-10 p-6 md:p-12">
+      <div className="relative z-10 p-4 sm:p-6 md:p-12">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-medium text-white">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-medium text-white">
             Get in Touch – We are Here to Help!
           </h2>
           <p className="mt-3 text-[16px] font-light max-w-md text-center mx-auto leading-8 text-white">

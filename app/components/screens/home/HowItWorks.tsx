@@ -64,16 +64,16 @@ const HowItWorks = () => {
   };
 
   return (
-    <section className="bg-[#E6F0E9] py-16 px-6">
+    <section className="bg-[#E6F0E9] py-10 sm:py-16 px-4 sm:px-6 overflow-x-hidden">
       <div className="max-w-[1400px] mx-auto">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
-            / HOW IT WORKS
+          <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] px-3 py-1.5 text-sm">
+            HOW IT WORKS
           </span>
         </div>
-        <div className="md:flex md:justify-between block">
+        <div className="md:flex md:justify-between block gap-4">
           <div>
-            <h2 className="md:text-3xl text-xl md:text-4xl md:font-bold font-medium text-green-800">
+            <h2 className="text-xl sm:text-2xl md:text-4xl md:font-bold font-medium text-green-800">
               Here’s How NaijaRentVerify Works:
             </h2>
             <div className="md:text-3xl text-xl md:font-bold font-medium text-green-800 mt-4">

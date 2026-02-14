@@ -1,191 +1,162 @@
-import { FaPhoneAlt } from "react-icons/fa";
 import { MapPin, Bed, Bath, Ruler } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Link from "next/link";
 import Button from "../../shared/buttons/Button";
+import { API_URL } from "@/config/constant";
 
-const propertyData = [
-  {
-    type: "Apartment",
-    price: "#250,095",
-    location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
-    image: "/images/featured-img.svg",
-    advisor: {
-      name: "Dami Ademola",
-      image: "/images/dami.svg"
-    },
+const defaultImage = "/images/featured-img.svg";
+
+function mapRoomToProperty(room: any) {
+  const prop = room?.propertyId || {};
+  const address = [prop.streetAddress, prop.city, prop.state].filter(Boolean).join(", ") || "Address not specified";
+  return {
+    id: room._id,
+    type: room.apartmentType || "Apartment",
+    price: room.rentAmount != null ? `₦${Number(room.rentAmount).toLocaleString()}` : "—",
+    location: address,
+    description: room.description || "Listed property. Contact for details.",
+    image: room.imageUrls?.[0] || room.file || prop.file || defaultImage,
     features: {
-      bedrooms: "4 bed",
-      bathrooms: "4 room",
-      area: "12x12 m2",
-      style: "Modern"
-    }
-  },
-  {
-    type: "Commercial",
-    price: "#500,000",
-    location: "10, Victoria Island, Lagos, Nigeria",
-    description: "A premium office space in the heart of the business district.",
-    image: "/images/featured-img.svg",
-    advisor: {
-      name: "Dami Ademola",
-      image: "/images/dami.svg"
+      bedrooms: room.noOfRooms ? `${room.noOfRooms} bed` : "—",
+      bathrooms: room.noOfBaths ? `${room.noOfBaths} room` : "—",
+      style: room.apartmentStyle || "—",
     },
-    features: {
-      bedrooms: "N/A",
-      bathrooms: "2 restrooms",
-      area: "2000 sqft",
-      style: "Corporate"
-    }
-  },
-  {
-    type: "Community",
-    price: "#250,095",
-    location: "29, Adeaga Street, Ibeju-Lekki, Lagos, Nigeria",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.",
-    image: "/images/featured-img.svg",
-    advisor: {
-      name: "Dami Ademola",
-      image: "/images/dami.svg"
-    },
-    features: {
-      bedrooms: "4 bed",
-      bathrooms: "4 room",
-      area: "12x12 m2",
-      style: "Modern"
-    }
-  },
-  {
-    type: "Ready Flat",
-    price: "#500,000",
-    location: "10, Victoria Island, Lagos, Nigeria",
-    description: "A premium office space in the heart of the business district.",
-    image: "/images/featured-img.svg",
-    advisor: {
-      name: "Dami Ademola",
-      image: "/images/dami.svg"
-    },
-    features: {
-      bedrooms: "N/A",
-      bathrooms: "2 restrooms",
-      area: "2000 sqft",
-      style: "Corporate"
-    }
-  }
-];
+  };
+}
+
+const CARD_LIMIT = 4;
 
 const FeaturedProperties = () => {
-  const [selectedProperty, setSelectedProperty] = useState(propertyData[0]);
+  const [properties, setProperties] = useState<ReturnType<typeof mapRoomToProperty>[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <div className="bg-[#0D3520] flex items-center justify-center p-5">
-      <div className="max-w-[1400px] w-full my-16">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-white font-normal rounded-full border border-[#BBFF37] p-2">
-            / FEATURED PROPERTIES
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get(`${API_URL}/rooms/all?page=1&limit=${CARD_LIMIT}`);
+        const list = Array.isArray(data?.data) ? data.data : [];
+        const mapped = list.slice(0, CARD_LIMIT).map(mapRoomToProperty);
+        if (!cancelled) setProperties(mapped);
+      } catch {
+        if (!cancelled) setProperties([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="bg-[#0D3520] flex items-center justify-center p-4 sm:p-5 min-h-[320px]">
+        <div className="max-w-[1400px] w-full my-8 sm:my-16 text-white text-center">
+          <span className="text-white font-normal rounded-full border border-[#BBFF37] px-3 py-1.5 text-sm">
+            FEATURED PROPERTIES
           </span>
-        </div>
-        <h2 className="md:text-3xl text-2xl font-bold text-white">
-          Find Your Ideal Living Space
-        </h2>
-        <div className="md:flex md:justify-between block mt-4">
-          <div className="flex space-x-3 text-sm overflow-x-auto">
-            {propertyData.map((property) => (
-              <button
-                key={property.type}
-                className={`md:px-4 md:py-2 px-2 rounded-full font-light md:text-[12px] text-[12px] ${
-                  selectedProperty.type === property.type
-                    ? "bg-lime-400 text-green-900"
-                    : "bg-[#0D3520] border border-[#E9F4E7] text-[#E9F4E7]"
-                }`}
-                onClick={() => setSelectedProperty(property)}
-              >
-                {property.type}
-              </button>
-            ))}
-          </div>
-          <Button
-            variant="lemonPrimary"
-            className="md:text-[16px] text-[14px] sm:w-64 mt-4 sm:mt-0"
-            size="large"
-          >
-            Explore Our Services
-          </Button>
-        </div>
-
-        <div className="mt-6 border border-[#E9F4E74D] rounded-2xl flex flex-col lg:flex-row">
-  {/* Image Section */}
-  <div className="relative w-full lg:w-2/5">
-    <img
-      src={selectedProperty.image}
-      alt={selectedProperty.type}
-      className="rounded-lg w-full h-full object-cover"
-    />
-  </div>
-
-  {/* Property Details Section */}
-  <div className="w-full lg:w-3/5 p-6 text-white flex flex-col justify-center">
-    <div>
-      {/* Price and Advisor Information */}
-      <div className="flex justify-between">
-        <p className="text-lime-400 text-[24px] sm:text-[30px] font-bold mt-4">
-          {selectedProperty.price}{" "}
-          <span className="text-sm font-light text-white">/ Month</span>
-        </p>
-        <div className="mt-4 md:flex hidden items-center mr-6">
-          <img
-            src={selectedProperty.advisor.image}
-            alt={selectedProperty.advisor.name}
-            className="w-12 h-12 rounded-full"
-          />
-          <div className="ml-3 mr-2">
-            <p className="font-semibold">
-              {selectedProperty.advisor.name}
-            </p>
-            <p className="text-white text-sm font-light">
-              Property Advisor
-            </p>
-          </div>
-          <button className="ml-auto bg-white p-4 rounded-full">
-            <FaPhoneAlt
-              size={16}
-              className="font-medium"
-              color="#03442C"
-            />
-          </button>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-4">
+            Find Your Ideal Living Space
+          </h2>
+          <p className="mt-4 text-white/80 text-sm sm:text-base">Loading featured properties...</p>
         </div>
       </div>
+    );
+  }
 
-      {/* Property Type and Location */}
-      <h3 className="text-2xl font-semibold md:mt-12 mt-4">
-        {selectedProperty.type} Realty
-      </h3>
-      <p className="flex md:text-[18px] text-[14px] items-center mt-1 text-white py-4">
-        <MapPin size={16} color="#BBFF37" className="mr-1" />{" "}
-        {selectedProperty.location}
-      </p>
-      <p className="mt-2 text-white font-light text-[14px] leading-8">
-        {selectedProperty.description}
-      </p>
-    </div>
-
-    {/* Property Features */}
-    <div className="mt-4 md:mb-8 bg-[#E9F4E7] p-4 rounded-lg grid grid-cols-2 sm:grid-cols-4 text-sm text-nrvPrimaryGreen font-medium gap-4">
-      {Object.entries(selectedProperty.features).map(([key, value]) => (
-        <div key={key}>
-          <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-          <div className="flex items-center">
-            {key === "bedrooms" && <Bed size={16} className="mr-1" />}
-            {key === "bathrooms" && <Bath size={16} className="mr-1" />}
-            {key === "area" && <Ruler size={16} className="mr-1" />}
-            {value}
-          </div>
+  if (properties.length === 0) {
+    return (
+      <div className="bg-[#0D3520] flex items-center justify-center p-4 sm:p-5 min-h-[320px]">
+        <div className="max-w-[1400px] w-full my-8 sm:my-16 text-white text-center">
+          <span className="text-white font-normal rounded-full border border-[#BBFF37] px-3 py-1.5 text-sm">
+            FEATURED PROPERTIES
+          </span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-4">
+            Find Your Ideal Living Space
+          </h2>
+          <p className="mt-4 text-white/80 text-sm sm:text-base">
+            No listed properties at the moment. Check back later.
+          </p>
+          <Link href="/sign-up">
+            <Button variant="lemonPrimary" className="mt-4" size="large">
+              Explore Our Services
+            </Button>
+          </Link>
         </div>
-      ))}
-    </div>
-  </div>
-</div>
+      </div>
+    );
+  }
 
+  return (
+    <div className="bg-[#0D3520] flex items-center justify-center p-4 sm:p-5 overflow-hidden">
+      <div className="max-w-[1400px] w-full my-8 sm:my-16">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div>
+            <span className="text-white font-normal rounded-full border border-[#BBFF37] px-3 py-1.5 text-xs sm:text-sm inline-block">
+              FEATURED PROPERTIES
+            </span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-3">
+              Find Your Ideal Living Space
+            </h2>
+          </div>
+          <Link href="/sign-up" className="shrink-0">
+            <Button
+              variant="lemonPrimary"
+              className="w-full sm:w-auto text-sm sm:text-base"
+              size="large"
+            >
+              Explore Our Services
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {properties.map((property) => (
+            <Link
+              key={property.id}
+              href={`/dashboard/tenant/properties/${property.id}`}
+              className="group block rounded-2xl border border-[#E9F4E74D] overflow-hidden bg-[#0D3520] hover:border-[#BBFF37]/50 transition-all duration-300"
+            >
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <img
+                  src={property.image}
+                  alt={property.type}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <span className="absolute top-3 left-3 rounded-full bg-[#0D3520]/90 text-[#BBFF37] text-xs font-medium px-2.5 py-1">
+                  {property.type}
+                </span>
+              </div>
+              <div className="p-4 sm:p-5 text-white">
+                <p className="text-lime-400 text-lg sm:text-xl font-bold">
+                  {property.price}
+                  <span className="text-sm font-light text-white/90"> / year</span>
+                </p>
+                <p className="flex items-start gap-1.5 mt-2 text-white/90 text-sm min-h-[2.5rem] line-clamp-2">
+                  <MapPin size={14} color="#BBFF37" className="mt-0.5 shrink-0" />
+                  {property.location}
+                </p>
+                <p className="mt-2 text-white/80 text-xs sm:text-sm font-light line-clamp-2">
+                  {property.description}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#E9F4E7]">
+                  <span className="flex items-center gap-1">
+                    <Bed size={12} /> {property.features.bedrooms}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Bath size={12} /> {property.features.bathrooms}
+                  </span>
+                  {property.features.style !== "—" && (
+                    <span className="flex items-center gap-1">
+                      <Ruler size={12} /> {property.features.style}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -87,7 +87,7 @@ const RentedApartments = () => {
                 <span className="text-gray-500 text-sm">/ Per Annum</span>
               </p>
               <p className="text-gray-500 text-[12px] font-light -mt-2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...
+                View details and manage your tenancy.
               </p>
               <div className="flex justify-between text-xs text-[#03442C] mt-2 p-3 bg-[#ECECEE]">
                 <div>

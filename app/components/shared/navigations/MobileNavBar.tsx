@@ -6,7 +6,6 @@ import { FaBars } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { IoClose, IoPersonCircle } from "react-icons/io5";
 import NavLink from "./NavLink";
-import Button from "../buttons/Button";
 import { useRouter } from "next/navigation";
 
 interface NavItem {
@@ -47,6 +46,11 @@ const MobileNavBar: React.FC = () => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleNavTo = (path: string) => {
+    setIsOpen(false);
+    router.push(path);
   };
 
   return (
@@ -98,16 +102,21 @@ const MobileNavBar: React.FC = () => {
               <IoPersonCircle size={50} className="text-nrvPrimaryGreen" />
             </div>
           ) : (
-            <div className="flex justify-between mt-4">
-              <NavLink
-                targetId="/sign-in"
-                className="text-nrvPrimaryGreen mr-4 mt-4"
+            <div className="flex flex-wrap gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => handleNavTo("/sign-in")}
+                className="text-nrvPrimaryGreen font-medium py-2 px-4 rounded-lg hover:bg-[#03442C]/5 min-h-[44px] min-w-[44px]"
               >
                 Sign In
-              </NavLink>
-              <Button size="large" variant="primary" showIcon={false}>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleNavTo("/sign-up")}
+                className="bg-[#03442C] text-white font-semibold py-2 px-5 rounded-lg hover:bg-[#03442C]/90 min-h-[44px] min-w-[44px] transition-colors"
+              >
                 Get Started
-              </Button>
+              </button>
             </div>
           )}
         </div>

@@ -8,6 +8,7 @@ import HoverableCard from "@/app/components/shared/cards/HoverableCard";
 import { CardData } from "@/helpers/data";
 import GuideCard from "../../shared/cards/GuideCard";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import StatsIcon from "../../icons/StatsIcon";
 import FeaturedProperties from "../home/FeaturedProperties";
 import HowItWorks from "../home/HowItWorks";
@@ -397,15 +398,15 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="w-full md:w-auto flex justify-center md:justify-end mt-5 sm:mt-6">
-            <button
-              className="w-full sm:w-auto bg-white text-[#03442C] text-base md:text-[22px] px-6 py-4 sm:px-8 md:p-6 hover:bg-nrvLightGreenButtonHover1 font-semibold transition-all duration-300 flex gap-3 sm:gap-6 items-center justify-center rounded-xl md:rounded-lg shadow-lg active:scale-[0.98] border-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#03442C] min-h-[52px]"
-              onClick={() => router.push("/sign-up")}
+            <Link
+              href="/sign-up"
+              className="w-full sm:w-auto bg-white text-[#03442C] text-base md:text-[22px] px-6 py-4 sm:px-8 md:p-6 hover:bg-nrvLightGreenButtonHover1 font-semibold transition-all duration-300 flex gap-3 sm:gap-6 items-center justify-center rounded-xl md:rounded-lg shadow-lg active:scale-[0.98] border-0 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#03442C] min-h-[52px] touch-manipulation cursor-pointer"
             >
               <span>Get Started Now!</span>
               <svg className="w-5 h-5 md:w-7 md:h-5 shrink-0" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
                 <path d="M18.8672 0.498047C18.6667 0.297525 18.4297 0.197266 18.1562 0.197266C17.8828 0.197266 17.6458 0.297525 17.4453 0.498047C17.2448 0.680338 17.1445 0.908203 17.1445 1.18164C17.1445 1.45508 17.2448 1.69206 17.4453 1.89258L24.6094 9.05664H0.984375C0.710938 9.05664 0.478516 9.15234 0.287109 9.34375C0.0957031 9.53516 0 9.76758 0 10.041C0 10.3145 0.0957031 10.5469 0.287109 10.7383C0.478516 10.9297 0.710938 11.0254 0.984375 11.0254H24.6094L17.4453 18.1895C17.2448 18.3717 17.1445 18.6042 17.1445 18.8867C17.1445 19.1693 17.2448 19.4017 17.4453 19.584C17.6458 19.7845 17.8828 19.8848 18.1562 19.8848C18.4297 19.8848 18.6667 19.7845 18.8672 19.584L27.6992 10.752C27.8997 10.5514 28 10.3145 28 10.041C28 9.76758 27.8997 9.5306 27.6992 9.33008L18.8672 0.498047Z" fill="currentColor" />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
       </div>

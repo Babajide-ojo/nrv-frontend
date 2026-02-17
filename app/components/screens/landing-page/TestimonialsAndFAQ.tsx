@@ -14,7 +14,7 @@ const FAQItem = ({ question, answer }: any) => {
         <span className="text-lg font-bold">{isOpen ? "−" : "+"}</span>
         {question}
       </summary>
-      {isOpen && <p className="mt-2 font-light text-sm text-white">{answer}</p>}
+      {isOpen && <p className="mt-2 font-light text-sm text-white landing-body">{answer}</p>}
     </details>
   );
 };
@@ -24,14 +24,14 @@ const TestimonialsAndFAQs: React.FC = () => {
     <div className="space-y-16">
       {/* Testimonials Section */}
       <section className="md:h-[400px] bg-[#E6F0E9] m-16 md:w-4/5 md:flex justify-center p-8 rounded-lg mx-auto">
-        <div className="text-start mx-auto pt-16">
-          <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2">
+        <div className="text-left mx-auto pt-16">
+          <span className="text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 landing-small">
              Testimonials
           </span>
-          <h2 className="my-8 text-4xl font-medium text-[#03442C]">
+          <h2 className="my-8 text-4xl font-medium text-[#03442C] landing-heading-2">
             Why They Love Us
           </h2>
-          <p className="mt-2 text-[18px] font-light text-[#03442C]">
+          <p className="mt-2 text-lg font-light text-[#03442C] landing-body">
             Discover the voices of our satisfied clients who have experienced
             firsthand the exceptional service we provide in helping them find
             their dream homes.
@@ -39,7 +39,7 @@ const TestimonialsAndFAQs: React.FC = () => {
         </div>
         <div className="relative w-full max-w-2xl p-6 bg-white shadow-md rounded-lg h-96 flex items-end md:m-0 mt-12">
           <div>
-            <p className="text-[20px] font-light text-[#03442C] leading-8 m-4">
+            <p className="text-xl font-light text-[#03442C] landing-body m-4">
               &rdquo;As a tenant, I appreciate the transparency{" "}
               <strong>NaijaRentVerify</strong> provides. The application process
               was smooth, and the screening report gave me confidence in my
@@ -72,7 +72,7 @@ const TestimonialsAndFAQs: React.FC = () => {
                 <span className="my-4 text-[#0D3520] font-normal rounded-full border border-[#0D3520] p-2 px-8 bg-[#E6F0E9]">
                    FAQs
                 </span>
-                <h2 className="my-8 md:text-3xl text-xl font-bold">
+                <h2 className="my-8 md:text-3xl text-xl font-bold landing-heading-2">
                   Frequently Asked Questions
                 </h2>
               </div>

@@ -59,7 +59,7 @@ const FeaturedProperties = () => {
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-4">
             Find Your Ideal Living Space
           </h2>
-          <p className="mt-4 text-white/80 text-sm sm:text-base">Loading featured properties...</p>
+          <p className="mt-4 text-white/80 text-sm sm:text-base landing-body">Loading featured properties...</p>
         </div>
       </div>
     );
@@ -75,7 +75,7 @@ const FeaturedProperties = () => {
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-4">
             Find Your Ideal Living Space
           </h2>
-          <p className="mt-4 text-white/80 text-sm sm:text-base">
+          <p className="mt-4 text-white/80 text-sm sm:text-base landing-body">
             No listed properties at the moment. Check back later.
           </p>
           <Link href="/sign-up">
@@ -91,12 +91,12 @@ const FeaturedProperties = () => {
   return (
     <div className="bg-[#0D3520] flex items-center justify-center p-4 sm:p-5 overflow-hidden">
       <div className="max-w-[1400px] w-full my-8 sm:my-16">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 text-left">
           <div>
-            <span className="text-white font-normal rounded-full border border-[#BBFF37] px-3 py-1.5 text-xs sm:text-sm inline-block">
+            <span className="text-white font-normal rounded-full border border-[#BBFF37] px-3 py-1.5 text-xs sm:text-sm inline-block landing-small">
               FEATURED PROPERTIES
             </span>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-3">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mt-3 landing-heading-2">
               Find Your Ideal Living Space
             </h2>
           </div>
@@ -128,16 +128,16 @@ const FeaturedProperties = () => {
                   {property.type}
                 </span>
               </div>
-              <div className="p-4 sm:p-5 text-white">
-                <p className="text-lime-400 text-lg sm:text-xl font-bold">
+              <div className="p-4 sm:p-5 text-white text-left">
+                <p className="text-lime-400 text-lg sm:text-xl font-bold landing-body-tight">
                   {property.price}
                   <span className="text-sm font-light text-white/90"> / year</span>
                 </p>
-                <p className="flex items-start gap-1.5 mt-2 text-white/90 text-sm min-h-[2.5rem] line-clamp-2">
+                <p className="flex items-start gap-1.5 mt-2 text-white/90 text-sm min-h-[2.5rem] line-clamp-2 landing-body">
                   <MapPin size={14} color="#BBFF37" className="mt-0.5 shrink-0" />
                   {property.location}
                 </p>
-                <p className="mt-2 text-white/80 text-xs sm:text-sm font-light line-clamp-2">
+                <p className="mt-2 text-white/80 text-xs sm:text-sm font-light line-clamp-2 landing-body">
                   {property.description}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#E9F4E7]">

@@ -57,7 +57,7 @@ const MobileNavBar: React.FC = () => {
     >
       <div className="flex justify-between items-center px-4">
         <NavLink targetId="/">
-          <img src="/images/nrv-logo.png" alt="Logo" className="w-28 h-auto" />
+          <img src="/images/dark-green-logo.svg" alt="NaijaRentVerify" className="w-28 h-auto" />
         </NavLink>
         {window.innerWidth <= 1000 && (
           <div>

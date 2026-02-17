@@ -23,7 +23,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     firstName: "",
     lastName: "",
     email: "",
-    phoneNumber: "",
+    nin: "",
     dateOfBirth: "",
     gender: "",
     address: "",
@@ -90,7 +90,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           firstName: firstName || prev.firstName,
           lastName: lastName || prev.lastName,
           email: initialData.email || prev.email,
-          phoneNumber: initialData.phone || prev.phoneNumber,
+          nin: initialData.nin || prev.nin,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
           address: initialData.address || prev.address,
@@ -100,7 +100,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           firstName: firstName || prev.firstName,
           lastName: lastName || prev.lastName,
           email: initialData.email || prev.email,
-          phoneNumber: initialData.phone || prev.phoneNumber,
+          nin: initialData.nin || prev.nin,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
           address: initialData.address || prev.address,
@@ -162,7 +162,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             firstName,
             lastName,
             email: data.email || "",
-            phoneNumber: data.phone || "",
+            nin: data.nin || "",
             dateOfBirth: data.dateOfBirth ? format(new Date(data.dateOfBirth), "yyyy-MM-dd") : "",
             gender: data.gender || "",
             address: data.address || "",
@@ -188,7 +188,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     "firstName",
     "lastName",
     "email",
-    "phoneNumber",
+    "nin",
     "dateOfBirth",
     "gender",
     "address",
@@ -233,7 +233,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       fullName,
       dateOfBirth: dateOfBirthISO,
       email: formData.email,
-      phone: formData.phoneNumber,
+      nin: formData.nin,
       gender: formData.gender,
       address: formData.address,
       verificationId: verificationId,
@@ -290,12 +290,12 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               disabled={isPrefilled}
             />
             <InputField
-              label="Phone Number"
-              name="phoneNumber"
-              inputType="phone"
-              value={formData.phoneNumber}
+              label="NIN (National Identification Number)"
+              name="nin"
+              placeholder="11-digit NIN"
+              value={formData.nin}
               onChange={handleInputChange}
-              error={errors.phoneNumber}
+              error={errors.nin}
               disabled={isPrefilled}
             />
             <InputField

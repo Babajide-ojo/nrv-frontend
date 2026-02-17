@@ -273,12 +273,12 @@ const VerificationResponsePage = () => {
                         </span>
                       </div>
                     )}
-                    {(verificationData.personalReport?.status || verificationData.phoneVerificationStatus) && (
+                    {(verificationData.personalReport?.status || verificationData.ninVerificationStatus || verificationData.phoneVerificationStatus) && (
                       <div className="flex items-center justify-between">
-                        <span className="text-[12px] text-[#101828]">Personal / Phone Verification</span>
-                        <span className={`flex items-center gap-1 font-medium text-[11px] ${(verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "")?.toLowerCase() === "approved" || (verificationData.phoneVerificationStatus || "")?.toLowerCase() === "completed" ? "text-green-600" : "text-gray-600"}`}>
-                          {getStatusIcon(verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "pending")}
-                          {verificationData.personalReport?.status || verificationData.phoneVerificationStatus || "-"}
+                        <span className="text-[12px] text-[#101828]">Personal / NIN Verification</span>
+                        <span className={`flex items-center gap-1 font-medium text-[11px] ${(verificationData.personalReport?.status || verificationData.ninVerificationStatus || verificationData.phoneVerificationStatus || "")?.toLowerCase() === "approved" || (verificationData.ninVerificationStatus || verificationData.phoneVerificationStatus || "")?.toLowerCase() === "completed" ? "text-green-600" : "text-gray-600"}`}>
+                          {getStatusIcon(verificationData.personalReport?.status || verificationData.ninVerificationStatus || verificationData.phoneVerificationStatus || "pending")}
+                          {verificationData.personalReport?.status || verificationData.ninVerificationStatus || verificationData.phoneVerificationStatus || "-"}
                         </span>
                       </div>
                     )}

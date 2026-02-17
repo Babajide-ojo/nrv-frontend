@@ -3,7 +3,7 @@ import TenantLayout from "@/app/components/layout/TenantLayout";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api";
-import { FiUser, FiMail, FiPhone, FiHome, FiUserCheck } from "react-icons/fi";
+import { FiUser, FiMail, FiHash, FiHome, FiUserCheck, FiPhone } from "react-icons/fi";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -137,9 +137,11 @@ const VerificationRequestsPage = () => {
                   <div className="flex items-center gap-1">
                     <FiMail /> {req.email}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <FiPhone /> {req.phone}
-                  </div>
+                  {(req.nin != null && req.nin !== "") && (
+                    <div className="flex items-center gap-1">
+                      <FiHash /> NIN: {req.nin}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1">
                     <FiHome /> Requested on: {req.dateRequested ? new Date(req.dateRequested).toLocaleString() : "-"}
                   </div>
@@ -155,9 +157,11 @@ const VerificationRequestsPage = () => {
                     <div className="flex items-center gap-1">
                       <FiMail /> {req.requestedBy?.email}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <FiPhone /> {req.requestedBy?.phoneNumber}
-                    </div>
+                    {req.requestedBy?.phoneNumber && (
+                      <div className="flex items-center gap-1">
+                        <FiPhone /> {req.requestedBy.phoneNumber}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

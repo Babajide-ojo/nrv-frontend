@@ -19,7 +19,7 @@ export default function OnboardTenant() {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    nin: "",
     landlordDisplayName: "",
   });
   const [user, setUser] = useState<any>({});
@@ -59,7 +59,7 @@ export default function OnboardTenant() {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
+      nin: "",
       landlordDisplayName: "",
     });
   };
@@ -117,13 +117,14 @@ export default function OnboardTenant() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium block mb-1">Phone Number</label>
+                  <label className="text-sm font-medium block mb-1">NIN (National Identification Number)</label>
                   <Input
-                    placeholder="Enter your Phone Number"
-                    name="phone"
-                    value={formData.phone}
+                    placeholder="Tenant NIN (optional)"
+                    name="nin"
+                    value={formData.nin}
                     onChange={handleChange}
                   />
+                  <p className="text-xs text-muted-foreground mt-1">Tenant will provide NIN during verification if not set</p>
                 </div>
 
                 <div className="md:col-span-2">

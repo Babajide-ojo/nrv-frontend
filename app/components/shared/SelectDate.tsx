@@ -25,7 +25,7 @@ const SelectDate = ({
   const customTheme = createTheme({
     palette: {
       primary: {
-        main: "#234e87", // Change to your desired primary color
+        main: "#03442C", // nrvPrimaryGreen – matches app branding
       },
     },
   });

@@ -359,7 +359,7 @@ const TenantVerificationSummaryPage = () => {
                 </span>
               </div>
               <div className="text-sm text-gray-600 mt-2">
-                {req.email} · {req.phone}
+                {req.email}{req.nin ? ` · NIN: ${req.nin}` : ''}
               </div>
               <div className="text-xs text-gray-500 mt-1">
                 Requested on: {req.dateRequested ? new Date(req.dateRequested).toLocaleString() : "—"}

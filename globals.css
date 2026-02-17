@@ -148,7 +148,26 @@ fieldset.MuiOutlinedInput-notchedOutline {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* Home page typography: consistent line heights and alignment */
+@layer components {
+  .landing-heading-1 {
+    @apply leading-tight tracking-tight;
+  }
+  .landing-heading-2 {
+    @apply leading-snug tracking-tight;
+  }
+  .landing-body {
+    @apply leading-relaxed;
+  }
+  .landing-body-tight {
+    @apply leading-normal;
+  }
+  .landing-small {
+    @apply leading-normal;
   }
 }
 

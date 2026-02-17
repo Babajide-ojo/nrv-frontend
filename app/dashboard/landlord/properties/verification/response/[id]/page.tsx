@@ -45,6 +45,10 @@ interface VerificationResponse {
   personalReport?: { status: string; comment?: string };
   documentsReport?: { status: string; comment?: string };
   phoneVerificationStatus?: string;
+  nin?: string;
+  ninVerificationStatus?: string;
+  ninVerificationDate?: string;
+  ninVerificationResult?: Record<string, unknown>;
 }
 
 const VerificationResponsePage = () => {

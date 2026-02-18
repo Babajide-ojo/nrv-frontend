@@ -9,12 +9,13 @@ import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import { toast, ToastContainer } from "react-toastify";
 import { requestVerification } from "@/redux/slices/verificationSlice";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 export default function OnboardTenant() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -68,6 +69,36 @@ export default function OnboardTenant() {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
   }, []);
+
+  useEffect(() => {
+    const next: any = {};
+    const firstName = searchParams.get("firstName");
+    const lastName = searchParams.get("lastName");
+    const email = searchParams.get("email");
+    const nin = searchParams.get("nin");
+    const landlordDisplayName = searchParams.get("landlordDisplayName");
+
+    if (firstName) next.firstName = firstName;
+    if (lastName) next.lastName = lastName;
+    if (email) next.email = email;
+    if (nin) next.nin = nin;
+    if (landlordDisplayName) next.landlordDisplayName = landlordDisplayName;
+
+    if (Object.keys(next).length) {
+      setFormData((prev) => ({ ...prev, ...next }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const displayNameFromUser =
+      `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "";
+    if (displayNameFromUser) {
+      setFormData((prev) =>
+        prev.landlordDisplayName ? prev : { ...prev, landlordDisplayName: displayNameFromUser }
+      );
+    }
+  }, [user?.firstName, user?.lastName]);
 
 
   return (

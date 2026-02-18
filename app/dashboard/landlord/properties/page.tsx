@@ -68,6 +68,11 @@ const PropertiesScreen = () => {
       );
       setProperties(response?.payload?.data || []);
       setTotalPages(response?.payload?.totalPages || 1);
+      // If we are on a page that no longer has items (e.g. after adding a new property),
+      // reset to first page so the most recent property is visible.
+      if ((response?.payload?.data?.length ?? 0) === 0 && page > 1) {
+        setPage(1);
+      }
     } catch (error) {
       console.error("Error fetching properties", error);
     } finally {
@@ -102,12 +107,13 @@ const PropertiesScreen = () => {
       });
 
       const avgLeaseDuration = properties.length;
+      const safeTotalUnits = totalUnits > 0 ? totalUnits : 0;
 
       setSummaryData({
-        occupancyRate: (totalOccupied / totalUnits) * 100,
+        occupancyRate: safeTotalUnits ? (totalOccupied / safeTotalUnits) * 100 : 0,
         avgLeaseDuration,
         tenantTurnoverRate: totalUnits,
-        vacancyRate: (totalVacant / totalUnits) * 100,
+        vacancyRate: safeTotalUnits ? (totalVacant / safeTotalUnits) * 100 : 0,
       });
     };
 
@@ -220,12 +226,14 @@ const PropertiesScreen = () => {
             <div className="grid grid-col-1 md:grid-cols-3 gap-8">
               {properties.map((property) => {
                 // Calculate the lease progress based on unitsLeft and apartmentCount
+                const apartmentCount = Number(property.apartmentCount || 0);
+                const unitsLeft = Number(property.unitsLeft || 0);
                 const occupiedProgress =
-                  ((property.apartmentCount - property.unitsLeft) /
-                    property.apartmentCount) *
-                  100;
+                  apartmentCount > 0
+                    ? ((apartmentCount - unitsLeft) / apartmentCount) * 100
+                    : 0;
                 const unoccupiedProgress =
-                  (property.unitsLeft / property.apartmentCount) * 100;
+                  apartmentCount > 0 ? (unitsLeft / apartmentCount) * 100 : 0;
 
                 return (
                   <div
@@ -264,7 +272,9 @@ const PropertiesScreen = () => {
                       </div>
                     </div>
                     <div className="mt-4">
-                      <h3 className="text-md font-semibold">{property.name}</h3>
+                      <h3 className="text-md font-semibold">
+                        {property.propertyName || property.name || "Unnamed Property"}
+                      </h3>
                       <p className="text-md text-[#101928] w-4/5 h-14">
                         {property.streetAddress}, {property.city},{" "}
                         {property.state}

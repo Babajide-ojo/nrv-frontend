@@ -240,6 +240,24 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
                 ),
               },
               {
+                key: "applicant",
+                label: "Applicant",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#101828] font-medium text-[13px]">
+                      {[val?.firstName, val?.lastName].filter(Boolean).join(" ") ||
+                        val?.fullName ||
+                        "N/A"}
+                    </div>
+                    {val?.email && (
+                      <div className="text-[#667085] font-light text-[12px]">
+                        {val.email}
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
+              {
                 key: "status",
                 label: "Status",
                 render: (val) => (

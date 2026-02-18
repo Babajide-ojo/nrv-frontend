@@ -87,6 +87,20 @@ const ApplicationDetails = () => {
     setIsVisible(!isVisible);
   };
 
+  const handleVerifyTenant = () => {
+    const sp = new URLSearchParams();
+    const applicant = application?.applicant;
+    if (applicant?.firstName) sp.set("firstName", applicant.firstName);
+    if (applicant?.lastName) sp.set("lastName", applicant.lastName);
+    if (applicant?.email) sp.set("email", applicant.email);
+    if (applicant?.nin) sp.set("nin", applicant.nin);
+    router.push(
+      `/dashboard/landlord/properties/verification/request${
+        sp.toString() ? `?${sp.toString()}` : ""
+      }`
+    );
+  };
+
   const validateTenancyDateAssignment = (values: any) => {
     const errors: { rentEndDate?: string; rentStartDate?: string } = {};
 
@@ -412,13 +426,6 @@ const ApplicationDetails = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="w-full text-center mt-5 border rounded-lg">
               <div className="flex flex-col items-center">
-                <Image
-                  src="/images/verified-user-icon.svg"
-                  alt="Profile"
-                  height={160}
-                  width={160}
-                  className="object-cover aspect-square rounded-lg"
-                />
                 <p className="text-[24px] text-[#03442C] font-semibold mt-3">
                   {application?.applicant?.firstName}{" "}
                   {application?.applicant?.lastName}
@@ -453,13 +460,13 @@ const ApplicationDetails = () => {
                   <Button
                     className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                     disabled={isLoading}
-                    onClick={() => handleAppApproval("Accepted")}
+                    onClick={handleVerifyTenant}
                   >
-                    Accept
+                    Verify Tenant
                   </Button>
                   <Button
                     className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
-                    onClick={() => {}}
+                    onClick={() => handleAppApproval("Rejected")}
                   >
                     Reject
                   </Button>

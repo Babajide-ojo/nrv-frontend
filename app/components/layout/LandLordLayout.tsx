@@ -167,7 +167,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           <div className="p-4 bg-white shadow-md">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Breadcrumbs */}
-              <nav className="text-gray-500 text-sm flex flex-wrap items-center">
+              <nav className="text-gray-500 text-sm flex flex-wrap items-center gap-x-1 gap-y-1">
                 <svg
                   width="25"
                   height="21"
@@ -183,11 +183,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                   />
                 </svg>
 
-                <span className="mx-2 hidden sm:inline">&gt;</span>
+                <span className="mx-1 text-gray-400">&gt;</span>
                 {path && <span className="text-sm text-[#333333]">{path}</span>}
-                {subMainPath && (
-                  <span className="mx-2 hidden sm:inline">/</span>
-                )}
+                {subMainPath && <span className="mx-1 text-gray-400">/</span>}
                 <a
                   href="#"
                   className="text-sm hover:text-gray-900 text-[#333333]"
@@ -196,7 +194,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 </a>
                 {subMainPath && (
                   <>
-                    <span className="mx-2 hidden sm:inline">/</span>
+                    <span className="mx-1 text-gray-400">/</span>
                     <span className="text-sm text-[#333333]">
                       {subMainPath}
                     </span>

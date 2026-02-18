@@ -253,6 +253,20 @@ const TenantScreen = () => {
     }
   };
 
+  const handleVerifyTenant = () => {
+    const sp = new URLSearchParams();
+    const applicant = application?.applicant;
+    if (applicant?.firstName) sp.set("firstName", applicant.firstName);
+    if (applicant?.lastName) sp.set("lastName", applicant.lastName);
+    if (applicant?.email) sp.set("email", applicant.email);
+    if (applicant?.nin) sp.set("nin", applicant.nin);
+    router.push(
+      `/dashboard/landlord/properties/verification/request${
+        sp.toString() ? `?${sp.toString()}` : ""
+      }`
+    );
+  };
+
   useEffect(() => {
     const formData = { id: id };
     if (id) {
@@ -263,13 +277,20 @@ const TenantScreen = () => {
   if (!application) return <div className="p-4">Loading lease details...</div>;
 
   return (
-    <div className="mx-5 my-4">
+    <div className="mx-4 sm:mx-5 my-4">
       <ToastContainer />
       {/* Breadcrumb and Back Button */}
       <div className="flex items-center justify-between gap-5 mb-4">
         <div className="flex items-center gap-3 text-sm">
-          <BackIcon />
-          <span className="text-nrvGreyBlack">Tenant Profile</span>
+          <button
+            type="button"
+            className="text-nrvGreyBlack"
+            onClick={() => router.back()}
+            aria-label="Go back"
+          >
+            <BackIcon />
+          </button>
+          <span className="text-nrvGreyBlack font-medium">Tenant Profile</span>
         </div>
       </div>
 
@@ -282,7 +303,7 @@ const TenantScreen = () => {
               width={168}
               src={application?.propertyId?.propertyId?.file}
               alt="property"
-              className="object-cover aspect-square h-full"
+              className="object-cover w-full h-[200px] sm:h-full sm:w-[168px] sm:aspect-square"
             />
             <div className="px-5 py-3">
               <div
@@ -292,10 +313,10 @@ const TenantScreen = () => {
                   ? "Active Lease"
                   : status}
               </div>
-              <div className="text-[20px] font-semibold mt-1">
+              <div className="text-lg sm:text-[20px] font-semibold mt-2 leading-snug">
                 {application?.propertyId?.description}
               </div>
-              <p>
+              <p className="text-sm sm:text-base text-[#101928] mt-1">
                 {application?.propertyId?.propertyId?.streetAddress},{" "}
                 {application?.propertyId?.propertyId?.city},{" "}
                 {application?.propertyId?.propertyId?.state}
@@ -309,36 +330,29 @@ const TenantScreen = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div className="w-full text-center mt-5 border rounded-lg">
+          <div className="flex flex-col lg:flex-row gap-4 mt-5">
+            <div className="w-full text-center border rounded-lg">
               <div className="flex flex-col items-center">
-                <Image
-                  src="/images/verified-user-icon.svg"
-                  alt="Profile"
-                  height={160}
-                  width={160}
-                  className="object-cover aspect-square rounded-lg"
-                />
-                <p className="text-[24px] text-[#03442C] font-semibold mt-3">
+                <p className="text-xl sm:text-2xl text-[#03442C] font-semibold mt-3">
                   {application?.applicant?.firstName}{" "}
                   {application?.applicant?.lastName}
                 </p>
-                <p className="text-lg text-gray-500">
+                <p className="text-sm sm:text-base text-gray-500 mt-1 break-words px-4">
                   {application?.applicant?.email}
                 </p>
 
-                <p className=" text-gray-700">
+                <p className="text-sm sm:text-base text-gray-700 mt-1">
                   {application?.applicant?.phoneNumber}
                 </p>
               </div>
 
-              <div className="mt-4 bg-[#E9F4E7] p-4 text-[24px] font-semibold rounded flex justify-between items-center">
-                <span>
+              <div className="mt-4 bg-[#E9F4E7] p-3 sm:p-4 text-base sm:text-2xl font-semibold rounded flex justify-between items-center gap-3">
+                <span className="truncate">
                   {showNIN ? application?.applicant?.nin : "**********"}
                 </span>
                 <button
                   onClick={() => setShowNIN(!showNIN)}
-                  className="underline text-lg text-green-600"
+                  className="underline text-sm sm:text-base text-green-700 shrink-0"
                 >
                   {!showNIN ? "Show NIN" : "Hide NIN"}
                 </button>
@@ -350,13 +364,13 @@ const TenantScreen = () => {
                 application?.status == "Ended" ||
                 application?.status == "Active_lease"
               ) && (
-                <div className="flex gap-2 mt-5 justify-center">
+                <div className="flex flex-col sm:flex-row gap-2 mt-5 justify-center px-4 pb-4">
                   <Button
                     className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
                     disabled={isLoading}
-                    onClick={() => handleApplicationStatus("Accepted")}
+                    onClick={handleVerifyTenant}
                   >
-                    Accept
+                    Verify Tenant
                   </Button>
                   <Button
                     className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
@@ -395,11 +409,11 @@ const TenantScreen = () => {
 
        
             </div>
-            <div className="w-full p-4 border rounded-lg mt-4">
+            <div className="w-full p-4 border rounded-lg">
               <div className="flex">
                 <p className="text-lg font-semibold">Employment Details</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <div className="w-full mt-4 text-sm text-start">
                   <p className="text-[#475467]">Employer</p>
                   <p className="font-semibold">
@@ -414,11 +428,11 @@ const TenantScreen = () => {
               </div>
             </div>
           </div>
-          <div className="p-4 border rounded-lg  mt-5">
+          <div className="p-4 border rounded-lg mt-5">
             <div className="flex items-center justify-between">
               <p className="text-lg font-semibold">Lease Period</p>
             </div>
-            <div className="mt-4 flex gap-4">
+            <div className="mt-4 flex flex-col sm:flex-row gap-4">
               <div className="w-full text-sm flex items-center gap-2 justify-between border rounded-md p-2">
                 <div>
                   <p className="text-sm font-semibold">Lease Start Date</p>

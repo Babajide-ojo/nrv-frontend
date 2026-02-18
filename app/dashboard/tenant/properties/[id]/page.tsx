@@ -54,6 +54,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { API_URL } from "@/config/constant";
+
+/** Ensure image URL is absolute so it loads from backend/Cloudinary when relative */
+function toAbsoluteImageUrl(url: string | null | undefined): string | null {
+  if (!url || typeof url !== "string" || !url.trim()) return null;
+  const u = url.trim();
+  if (u.startsWith("http://") || u.startsWith("https://")) return u;
+  const base = API_URL.replace(/\/$/, "");
+  return u.startsWith("/") ? `${base}${u}` : `${base}/${u}`;
+}
 
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
@@ -99,8 +109,17 @@ const TenantPropertiesScreen = () => {
       const raw = response?.payload?.data?.property; // Pass page parameter
             let mapped = {
         title: raw?.apartmentType + " • " + raw?.apartmentStyle,
-        imageUrl: raw?.propertyId.file,
-        imageUrls: raw?.imageUrls || [],
+        imageUrl: raw?.propertyId?.file,
+        imageUrls: (() => {
+          const fromArray = Array.isArray(raw?.imageUrls)
+            ? raw.imageUrls.map((u: string) => toAbsoluteImageUrl(u)).filter(Boolean)
+            : [];
+          if (fromArray.length > 0) return fromArray;
+          const fallbacks = [raw?.file, raw?.propertyId?.file]
+            .map((u) => toAbsoluteImageUrl(u))
+            .filter(Boolean);
+          return fallbacks;
+        })(),
         price: raw?.rentAmount,
         apartmentName: raw?.apartmentType,
         address: `${raw?.propertyId.streetAddress}, ${raw?.propertyId.city}, ${raw.propertyId.state}`,
@@ -213,6 +232,11 @@ const TenantPropertiesScreen = () => {
     fetchData();
   }, []);
 
+  // When viewing a different property (route id changes), reset gallery index
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [id]);
+
   // Keyboard navigation for image gallery
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -240,14 +264,27 @@ const TenantPropertiesScreen = () => {
     };
   }, [showImageModal, property.imageUrls]);
 
-  // Reset image states when property changes
+  // Reset image states only when the current image URL actually changes (avoids spinner reappearing on re-renders)
+  const currentImageUrl = property.imageUrls?.[selectedImageIndex] ?? property.imageUrls?.[0];
   useEffect(() => {
-    if (property.imageUrls && property.imageUrls.length > 0) {
-      setSelectedImageIndex(0);
-      setImageLoading(true);
+    if (!property.imageUrls || property.imageUrls.length === 0) {
+      setImageLoading(false);
       setImageError(false);
+      return;
     }
-  }, [property.imageUrls]);
+    setImageLoading(true);
+    setImageError(false);
+  }, [currentImageUrl]);
+
+  // Timeout fallback: stop loader if image never loads (broken URL, CORS, etc.)
+  useEffect(() => {
+    if (!property.imageUrls?.length || !imageLoading) return;
+    const t = setTimeout(() => {
+      setImageLoading(false);
+      setImageError(true);
+    }, 10000);
+    return () => clearTimeout(t);
+  }, [property.imageUrls, selectedImageIndex, imageLoading]);
 
   const handleImageLoad = () => {
     setImageLoading(false);
@@ -306,13 +343,13 @@ const TenantPropertiesScreen = () => {
                       <div className="relative">
                         {/* Main Image */}
                         <div className="relative h-80 overflow-hidden">
-                          {imageLoading && (
-                            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+                          {imageLoading && property.imageUrls?.length > 0 && (
+                            <div className="absolute inset-0 bg-gray-200 flex items-center justify-center z-10">
                               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
                             </div>
                           )}
                           
-                          {imageError && (
+                          {imageError && property.imageUrls?.length > 0 && (
                             <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
                               <div className="text-center text-gray-500">
                                 <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1179,21 +1216,19 @@ const TenantPropertiesScreen = () => {
               <div className="space-y-3">
                 <Button
                   size="large"
-                  variant="primary"
+                  variant="darkPrimary"
                   showIcon={false}
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  className="w-full !bg-[#03442C] hover:!bg-[#03442C]/90 !text-white"
                 >
                   Send Message
                 </Button>
-                <Button
+                <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
-                  size="large"
-                  variant="lightGrey"
-                  showIcon={false}
-                  className="w-full"
+                  className="w-full px-8 py-3 text-sm font-medium rounded-full border border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
                 >
                   Close
-                </Button>
+                </button>
               </div>
             </div>
           </CenterModal>
@@ -1235,7 +1270,7 @@ const TenantPropertiesScreen = () => {
 
               <div className="flex gap-3 pt-4">
                 <Link className="flex-1" href={`tel:${property?.owner?.phoneNumber}`}>
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white" variant="darkPrimary">
                     <div className="flex items-center gap-2 py-1">
                       <Phone className="h-4 w-4" />
                       Call
@@ -1243,7 +1278,7 @@ const TenantPropertiesScreen = () => {
                   </Button>
                 </Link>
                 <Link className="flex-1" href={`mailto:${property?.owner?.email}`}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" variant="darkPrimary">
                     <div className="flex items-center gap-2 py-1">
                       <Mail className="h-4 w-4" />
                       Email

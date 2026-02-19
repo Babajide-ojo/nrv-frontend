@@ -8,6 +8,8 @@ import { IoBackspace, IoPeopleOutline, IoSettings } from "react-icons/io5";
 import { useRouter } from "next/navigation";
 import TenantSideBar from "../shared/navigations/TenantSideBar";
 import { FaBuilding } from "react-icons/fa";
+import { PiFileDocDuotone } from "react-icons/pi";
+import { FiTool, FiBell, FiCheckCircle } from "react-icons/fi";
 
 interface TenantLayoutProps {
   children: React.ReactNode;
@@ -63,29 +65,64 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
               </button>
             </>
           ) : (
-            <>
+            <div className="grid grid-cols-4 gap-2 w-full">
               <button
                 className="py-3 w-full flex flex-col items-center"
                 onClick={handleToggle}
               >
                 <IoBackspace size={24} color="white" />
-                <span className="text-xs text-white">Go Back</span>
+                <span className="text-[10px] text-white">Go Back</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/settings")}
+                onClick={() => router.push("/dashboard/tenant/properties/applications")}
               >
-                <IoSettings size={24} color="white" />
-                <span className="text-xs text-white">Settings</span>
+                <PiFileDocDuotone size={24} color="white" />
+                <span className="text-[10px] text-white">Applications</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/tenant/properties/maintenance")}
+              >
+                <FiTool size={24} color="white" />
+                <span className="text-[10px] text-white">Maintenance</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/tenant/verification/requests")}
+              >
+                <FiCheckCircle size={24} color="white" />
+                <span className="text-[10px] text-white">Verifications</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/tenant/verification")}
+              >
+                <FiCheckCircle size={24} color="white" />
+                <span className="text-[10px] text-white">Submissions</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/tenant/notifications")}
+              >
+                <FiBell size={24} color="white" />
+                <span className="text-[10px] text-white">Notifications</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/messages")}
               >
                 <FaMessage size={24} color="white" />
-                <span className="text-xs text-white">Messages</span>
+                <span className="text-[10px] text-white">Messages</span>
               </button>
-            </>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/tenant/settings")}
+              >
+                <IoSettings size={24} color="white" />
+                <span className="text-[10px] text-white">Settings</span>
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
   IoPeopleCircleOutline,
   IoSettings,
 } from "react-icons/io5";
+import { FiUsers, FiFileText, FiBell } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -96,13 +97,20 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               </button>
             </>
           ) : (
-            <>
+            <div className="grid grid-cols-4 gap-2 w-full">
               <button
                 className="py-3 w-full flex flex-col items-center"
                 onClick={handleToggle}
               >
                 <IoBackspace size={24} color="white" />
-                <span className="text-[11px] text-white">Go Back</span>
+                <span className="text-[10px] text-white">Go Back</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/landlord/tenants")}
+              >
+                <FiUsers size={24} color="white" />
+                <span className="text-[10px] text-white">Tenants</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
@@ -111,7 +119,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 }
               >
                 <IoSettings size={24} color="white" />
-                <span className="text-[11px] text-white">Maintenance</span>
+                <span className="text-[10px] text-white">Maintenance</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
@@ -120,16 +128,30 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 }
               >
                 <FaCheck size={24} color="white" />
-                <span className="text-[11px] text-white">Verification</span>
+                <span className="text-[10px] text-white">Verification</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/landlord/reports")}
+              >
+                <FiFileText size={24} color="white" />
+                <span className="text-[10px] text-white">Reports</span>
+              </button>
+              <button
+                className="py-3 w-full flex flex-col items-center"
+                onClick={() => router.push("/dashboard/landlord/notifications")}
+              >
+                <FiBell size={24} color="white" />
+                <span className="text-[10px] text-white">Notifications</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/landlord/settings")}
               >
                 <IoSettings size={24} color="white" />
-                <span className="text-[11px] text-white">Settings</span>
+                <span className="text-[10px] text-white">Settings</span>
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>

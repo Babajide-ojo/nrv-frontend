@@ -182,7 +182,7 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
               </div>
             }
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <Button
                 variant="default"
                 className={`${
@@ -351,7 +351,7 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
                 <div className="mt-4 text-sm text-gray-700">
                   {application?.applicant?.phoneNumber}
                 </div>
-                <div className="flex gap-2 mt-3 justify-center">
+                <div className="flex gap-2 mt-3 justify-center flex-wrap">
                   <Button className="bg-nrvPrimaryGreen text-white text-xs px-4 py-2">
                     Send Message
                   </Button>

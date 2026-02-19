@@ -98,13 +98,8 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   }, []);
 
   return (
-    // <div
-    //   className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#0D3520] text-white flex flex-col justify-between transition-transform ${
-    //     isOpen ? "translate-x-0" : "-translate-x-full"
-    //   }`}
-    // >
     <div
-      className={`inset-y-0 left-0 z-50 w-full h-screen bg-[#0D3520] text-white flex flex-col justify-between transition-transform`}
+      className={`h-full w-full bg-nrvPrimaryGreen text-white flex flex-col justify-between`}
     >
       <div>
         {/* Logo */}

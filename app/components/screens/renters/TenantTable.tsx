@@ -376,7 +376,7 @@ const TenantTable = () => {
               </div>
             }
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <Button
                 variant="default"
                 className={`${

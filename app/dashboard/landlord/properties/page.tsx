@@ -177,7 +177,7 @@ const PropertiesScreen = () => {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6 border border-gray-300 rounded-lg overflow-hidden">
             {[
               {
                 label: "Total Number of Properties",
@@ -203,7 +203,7 @@ const PropertiesScreen = () => {
             ].map((stat, index) => (
               <div
                 key={index}
-                className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
+                className="text-start p-4 bg-white space-y-2.5 border-b sm:border-b-0 sm:border-r last:border-0"
               >
                 <p className="text-[#67667A] font-medium text-sm">
                   {stat.label}
@@ -223,7 +223,7 @@ const PropertiesScreen = () => {
               <p className="text-gray-500">No properties listed yet.</p>
             </div>
           ) : (
-            <div className="grid grid-col-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {properties.map((property) => {
                 // Calculate the lease progress based on unitsLeft and apartmentCount
                 const apartmentCount = Number(property.apartmentCount || 0);

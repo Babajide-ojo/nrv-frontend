@@ -131,7 +131,7 @@ const SingleRoom = () => {
                         {singleRoom?.propertyId?.state}
                       </div>
                     </div>
-                    <div className="bg-[#E9F4E7] border-t border-l border-r border-[#E9F4E7] rounded-l rounded-r p-2 flex flex-col md:flex-row items-start md:items-center justify-between">
+                    <div className="bg-[#E9F4E7] border-t border-l border-r border-[#E9F4E7] rounded-l rounded-r p-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
                       <div className="flex gap-2">
                         <div></div>
 
@@ -144,9 +144,9 @@ const SingleRoom = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 flex-wrap w-full md:w-auto">
                         <button
-                          className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
+                          className={`px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto ${
                             singleRoom?.assignedToTenant
                               ? "bg-[#FFF1DA] text-[#F3A218]"
                               : "text-[#E7F6EC] bg-[#099137]"
@@ -157,12 +157,12 @@ const SingleRoom = () => {
                             : "Currently Vacant"}
                         </button>
                         <button
-                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137]"
+                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto"
                           onClick={() => {
                             setIsModalOpen(true);
                           }}
                         >
-                          <div className="flex gap-3 p-1.5 text-swBlue">
+                          <div className="flex gap-3 p-1.5 text-swBlue justify-center">
                             {singleRoom.listRoom === false
                               ? "List Apartment"
                               : "Unlist Apartment"}
@@ -172,21 +172,21 @@ const SingleRoom = () => {
                     </div>
 
                     <Tabs defaultValue="details" className="w-full mt-4">
-                      <TabsList className="w-full bg-gray-50 border-b border-gray-200">
+                      <TabsList className="w-full bg-gray-50 border-b border-gray-200 overflow-x-auto flex whitespace-nowrap hide-scrollbar">
                         <TabsTrigger
-                          className="text-[14px] font-medium p-6  text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B]"
+                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
                           value="details"
                         >
                           Apartment Details
                         </TabsTrigger>
                         <TabsTrigger
-                          className="text-[14px] font-medium p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B]"
+                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
                           value="maintenance"
                         >
                           Ongoing Maintenance
                         </TabsTrigger>
                         <TabsTrigger
-                          className="text-[14px] font-medium p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B]"
+                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
                           value="document"
                         >
                           Apartment Documents

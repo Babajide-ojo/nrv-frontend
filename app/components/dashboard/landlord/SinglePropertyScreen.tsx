@@ -330,10 +330,10 @@ const SinglePropertyScreen = () => {
                   </div>
 
                   {/* Right Section (Buttons) */}
-                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 w-full md:w-auto">
                     <Button
                       variant="light"
-                      className="px-6 py-2 rounded-md flex gap-2 justify-center"
+                      className="px-6 py-2 rounded-md flex gap-2 justify-center w-full md:w-auto"
                       onClick={() =>
                         router.push(
                           `/dashboard/landlord/properties/update/${singleProperty._id}`
@@ -344,7 +344,7 @@ const SinglePropertyScreen = () => {
                     </Button>
                     <Button
                       variant="darkPrimary"
-                      className="px-6 py-2 rounded-md justify-center"
+                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto"
                       onClick={() => {
                         //localStorage.setItem("property", JSON.stringify(id))
                         router.push(
@@ -358,11 +358,11 @@ const SinglePropertyScreen = () => {
                 </div>
 
                 {/* Summary Cards */}
-                <div className="grid md:grid-cols-4 grid-cols-1 gap-4 text-center mb-6 border border-gray-300 ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6 border border-gray-300 rounded-lg overflow-hidden">
                   {summaryStats.map((stat: any, index: any) => (
                     <div
                       key={index}
-                      className="text-start p-4 bg-white my-2 space-y-2.5 border-r"
+                      className="text-start p-4 bg-white space-y-2.5 border-b sm:border-b-0 sm:border-r last:border-0"
                     >
                       <p className="text-[#67667A] font-medium text-sm">
                         {stat?.label}
@@ -376,13 +376,13 @@ const SinglePropertyScreen = () => {
                     </div>
                   ))}
                 </div>
-                <div className="flex w-full gap-1 md:gap-6 border-b-2">
+                <div className="flex w-full gap-1 md:gap-6 border-b-2 overflow-x-auto hide-scrollbar">
                   {propertyDashboardLinks.map((item: any) => (
-                    <div key={item.id}>
+                    <div key={item.id} className="flex-shrink-0">
                       <div
-                        className={`text-[16px] font-medium mt-2 mb-2 cursor-pointer px-12 text-center ${
+                        className={`text-[16px] font-medium mt-2 mb-2 cursor-pointer px-4 md:px-12 text-center whitespace-nowrap ${
                           currentState === item.id
-                            ? "text-[#2B892B]"
+                            ? "text-[#2B892B] border-b-2 border-[#2B892B] -mb-[2px]"
                             : "text-[#344054]"
                         }`}
                         onClick={() => {

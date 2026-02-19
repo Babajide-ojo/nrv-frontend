@@ -123,12 +123,6 @@ const DASHBOARD_ACTIONS: ActionCard[] = [
     bgColor: "bg-[#FEF6E7]",
     link: "/"
   },
-  {
-    title: "Invite your Tenants, Friends & Families with ease.",
-    icon: <img src="/images/group-people.svg" className="" alt="User" />,
-    bgColor: "bg-[#E3EFFC]",
-    link: "/"
-  },
 ];
 
 const METRIC_ICONS = {
@@ -411,7 +405,7 @@ const DashboardScreen: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">
               Where would you like to start?
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {DASHBOARD_ACTIONS.map((action, index) => (
                 <ActionCard
                   key={index}

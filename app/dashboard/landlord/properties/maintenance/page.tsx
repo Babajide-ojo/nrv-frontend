@@ -82,7 +82,7 @@ const Maintainance = () => {
             <ToastContainer />
             <div className="space-y-12 p-4 font-jakarta">
               {/* Header */}
-              <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full gap-4 md:gap-0">
                 <div>
                   <h2 className="text-2xl font-semibold">
                     Maintenance Management
@@ -94,7 +94,7 @@ const Maintainance = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 w-full md:w-auto"
                   onClick={fetchData}
                 >
                   <RefreshCcw className="w-4 h-4" />
@@ -104,7 +104,7 @@ const Maintainance = () => {
 
               {/* Summary Cards */}
               {maintenance?.summary && (
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white p-4 border rounded-lg">
                   {[
                     {
                       title: "Active Requests",
@@ -141,7 +141,7 @@ const Maintainance = () => {
                       comparison: "compared to the last 6 months",
                     },
                   ].map((card, i) => (
-                    <div key={i} className="border-r last:border-none px-4">
+                    <div key={i} className="border-b sm:border-b-0 sm:border-r last:border-0 pb-4 sm:pb-0 px-4">
                       <p className="text-gray-500 text-sm">{card.title}</p>
                       <h3 className="text-xl font-semibold text-green-900">
                         {card.value}
@@ -162,7 +162,7 @@ const Maintainance = () => {
               )}
 
               {/* Status Tabs */}
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
                 <Button
                   variant="default"
                   className={`${

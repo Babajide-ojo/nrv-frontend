@@ -451,7 +451,7 @@ const SingleMaintainance = () => {
                   Active Maintenance Ticket
                 </div>
                 <div className="text-sm text-[#667085] space-y-6">
-                  <div className="flex justify-between">
+                  <div className="flex flex-col sm:flex-row justify-between gap-4">
                     <div>
                       <span className="block font-semibold text-[11px]">
                         Request ID:

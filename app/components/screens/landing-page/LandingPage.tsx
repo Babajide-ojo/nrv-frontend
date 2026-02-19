@@ -410,9 +410,9 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <section id="about" className="relative z-10 bg-white">
+      {/* <section id="about" className="relative z-10 bg-white">
         <AboutSection />
-      </section>
+      </section> */}
       <section id="services">
         <FeatureSection />
       </section>

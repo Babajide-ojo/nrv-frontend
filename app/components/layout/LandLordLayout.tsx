@@ -28,7 +28,6 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   subMainPath,
   comingSoon = false,
 }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [activeLink, setActiveLink] = useState<string>("");
   const router = useRouter();
@@ -51,22 +50,10 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
     setShowMore((prev) => !prev);
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-      setIsSidebarOpen(screenWidth > 1110);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
-    <div className="relative min-h-screen !overflow-hidden">
+    <div className="relative min-h-screen !overflow-hidden flex flex-col">
       {/* Mobile Bottom Nav */}
-      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md 2xl:hidden xl:hidden lg:hidden z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md lg:hidden z-50">
         <div className="flex gap-4 space-between p-2">
           {!showMore ? (
             <>
@@ -148,23 +135,16 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       </div>
 
       {/* Layout Content */}
-      <div
-        className="flex w-full h-screen bg-white overflow-hidden"
-        style={{ paddingBottom: "40px" }}
-      >
-        <div className={"hidden lg:block w-1/10"}>
-          {/* <div className={isSidebarOpen ? "w-1/5" : "hidden lg:block w-1/10"}> */}
-          <LandLordSideBar isOpen={isSidebarOpen} />
+      <div className="flex w-full h-screen bg-white overflow-hidden">
+        {/* Sidebar - Desktop */}
+        <div className="hidden lg:block w-64 flex-shrink-0 h-full bg-nrvPrimaryGreen">
+          <LandLordSideBar isOpen={true} />
         </div>
-        <div
-          className={
-            isSidebarOpen
-              ? "w-9/10 flex-1 overflow-y-auto"
-              : "w-full lg:w-1/10 flex-1 overflow-y-auto"
-          }
-        >
+
+        {/* Main Content */}
+        <div className="flex-1 h-full overflow-y-auto w-full relative">
           {/* Header */}
-          <div className="p-4 bg-white shadow-md">
+          <div className="p-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Breadcrumbs */}
               <nav className="text-gray-500 text-sm flex flex-wrap items-center gap-x-1 gap-y-1">
@@ -212,8 +192,10 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
             </div>
           </div>
 
-          {/* Main Content */}
-          <main className="bg-white w-full pb-24 lg:pb-0">{children}</main>
+          {/* Main Content Body */}
+          <main className="bg-white w-full p-4 pb-24 lg:pb-4 min-h-[calc(100vh-80px)]">
+            {children}
+          </main>
         </div>
       </div>
     </div>

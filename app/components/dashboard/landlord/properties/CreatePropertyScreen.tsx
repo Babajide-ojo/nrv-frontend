@@ -344,7 +344,7 @@ const CreatePropertyScreen = () => {
                 encType="multipart/form-data"
               >
                 <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">
-                  <div className="md:flex md:justify-between block">
+                  <div className="md:flex md:justify-between block flex-col md:flex-row gap-4">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">
                         Add New Property
@@ -354,17 +354,17 @@ const CreatePropertyScreen = () => {
                         and up-to-date.
                       </p>
                     </div>
-                    <div className="flex justify-end gap-4 mt-8">
+                    <div className="flex justify-end gap-4 mt-4 md:mt-8 w-full md:w-auto">
                       <Button
                         variant="light"
-                        className="px-6 py-1.5 rounded-md"
+                        className="px-6 py-1.5 rounded-md w-full md:w-auto"
                         onClick={() => router.back()}
                       >
                         Cancel
                       </Button>
                       <Button
                         variant="darkPrimary"
-                        className="px-6 py-1.5 rounded-md"
+                        className="px-6 py-1.5 rounded-md w-full md:w-auto"
                         isLoading={loading}
                         disabled={loading}
                         onClick={() => setShowModal(true)}
@@ -375,9 +375,9 @@ const CreatePropertyScreen = () => {
                     </div>
                   </div>
 
-                  <div className="mx-auto border rounded-md py-4 mt-16">
-                    <div className="max-w-4xl mx-auto flex gap-8 w-full">
-                      <div className="w-1/2">
+                  <div className="mx-auto border rounded-md py-4 mt-8 md:mt-16 px-4">
+                    <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-8 w-full">
+                      <div className="w-full md:w-1/2">
                         <p className="text-[#344054] font-medium">
                           Your Property Photo
                         </p>
@@ -386,7 +386,7 @@ const CreatePropertyScreen = () => {
                           thumbnail.
                         </div>
                       </div>
-                      <div className="w-1/2">
+                      <div className="w-full md:w-1/2">
                         <ImageUploader label="" onChange={handleImageChange} />
                       </div>
                     </div>

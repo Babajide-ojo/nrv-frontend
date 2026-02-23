@@ -31,23 +31,23 @@ const Footer: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
             <div>
               <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="#">
+                <Link href="/about-us">
                   {" "}
                   <li>About Us</li>
                 </Link>
-                <Link href="#">
+                <Link href="/careers">
                   {" "}
                   <li>Careers</li>
                 </Link>
-                <Link href="#">
+                <Link href="/contact-us">
                   {" "}
                   <li>Contact Us</li>
                 </Link>
-                <Link href="#">
+                <Link href="/legal">
                   {" "}
                   <li>Legal Notices</li>
                 </Link>
-                <Link href="#">
+                <Link href="/privacy">
                   {" "}
                   <li>Privacy Notice</li>
                 </Link>
@@ -56,23 +56,23 @@ const Footer: React.FC = () => {
 
             <div>
               <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="#">
+                <Link href="/dashboard/landlord/properties/create">
                   {" "}
                   <li>Add a Property</li>
                 </Link>
-                <Link href="#">
+                <Link href="/dashboard/landlord/properties/create">
                   {" "}
                   <li>List Your Property for Rent</li>
                 </Link>
-                <Link href="#">
+                <Link href="/dashboard/landlord/properties/renters">
                   {" "}
                   <li>Screen Applicants</li>
                 </Link>
-                <Link href="#">
+                <Link href="/dashboard/landlord/properties/create">
                   {" "}
                   <li>Create Rental</li>
                 </Link>
-                <Link href="#">
+                <Link href="/sign-in">
                   {" "}
                   <li>Customer Portal</li>
                 </Link>
@@ -82,15 +82,6 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="text-white mt-8">
-          <nav className="md:flex hidden justify-between items-center px-10 py-6 rounded-full bg-[#03442C] max-w-7xl mx-auto mt-6 bg-[#0D3520] opacity-80">
-            <h1 className="text-lg font-bold">NaijaRentVerify</h1>
-            <ul className="flex space-x-8 text-sm">
-              <li className="cursor-pointer hover:text-gray-300">About Us</li>
-              <li className="cursor-pointer hover:text-gray-300">Management</li>
-              <li className="cursor-pointer hover:text-gray-300">Project</li>
-              <li className="cursor-pointer hover:text-gray-300">FAQs</li>
-            </ul>
-          </nav>
 
           {/* Footer */}
           <footer className="text-center text-gray-400 text-sm py-6">

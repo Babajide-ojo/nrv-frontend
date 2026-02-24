@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AccountSideBar from "./AccountSideBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
@@ -248,7 +249,30 @@ const SignUpMultiForm = () => {
                     ))}
                     {/* Terms and Conditions Checkbox */}
                     <CheckBox
-                      label="I agree to the Terms of Use and Privacy Policy"
+                      label={
+                        <>
+                          I agree to the{" "}
+                          <Link
+                            href="/legal"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-green-800 underline hover:text-green-900"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Terms of Use
+                          </Link>{" "}
+                          and{" "}
+                          <Link
+                            href="/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-green-800 underline hover:text-green-900"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Privacy Policy
+                          </Link>
+                        </>
+                      }
                       checked={isChecked}
                       onChange={() => setIsChecked(!isChecked)}
                     />

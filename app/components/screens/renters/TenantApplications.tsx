@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   getApplicationsByTenantId,
+  getTenantMetrics,
   inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
@@ -28,6 +29,11 @@ const TenantApplications = () => {
   const [user, setUser] = useState<any>({});
   const [properties, setProperties] = useState<any[]>([]);
   const [application, setApplication] = useState<any>([]);
+  const [metrics, setMetrics] = useState<{
+    totalNew: number;
+    totalAccepted: number;
+    totalRejected: number;
+  } | null>(null);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>("");
@@ -100,6 +106,20 @@ const TenantApplications = () => {
     setUser(user?.user);
   }, []);
 
+  useEffect(() => {
+    if (!user?._id) return;
+    dispatch(getTenantMetrics({ id: user._id }) as any)
+      .unwrap()
+      .then((data: any) => {
+        setMetrics({
+          totalNew: data?.totalNew ?? 0,
+          totalAccepted: data?.totalAccepted ?? 0,
+          totalRejected: data?.totalRejected ?? 0,
+        });
+      })
+      .catch(() => setMetrics({ totalNew: 0, totalAccepted: 0, totalRejected: 0 }));
+  }, [user?._id, dispatch]);
+
   return (
     <div className="pb-16">
       <ToastContainer />
@@ -119,58 +139,38 @@ const TenantApplications = () => {
               </div>
               
             </div>
-            {
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
-                {[
-                  {
-                    title: "Active Applications",
-                    value: `${18}`,
-                    change: "0%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Approved Applications",
-                    value: `${0}`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Pending (Under Review)",
-                    value: `${0}`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Rejected Applications",
-                    value: `${0}`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                ].map((card, i) => (
-                  <div
-                    key={i}
-                    className="border-b md:border-b-0 pb-4 md:pb-0 md:border-r last:border-none px-4"
-                  >
-                    <p className="text-gray-500 text-sm">{card.title}</p>
-                    <h3 className="text-xl font-semibold text-green-900">
-                      {card.value}
-                    </h3>
-                    <p
-                      className={`text-xs mt-1 ${
-                        card.trend === "up" ? "text-green-600" : "text-red-500"
-                      }`}
-                    >
-                      {card.trend === "up" ? "↑" : "↓"} {card.change}{" "}
-                      {card.comparison}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            }
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 border">
+              {[
+                {
+                  title: "Active Applications",
+                  value: metrics
+                    ? (metrics.totalNew + metrics.totalAccepted).toString()
+                    : "—",
+                },
+                {
+                  title: "Approved Applications",
+                  value: metrics ? metrics.totalAccepted.toString() : "—",
+                },
+                {
+                  title: "Pending (Under Review)",
+                  value: metrics ? metrics.totalNew.toString() : "—",
+                },
+                {
+                  title: "Rejected Applications",
+                  value: metrics ? metrics.totalRejected.toString() : "—",
+                },
+              ].map((card, i) => (
+                <div
+                  key={i}
+                  className="border-b md:border-b-0 pb-4 md:pb-0 md:border-r last:border-none px-4"
+                >
+                  <p className="text-gray-500 text-sm">{card.title}</p>
+                  <h3 className="text-xl font-semibold text-green-900">
+                    {card.value}
+                  </h3>
+                </div>
+              ))}
+            </div>
 
             <div className="flex gap-3">
               <Button

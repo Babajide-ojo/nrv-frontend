@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import TenantSideBar from "../shared/navigations/TenantSideBar";
 import { FaBuilding } from "react-icons/fa";
 import { PiFileDocDuotone } from "react-icons/pi";
-import { FiTool, FiBell, FiCheckCircle } from "react-icons/fi";
+import { FiTool, FiCheckCircle } from "react-icons/fi";
 
 interface TenantLayoutProps {
   children: React.ReactNode;
@@ -100,13 +100,6 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
               >
                 <FiCheckCircle size={24} color="white" />
                 <span className="text-[10px] text-white">Submissions</span>
-              </button>
-              <button
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/notifications")}
-              >
-                <FiBell size={24} color="white" />
-                <span className="text-[10px] text-white">Notifications</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"

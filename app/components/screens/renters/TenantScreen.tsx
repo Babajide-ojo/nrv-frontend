@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   createUploadAgreement,
   getApplicationsById,
@@ -33,7 +33,16 @@ import CustomDatePicker from "../../shared/CustomDatePicker";
 const TenantScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const pathname = usePathname();
   const { id }: any = useParams();
+
+  const handleBack = () => {
+    if (pathname?.includes("/landlord/tenants/")) {
+      router.push("/dashboard/landlord/tenants");
+    } else {
+      router.push("/dashboard/landlord/properties/renters");
+    }
+  };
   const [showNIN, setShowNIN] = useState(false);
   const application = useSelector((state: any) => state?.property?.data?.data);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,26 +90,21 @@ const TenantScreen = () => {
     { resetForm, setSubmitting },
     dispatch
   ) => {
-    const formData = { id };
-  
     const refreshApplication = () => {
-      if (id) dispatch(getApplicationsById(formData as any) as any);
+      if (id) dispatch(getApplicationsById({ id } as any) as any);
     };
-  
+
     try {
-      const result = await dispatch(endTenancyTenure(values)) as any;
-  
-      if (result.error) {
-        const errorMessage = result.payload || "Failed to end tenancy. Please try again.";
-        toast.error(errorMessage);
-      } else {
-        toast.success("Tenant ended successfully");
-        resetForm();
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
-      );
+      await dispatch(endTenancyTenure({ id: id || values?.id }) as any).unwrap();
+      toast.success("Lease ended successfully.");
+      resetForm();
+      refreshApplication();
+    } catch (err: any) {
+      const message =
+        err?.message ||
+        err?.payload ||
+        (typeof err === "string" ? err : "Failed to end lease. Please try again.");
+      toast.error(message);
     } finally {
       setSubmitting(false);
       setOpenAddTenantModal(false);
@@ -152,24 +156,15 @@ const TenantScreen = () => {
     dispatch
   ) => {
     try {
-      const result = (await dispatch(extendTenancyTenure(values))) as any;
-      if (result.error) {
-        if (result.error.message === "Rejected") {
-          toast.error(
-            result.payload || "Failed to extend tenancy. Please try again."
-          );
-        } else {
-          toast.error("Failed to extend tenancy. Please try again.");
-        }
-      } else {
-        toast.success("Tenant tenure extended successfully");
-        resetForm();
-        // fetchData();
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
-      );
+      await dispatch(extendTenancyTenure({ ...values, id: id || values?.id }) as any).unwrap();
+      toast.success("Lease extended successfully.");
+      resetForm();
+    } catch (err: any) {
+      const message =
+        err?.message ||
+        err?.payload ||
+        (typeof err === "string" ? err : "Failed to extend lease. Please try again.");
+      toast.error(message);
     } finally {
       setSubmitting(false);
       setOpenAddTenantModal(false);
@@ -268,11 +263,16 @@ const TenantScreen = () => {
   };
 
   useEffect(() => {
-    const formData = { id: id };
-    if (id) {
-      dispatch(getApplicationsById(formData as any) as any);
+    if (!id || id === "undefined") {
+      router.replace("/dashboard/landlord/properties/renters");
+      return;
     }
-  }, [id, dispatch]);
+    dispatch(getApplicationsById({ id } as any) as any);
+  }, [id, dispatch, router]);
+
+  if (!id || id === "undefined") {
+    return null;
+  }
 
   if (!application) return <div className="p-4">Loading lease details...</div>;
 
@@ -285,7 +285,7 @@ const TenantScreen = () => {
           <button
             type="button"
             className="text-nrvGreyBlack"
-            onClick={() => router.back()}
+            onClick={handleBack}
             aria-label="Go back"
           >
             <BackIcon />
@@ -311,9 +311,11 @@ const TenantScreen = () => {
               >
                 {status === ApplicationStatus.ACTIVE_LEASE
                   ? "Active Lease"
+                  : status === ApplicationStatus.ENDED || application?.status === "Ended"
+                  ? "Ended Lease"
                   : status}
               </div>
-              <div className="text-lg sm:text-[20px] font-semibold mt-2 leading-snug">
+              <div className="text-sm sm:text-base font-normal mt-2 leading-snug">
                 {application?.propertyId?.description}
               </div>
               <p className="text-sm sm:text-base text-[#101928] mt-1">
@@ -403,11 +405,20 @@ const TenantScreen = () => {
                    Click here
                  </span>
                </div>
-           
              </div>
               )}
 
-       
+              {(application?.status === "Ended" || application?.status === ApplicationStatus.ENDED) && (
+                <div className="mt-6 p-3 bg-gray-100 border border-gray-200 rounded-lg">
+                  <p className="text-sm font-medium text-gray-700">
+                    This lease ended
+                    {application?.rentEndDate
+                      ? ` on ${format(new Date(application.rentEndDate), "do MMMM yyyy")}`
+                      : "."}
+                  </p>
+                </div>
+              )}
+
             </div>
             <div className="w-full p-4 border rounded-lg">
               <div className="flex">
@@ -423,7 +434,11 @@ const TenantScreen = () => {
 
                 <div className="w-full mt-4 text-sm flex flex-col  text-start">
                   <p className=" text-[#475467]">Salary</p>
-                  <p className="font-semibold">{`₦${application?.monthlyIncome?.toLocaleString()}`}</p>
+                  <p className="font-semibold">
+                  {application?.monthlyIncome != null
+                    ? `₦${Number(application.monthlyIncome).toLocaleString()}`
+                    : "N/A"}
+                </p>
                 </div>
               </div>
             </div>
@@ -631,7 +646,7 @@ const TenantScreen = () => {
           </p>
           <Formik
             initialValues={{
-              id:  tenantDetails?.data?.finalResult?._id || id,
+              id: id,
             }}
             onSubmit={(values, formikHelpers) =>
               endTenancy(values, formikHelpers, dispatch)

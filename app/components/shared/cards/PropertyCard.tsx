@@ -26,12 +26,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   rentAmount,
   property,
 }) => {
-  console.log({ imageUrl, address, rentAmount, property });
+  const description = property?.description || property?.propertyId?.description || "Room Description";
+  const addressText = address?.trim() || `${property?.propertyId?.streetAddress ?? ""} ${property?.propertyId?.city ?? ""} ${property?.propertyId?.state ?? ""}`.trim() || "—";
+  const bedrooms = property?.noOfRooms ?? property?.propertyId?.noOfRooms ?? "N/A";
+  const bathrooms = property?.noOfBaths ?? property?.propertyId?.noOfBaths ?? "N/A";
+  const style = (property?.apartmentStyle ?? property?.propertyId?.apartmentStyle)?.toString()?.trim() || "N/A";
+  const type = (property?.apartmentType ?? property?.propertyId?.apartmentType)?.toString()?.trim() || "N/A";
 
   return (
-    <div className="w-full h-full bg-white shadow-lg border border-gray-100 rounded-2xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+    <div className="w-full h-full flex flex-col bg-white shadow-lg border border-gray-100 rounded-2xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       {/* Image section with overlay button */}
-      <div className="relative h-80 rounded-xl overflow-hidden mb-4">
+      <div className="relative h-80 rounded-xl overflow-hidden mb-4 shrink-0">
         <img
           src={imageUrl || property?.imageUrls?.[0] || property?.file || property?.propertyId?.file}
           alt="property"
@@ -48,68 +53,49 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </div>
 
-      {/* Title and address section */}
-      <div className="mb-4">
-        <h2 className="text-sm font-light text-gray-800 mb-2 leading-relaxed">
-          {property?.description || property?.propertyId?.description || "Room Description"}
+      {/* Title and address - fixed min height for alignment */}
+      <div className="mb-4 min-h-[72px] flex flex-col shrink-0">
+        <h2 className="text-sm font-light text-gray-800 mb-2 leading-relaxed line-clamp-2">
+          {description}
         </h2>
-        <div className="flex items-center text-sm text-gray-600 mb-3">
-          <FaMapMarkerAlt className="mr-2 text-gray-400" />
-          <span className="text-gray-700">
-            {address || `${property?.propertyId?.streetAddress || ''} ${property?.propertyId?.city || ''} ${property?.propertyId?.state || ''}`}
+        <div className="flex items-start text-sm text-gray-600">
+          <FaMapMarkerAlt className="mr-2 mt-0.5 shrink-0 text-gray-400" />
+          <span className="text-gray-700 line-clamp-2 break-words">
+            {addressText}
           </span>
-        </div>
-        
-        {/* Rent section */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100">
-          <div className="text-xl font-bold text-green-900">
-            ₦ {parseInt(rentAmount || property?.rentAmount || '0').toLocaleString()}
-          </div>
-          <div className="text-sm text-green-700 font-medium">
-            {property?.rentAmountMetrics || 'Per Annum'}
-          </div>
         </div>
       </div>
 
-      {/* Features section */}
-      <div className="bg-gray-50 py-4 px-3 rounded-xl mb-4">
+      {/* Rent section */}
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg border border-green-100 shrink-0">
+        <div className="text-xl font-bold text-green-900">
+          ₦ {parseInt(rentAmount || property?.rentAmount || "0", 10).toLocaleString()}
+        </div>
+        <div className="text-sm text-green-700 font-medium">
+          {property?.rentAmountMetrics || "Per Annum"}
+        </div>
+      </div>
+
+      {/* Features section - equal height cells for alignment */}
+      <div className="bg-gray-50 py-4 px-3 rounded-xl mb-4 mt-auto shrink-0">
         <div className="grid grid-cols-2 gap-3">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <FaBed className="text-green-600 text-lg" />
+          {[
+            { icon: <FaBed className="text-green-600 text-lg" />, label: "Bedrooms", value: bedrooms },
+            { icon: <FaBath className="text-green-600 text-lg" />, label: "Bathrooms", value: bathrooms },
+            { icon: <FaPaintRoller className="text-green-600 text-lg" />, label: "Style", value: style },
+            { icon: <CgStyle className="text-green-600 text-lg" />, label: "Type", value: type },
+          ].map(({ icon, label, value }) => (
+            <div
+              key={label}
+              className="text-center min-h-[64px] flex flex-col items-center justify-center"
+            >
+              <div className="flex items-center justify-center mb-1">{icon}</div>
+              <div className="text-xs text-gray-600 mb-1">{label}</div>
+              <div className="text-sm font-semibold text-gray-800 min-h-[20px] flex items-center justify-center">
+                {value}
+              </div>
             </div>
-            <div className="text-xs text-gray-600 mb-1">Bedrooms</div>
-            <div className="text-sm font-semibold text-gray-800">
-              {property?.noOfRooms || property?.propertyId?.noOfRooms || 'N/A'}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <FaBath className="text-green-600 text-lg" />
-            </div>
-            <div className="text-xs text-gray-600 mb-1">Bathrooms</div>
-            <div className="text-sm font-semibold text-gray-800">
-              {property?.noOfBaths || property?.propertyId?.noOfBaths || 'N/A'}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <FaPaintRoller className="text-green-600 text-lg" />
-            </div>
-            <div className="text-xs text-gray-600 mb-1">Style</div>
-            <div className="text-sm font-semibold text-gray-800">
-              {property?.apartmentStyle || property?.propertyId?.apartmentStyle || 'N/A'}
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <CgStyle className="text-green-600 text-lg" />
-            </div>
-            <div className="text-xs text-gray-600 mb-1">Type</div>
-            <div className="text-sm font-semibold text-gray-800">
-              {property?.apartmentType || property?.propertyId?.apartmentType || 'N/A'}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -135,7 +121,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       </div>
 
       {/* Room Status */}
-      <div className="pt-3 border-t border-gray-100">
+      <div className="pt-3 border-t border-gray-100 shrink-0">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-600 font-medium">Status:</span>
           <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${

@@ -12,7 +12,6 @@ import {
   FiFileText,
   FiTool,
   FiMessageSquare,
-  FiBell,
   FiHeadphones,
   FiSettings,
 } from "react-icons/fi";
@@ -67,11 +66,6 @@ const links = [
     route: "/dashboard/landlord/messages",
     icon: <FiMessageSquare />,
   },
-  {
-    name: "Notifications",
-    route: "/dashboard/landlord/notifications",
-    icon: <FiBell />,
-  },
 ];
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
@@ -117,15 +111,6 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
         >
           {/* <Image src={Logo} width={150} height={40} alt="logo" /> */}
           NaijaRentVerify
-        </div>
-
-        {/* Search Bar */}
-        <div className="px-4 mt-6">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full px-4 py-2 rounded-md bg-[#1C3B2A] text-white placeholder-gray-400"
-          />
         </div>
 
         {/* Navigation Links */}

@@ -79,13 +79,16 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
   };
 
   const handleRowAction = (row: BaseRow) => {
+    const applicationId = row._id ?? row.id;
     return (
       <div className="flex gap-2">
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
-          onClick={() =>
-            router.push(`/dashboard/landlord/properties/renters/${row._id}`)
-          }
+          onClick={() => {
+            if (applicationId) {
+              router.push(`/dashboard/landlord/properties/renters/${applicationId}`);
+            }
+          }}
         >
           view applicant
         </p>

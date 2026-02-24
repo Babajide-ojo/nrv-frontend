@@ -119,7 +119,7 @@ export default function OnboardTenant() {
                 <div>
                   <label className="text-sm font-medium block mb-1">First Name</label>
                   <Input
-                    placeholder="Enter your First Name"
+                    placeholder="Enter Tenant First Name"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
@@ -129,7 +129,7 @@ export default function OnboardTenant() {
                 <div>
                   <label className="text-sm font-medium block mb-1">Last Name</label>
                   <Input
-                    placeholder="Enter your Last Name"
+                    placeholder="Enter Tenant Last Name"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}

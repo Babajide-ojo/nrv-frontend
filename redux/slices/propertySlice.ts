@@ -101,7 +101,10 @@ export const getAllPropertyForTenant = createAsyncThunk<any, {}>(
     "property-tenant/all",
     async (formData: any, { rejectWithValue }) => {
       try {
-        let url = `${API_URL}/rooms/all?page=${formData.page}`
+        let url = `${API_URL}/rooms/all?page=${formData.page ?? 1}`
+        if (formData.limit != null) {
+            url = url + `&limit=${formData.limit}`
+        }
         if(formData.searchTerm){
             url = url + `&search=${formData.searchTerm}`
         }
@@ -414,7 +417,7 @@ export const getRentedApartmentsForTenant = createAsyncThunk<any, {}>(
     "current-tenant/properties",
     async (formData: any, { rejectWithValue }) => {
         try {
-            const response: any = await axios.get(`${API_URL}/rooms/properties/renters?id=${formData.id}`);
+            const response: any = await axios.get(`${API_URL}/rooms/properties/rented-by-tenant?id=${formData.id}`);
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

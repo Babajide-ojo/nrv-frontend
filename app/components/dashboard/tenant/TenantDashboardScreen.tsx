@@ -1,17 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { tenantDashboardMetrics } from "../../../../helpers/data";
-import Button from "../../shared/buttons/Button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import TenantDashboardNavigationCard from "../../shared/cards/TenantDashboardNavigationCard";
-import RentedPropertiesScreen from "./RentedPropertiesScreen";
 import { useDispatch } from "react-redux";
-import { getTenantMetrics } from "@/redux/slices/propertySlice";
+import { getTenantMetrics, getRentedApartmentsForTenant, getAllPropertyForTenant } from "@/redux/slices/propertySlice";
 import { FcComboChart, FcHome, FcParallelTasks } from "react-icons/fc";
-import { FaBed, FaPaintRoller, FaBath, FaChartLine } from "react-icons/fa";
-import DashboardOverview from "../../screens/dashboard-screens/DashboardOverview";
+import { FaBed, FaPaintRoller, FaBath } from "react-icons/fa";
 import InputField from "../../shared/input-fields/InputFields";
 import House from "../../icons/House";
 import Notes from "../../icons/Notes";
@@ -20,25 +15,38 @@ import { BiShapeSquare } from "react-icons/bi";
 import { IoFilter } from "react-icons/io5";
 import { LuMapPin } from "react-icons/lu";
 
-//import RentedPropertiesScreen from "@/app/dashboard/tenant/rented-properties/page";
+const DEFAULT_IMAGE =
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994";
 
-const RentedApartments = () => {
-  const apartmentImages = [
-    "https://images.unsplash.com/photo-1570129477492-45c003edd2be", // apt1
-    "https://images.unsplash.com/photo-1568605114967-8130f3a36994", // apt2
-  ];
+function getRoomFromItem(item: any) {
+  const room = item?.propertyId;
+  if (!room) return null;
+  return room;
+}
 
-  const thumbImages = [
-    "https://images.unsplash.com/photo-1599423300746-b62533397364",
-    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-    "https://images.unsplash.com/photo-1501183638710-841dd1904471",
-  ];
+function getPropertyFromItem(item: any) {
+  const room = item?.propertyId;
+  const prop = room?.propertyId ?? room?.property;
+  return prop;
+}
+
+const RentedApartments = ({
+  apartments = [],
+  loading = false,
+  exploreProperties = [],
+  exploreLoading = false,
+}: {
+  apartments?: any[];
+  loading?: boolean;
+  exploreProperties?: any[];
+  exploreLoading?: boolean;
+}) => {
+  const router = useRouter();
 
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
       <h2 className="text-xl font-semibold">My Rented Apartments</h2>
 
-      {/* Search and Filter */}
       <div className="flex justify-between items-start gap-4">
         <div className="w-1/2">
           <InputField
@@ -54,121 +62,177 @@ const RentedApartments = () => {
         </button>
       </div>
 
-      {/* Apartment Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {apartmentImages.map((img, index) => (
-          <div
-            key={index}
-            className={`rounded-xl overflow-hidden shadow border ${
-              index === 1 ? "" : ""
-            }`}
-          >
-            <div className="relative h-58">
-              <img
-                src={img}
-                alt="Apartment"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col justify-end">
-                <h3 className="text-white text-lg font-semibold">
-                  Luxurious Apartment
-                </h3>
-                <p className="text-white text-sm flex items-center gap-1">
-                  📍 29B, Lekki Phase 1
-                </p>
-              </div>
-              {index === 1 && (
-                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-white border-2 border-blue-600"></div>
-              )}
-            </div>
-            <div className="p-4 space-y-3 text-sm">
-              <p className="text-[#03442C] font-semibold text-base">
-                ₦250,095{" "}
-                <span className="text-gray-500 text-sm">/ Per Annum</span>
-              </p>
-              <p className="text-gray-500 text-[12px] font-light -mt-2">
-                View details and manage your tenancy.
-              </p>
-              <div className="flex justify-between text-xs text-[#03442C] mt-2 p-3 bg-[#ECECEE]">
-                <div>
-                  <p className="font-medium text-[8px]">Bedroom</p>
-                  <div className="flex items-center gap-1">
-                    <FaBed />
-                    <p className="text-[10px] font-medium">4 Beds</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-[8px]">Bathroom</p>
-                  <div className="flex items-center gap-1">
-                    <FaBath />
-                    <p className="text-[10px] font-medium">4 rooms</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-[8px]">Square Area</p>
-                  <div className="flex items-center gap-1">
-                    <BiShapeSquare />
-                    <p className="text-[10px] font-medium">12 x 12 m²</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-[8px]">Style</p>
-                  <div className="flex items-center gap-1">
-                    <FaPaintRoller />
-                    <p className="text-[10px] font-medium">Modern</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Explore More Properties */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Explore more Properties</h3>
-          <button className="text-green-600 text-sm font-medium">
-            See all
-          </button>
-        </div>
-        <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
-          {thumbImages.map((thumb, index) => (
-            <div
-              key={index}
-              className="min-w-[340px] max-w-[340px] h-[100px] rounded-xl border shadow p-2 flex items-center bg-white"
-            >
-              <div className="relative h-[83px] w-[83px] min-w-[83px] rounded-md overflow-hidden">
-                <img
-                  src={thumb}
-                  alt="Thumbnail"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="ml-3 w-full space-y-1">
-                <div className="flex w-full justify-between items-center">
-                  <p className="text-[14px] font-medium text-[#263245]">
-                    Luxury Apartment
-                  </p>
-                  <div className="">
-                    {index === 0 ? (
-                      <span className="text-red-500 text-xl">❤️</span>
-                    ) : (
-                      <span className="text-gray-400 text-xl">🤍</span>
-                    )}
-                  </div>
-                </div>
-                <p className="text-[10px] font-light text-[#737D8C] flex items-center gap-1">
-                  <LuMapPin /> Victoria Island
-                </p>
-                <p className="text-[#263245] text-[14px] font-semibole">
-                  ₦10,000,000 /{" "}
-                  <span className="text-[10px] font-normal">Per Annum</span>
-                </p>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="rounded-xl overflow-hidden shadow border animate-pulse">
+              <div className="h-58 bg-gray-200" />
+              <div className="p-4 space-y-3">
+                <div className="h-5 bg-gray-200 rounded w-1/3" />
+                <div className="h-4 bg-gray-100 rounded w-2/3" />
               </div>
             </div>
           ))}
         </div>
+      ) : !apartments?.length ? (
+        <div className="rounded-xl border bg-gray-50 p-8 text-center text-gray-500">
+          <p className="font-medium">No rented apartments yet</p>
+          <p className="text-sm mt-1">Your active leases will appear here.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {apartments.map((item: any, index: number) => {
+            const room = getRoomFromItem(item);
+            const property = getPropertyFromItem(item);
+            const imageUrl =
+              room?.imageUrls?.[0] ||
+              room?.file ||
+              DEFAULT_IMAGE;
+            const title = room?.name || "Apartment";
+            const address =
+              property?.streetAddress ||
+              [property?.city, property?.state].filter(Boolean).join(", ") ||
+              "—";
+            const rent = room?.rentAmount;
+            const beds = room?.noOfRooms ?? "—";
+            const baths = room?.noOfBaths ?? "—";
+            const style = room?.apartmentStyle ?? "—";
+
+            return (
+              <div
+                key={item._id ?? index}
+                className="rounded-xl overflow-hidden shadow border"
+              >
+                <div className="relative h-58">
+                  <img
+                    src={imageUrl}
+                    alt="Apartment"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col justify-end">
+                    <h3 className="text-white text-lg font-semibold">{title}</h3>
+                    <p className="text-white text-sm flex items-center gap-1">
+                      <LuMapPin /> {address}
+                    </p>
+                  </div>
+                </div>
+                <div className="p-4 space-y-3 text-sm">
+                  <p className="text-[#03442C] font-semibold text-base">
+                    {rent != null ? `₦${Number(rent).toLocaleString()}` : "—"}{" "}
+                    <span className="text-gray-500 text-sm">/ Per Annum</span>
+                  </p>
+                  <p className="text-gray-500 text-[12px] font-light -mt-2">
+                    View details and manage your tenancy.
+                  </p>
+                  <div className="flex justify-between text-xs text-[#03442C] mt-2 p-3 bg-[#ECECEE]">
+                    <div>
+                      <p className="font-medium text-[8px]">Bedroom</p>
+                      <div className="flex items-center gap-1">
+                        <FaBed />
+                        <p className="text-[10px] font-medium">{beds}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-medium text-[8px]">Bathroom</p>
+                      <div className="flex items-center gap-1">
+                        <FaBath />
+                        <p className="text-[10px] font-medium">{baths}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-medium text-[8px]">Style</p>
+                      <div className="flex items-center gap-1">
+                        <FaPaintRoller />
+                        <p className="text-[10px] font-medium">{style}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Explore more Properties</h3>
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard/tenant/properties")}
+            className="text-green-600 text-sm font-medium hover:underline"
+          >
+            See all
+          </button>
+        </div>
+        {exploreLoading ? (
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="min-w-[340px] max-w-[340px] h-[100px] rounded-xl border shadow p-2 flex items-center bg-white animate-pulse"
+              >
+                <div className="h-[83px] w-[83px] min-w-[83px] rounded-md bg-gray-200" />
+                <div className="ml-3 flex-1 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !exploreProperties?.length ? (
+          <p className="text-gray-500 text-sm py-4">No properties available to explore right now.</p>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+            {exploreProperties.map((room: any, index: number) => {
+              const imageUrl =
+                room?.imageUrls?.[0] || room?.file || DEFAULT_IMAGE;
+              const title = room?.name || "Apartment";
+              const property = room?.propertyId;
+              const location =
+                property?.streetAddress ||
+                [property?.city, property?.state].filter(Boolean).join(", ") ||
+                "—";
+              const rent = room?.rentAmount;
+              return (
+                <div
+                  key={room._id ?? index}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/dashboard/tenant/properties?room=${room._id}`)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/dashboard/tenant/properties?room=${room._id}`);
+                    }
+                  }}
+                  className="min-w-[340px] max-w-[340px] h-[100px] rounded-xl border shadow p-2 flex items-center bg-white hover:border-green-600/50 transition-colors cursor-pointer"
+                >
+                  <div className="relative h-[83px] w-[83px] min-w-[83px] rounded-md overflow-hidden">
+                    <img
+                      src={imageUrl}
+                      alt={title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="ml-3 w-full space-y-1 min-w-0">
+                    <p className="text-[14px] font-medium text-[#263245] truncate">
+                      {title}
+                    </p>
+                    <p className="text-[10px] font-light text-[#737D8C] flex items-center gap-1 truncate">
+                      <LuMapPin /> {location}
+                    </p>
+                    <p className="text-[#263245] text-[14px] font-semibold">
+                      {rent != null ? `₦${Number(rent).toLocaleString()}` : "—"} /{" "}
+                      <span className="text-[10px] font-normal">Per Annum</span>
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -242,45 +306,6 @@ const TenantDashboardCard = ({ user }: { user: any }) => {
         </div>
       </div> */}
 
-      {/* Quick Actions */}
-      <div className="rounded-xl border divide-y">
-        <div className="p-4">
-          <p className="font-semibold">Quick Actions</p>
-        </div>
-        {[
-          {
-            icon: "🏠",
-            title: "Rent Payment/ Renew",
-            desc: "Initiate rent payment or renewal and upload receipt for prove.",
-          },
-          {
-            icon: "🛠️",
-            title: "Request Maintenance",
-            desc: "Submit a repair request (e.g., plumbing, HVAC)",
-          },
-          {
-            icon: "💬",
-            title: "Message Landlord/Manager",
-            desc: "In-app messaging to communicate with the Landlord.",
-          },
-          {
-            icon: "📄",
-            title: "View Lease Agreement",
-            desc: "Access the signed lease PDF to check terms, and rules.",
-          },
-        ].map((action, i) => (
-          <div key={i} className="p-4 flex gap-3 items-start hover:bg-gray-50">
-            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-lg">
-              {action.icon}
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-sm">{action.title}</p>
-              <p className="text-xs text-gray-600">{action.desc}</p>
-            </div>
-            <div className="text-gray-400 text-lg">›</div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
@@ -288,49 +313,64 @@ const TenantDashboardCard = ({ user }: { user: any }) => {
 const TenantDashboardScreen = () => {
   const [user, setUser] = useState<any>({});
   const [count, setCount] = useState<any>({});
+  const [rentedApartments, setRentedApartments] = useState<any[]>([]);
+  const [rentedLoading, setRentedLoading] = useState(false);
+  const [exploreProperties, setExploreProperties] = useState<any[]>([]);
+  const [exploreLoading, setExploreLoading] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
+
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    fetchData();
-  }, []);
+    const stored = JSON.parse(localStorage.getItem("nrv-user") as any);
+    const u = stored?.user;
+    setUser(u);
+    const id = u?._id;
+    if (!id) return;
+    (async () => {
+      try {
+        const metricsResult = await dispatch(getTenantMetrics({ id }) as any);
+        const data = metricsResult?.payload?.data;
+        if (data) setCount(data);
+      } catch (_) {}
+    })();
+    setRentedLoading(true);
+    dispatch(getRentedApartmentsForTenant({ id }) as any)
+      .then((res: any) => {
+        const list = res?.payload?.data ?? [];
+        setRentedApartments(Array.isArray(list) ? list : []);
+      })
+      .catch(() => setRentedApartments([]))
+      .finally(() => setRentedLoading(false));
 
-  const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-    const formData = {
-      id: user?.user?._id,
-    };
-    try {
-      const response = await dispatch(getTenantMetrics(formData) as any);
-      setCount(response.payload.data);
-    } catch (error) {
-    } finally {
-    }
-  };
-
-  console.log("User:", user);
+    setExploreLoading(true);
+    dispatch(getAllPropertyForTenant({ page: 1, limit: 8 }) as any)
+      .then((res: any) => {
+        const list = res?.payload?.data ?? [];
+        setExploreProperties(Array.isArray(list) ? list : []);
+      })
+      .catch(() => setExploreProperties([]))
+      .finally(() => setExploreLoading(false));
+  }, [dispatch]);
 
   const tenantDashboardMetrics = [
     {
       imageLink: <FcHome color="#004B95" size={35} />,
       title: "Apartments",
-      number: count.totalNew,
+      number: count?.totalRentedApartments ?? count?.totalNew ?? 0,
       link: "/dashboard/tenant/rented-properties",
       icon: <House className="w-[20px] h-[20px]" />,
     },
     {
       imageLink: <FcComboChart color="#004B95" size={35} />,
       title: "Applications",
-      number: count.totalAccepted,
+      number: (count?.totalNew ?? 0) + (count?.totalAccepted ?? 0),
       link: "/dashboard/tenant/properties/applications",
       icon: <Notes className="w-[20px] h-[20px]" />,
     },
     {
       imageLink: <FcParallelTasks color="#004B95" size={35} />,
       title: "Maintenance",
-      number: count.totalActiveTenants,
+      number: count?.totalActiveTenants ?? 0,
       link: "/dashboard/tenant/properties/maintenance",
       icon: <Users className="w-[20px] h-[20px]" />,
     },
@@ -348,7 +388,7 @@ const TenantDashboardScreen = () => {
       <div className="">
         <div className="w-full">
           <div className="flex flex-col md:flex-row gap-8">
-            <div className="w-full md:w-2/3">
+            <div className="w-full md:w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-8">
                 {tenantDashboardMetrics.map(
                   ({ title, imageLink, number, link, icon }, index) => (
@@ -370,7 +410,7 @@ const TenantDashboardScreen = () => {
                       <div>
                         <p className="text-[#767484] text-sm">{title}</p>
                         <p className="text-3xl font-semibold my-6">
-                          {number | 0}
+                          {number ?? 0}
                         </p>
                         {/* <div className="flex items-center gap-2 mt-2 text-xs text-[#8D8B99]">
                           <FaChartLine
@@ -394,9 +434,13 @@ const TenantDashboardScreen = () => {
                   )
                 )}
               </div>
-              <RentedApartments />
+              <RentedApartments
+                apartments={rentedApartments}
+                loading={rentedLoading}
+                exploreProperties={exploreProperties}
+                exploreLoading={exploreLoading}
+              />
             </div>
-
             <div className="w-full md:w-1/3">
               <TenantDashboardCard user={user} />
             </div>

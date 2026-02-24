@@ -10,7 +10,7 @@ import {
   IoPeopleCircleOutline,
   IoSettings,
 } from "react-icons/io5";
-import { FiUsers, FiFileText, FiBell } from "react-icons/fi";
+import { FiUsers, FiFileText } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -136,13 +136,6 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
               >
                 <FiFileText size={24} color="white" />
                 <span className="text-[10px] text-white">Reports</span>
-              </button>
-              <button
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/landlord/notifications")}
-              >
-                <FiBell size={24} color="white" />
-                <span className="text-[10px] text-white">Notifications</span>
               </button>
               <button
                 className="py-3 w-full flex flex-col items-center"

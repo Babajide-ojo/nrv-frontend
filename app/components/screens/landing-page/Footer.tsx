@@ -1,6 +1,24 @@
+"use client";
+
 import { ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+
+const FOOTER_LINKS = [
+  { href: "/about-us", label: "About Us" },
+  { href: "/careers", label: "Careers" },
+  { href: "/contact-us", label: "Contact Us" },
+  { href: "/legal", label: "Legal Notices" },
+  { href: "/privacy", label: "Privacy Notice" },
+] as const;
+
+const FOOTER_ACTIONS = [
+  { href: "/dashboard/landlord/properties/create", label: "Add a Property" },
+  { href: "/dashboard/landlord/properties/create", label: "List Your Property for Rent" },
+  { href: "/dashboard/landlord/properties/renters", label: "Screen Applicants" },
+  { href: "/dashboard/landlord/properties/create", label: "Create Rental" },
+  { href: "/sign-in", label: "Customer Portal" },
+] as const;
 
 const Footer: React.FC = () => {
   return (
@@ -29,55 +47,33 @@ const Footer: React.FC = () => {
 
           {/* Links Section */}
           <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
-            <div>
-              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="/about-us">
-                  {" "}
-                  <li>About Us</li>
-                </Link>
-                <Link href="/careers">
-                  {" "}
-                  <li>Careers</li>
-                </Link>
-                <Link href="/contact-us">
-                  {" "}
-                  <li>Contact Us</li>
-                </Link>
-                <Link href="/legal">
-                  {" "}
-                  <li>Legal Notices</li>
-                </Link>
-                <Link href="/privacy">
-                  {" "}
-                  <li>Privacy Notice</li>
-                </Link>
-              </ul>
-            </div>
+            <ul className="mt-2 flex flex-col gap-3 text-[14px] font-light text-[#FFFFFFB2] list-none">
+              {FOOTER_LINKS.map(({ href, label }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    prefetch={true}
+                    className="block py-1 pr-2 text-white/80 hover:text-white transition-colors cursor-pointer focus:outline-none focus:underline"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
 
-            <div>
-              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="/dashboard/landlord/properties/create">
-                  {" "}
-                  <li>Add a Property</li>
-                </Link>
-                <Link href="/dashboard/landlord/properties/create">
-                  {" "}
-                  <li>List Your Property for Rent</li>
-                </Link>
-                <Link href="/dashboard/landlord/properties/renters">
-                  {" "}
-                  <li>Screen Applicants</li>
-                </Link>
-                <Link href="/dashboard/landlord/properties/create">
-                  {" "}
-                  <li>Create Rental</li>
-                </Link>
-                <Link href="/sign-in">
-                  {" "}
-                  <li>Customer Portal</li>
-                </Link>
-              </ul>
-            </div>
+            <ul className="mt-2 flex flex-col gap-3 text-[14px] font-light text-[#FFFFFFB2] list-none">
+              {FOOTER_ACTIONS.map(({ href, label }) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    prefetch={true}
+                    className="block py-1 pr-2 text-white/80 hover:text-white transition-colors cursor-pointer focus:outline-none focus:underline"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

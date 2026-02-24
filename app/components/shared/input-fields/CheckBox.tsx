@@ -1,7 +1,7 @@
 import React, { InputHTMLAttributes } from 'react';
 
 interface CheckBoxProps extends InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label: React.ReactNode;
 }
 
 const CheckBox: React.FC<CheckBoxProps> = ({ label, ...props }) => {

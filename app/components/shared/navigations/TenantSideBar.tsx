@@ -12,11 +12,9 @@ import {
   FiFileText,
   FiTool,
   FiMessageSquare,
-  FiBell,
   FiHeadphones,
   FiSettings,
   FiCheckCircle,
-  FiSearch,
 } from "react-icons/fi";
 import Logo from "../../../../public/images/nrv-logo.png";
 import { FaPerson } from "react-icons/fa6";
@@ -64,11 +62,6 @@ const links = [
     route: "/dashboard/tenant/messages",
     icon: <FiMessageSquare />,
   },
-  {
-    name: "Notifications",
-    route: "/dashboard/tenant/notifications",
-    icon: <FiBell />,
-  },
 ];
 
 const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
@@ -111,15 +104,6 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
           NaijaRentVerify
         </div>
 
-        {/* Search Bar */}
-        <div className="px-4 mt-6">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full px-4 py-2 rounded-md bg-[#1C3B2A] text-white placeholder-gray-400"
-          />
-        </div>
-
         {/* Navigation Links */}
         <nav className="mt-6">
           <ul className="font-lighter text-[12px] text-[#98A2B3]">
@@ -156,17 +140,17 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
       </div>
 
       {/* Support, Settings, and User Info */}
-      <div className="px-6 py-4 border-t border-gray-600">
-        <div className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
+      <div className="px-6 pt-4 pb-1 border-t border-gray-600">
+        <div className="flex items-center gap-4 mb-3 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
           <FiHeadphones className="font-lighter text-[12px] text-[#98A2B3]" />{" "}
           <span>Contact Support</span>
         </div>
-        <div className="flex items-center gap-4 mb-6 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
+        <div className="flex items-center gap-4 mb-3 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
           <FiSettings className="font-lighter text-[12px] text-[#98A2B3]" />{" "}
           <span>System Settings</span>
         </div>
         {user && (
-          <div className="flex items-center gap-4 justify-between">
+          <div className="flex items-center gap-4 justify-between pt-0 pb-0">
             <div className="flex gap-1.5">
               <BsPersonFill />
               <div>

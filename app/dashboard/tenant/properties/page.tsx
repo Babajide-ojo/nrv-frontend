@@ -119,9 +119,7 @@ const TenantPropertiesScreen = () => {
 
   const minPriceDisplay =
     formData.minimiumPrice !== "" && formData.minimiumPrice != null
-      ? typeof formData.minimiumPrice === "number"
-        ? formData.minimiumPrice.toLocaleString()
-        : String(formData.minimiumPrice).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      ? String(formData.minimiumPrice).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : "";
 
   return (

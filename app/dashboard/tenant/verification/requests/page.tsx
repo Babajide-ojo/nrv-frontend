@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api";
 import { FiUser, FiMail, FiHash, FiHome, FiUserCheck, FiPhone } from "react-icons/fi";
+import { MdArrowBackIos } from "react-icons/md";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -44,7 +45,12 @@ const VerificationRequestsPage = () => {
     setLoading(true);
     try {
       const res: any = await apiService.get(`/verification/by-email?email=${encodeURIComponent(email)}`);
-      const list = Array.isArray(res?.data) ? res.data : [];
+      const raw = Array.isArray(res?.data) ? res.data : [];
+      const list = [...raw].sort((a, b) => {
+        const dateA = new Date(a.dateRequested || a.createdAt || 0).getTime();
+        const dateB = new Date(b.dateRequested || b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
       setRequests(list);
 
       // For each verification request, check whether a submission exists for this tenant email.
@@ -74,6 +80,13 @@ const VerificationRequestsPage = () => {
   return (
     <TenantLayout path="Verification" mainPath=" / My Verifications">
       <div className="max-w-3xl mx-auto w-full p-3 bg-white rounded-lg mt-8">
+        <button
+          onClick={() => router.push("/dashboard/tenant")}
+          className="flex items-center gap-2 text-sm text-gray-600 hover:text-nrvPrimaryGreen mb-4"
+        >
+          <MdArrowBackIos size={16} />
+          Back to Dashboard
+        </button>
         <h2 className="text-2xl font-bold mb-6 text-nrvPrimaryGreen flex items-center gap-2">
           <FiUserCheck className="inline-block" /> My Verifications
         </h2>

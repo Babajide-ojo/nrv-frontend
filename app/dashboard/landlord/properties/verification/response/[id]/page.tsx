@@ -2,7 +2,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { MdArrowBackIos } from "react-icons/md";
-import { FaFilePdf, FaDownload } from "react-icons/fa";
+import { FaFilePdf } from "react-icons/fa";
 import { apiService } from "@/lib/api";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import { ToastContainer, toast } from "react-toastify";
@@ -43,16 +43,22 @@ interface VerificationResponse {
   previousLandlordComments?: Array<{ comment: string; landlordName: string }>;
   videoSelfieVerified?: string;
   personalReport?: { status: string; comment?: string };
+  employmentReport?: { status: string; comment?: string };
+  guarantorReport?: { status: string; comment?: string };
   documentsReport?: { status: string; comment?: string };
   phoneVerificationStatus?: string;
   nin?: string;
   ninVerificationStatus?: string;
   ninVerificationDate?: string;
   ninVerificationResult?: Record<string, unknown>;
-  /** Saved Dojah credit summary snapshot (from admin checks). */
+  /** Saved credit summary snapshot (from admin checks). */
   creditSummary?: Record<string, unknown> | null;
-  /** AML screening result (PEP, sanctions, adverse media) from Dojah. */
+  /** AML screening result (PEP, sanctions, adverse media). */
   amlScreeningResult?: Record<string, unknown> | null;
+  /** Backend analysis result for ID document. */
+  identificationDocumentAnalysis?: Record<string, unknown> | null;
+  /** Backend analysis result for utility bill. */
+  utilityBillAnalysis?: Record<string, unknown> | null;
   /** Privacy-safe summary (no PII). Shown in landlord dashboard when present. */
   landlordReport?: {
     generatedAt: string;
@@ -78,10 +84,23 @@ const VerificationResponsePage = () => {
   
   const [verificationData, setVerificationData] = useState<VerificationResponse | null>(null);
   const [verificationRequest, setVerificationRequest] = useState<{ verificationTier?: "standard" | "premium" } | null>(null);
+  const [landlord, setLandlord] = useState<{ firstName?: string; lastName?: string; email?: string; _id?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfExportLoading, setPdfExportLoading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setLandlord(parsed?.user ?? parsed ?? null);
+      }
+    } catch {
+      setLandlord(null);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchVerificationData = async () => {
@@ -117,6 +136,41 @@ const VerificationResponsePage = () => {
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  /** ID document status from backend: landlordReport.idDocument or derived from analysis. */
+  const getIdDocumentStatus = (): string => {
+    if (verificationData.landlordReport?.idDocument) {
+      return String(verificationData.landlordReport.idDocument).replace(/_/g, " ");
+    }
+    if (!verificationData.identificationDocumentUrl) return "Not provided";
+    const analysis = verificationData.identificationDocumentAnalysis as { status?: string } | undefined;
+    if (analysis?.status === "failed") return "Failed";
+    if (analysis?.status) return "Verified";
+    return "Not run";
+  };
+
+  /** Utility bill status from backend: landlordReport.utilityBill or derived from analysis. */
+  const getUtilityBillStatus = (): string => {
+    if (verificationData.landlordReport?.utilityBill) {
+      return String(verificationData.landlordReport.utilityBill).replace(/_/g, " ");
+    }
+    if (!verificationData.utilityBillUrl) return "Not provided";
+    const analysis = verificationData.utilityBillAnalysis as { status?: string } | undefined;
+    if (analysis?.status === "failed") return "Failed";
+    if (analysis?.status) return "Verified";
+    return "Not run";
+  };
+
+  /** Use actual admin review status when present; only show "Not reviewed" when no review exists. */
+  const getSectionDisplay = (
+    report: { status?: string } | null | undefined,
+    landlordSection?: string
+  ): string => {
+    const raw = report?.status ?? landlordSection ?? "not_reviewed";
+    const formatted = String(raw).replace(/_/g, " ").toLowerCase();
+    if (formatted === "not reviewed" || formatted === "not_reviewed") return "Not reviewed";
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   };
 
   const formatCurrency = (amount: number) => {
@@ -193,14 +247,25 @@ const VerificationResponsePage = () => {
     );
   }
 
+  const verificationListPath = "/dashboard/landlord/properties/verification";
+
   if (!verificationData) {
     return (
       <LandLordLayout path="Verification" mainPath="/ Verification Response">
         <ToastContainer />
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="text-gray-400 text-6xl mb-4">📄</div>
-            <p className="text-gray-600 text-lg">No verification data found</p>
+        <div className="m-6">
+          <button
+            onClick={() => router.push(verificationListPath)}
+            className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
+          >
+            <MdArrowBackIos size={16} />
+            Back to Tenant Verification
+          </button>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-gray-400 text-6xl mb-4">📄</div>
+              <p className="text-gray-600 text-lg">No verification data found</p>
+            </div>
           </div>
         </div>
       </LandLordLayout>
@@ -212,52 +277,71 @@ const VerificationResponsePage = () => {
       <ToastContainer />
       <div className="m-6 py-6 px-1 md:px-0 bg-[#FAFAFA] min-h-screen">
         <div className="max-w-[1300px] mx-auto" ref={reportRef}>
-          {/* Header */}
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-fit flex gap-1 items-center text-[#98A2B3] pr-3 border-r border-gray-100 text-xs">
-                <MdArrowBackIos size={16} />
-                <button onClick={() => router.back()} className="hover:underline">
-                  Back
-                </button>
-              </div>
-              <div>
-                <p className="text-[16px] font-bold text-[#101828]">View Tenant Verification Details</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleExportPdf}
-                  disabled={pdfExportLoading}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold border border-gray-300 bg-white text-[#101828] hover:bg-gray-50 disabled:opacity-60 flex items-center gap-2"
-                >
-                  <FaFilePdf size={14} />
-                  {pdfExportLoading ? "Exporting…" : "Export PDF"}
-                </button>
-              </div>
-            </div>
+          {/* Back + Export – minimal nav */}
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <button
+              onClick={() => router.push(verificationListPath)}
+              className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828]"
+            >
+              <MdArrowBackIos size={16} />
+              Back to Tenant Verification
+            </button>
+            <button
+              onClick={handleExportPdf}
+              disabled={pdfExportLoading}
+              className="text-xs text-[#667085] hover:text-[#101828] border border-gray-200 rounded px-2 py-1.5 bg-white disabled:opacity-60 flex items-center gap-1"
+            >
+              <FaFilePdf size={12} />
+              {pdfExportLoading ? "Exporting…" : "Export PDF"}
+            </button>
           </div>
 
-          {/* Reports & verification outcomes – NIN, AML, phone, credit summary, ID document, utility bill */}
-          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
-            <p className="text-sm font-semibold text-[#101828]">Reports & verification outcomes</p>
-            <p className="text-xs text-[#667085]">
-              NIN, AML, phone, credit summary, ID document and utility bill status are included alongside the details below.
+          {/* Report header + recipient */}
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5 mb-4">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <h1 className="text-xl font-bold text-[#101828]">Tenant Verification Report</h1>
+              {verificationRequest?.verificationTier && (
+                <span className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${verificationRequest.verificationTier === "premium" ? "bg-indigo-100 text-indigo-800" : "bg-gray-100 text-gray-700"}`}>
+                  {verificationRequest.verificationTier}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-[#667085] mb-4">Naija Rent Verify</p>
+            {landlord && (
+              <div className="border-t border-gray-100 pt-4">
+                <p className="text-xs font-semibold text-[#667085] uppercase tracking-wide mb-2">Recipient</p>
+                <p className="text-sm font-medium text-[#101828]">
+                  {[landlord.firstName, landlord.lastName].filter(Boolean).join(" ") || "—"}
+                </p>
+                {landlord.email && (
+                  <p className="text-sm text-[#667085]">{landlord.email}</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Reports & verification outcomes – compact, Beta */}
+          <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50/50 p-3 space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-xs font-semibold text-[#101828]">Verification report</p>
+              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Beta</span>
+            </div>
+            <p className="text-[11px] text-[#667085]">
+              Reports from Naija Rent Verify and our verification partners (NIN, AML, phone, credit summary, ID document, utility bill, and section reviews). Applicant-uploaded files are not accessible to landlords.
             </p>
             {verificationData.landlordReport ? (
               <>
-                <p className="text-xs text-[#667085]">Generated at {formatDate(verificationData.landlordReport.generatedAt)}.</p>
-                <div className="grid gap-2 text-sm sm:grid-cols-2">
+                <p className="text-[11px] text-[#667085]">Generated at {formatDate(verificationData.landlordReport.generatedAt)}.</p>
+                <div className="grid gap-1.5 text-xs sm:grid-cols-2">
                   <p><span className="text-[#667085]">NIN:</span> <span className="capitalize">{verificationData.landlordReport.nin.replace(/_/g, " ")}</span></p>
                   <p><span className="text-[#667085]">AML risk:</span> <span className="capitalize">{verificationData.landlordReport.aml.replace(/_/g, " ")}</span></p>
                   <p><span className="text-[#667085]">Phone:</span> <span className="capitalize">{verificationData.landlordReport.phone.replace(/_/g, " ")}</span></p>
                   <p><span className="text-[#667085]">Credit summary:</span> <span className="capitalize">{verificationData.landlordReport.creditSummary.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{verificationData.landlordReport.idDocument.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{verificationData.landlordReport.utilityBill.replace(/_/g, " ")}</span></p>
+                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{getIdDocumentStatus()}</span></p>
+                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{getUtilityBillStatus()}</span></p>
                 </div>
                 {((verificationData.ninVerificationResult as any)?.namesMatch !== undefined || (verificationData.ninVerificationResult as any)?.dobMatch !== undefined) && (
-                  <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2">
+                  <div className="grid gap-1.5 text-xs sm:grid-cols-2 border-t border-gray-200 pt-1.5">
                     <p>
                       <span className="text-[#667085]">Name on NIN matches tenant:</span>{" "}
                       <span className={(verificationData.ninVerificationResult as any)?.namesMatch ? "text-green-600 font-medium" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "text-amber-600 font-medium" : ""}>
@@ -273,10 +357,10 @@ const VerificationResponsePage = () => {
                   </div>
                 )}
                 <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2">
-                  <p><span className="text-[#667085]">Personal section:</span> <span className="capitalize">{verificationData.landlordReport.personalSection.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Employment section:</span> <span className="capitalize">{verificationData.landlordReport.employmentSection.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Guarantor section:</span> <span className="capitalize">{verificationData.landlordReport.guarantorSection.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Documents section:</span> <span className="capitalize">{verificationData.landlordReport.documentsSection.replace(/_/g, " ")}</span></p>
+                  <p><span className="text-[#667085]">Personal section:</span> <span className="capitalize">{getSectionDisplay(verificationData.personalReport, verificationData.landlordReport?.personalSection)}</span></p>
+                  <p><span className="text-[#667085]">Employment section:</span> <span className="capitalize">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection)}</span></p>
+                  <p><span className="text-[#667085]">Guarantor section:</span> <span className="capitalize">{getSectionDisplay(verificationData.guarantorReport, verificationData.landlordReport?.guarantorSection)}</span></p>
+                  <p><span className="text-[#667085]">Documents section:</span> <span className="capitalize">{getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection)}</span></p>
                 </div>
               </>
             ) : (
@@ -286,8 +370,8 @@ const VerificationResponsePage = () => {
                   <p><span className="text-[#667085]">AML risk:</span> <span className="capitalize">{verificationData.amlScreeningResult ? ((verificationData.amlScreeningResult as any)?.entity?.risk_level ? String((verificationData.amlScreeningResult as any).entity.risk_level).replace(/_/g, " ") : "Completed") : "—"}</span></p>
                   <p><span className="text-[#667085]">Phone:</span> <span className="capitalize">{verificationData.phoneVerificationStatus || "—"}</span></p>
                   <p><span className="text-[#667085]">Credit summary:</span> <span className="capitalize">{verificationData.creditSummary ? "Available" : "—"}</span></p>
-                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{verificationData.identificationDocumentUrl ? "Submitted" : "—"}</span></p>
-                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{verificationData.utilityBillUrl ? "Submitted" : "—"}</span></p>
+                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{getIdDocumentStatus()}</span></p>
+                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{getUtilityBillStatus()}</span></p>
                 </div>
                 {((verificationData.ninVerificationResult as any)?.namesMatch !== undefined || (verificationData.ninVerificationResult as any)?.dobMatch !== undefined) && (
                   <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2 mt-2">
@@ -305,6 +389,12 @@ const VerificationResponsePage = () => {
                     </p>
                   </div>
                 )}
+                <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2 mt-2">
+                  <p><span className="text-[#667085]">Personal section:</span> <span className="capitalize">{getSectionDisplay(verificationData.personalReport, verificationData.landlordReport?.personalSection)}</span></p>
+                  <p><span className="text-[#667085]">Employment section:</span> <span className="capitalize">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection)}</span></p>
+                  <p><span className="text-[#667085]">Guarantor section:</span> <span className="capitalize">{getSectionDisplay(verificationData.guarantorReport, verificationData.landlordReport?.guarantorSection)}</span></p>
+                  <p><span className="text-[#667085]">Documents section:</span> <span className="capitalize">{getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection)}</span></p>
+                </div>
               </>
             )}
           </div>
@@ -490,48 +580,20 @@ const VerificationResponsePage = () => {
               </div>
             )}
 
-            {/* Documents – check ID documents and other files (View / Download) */}
+            {/* Documents – status when reviewed; no “not reviewed” text */}
             <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5 lg:col-span-2">
-              <h3 className="text-lg font-semibold text-[#101828] mb-1">ID documents & other files</h3>
-              <p className="text-sm text-[#667085] mb-4">Check and preview the identification document, bank statement and utility bill below. Use View to open or Download to save.</p>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-[#667085] mb-1">Identification Document</p>
-                  {verificationData.identificationDocumentUrl ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50/50 p-3">
-                      <FaFilePdf className="text-red-500" size={16} />
-                      <a href={verificationData.identificationDocumentUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#101828] hover:underline truncate flex-1">View</a>
-                      <a href={verificationData.identificationDocumentUrl} download className="text-[#667085] hover:text-[#101828]"><FaDownload size={14} /></a>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-[#667085]">No document uploaded</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085] mb-1">Bank Statement</p>
-                  {verificationData.bankStatementUrl ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50/50 p-3">
-                      <FaFilePdf className="text-red-500" size={16} />
-                      <a href={verificationData.bankStatementUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#101828] hover:underline truncate flex-1">View</a>
-                      <a href={verificationData.bankStatementUrl} download className="text-[#667085] hover:text-[#101828]"><FaDownload size={14} /></a>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-[#667085]">No document uploaded</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085] mb-1">Utility Bill</p>
-                  {verificationData.utilityBillUrl ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50/50 p-3">
-                      <FaFilePdf className="text-red-500" size={16} />
-                      <a href={verificationData.utilityBillUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#101828] hover:underline truncate flex-1">View</a>
-                      <a href={verificationData.utilityBillUrl} download className="text-[#667085] hover:text-[#101828]"><FaDownload size={14} /></a>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-[#667085]">No document uploaded</p>
-                  )}
-                </div>
-              </div>
+              <h3 className="text-lg font-semibold text-[#101828] mb-1">Documents</h3>
+              <p className="text-sm text-[#667085] mb-4">Identification document, bank statement and utility bill uploaded by the applicant are not accessible to landlords.</p>
+              {(() => {
+                const docStatus = getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection);
+                const wasReviewed = docStatus !== "Not reviewed";
+                if (!wasReviewed) return null;
+                return (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-3 text-sm">
+                    <p>Documents were reviewed. <span className="capitalize font-medium text-[#101828]">Outcome: {docStatus}</span></p>
+                  </div>
+                );
+              })()}
             </div>
           </div>
 

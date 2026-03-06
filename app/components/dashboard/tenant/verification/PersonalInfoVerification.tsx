@@ -260,17 +260,17 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
 
   return (
     <div className="">
-      <div className="pb-4 border-b border-gray-200 mb-5">
-        <h3 className="font-medium">
-          Let&apos;s start with a few personal details
+      <div className="pb-6 border-b border-gray-100 mb-8">
+        <h3 className="text-xl font-semibold text-gray-900">
+          Personal Information
         </h3>
-        <p className="text-xs text-[#667085]">
-          We would like to know a few things about you
+        <p className="text-sm text-gray-500 mt-1">
+          Please provide your personal details to get started.
         </p>
       </div>
       <div className="">
-        <div className="bg-[#FDFDFC]  border border-[#ECECEE] rounded-lg p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="bg-white rounded-xl p-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <InputField
               label="First Name"
               name="firstName"
@@ -295,18 +295,18 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               error={errors.email}
               disabled={isPrefilled}
             />
-            <InputField
-              label="Phone Number"
-              name="phone"
-              placeholder="e.g. 08012345678"
-              value={formData.phone}
-              onChange={handleInputChange}
-              error={errors.phone}
-              disabled={isPrefilled}
-            />
-            <p className="text-xs text-[#807F94] sm:col-span-2 -mt-3">
-              Used for fraud screening during verification.
-            </p>
+            <div>
+              <InputField
+                label="Phone Number"
+                name="phone"
+                placeholder="e.g. 08012345678"
+                value={formData.phone}
+                onChange={handleInputChange}
+                error={errors.phone}
+                disabled={isPrefilled}
+              />
+        
+            </div>
             <InputField
               label="NIN (National Identification Number)"
               name="nin"
@@ -346,37 +346,24 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               options={genderOptions}
               error={errors.gender}
               disabled={isPrefilled}
-              // css="bg-nrvLightGreyBg"
             />
           </div>
-          <div className="pt-3 pb-6 border-t border-[#ECECEE] mt-5">
+          <div className="pt-6 border-t border-gray-100 mt-8">
             <InputField
-              label={
-                <p className="flex items-center gap-1">
-                  Address <FiInfo />
-                </p>
-              }
+              label="Current Address"
               name="address"
               value={formData.address}
               onChange={handleInputChange}
               error={errors.address}
               disabled={isPrefilled}
             />
-
-            <p className="text-xs text-[#807F94] mt-1">
+            <p className="text-xs text-gray-500 mt-1.5">
               Your address at the time of filling this form.
             </p>
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end gap-4">
-          <Button
-            onClick={handleSubmit}
-            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
-            disabled={isPrefilled && allFieldsFilled && !isDirty}
-          >
-            Save and Continue
-          </Button>
+        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -390,8 +377,16 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               }
               router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
             }}
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
           >
-            Next
+            Skip for now
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            disabled={isPrefilled && allFieldsFilled && !isDirty}
+          >
+            Save and Continue
           </Button>
         </div>
       </div>

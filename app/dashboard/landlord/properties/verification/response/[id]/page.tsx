@@ -72,6 +72,9 @@ interface VerificationResponse {
     employmentSection: string;
     guarantorSection: string;
     documentsSection: string;
+    riskScore?: number;
+    riskCategory?: string;
+    recommendation?: string;
   };
 }
 
@@ -111,14 +114,16 @@ const VerificationResponsePage = () => {
           return;
         }
         const [res, reqRes] = await Promise.all([
-          apiService.get(`/verification/response/by-request/${id}?email=${encodeURIComponent(email)}`),
-          apiService.get(`/verification/${id}`).catch(() => ({ data: {} })),
+          apiService.get(`/verification/response/by-request/${id}?email=${encodeURIComponent(email)}`, { timeout: 60000 }),
+          apiService.get(`/verification/${id}`, { timeout: 15000 }).catch(() => ({ data: {} })),
         ]);
-        setVerificationData(res?.data?.data || res?.data || null);
+        const data = res?.data?.data ?? res?.data ?? null;
+        setVerificationData(data || null);
         const req = reqRes?.data?.data ?? reqRes?.data ?? null;
         setVerificationRequest(req || null);
       } catch (err: any) {
-        setError(err?.response?.data?.message || "Failed to load verification data");
+        const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? err?.message;
+        setError(msg && typeof msg === "string" ? msg : "Failed to load verification data");
       } finally {
         setLoading(false);
       }
@@ -275,338 +280,157 @@ const VerificationResponsePage = () => {
   return (
     <LandLordLayout path="Verification" mainPath="/ Verification Response">
       <ToastContainer />
-      <div className="m-6 py-6 px-1 md:px-0 bg-[#FAFAFA] min-h-screen">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 bg-[#FAFAFA] min-h-screen">
         <div className="max-w-[1300px] mx-auto" ref={reportRef}>
-          {/* Back + Export – minimal nav */}
-          <div className="flex items-center justify-between gap-3 mb-4">
+          {/* Back + Export – responsive nav */}
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 mb-4 sm:mb-6">
             <button
               onClick={() => router.push(verificationListPath)}
-              className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828]"
+              className="inline-flex items-center justify-center gap-2 text-sm text-[#667085] hover:text-[#101828] py-2.5 px-3 rounded-lg border border-gray-200 bg-white sm:border-0 sm:bg-transparent sm:py-0 sm:px-0 min-h-[44px] sm:min-h-0 touch-manipulation"
             >
-              <MdArrowBackIos size={16} />
-              Back to Tenant Verification
+              <MdArrowBackIos size={18} className="shrink-0" />
+              <span>Back to Tenant Verification</span>
             </button>
             <button
               onClick={handleExportPdf}
               disabled={pdfExportLoading}
-              className="text-xs text-[#667085] hover:text-[#101828] border border-gray-200 rounded px-2 py-1.5 bg-white disabled:opacity-60 flex items-center gap-1"
+              className="inline-flex items-center justify-center gap-2 text-sm text-[#667085] hover:text-[#101828] border border-gray-200 rounded-lg px-4 py-2.5 bg-white disabled:opacity-60 min-h-[44px] touch-manipulation"
             >
-              <FaFilePdf size={12} />
+              <FaFilePdf size={14} className="shrink-0" />
               {pdfExportLoading ? "Exporting…" : "Export PDF"}
             </button>
           </div>
 
           {/* Report header + recipient */}
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5 mb-4">
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <h1 className="text-xl font-bold text-[#101828]">Tenant Verification Report</h1>
-              {verificationRequest?.verificationTier && (
-                <span className={`text-xs font-medium px-2 py-0.5 rounded capitalize ${verificationRequest.verificationTier === "premium" ? "bg-indigo-100 text-indigo-800" : "bg-gray-100 text-gray-700"}`}>
-                  {verificationRequest.verificationTier}
-                </span>
-              )}
+          <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-4 sm:p-6 mb-6">
+            <h1 className="text-xl sm:text-2xl font-bold text-[#101828] text-center mb-4 sm:mb-6">Naija Rent Verify</h1>
+            <h2 className="text-base sm:text-lg font-semibold text-[#101828] text-center mb-4 sm:mb-6">Landlord Decision Summary</h2>
+            
+            <div className="border rounded-lg overflow-hidden mb-6 sm:mb-8 overflow-x-auto">
+              <table className="w-full min-w-[280px] text-sm text-left">
+                <tbody>
+                  <tr className="border-b border-gray-200">
+                    <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600 w-1/3 min-w-[120px]">Verification ID</th>
+                    <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.verificationId ? verificationData.verificationId.slice(-5).toUpperCase() : "—"}</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Tenant Name</th>
+                    <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.fullName || "—"}</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Property</th>
+                    <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{(verificationData as any).propertyAddress || "—"}</td>
+                  </tr>
+                  <tr>
+                    <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Report Date</th>
+                    <td className="px-3 sm:px-4 py-3 text-gray-900">
+                      {verificationData.landlordReport?.generatedAt 
+                        ? formatDate(verificationData.landlordReport.generatedAt) 
+                        : formatDate(new Date().toISOString())}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <p className="text-xs text-[#667085] mb-4">Naija Rent Verify</p>
-            {landlord && (
-              <div className="border-t border-gray-100 pt-4">
-                <p className="text-xs font-semibold text-[#667085] uppercase tracking-wide mb-2">Recipient</p>
-                <p className="text-sm font-medium text-[#101828]">
-                  {[landlord.firstName, landlord.lastName].filter(Boolean).join(" ") || "—"}
-                </p>
-                {landlord.email && (
-                  <p className="text-sm text-[#667085]">{landlord.email}</p>
-                )}
-              </div>
-            )}
-          </div>
 
-          {/* Reports & verification outcomes – compact, Beta */}
-          <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50/50 p-3 space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-xs font-semibold text-[#101828]">Verification report</p>
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Beta</span>
-            </div>
-            <p className="text-[11px] text-[#667085]">
-              Reports from Naija Rent Verify and our verification partners (NIN, AML, phone, credit summary, ID document, utility bill, and section reviews). Applicant-uploaded files are not accessible to landlords.
-            </p>
-            {verificationData.landlordReport ? (
-              <>
-                <p className="text-[11px] text-[#667085]">Generated at {formatDate(verificationData.landlordReport.generatedAt)}.</p>
-                <div className="grid gap-1.5 text-xs sm:grid-cols-2">
-                  <p><span className="text-[#667085]">NIN:</span> <span className="capitalize">{verificationData.landlordReport.nin.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">AML risk:</span> <span className="capitalize">{verificationData.landlordReport.aml.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Phone:</span> <span className="capitalize">{verificationData.landlordReport.phone.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">Credit summary:</span> <span className="capitalize">{verificationData.landlordReport.creditSummary.replace(/_/g, " ")}</span></p>
-                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{getIdDocumentStatus()}</span></p>
-                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{getUtilityBillStatus()}</span></p>
-                </div>
-                {((verificationData.ninVerificationResult as any)?.namesMatch !== undefined || (verificationData.ninVerificationResult as any)?.dobMatch !== undefined) && (
-                  <div className="grid gap-1.5 text-xs sm:grid-cols-2 border-t border-gray-200 pt-1.5">
-                    <p>
-                      <span className="text-[#667085]">Name on NIN matches tenant:</span>{" "}
-                      <span className={(verificationData.ninVerificationResult as any)?.namesMatch ? "text-green-600 font-medium" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "text-amber-600 font-medium" : ""}>
-                        {(verificationData.ninVerificationResult as any)?.namesMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "No" : "—"}
-                      </span>
-                    </p>
-                    <p>
-                      <span className="text-[#667085]">DOB on NIN matches tenant:</span>{" "}
-                      <span className={(verificationData.ninVerificationResult as any)?.dobMatch ? "text-green-600 font-medium" : (verificationData.ninVerificationResult as any)?.dobMatch === false ? "text-amber-600 font-medium" : ""}>
-                        {(verificationData.ninVerificationResult as any)?.dobMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.dobMatch === false ? "No" : "—"}
-                      </span>
-                    </p>
-                  </div>
-                )}
-                <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2">
-                  <p><span className="text-[#667085]">Personal section:</span> <span className="capitalize">{getSectionDisplay(verificationData.personalReport, verificationData.landlordReport?.personalSection)}</span></p>
-                  <p><span className="text-[#667085]">Employment section:</span> <span className="capitalize">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection)}</span></p>
-                  <p><span className="text-[#667085]">Guarantor section:</span> <span className="capitalize">{getSectionDisplay(verificationData.guarantorReport, verificationData.landlordReport?.guarantorSection)}</span></p>
-                  <p><span className="text-[#667085]">Documents section:</span> <span className="capitalize">{getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection)}</span></p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="grid gap-2 text-sm sm:grid-cols-2">
-                  <p><span className="text-[#667085]">NIN:</span> <span className="capitalize">{(verificationData.ninVerificationStatus || (verificationData.ninVerificationResult as any)?.status) || "—"}</span></p>
-                  <p><span className="text-[#667085]">AML risk:</span> <span className="capitalize">{verificationData.amlScreeningResult ? ((verificationData.amlScreeningResult as any)?.entity?.risk_level ? String((verificationData.amlScreeningResult as any).entity.risk_level).replace(/_/g, " ") : "Completed") : "—"}</span></p>
-                  <p><span className="text-[#667085]">Phone:</span> <span className="capitalize">{verificationData.phoneVerificationStatus || "—"}</span></p>
-                  <p><span className="text-[#667085]">Credit summary:</span> <span className="capitalize">{verificationData.creditSummary ? "Available" : "—"}</span></p>
-                  <p><span className="text-[#667085]">ID document:</span> <span className="capitalize">{getIdDocumentStatus()}</span></p>
-                  <p><span className="text-[#667085]">Utility bill:</span> <span className="capitalize">{getUtilityBillStatus()}</span></p>
-                </div>
-                {((verificationData.ninVerificationResult as any)?.namesMatch !== undefined || (verificationData.ninVerificationResult as any)?.dobMatch !== undefined) && (
-                  <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2 mt-2">
-                    <p>
-                      <span className="text-[#667085]">Name on NIN matches tenant:</span>{" "}
-                      <span className={(verificationData.ninVerificationResult as any)?.namesMatch ? "text-green-600 font-medium" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "text-amber-600 font-medium" : ""}>
-                        {(verificationData.ninVerificationResult as any)?.namesMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "No" : "—"}
-                      </span>
-                    </p>
-                    <p>
-                      <span className="text-[#667085]">DOB on NIN matches tenant:</span>{" "}
-                      <span className={(verificationData.ninVerificationResult as any)?.dobMatch ? "text-green-600 font-medium" : (verificationData.ninVerificationResult as any)?.dobMatch === false ? "text-amber-600 font-medium" : ""}>
-                        {(verificationData.ninVerificationResult as any)?.dobMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.dobMatch === false ? "No" : "—"}
-                      </span>
-                    </p>
-                  </div>
-                )}
-                <div className="grid gap-2 text-sm sm:grid-cols-2 border-t border-gray-200 pt-2 mt-2">
-                  <p><span className="text-[#667085]">Personal section:</span> <span className="capitalize">{getSectionDisplay(verificationData.personalReport, verificationData.landlordReport?.personalSection)}</span></p>
-                  <p><span className="text-[#667085]">Employment section:</span> <span className="capitalize">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection)}</span></p>
-                  <p><span className="text-[#667085]">Guarantor section:</span> <span className="capitalize">{getSectionDisplay(verificationData.guarantorReport, verificationData.landlordReport?.guarantorSection)}</span></p>
-                  <p><span className="text-[#667085]">Documents section:</span> <span className="capitalize">{getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection)}</span></p>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Content grid – same structure as admin hub */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Personal Information */}
-            <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Personal Information</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-sm text-[#667085]">Full Name</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.fullName || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Email</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.email || "—"}</p>
-                </div>
-                {verificationData.phone && (
-                  <div>
-                    <p className="text-sm text-[#667085]">Phone</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.phone}</p>
-                  </div>
-                )}
-                <div>
-                  <p className="text-sm text-[#667085]">Date of birth</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.dateOfBirth ? formatDate(verificationData.dateOfBirth) : "—"}</p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <p className="text-sm text-[#667085]">Address</p>
-                <p className="text-sm font-medium text-[#101828]">{verificationData.address || "—"}</p>
-              </div>
-              {verificationData.gender && (
-                <div className="mt-4">
-                  <p className="text-sm text-[#667085]">Gender</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.gender}</p>
-                </div>
-              )}
-              {/* NIN verification status and alignment with applicant */}
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center justify-between rounded-lg border border-gray-200 p-3">
-                  <span className="text-sm font-medium text-[#101828]">NIN verification</span>
-                  <span className={`text-sm font-medium ${(verificationData.ninVerificationStatus || (verificationData.ninVerificationResult as any)?.status) === "completed" || (verificationData.ninVerificationResult as any)?.status === "success" ? "text-green-600" : (verificationData.ninVerificationResult as any)?.status === "failed" ? "text-amber-600" : "text-[#667085]"}`}>
-                    {(verificationData.ninVerificationResult as any)?.status === "failed" ? "Not verified" : verificationData.ninVerificationStatus === "completed" || (verificationData.ninVerificationResult as any)?.status === "success" ? "Verified" : "—"}
-                  </span>
-                </div>
-                {(verificationData.ninVerificationResult as any)?.namesMatch !== undefined || (verificationData.ninVerificationResult as any)?.dobMatch !== undefined ? (
-                  <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-3 space-y-2 text-sm">
-                    <p className="font-medium text-[#101828]">NIN vs tenant submission</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#667085]">Name submitted by tenant matches name on NIN</span>
-                      <span className={`font-medium ${(verificationData.ninVerificationResult as any)?.namesMatch ? "text-green-600" : "text-amber-600"}`}>
-                        {(verificationData.ninVerificationResult as any)?.namesMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.namesMatch === false ? "No" : "—"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#667085]">DOB submitted by tenant matches DOB on NIN</span>
-                      <span className={`font-medium ${(verificationData.ninVerificationResult as any)?.dobMatch ? "text-green-600" : "text-amber-600"}`}>
-                        {(verificationData.ninVerificationResult as any)?.dobMatch === true ? "Yes" : (verificationData.ninVerificationResult as any)?.dobMatch === false ? "No" : "—"}
-                      </span>
-                    </div>
-                  </div>
-                ) : null}
+            {/* Overall Tenant Risk Assessment */}
+            <div className="mb-6 sm:mb-8">
+              <h3 className="text-base sm:text-lg font-bold text-[#101828] mb-3">Overall Tenant Risk Assessment</h3>
+              <div className="border rounded-lg overflow-hidden overflow-x-auto">
+                <table className="w-full min-w-[280px] text-sm text-left">
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600 w-1/3 min-w-[120px]">Tenant Risk Score</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.landlordReport?.riskScore != null ? `${verificationData.landlordReport.riskScore} / 100` : "—"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Risk Category</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.landlordReport?.riskCategory || "—"}</td>
+                    </tr>
+                    <tr>
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Recommendation</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.landlordReport?.recommendation || "—"}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* AML screening – show when AML was carried out */}
-            {verificationData.amlScreeningResult && (
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5">
-                <h3 className="text-lg font-semibold text-[#101828] mb-4">AML screening</h3>
-                <p className="text-sm text-[#667085] mb-3">PEP, sanctions and adverse media check has been carried out.</p>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50/50 px-3 py-2">
-                    <span className="text-[#667085]">Risk level</span>
-                    <span className={`font-medium capitalize ${((verificationData.amlScreeningResult as any)?.entity?.risk_level === "low" && "text-green-600") || ((verificationData.amlScreeningResult as any)?.entity?.risk_level === "medium" && "text-amber-600") || ((verificationData.amlScreeningResult as any)?.entity?.risk_level === "high" && "text-red-600") || ""}`}>
-                      {(verificationData.amlScreeningResult as any)?.entity?.risk_level ? String((verificationData.amlScreeningResult as any).entity.risk_level).replace(/_/g, " ") : "—"}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50/50 px-3 py-2">
-                    <span className="text-[#667085]">Status</span>
-                    <span className="font-medium text-green-600">Completed</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Employment */}
-            <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Employment</h3>
-              <div className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <p className="text-sm text-[#667085]">Employment Status</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.employmentStatus || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#667085]">Role</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.roleInCompany || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#667085]">Company</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.companyName || "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#667085]">Date Joined</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.dateJoined ? formatDate(verificationData.dateJoined) : "—"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#667085]">Monthly Income</p>
-                    <p className="text-sm font-medium text-[#101828]">{verificationData.monthlyIncome ? formatCurrency(verificationData.monthlyIncome) : "—"}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Work Address</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.companyAddress || "—"}</p>
-                </div>
+            {/* Key Verification Results */}
+            <div className="mb-6 sm:mb-8">
+              <h3 className="text-base sm:text-lg font-bold text-[#101828] mb-3">Key Verification Results</h3>
+              <div className="border rounded-lg overflow-hidden overflow-x-auto">
+                <table className="w-full min-w-[320px] text-sm text-left">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-3 sm:px-4 py-3 font-medium text-gray-600 min-w-[100px]">Category</th>
+                      <th className="px-3 sm:px-4 py-3 font-medium text-gray-600 min-w-[80px]">Result</th>
+                      <th className="px-3 sm:px-4 py-3 font-medium text-gray-600">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">Identity Verification</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{((verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch) ? "Verified" : "Partial Match"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{(verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch ? "NIN verified and matches tenant details" : "NIN verified but name/DOB mismatch"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">Phone Verification</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.phoneVerificationStatus === "valid" ? "Verified" : "Invalid"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{verificationData.phoneVerificationStatus === "valid" ? "Phone number verified" : "Phone not verified"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">Address Verification</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getUtilityBillStatus() === "Verified" ? "Verified" : "Pending"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getUtilityBillStatus() === "Verified" ? "Utility bill confirmed" : "Utility bill review pending or failed"}</td>
+                    </tr>
+                    <tr>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">Employment Verification</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Verified" ? "Verified" : "Pending"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Verified" ? "Active employment confirmed" : "Employment review pending"}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* Guarantor */}
-            <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5">
-              <h3 className="text-lg font-semibold text-[#101828] mb-4">Guarantor</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-sm text-[#667085]">Name</p>
-                  <p className="text-sm font-medium text-[#101828]">{[verificationData.guarantorFirstName, verificationData.guarantorLastName].filter(Boolean).join(" ") || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Phone</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.guarantorPhone || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Email</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.guarantorEmail || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Address</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.guarantorAddress || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Employment Status</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.guarantorEmploymentStatus || "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[#667085]">Company</p>
-                  <p className="text-sm font-medium text-[#101828]">{verificationData.guarantorCompany || "—"}</p>
-                </div>
-              </div>
+            {/* Important Flags Detected */}
+            <div className="mb-6 sm:mb-8">
+              <h3 className="text-base sm:text-lg font-bold text-[#101828] mb-3">Important Flags Detected</h3>
+              <p className="text-sm text-gray-900 break-words">
+                {((verificationData.ninVerificationResult as any)?.namesMatch === false || (verificationData.ninVerificationResult as any)?.dobMatch === false)
+                  ? "Identity Data Mismatch: Tenant submitted personal details that do not fully match NIN records. Landlords are advised to request clarification before lease approval."
+                  : "No critical identity mismatch flags detected."}
+              </p>
             </div>
 
-            {/* Credit summary – included alongside reports */}
-            {verificationData.creditSummary && (verificationData.creditSummary as any).entity && (
-              <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5 lg:col-span-2">
-                <h3 className="text-lg font-semibold text-[#101828] mb-4">Credit summary</h3>
-                {(() => {
-                  const cs = verificationData.creditSummary as any;
-                  const entity = cs.entity as { score?: { bureauStatus?: unknown; totalBorrowed?: { source?: string; value?: number }[]; totalOutstanding?: { source?: string; value?: number }[]; totalNoOfActiveLoans?: { source?: string; value?: number }[]; totalNoOfLoans?: { source?: string; value?: number }[] } } | undefined;
-                  const score = entity?.score;
-                  if (!score) return <p className="text-sm text-[#667085]">Credit report on file.</p>;
-                  return (
-                    <div className="space-y-2 text-sm">
-                      {score.bureauStatus != null && (
-                        <p className="text-[#667085]">Bureaus: {typeof score.bureauStatus === "object" ? Object.entries(score.bureauStatus as Record<string, unknown>).map(([k, v]) => `${k}: ${v}`).join(" · ") : String(score.bureauStatus)}</p>
-                      )}
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {(score.totalBorrowed ?? []).map((x, i) => (
-                          <p key={i}><span className="text-[#667085]">Total borrowed ({x.source}):</span> {x.value != null ? formatCurrency(Number(x.value)) : "—"}</p>
-                        ))}
-                        {(score.totalOutstanding ?? []).map((x, i) => (
-                          <p key={i}><span className="text-[#667085]">Total outstanding ({x.source}):</span> {x.value != null ? formatCurrency(Number(x.value)) : "—"}</p>
-                        ))}
-                        {(score.totalNoOfActiveLoans ?? []).map((x, i) => (
-                          <p key={i}><span className="text-[#667085]">Active loans ({x.source}):</span> {x.value ?? "—"}</p>
-                        ))}
-                        {(score.totalNoOfLoans ?? []).map((x, i) => (
-                          <p key={i}><span className="text-[#667085]">Total loans ({x.source}):</span> {x.value ?? "—"}</p>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })()}
+            {/* Financial Capacity */}
+            <div className="mb-0">
+              <h3 className="text-base sm:text-lg font-bold text-[#101828] mb-3">Financial Capacity</h3>
+              <div className="border rounded-lg overflow-hidden overflow-x-auto">
+                <table className="w-full min-w-[280px] text-sm text-left">
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600 w-1/3 min-w-[120px]">Employment Status</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.employmentStatus || "—"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Company</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.companyName || "—"}</td>
+                    </tr>
+                    <tr className="border-b border-gray-200">
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Monthly Income</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.monthlyIncome ? formatCurrency(verificationData.monthlyIncome) : "—"}</td>
+                    </tr>
+                    <tr>
+                      <th className="bg-gray-50 px-3 sm:px-4 py-3 font-medium text-gray-600">Affordability Estimate</th>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900 break-words">{verificationData.monthlyIncome && verificationData.monthlyIncome > 500000 ? "Supports mid-range rental payments" : "Income verification recommended"}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            )}
-
-            {/* Documents – status when reviewed; no “not reviewed” text */}
-            <div className="rounded-lg border border-gray-200 bg-white shadow-sm p-5 lg:col-span-2">
-              <h3 className="text-lg font-semibold text-[#101828] mb-1">Documents</h3>
-              <p className="text-sm text-[#667085] mb-4">Identification document, bank statement and utility bill uploaded by the applicant are not accessible to landlords.</p>
-              {(() => {
-                const docStatus = getSectionDisplay(verificationData.documentsReport, verificationData.landlordReport?.documentsSection);
-                const wasReviewed = docStatus !== "Not reviewed";
-                if (!wasReviewed) return null;
-                return (
-                  <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-3 text-sm">
-                    <p>Documents were reviewed. <span className="capitalize font-medium text-[#101828]">Outcome: {docStatus}</span></p>
-                  </div>
-                );
-              })()}
             </div>
           </div>
-
-          {verificationData.previousLandlordComments && verificationData.previousLandlordComments.length > 0 && (
-            <div className="mt-6 rounded-lg border border-gray-200 bg-gray-50/50 p-4">
-              <p className="text-sm font-semibold text-[#101828] mb-2">Previous landlord experience</p>
-              <div className="space-y-2">
-                {verificationData.previousLandlordComments.map((item, idx) => (
-                  <p key={idx} className="text-sm text-[#344054]">{item.comment}{item.landlordName ? ` – ${item.landlordName}` : ""}</p>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

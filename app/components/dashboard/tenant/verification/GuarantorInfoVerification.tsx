@@ -174,15 +174,15 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
 
   return (
     <div className="">
-      <div className="pb-4 border-b border-gray-200 mb-5">
-        <h3 className="font-medium">Who is your guarantor?</h3>
-        <p className="text-xs text-[#667085]">
-          Tell us who your guarantor is and how to reach out to them
+      <div className="pb-6 border-b border-gray-100 mb-8">
+        <h3 className="text-xl font-semibold text-gray-900">Guarantor Information</h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Tell us who your guarantor is and how to reach out to them.
         </p>
       </div>
       <div className="">
-        <div className="bg-[#FDFDFC]  border border-[#ECECEE] rounded-lg p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="bg-white rounded-xl p-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <InputField
               label="First Name"
               name="firstName"
@@ -230,7 +230,6 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
               }}
               options={employmentStatusOptions}
               error={errors.state}
-              // css="bg-nrvLightGreyBg"
             />
             <InputField
               label="Company"
@@ -240,13 +239,9 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
               error={errors.company}
             />
           </div>
-          <div className="pt-3 pb-6 border-t border-[#ECECEE] mt-5">
+          <div className="pt-6 border-t border-gray-100 mt-8">
             <InputField
-              label={
-                <p className="flex items-center gap-1">
-                  Guarantor&apos;s Home Address <FiInfo />
-                </p>
-              }
+              label="Guarantor's Home Address"
               name="guarantorHomeAddress"
               value={formData.guarantorHomeAddress}
               onChange={handleInputChange}
@@ -255,14 +250,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
           </div>
         </div>
 
-        <div className="mt-10 flex justify-end gap-4">
-          <Button
-            onClick={handleSubmit}
-            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
-            disabled={isPrefilled && allFieldsFilled && !isDirty}
-          >
-            Save and Continue
-          </Button>
+        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -272,8 +260,16 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
               }
               router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
             }}
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
           >
-            Next
+            Skip for now
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            disabled={isPrefilled && allFieldsFilled && !isDirty}
+          >
+            Save and Continue
           </Button>
         </div>
       </div>

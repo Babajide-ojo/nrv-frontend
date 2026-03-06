@@ -20,7 +20,6 @@ export default function OnboardTenant() {
     firstName: "",
     lastName: "",
     email: "",
-    nin: "",
     landlordDisplayName: "",
   });
   const [verificationTier, setVerificationTier] = useState<"standard" | "premium">("standard");
@@ -62,7 +61,6 @@ export default function OnboardTenant() {
       firstName: "",
       lastName: "",
       email: "",
-      nin: "",
       landlordDisplayName: "",
     });
   };
@@ -77,13 +75,11 @@ export default function OnboardTenant() {
     const firstName = searchParams.get("firstName");
     const lastName = searchParams.get("lastName");
     const email = searchParams.get("email");
-    const nin = searchParams.get("nin");
     const landlordDisplayName = searchParams.get("landlordDisplayName");
 
     if (firstName) next.firstName = firstName;
     if (lastName) next.lastName = lastName;
     if (email) next.email = email;
-    if (nin) next.nin = nin;
     if (landlordDisplayName) next.landlordDisplayName = landlordDisplayName;
 
     if (Object.keys(next).length) {
@@ -108,143 +104,123 @@ export default function OnboardTenant() {
       <ToastContainer />
       <LandLordLayout path="Tenant Verification">
         <div className="max-w-4xl mx-auto p-6">
-          <h2 className="text-2xl font-semibold">Verification Request</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Please enter details about your tenant below so we can help you verify details about them
-          </p>
+          <h2 className="text-2xl font-semibold mb-6">New Verification Request</h2>
 
-          <hr className="my-4" />
-
-          <Card>
+          <Card className="border-none shadow-sm bg-white">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-sm font-medium block mb-1">First Name</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-1.5">First Name</label>
                   <Input
-                    placeholder="Enter Tenant First Name"
+                    placeholder="Tenant's first name"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
+                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium block mb-1">Last Name</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-1.5">Last Name</label>
                   <Input
-                    placeholder="Enter Tenant Last Name"
+                    placeholder="Tenant's last name"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
+                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium block mb-1">Email Address</label>
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700 block mb-1.5">Email Address</label>
                   <Input
-                    placeholder="Enter Tenant Email Address"
+                    placeholder="Tenant's email address"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     type="email"
+                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                   />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium block mb-1">NIN (National Identification Number)</label>
-                  <Input
-                    placeholder="Tenant NIN (optional)"
-                    name="nin"
-                    value={formData.nin}
-                    onChange={handleChange}
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">Tenant will provide NIN during verification if not set</p>
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="text-sm font-medium block mb-1">Landlord’s Display Name</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-1.5">Landlord Display Name</label>
                   <Input
-                    placeholder="Ex. Segun Peters"
+                    placeholder="Name shown to tenant (e.g. Segun Peters)"
                     name="landlordDisplayName"
                     value={formData.landlordDisplayName}
                     onChange={handleChange}
+                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Display name is the name the tenant sees is requesting their verification
-                  </p>
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="text-sm font-medium block mb-2">Verification type</label>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Choose the type of screening to run for this tenant. One credit of the selected type will be used when you run screening after they submit.
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label
-                      className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-colors ${
+                <div className="md:col-span-2 mt-2">
+                  <label className="text-sm font-medium text-gray-700 block mb-3">Verification Tier</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div
+                      onClick={() => setVerificationTier("standard")}
+                      className={`relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${
                         verificationTier === "standard"
-                          ? "border-green-700 bg-green-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? "border-green-600 bg-green-50/50"
+                          : "border-gray-100 hover:border-gray-200 bg-white"
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="verificationTier"
-                        value="standard"
-                        checked={verificationTier === "standard"}
-                        onChange={() => setVerificationTier("standard")}
-                        className="mt-1 h-4 w-4 text-green-700"
-                      />
-                      <div>
-                        <span className="text-sm font-semibold text-gray-900">Standard</span>
-                        <p className="text-xs text-gray-600 mt-0.5">
-                          NIN Advanced, selfie + NIN, liveness, AML, PEP & sanctions
-                        </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-sm font-bold ${verificationTier === "standard" ? "text-green-700" : "text-gray-900"}`}>
+                          Standard
+                        </span>
+                        {verificationTier === "standard" && (
+                          <div className="h-4 w-4 rounded-full bg-green-600 flex items-center justify-center">
+                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                          </div>
+                        )}
                       </div>
-                    </label>
-                    <label
-                      className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-colors ${
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        NIN Advanced, selfie + NIN, liveness check, AML screening, PEP & sanctions list.
+                      </p>
+                    </div>
+
+                    <div
+                      onClick={() => setVerificationTier("premium")}
+                      className={`relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${
                         verificationTier === "premium"
-                          ? "border-green-700 bg-green-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          ? "border-green-600 bg-green-50/50"
+                          : "border-gray-100 hover:border-gray-200 bg-white"
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="verificationTier"
-                        value="premium"
-                        checked={verificationTier === "premium"}
-                        onChange={() => setVerificationTier("premium")}
-                        className="mt-1 h-4 w-4 text-green-700"
-                      />
-                      <div>
-                        <span className="text-sm font-semibold text-gray-900">Premium</span>
-                        <p className="text-xs text-gray-600 mt-0.5">
-                          All Standard checks plus credit score (BVN)
-                        </p>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className={`text-sm font-bold ${verificationTier === "premium" ? "text-green-700" : "text-gray-900"}`}>
+                          Premium
+                        </span>
+                        {verificationTier === "premium" && (
+                          <div className="h-4 w-4 rounded-full bg-green-600 flex items-center justify-center">
+                            <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                          </div>
+                        )}
                       </div>
-                    </label>
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Includes all Standard checks plus comprehensive credit score (BVN) analysis.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground mt-6">
-                By submitting this tenant verification request, you agree with our Terms and Conditions.
-              </p>
-
-              <div className="flex justify-end gap-4 mt-6">
+              <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
                 <Button
-                  variant="outline"
-                  onClick={() =>     router.push('/dashboard/landlord/properties/verification')}
+                  variant="ghost"
+                  onClick={() => router.push('/dashboard/landlord/properties/verification')}
                   disabled={loading}
+                  className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="bg-green-900 text-white"
+                  className="bg-green-700 hover:bg-green-800 text-white min-w-[140px]"
                   onClick={handleSubmit}
                   disabled={loading}
                 >
-                  {loading ? "Submitting..." : "Submit Request"}
+                  {loading ? "Sending Request..." : "Send Request"}
                 </Button>
               </div>
             </CardContent>

@@ -76,26 +76,25 @@ export default function TenantVerification() {
     <>
       <ToastContainer />
       <LandLordLayout path="Tenant Verification">
-        <div className="p-6 max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-semibold">Tenant Verification</h2>
-              <p className="text-sm text-muted-foreground mt-1">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Tenant Verification</h2>
+              <p className="text-sm text-gray-500 mt-1">
                 Send tenant verification requests and review their profiles before a lease agreement.
               </p>
             </div>
-
             <button
-              className="bg-green-900 text-white px-4 py-2 text-sm rounded-md hover:bg-green-800 transition"
+              className="bg-green-900 text-white px-4 py-2.5 text-sm rounded-lg hover:bg-green-800 transition shrink-0 min-h-[44px] touch-manipulation"
               onClick={() => router.push(`/dashboard/landlord/properties/verification/request`)}
             >
               + New Verification Request
             </button>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h4 className="text-lg font-semibold text-gray-900">Tenant Screening Report</h4>
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">Tenant Screening Report</h4>
             </div>
 
             {/* Render DataTable only when userId is available */}

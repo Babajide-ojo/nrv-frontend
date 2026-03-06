@@ -15,10 +15,9 @@ import {
   FiHeadphones,
   FiSettings,
 } from "react-icons/fi";
-import Logo from "../../../../public/images/nrv-logo.png";
-import { FaPerson } from "react-icons/fa6";
 import { BsPersonFill } from "react-icons/bs";
 import { clearAllStoredData } from "@/helpers/utils";
+import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 
 interface User {
   name: string;
@@ -29,49 +28,22 @@ interface LandLordSideBarProps {
   isOpen: boolean;
 }
 
-const links = [
-  { name: "Dashboard", route: "/dashboard/landlord", icon: <FiHome /> },
-  {
-    name: "Properties",
-    route: "/dashboard/landlord/properties",
-    icon: <FiClipboard />,
-  },
-  {
-    name: "Leads & Applications",
-    route: "/dashboard/landlord/properties/renters",
-    icon: <FiFileText />,
-  },
-  {
-    name: "Tenants",
-    route: "/dashboard/landlord/tenants",
-    icon: <FiUsers />,
-  },
-  {
-    name: "Tenant Verification",
-    route: "/dashboard/landlord/properties/verification",
-    icon: <FiDollarSign />,
-  },
-  {
-    name: "Financial Reports",
-    route: "/dashboard/landlord/reports",
-    icon: <FiFileText />,
-  },
-  {
-    name: "Maintenance",
-    route: "/dashboard/landlord/properties/maintenance",
-    icon: <FiTool />,
-  },
-  {
-    name: "Messages",
-    route: "/dashboard/landlord/messages",
-    icon: <FiMessageSquare />,
-  },
-  {
-    name: "Plans",
-    route: "/dashboard/landlord/settings/plans",
-    icon: <FiSettings />,
-  },
-];
+const ICONS: Record<string, React.ReactNode> = {
+  "Dashboard": <FiHome />,
+  "Properties": <FiClipboard />,
+  "Leads & Applications": <FiFileText />,
+  "Tenants": <FiUsers />,
+  "Tenant Verification": <FiDollarSign />,
+  "Maintenance": <FiTool />,
+  "Messages": <FiMessageSquare />,
+  "Buy verification credit": <FiSettings />,
+};
+
+const links = LANDLORD_NAV_ITEMS.map(({ name, route }) => ({
+  name,
+  route,
+  icon: ICONS[name] ?? <FiSettings />,
+}));
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
   const router = useRouter();

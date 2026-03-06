@@ -20,7 +20,6 @@ import Button from "../../shared/buttons/Button";
 import {
   FaBullhorn,
   FaChartLine,
-  FaCoins,
   FaFileSignature,
   FaHome,
   FaUserShield,
@@ -102,6 +101,13 @@ const EMPTY_CHART_DATA: ChartDataPoint[] = [
 
 const DASHBOARD_ACTIONS: ActionCard[] = [
   {
+    title: "Buy verification credit",
+    description: "Purchase Standard or Premium verification credits for tenant checks.",
+    icon: <FaCrown size={24} className="text-green-600" />,
+    bgColor: "bg-[#E7F6EC]",
+    link: "/dashboard/landlord/settings/plans"
+  },
+  {
     title: "Screening",
     description: "Request a detailed report, eviction records and criminal history.",
     icon: <FaUserShield size={24} className="text-red-500" />,
@@ -114,13 +120,6 @@ const DASHBOARD_ACTIONS: ActionCard[] = [
     icon: <FaFileSignature size={24} className="text-green-500" />,
     bgColor: "bg-[#E7F6EC]",
     link: "/dashboard/landlord/properties/renters"
-  },
-  {
-    title: "Rent Collection",
-    description: "Set up automated rent collection and view financial reports.",
-    icon: <FaCoins size={24} className="text-purple-500" />,
-    bgColor: "bg-[#EBE0FF]",
-    link: "/"
   },
   {
     title: "Advertising",
@@ -414,7 +413,7 @@ const DashboardScreen: React.FC = () => {
         </div>
 
         {currentPlan && (
-          <Link href="/dashboard/landlord/settings/plans" className="hidden md:block">
+          <Link href="/dashboard/landlord/settings/plans" className="hidden md:flex">
             <div className={`flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md ${
               currentPlan.slug === 'premium' 
                 ? 'bg-gray-900 text-white border-gray-800' 

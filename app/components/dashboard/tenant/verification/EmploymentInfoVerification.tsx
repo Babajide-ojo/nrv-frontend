@@ -139,14 +139,14 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
 
   return (
     <div className="">
-      <div className="pb-4 border-b border-gray-200 mb-5">
-        <h3 className="font-medium">What do you do for work?</h3>
-        <p className="text-xs text-[#667085]">
+      <div className="pb-6 border-b border-gray-100 mb-8">
+        <h3 className="text-xl font-semibold text-gray-900">Employment Information</h3>
+        <p className="text-sm text-gray-500 mt-1">
           Tell us where you work and what your role is.
         </p>
       </div>
       <div className="">
-        <div className="bg-[#FDFDFC]  border border-[#ECECEE] rounded-lg p-5 flex flex-col gap-5">
+        <div className="bg-white rounded-xl p-1 flex flex-col gap-6">
           <SelectField
             label="Employment Status"
             name="employmentStatus"
@@ -165,18 +165,17 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             }}
             options={employmentStatusOptions}
             error={errors.state}
-            // css="bg-nrvLightGreyBg"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <InputField
-              label="Name of Company"
+              label="Company Name"
               name="nameOfCompany"
               value={formData.nameOfCompany}
               onChange={handleInputChange}
               error={errors.nameOfCompany}
             />
             <InputField
-              label="Your Role in the Company"
+              label="Role / Job Title"
               name="role"
               value={formData.role}
               onChange={handleInputChange}
@@ -195,6 +194,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               value={formData.monthlyIncome}
               onChange={handleInputChange}
               error={errors.monthlyIncome}
+              inputType="number"
             />
             <InputField
               label="Date Joined"
@@ -204,17 +204,11 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               onChange={() => {}}
               error={errors.dateJoined}
               readOnly
+              placeholder="Select date"
             />
           </div>
         </div>
-        <div className="mt-10 flex justify-end gap-4">
-          <Button
-            onClick={handleSubmit}
-            className="text-white bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 px-10"
-            disabled={isPrefilled && allFieldsFilled && !isDirty}
-          >
-            Save and Continue
-          </Button>
+        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -224,8 +218,16 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               }
               router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
             }}
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
           >
-            Next
+            Skip for now
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            disabled={isPrefilled && allFieldsFilled && !isDirty}
+          >
+            Save and Continue
           </Button>
         </div>
       </div>

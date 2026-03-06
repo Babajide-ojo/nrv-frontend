@@ -89,7 +89,7 @@ const PlansPage = () => {
   return (
     <ProtectedRoute>
       <ToastContainer />
-      <LandLordLayout path="Plans" mainPath="Settings" subMainPath="Plans">
+      <LandLordLayout path="Buy verification credit" mainPath="Settings" subMainPath="Buy verification credit">
         <div className="max-w-4xl mx-auto p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 mb-1">

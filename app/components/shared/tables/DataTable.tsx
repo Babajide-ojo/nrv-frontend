@@ -307,13 +307,13 @@ export default function DataTable<T extends BaseRow = BaseRow>({
         {columns.map((col) => (
           <th 
             key={String(col.key)} 
-            className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+            className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
             style={{ width: col.width }}
           >
             {col.label}
           </th>
         ))}
-        {rowActions && <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>}
+        {rowActions && <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>}
       </tr>
     </thead>
   );
@@ -352,12 +352,12 @@ export default function DataTable<T extends BaseRow = BaseRow>({
         onClick={() => handleRowClick(row)}
       >
         {columns.map((col) => (
-          <td key={String(col.key)} className="px-6 py-4 text-sm text-gray-900">
+          <td key={String(col.key)} className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-900">
             {col.render ? col.render(row[col.key], row) : String(row[col.key] || '')}
           </td>
         ))}
         {rowActions && (
-          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+          <td className="px-3 sm:px-6 py-3 sm:py-4" onClick={(e) => e.stopPropagation()}>
             {rowActions(row)}
           </td>
         )}
@@ -366,9 +366,9 @@ export default function DataTable<T extends BaseRow = BaseRow>({
   };
 
   return (
-    <div className={`p-4 bg-white rounded-xl shadow-md font-jakarta ${className}`}>
+    <div className={`p-4 sm:p-6 bg-white rounded-xl shadow-md font-jakarta ${className}`}>
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between mb-4 gap-3 sm:gap-4">
         {searchTerm && (
           <Input
             placeholder="Search..."
@@ -409,9 +409,9 @@ export default function DataTable<T extends BaseRow = BaseRow>({
         ))}
       </div>
 
-      {/* Table */}
-      <div className="overflow-auto rounded-lg">
-        <table className="min-w-full text-left">
+      {/* Table – horizontal scroll on small screens */}
+      <div className="overflow-x-auto overflow-y-visible rounded-lg -mx-1 sm:mx-0">
+        <table className="min-w-full text-left min-w-[600px] sm:min-w-0">
           {renderTableHeader()}
           <tbody>
             {renderTableBody()}

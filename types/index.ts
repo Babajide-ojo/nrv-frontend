@@ -24,7 +24,6 @@ export interface Property {
   unit?: string;
   city: string;
   state: string;
-  zipCode: string;
   propertyType: string;
   ownerId: string;
   rentAmount: number;
@@ -150,7 +149,6 @@ export interface PropertyFormData {
   unit?: string;
   city: string;
   state: string;
-  zipCode: string;
   propertyType: string;
   rentAmount: number;
   description?: string;

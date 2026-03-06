@@ -46,6 +46,17 @@ interface UpdateUserRequest {
   payload: Partial<User> | FormData;
 }
 
+interface UpdatePlanRequest {
+  userId: string;
+  planId: string;
+}
+
+interface AddCreditsRequest {
+  userId: string;
+  standardVerification?: number;
+  premiumVerification?: number;
+}
+
 interface TenancyRequest {
   id: string;
   rentEndDate?: string;
@@ -101,6 +112,95 @@ export const updateUser = createAsyncThunk<UserToken, UpdateUserRequest>(
         }
       );
       return response.data.data;
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  }
+);
+
+export const updateUserPlan = createAsyncThunk<UserToken, UpdatePlanRequest>(
+  "user/updatePlan",
+  async ({ userId, planId }: UpdatePlanRequest, { getState, rejectWithValue }) => {
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      const token = stored ? (JSON.parse(stored)?.accessToken) : undefined;
+      const response = await axios.patch<{ data: any; status: string; message: string }>(
+        `${API_URL}/users/${userId}/plan`,
+        { planId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        }
+      );
+      const updatedUser = response.data.data;
+      const current = (getState() as any).user?.data;
+      return {
+        ...current,
+        user: updatedUser,
+      } as UserToken;
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  }
+);
+
+/** One-time purchase: buy a pack and add credits to user (stackable). */
+export const purchasePack = createAsyncThunk<UserToken, UpdatePlanRequest>(
+  "user/purchasePack",
+  async ({ userId, planId }: UpdatePlanRequest, { getState, rejectWithValue }) => {
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      const token = stored ? (JSON.parse(stored)?.accessToken) : undefined;
+      const response = await axios.post<{ data: any; status: string; message: string }>(
+        `${API_URL}/users/${userId}/purchase-pack`,
+        { planId },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        }
+      );
+      const updatedUser = response.data.data;
+      const current = (getState() as any).user?.data;
+      return {
+        ...current,
+        user: updatedUser,
+      } as UserToken;
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  }
+);
+
+/** Add credits one at a time (or in quantity) for affordability. */
+export const addCredits = createAsyncThunk<UserToken, AddCreditsRequest>(
+  "user/addCredits",
+  async (
+    { userId, standardVerification, premiumVerification }: AddCreditsRequest,
+    { getState, rejectWithValue },
+  ) => {
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      const token = stored ? (JSON.parse(stored)?.accessToken) : undefined;
+      const response = await axios.post<{ data: any; status: string; message: string }>(
+        `${API_URL}/users/${userId}/add-credits`,
+        { standardVerification, premiumVerification },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...(token && { Authorization: `Bearer ${token}` }),
+          },
+        }
+      );
+      const updatedUser = response.data.data;
+      const current = (getState() as any).user?.data;
+      return {
+        ...current,
+        user: updatedUser,
+      } as UserToken;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
     }
@@ -358,6 +458,45 @@ const userSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      // Update user plan
+      .addCase(updateUserPlan.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(updateUserPlan.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(updateUserPlan.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      // Purchase pack (one-time, stackable credits)
+      .addCase(purchasePack.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(purchasePack.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(purchasePack.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      // Add credits (1 by 1 for affordability)
+      .addCase(addCredits.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(addCredits.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(addCredits.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload as string;
       })

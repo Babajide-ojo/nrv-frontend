@@ -52,6 +52,12 @@ export default function TenantVerification() {
     fetchStatusOptions();
   }, []);
 
+  /** Format short reference for display (unique ID instead of long DB _id) */
+  const formatVerificationRef = (row: BaseRow) => {
+    const id = row.uniqueId != null ? String(row.uniqueId) : (row._id ? String(row._id).slice(-6) : "");
+    return id ? `VRF-${id}` : "—";
+  };
+
   const handleRowAction = (row: BaseRow) => {
     return (
       <div className="flex items-center gap-2">
@@ -106,6 +112,15 @@ export default function TenantVerification() {
                 ]}
 
                 columns={[
+                  {
+                    key: "uniqueId",
+                    label: "Reference",
+                    render: (_, row) => (
+                      <span className="text-sm font-mono font-medium text-[#101828]">
+                        {formatVerificationRef(row)}
+                      </span>
+                    ),
+                  },
                   {
                     key: "fullName",
                     label: "Tenant Full Name",

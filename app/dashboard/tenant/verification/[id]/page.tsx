@@ -26,6 +26,11 @@ const TenantVerificationIdPage = () => {
   const [verificationRequest, setVerificationRequest] = useState<any>(null);
 
   useEffect(() => {
+    if (!stepId) {
+      setLoading(false);
+      setError("Invalid verification step. Please use the link from your landlord's email.");
+      return;
+    }
     const fetchVerificationData = async () => {
       setLoading(true);
       setError(null);
@@ -85,7 +90,7 @@ const TenantVerificationIdPage = () => {
         setLoading(false);
       }
     };
-    if (stepId) fetchVerificationData();
+    fetchVerificationData();
   }, [stepId, verificationRequestId]);
 
   const stages = [
@@ -119,6 +124,29 @@ const TenantVerificationIdPage = () => {
       ? verificationRequestId
       : stepId || "";
 
+  const handleBack = () => {
+    if (!verificationId) {
+      router.push("/dashboard/tenant/verification");
+      return;
+    }
+    if (stepId === "personal-info") {
+      router.push(`/dashboard/tenant/verification?verificationId=${verificationId}`);
+      return;
+    }
+    const prevIndex = currentStageIndex - 1;
+    if (prevIndex >= 0) {
+      router.push(`/dashboard/tenant/verification/${stages[prevIndex].value}?verificationId=${verificationId}`);
+    } else {
+      router.push(`/dashboard/tenant/verification?verificationId=${verificationId}`);
+    }
+  };
+
+  const handleStepClick = (stageValue: string) => {
+    if (!verificationId) return;
+    if (stageValue === stepId) return;
+    router.push(`/dashboard/tenant/verification/${stageValue}?verificationId=${verificationId}`);
+  };
+
   if (loading) {
     return <div className="p-8 text-center">Loading...</div>;
   }
@@ -136,7 +164,9 @@ const TenantVerificationIdPage = () => {
           <div className="flex items-center gap-3">
             <div className="w-fit flex gap-1 items-center text-[#667185] pr-3 border-r border-gray-100">
               <MdArrowBackIos />
-              <button onClick={() => router.back()}>Back</button>
+              <button type="button" onClick={handleBack} className="hover:underline">
+                Back
+              </button>
             </div>
             <p className="text-[18px] font-semibold">
               {getTitle()}
@@ -149,15 +179,18 @@ const TenantVerificationIdPage = () => {
           <div className="flex items-center mb-8 flex-wrap gap-2">
             {stages.map((stage, index) => (
               <div key={index} className="flex items-center">
-                <div
-                  className={`flex items-center gap-1 border py-1.5 px-3 rounded-full ${
+                <button
+                  type="button"
+                  onClick={() => handleStepClick(stage.value)}
+                  disabled={!verificationId}
+                  className={`flex items-center gap-1 border py-1.5 px-3 rounded-full text-left transition-colors ${
                     index <= currentStageIndex
-                      ? "border-[#2B892B]"
-                      : "border-gray-200"
-                  }`}
+                      ? "border-[#2B892B] hover:bg-green-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  } ${!verificationId ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
                 >
-                <div
-                  className={`w-[18px] h-[18px] rounded-full flex items-center border justify-center text-[10px] font-medium ${
+                  <div
+                    className={`w-[18px] h-[18px] rounded-full flex items-center border justify-center text-[10px] font-medium shrink-0 ${
                       index < currentStageIndex
                         ? "border-[#2B892B] bg-[#2B892B] text-white"
                         : index === currentStageIndex
@@ -180,10 +213,10 @@ const TenantVerificationIdPage = () => {
                   >
                     {stage.label}
                   </span>
-                </div>
+                </button>
                 {index < stages.length - 1 && (
                   <div
-                    className={`w-8 h-0.5 ml-2 ${
+                    className={`w-8 h-0.5 ml-2 shrink-0 ${
                       index < currentStageIndex ? "bg-[#2B892B]" : "bg-gray-200"
                     }`}
                   />

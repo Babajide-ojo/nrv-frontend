@@ -9,7 +9,6 @@ interface PropertyData {
   rentStart: string;
   rentEnd: string;
   tenantStatus: string;
-  propertyName: string;
   address: string;
   description: string;
   noOfBedrooms: number;

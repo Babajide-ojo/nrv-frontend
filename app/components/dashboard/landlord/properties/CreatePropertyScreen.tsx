@@ -22,6 +22,7 @@ import ImageUploader from "@/app/components/shared/ImageUploader";
 import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
 import { formatDisplayValue } from "@/helpers/utils";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+import Link from "next/link";
 
 
 
@@ -40,12 +41,10 @@ interface UnitData {
 }
 
 interface PropertyData {
-  nameOfProperty: string;
   location: string;
   buildingType: string;
   city: string;
   state: string;
-  zipCode: string;
   units: UnitData[];
 }
 
@@ -64,16 +63,14 @@ const CreatePropertyScreen = () => {
     label: "Residential",
     value: "Residential",
   });
-
+  
   const dispatch = useDispatch();
   const router = useRouter();
   const [propertyData, setPropertyData] = useState<PropertyData>({
-    nameOfProperty: "",
     location: "",
     buildingType: "Residential",
     city: "",
     state: "",
-    zipCode: "",
     units: [
       {
         description: "",
@@ -94,15 +91,9 @@ const CreatePropertyScreen = () => {
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
-    if (!propertyData.nameOfProperty.trim()) {
-      errors.nameOfProperty = "Property name is required";
-    }
     if (!propertyData.location.trim()) {
       errors.location = "Address/Location is required";
     }
-    // if (!propertyData.zipCode.trim()) {
-    //   errors.zipCode = "Zip code is required";
-    // }
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
     }
@@ -139,13 +130,11 @@ const CreatePropertyScreen = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("nameOfProperty", propertyData.nameOfProperty);
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
     // formData.append("name", buildingType.name);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
-    formData.append("zipCode", propertyData.zipCode);
     formData.append("file", selectedFiles);
     
     formData.append("createdBy", user?._id);
@@ -175,12 +164,10 @@ const CreatePropertyScreen = () => {
       setLoading(true);
       await dispatch(createProperty(formData) as any).unwrap();
       setPropertyData({
-        nameOfProperty: "",
         location: "",
         buildingType: "Residential",
         city: "",
         state: "",
-        zipCode: "",
         units: [
           {
             description: "",
@@ -315,10 +302,12 @@ const CreatePropertyScreen = () => {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
       setUser(user?.user);
       const fetchProperties = async () => {
-        const properties = await dispatch(
-          getPropertyByUserId(user?.user?._id) as any
+        const propertiesResponse = await dispatch(
+          getPropertyByUserId({ id: user?.user?._id }) as any
         ).unwrap();
-        setProperties(properties?.data);
+        const propertiesData = propertiesResponse?.data || [];
+        setProperties(propertiesData);
+        
       };
       fetchProperties();
       const timer = setTimeout(() => setIsLoading(false), 2000);
@@ -338,6 +327,7 @@ const CreatePropertyScreen = () => {
             subMainPath="Add Property"
           >
             <ToastContainer />
+            
             {currentAmountStep === 0 && (
               <form
                 onSubmit={handleNextAndVerify}
@@ -395,15 +385,6 @@ const CreatePropertyScreen = () => {
 
                     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <InputField
-                        label="Name of Property"
-                        name="nameOfProperty"
-                        required
-                        value={propertyData.nameOfProperty}
-                        onChange={handleInputChange}
-                        error={errors.nameOfProperty}
-                        css="bg-nrvLightGreyBg"
-                      />
-                      <InputField
                         label="Property Address/Location"
                         name="location"
                         required
@@ -423,15 +404,6 @@ const CreatePropertyScreen = () => {
                         ]}
                         placeholder="Select Building Type"
                         name={"buildingType"}
-                      />
-                      <InputField
-                        label="Zip Code"
-                        name="zipCode"
-                        required
-                        value={propertyData.zipCode}
-                        onChange={handleInputChange}
-                        error={errors.zipCode}
-                        css="bg-nrvLightGreyBg"
                       />
                       <InputField
                         label="City"

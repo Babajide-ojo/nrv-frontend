@@ -121,7 +121,6 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
       [name]: "",
     }));
   };
-  console.log(formData);
 
   const allFieldsFilled = useMemo(() => {
     // ...check all required fields for this step
@@ -143,7 +142,6 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
   }, [formData, prefilledData]);
 
   const handleSubmit = async () => {
-    console.log({ allFieldsFilled, isPrefilled });
     if (allFieldsFilled && isPrefilled) {
       if (!verificationId) {
         alert('Verification ID missing.');

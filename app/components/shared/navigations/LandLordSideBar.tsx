@@ -66,6 +66,11 @@ const links = [
     route: "/dashboard/landlord/messages",
     icon: <FiMessageSquare />,
   },
+  {
+    name: "Plans",
+    route: "/dashboard/landlord/settings/plans",
+    icon: <FiSettings />,
+  },
 ];
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {

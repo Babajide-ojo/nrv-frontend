@@ -39,12 +39,10 @@ const UpdatePropertyScreen = () => {
   const router = useRouter();
   const { propertyId } = useParams(); // Get the property ID from the URL
   const [propertyData, setPropertyData] = useState({
-    nameOfProperty: "",
     location: "",
     buildingType: "Residential",
     city: "",
     state: "",
-    zipCode: "",
   });
 
   useEffect(() => {
@@ -56,12 +54,10 @@ const UpdatePropertyScreen = () => {
           const data = response?.data;
           if (data) {
             setPropertyData({
-              nameOfProperty: data.nameOfProperty || "",
               location: data.location || "",
               buildingType: data.buildingType || "Residential",
               city: data.city || "",
               state: data.state || "",
-              zipCode: data.zipCode || "",
             });
             setBuildingType({
               label: data.buildingType || "Residential",
@@ -86,14 +82,8 @@ const UpdatePropertyScreen = () => {
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
-    if (!propertyData.nameOfProperty.trim()) {
-      errors.nameOfProperty = "Property name is required";
-    }
     if (!propertyData.location.trim()) {
       errors.location = "Address/Location is required";
-    }
-    if (!propertyData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
     }
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
@@ -118,12 +108,10 @@ const UpdatePropertyScreen = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("nameOfProperty", propertyData.nameOfProperty);
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
-    formData.append("zipCode", propertyData.zipCode);
     formData.append("file", selectedFiles);
     
     // Append multiple images
@@ -137,12 +125,10 @@ const UpdatePropertyScreen = () => {
       setLoading(true);
       await dispatch(updateProperty({ propertyId, formData }) as any).unwrap();
       setPropertyData({
-        nameOfProperty: "",
         location: "",
         buildingType: "Residential",
         city: "",
         state: "",
-        zipCode: "",
       });
       setSelectedFiles([]);
       setSelectedImages([]);
@@ -194,14 +180,6 @@ const UpdatePropertyScreen = () => {
                 <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">
                   <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <InputField
-                      label="Name of Property"
-                      name="nameOfProperty"
-                      value={propertyData.nameOfProperty}
-                      onChange={handleInputChange}
-                      error={errors.nameOfProperty}
-                      css="bg-nrvLightGreyBg"
-                    />
-                    <InputField
                       label="Location"
                       name="location"
                       value={propertyData.location}
@@ -225,14 +203,6 @@ const UpdatePropertyScreen = () => {
                       options={nigerianStates}
                       error={errors.state}
                      // css="bg-nrvLightGreyBg"
-                    />
-                    <InputField
-                      label="Zip Code"
-                      name="zipCode"
-                      value={propertyData.zipCode}
-                      onChange={handleInputChange}
-                      error={errors.zipCode}
-                      css="bg-nrvLightGreyBg"
                     />
                     <SelectField
                       label="Building Type"

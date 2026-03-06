@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,6 +23,7 @@ export default function OnboardTenant() {
     nin: "",
     landlordDisplayName: "",
   });
+  const [verificationTier, setVerificationTier] = useState<"standard" | "premium">("standard");
   const [user, setUser] = useState<any>({});
 
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ export default function OnboardTenant() {
       const payload = {
         ...formData,
         requestedBy: user?._id,
+        verificationTier,
       };
 
       const res = await dispatch(requestVerification(payload) as any).unwrap();
@@ -169,6 +171,59 @@ export default function OnboardTenant() {
                   <p className="text-xs text-muted-foreground mt-1">
                     Display name is the name the tenant sees is requesting their verification
                   </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium block mb-2">Verification type</label>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Choose the type of screening to run for this tenant. One credit of the selected type will be used when you run screening after they submit.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label
+                      className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-colors ${
+                        verificationTier === "standard"
+                          ? "border-green-700 bg-green-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="verificationTier"
+                        value="standard"
+                        checked={verificationTier === "standard"}
+                        onChange={() => setVerificationTier("standard")}
+                        className="mt-1 h-4 w-4 text-green-700"
+                      />
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Standard</span>
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          NIN Advanced, selfie + NIN, liveness, AML, PEP & sanctions
+                        </p>
+                      </div>
+                    </label>
+                    <label
+                      className={`flex items-start gap-3 rounded-lg border px-4 py-3 cursor-pointer transition-colors ${
+                        verificationTier === "premium"
+                          ? "border-green-700 bg-green-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="verificationTier"
+                        value="premium"
+                        checked={verificationTier === "premium"}
+                        onChange={() => setVerificationTier("premium")}
+                        className="mt-1 h-4 w-4 text-green-700"
+                      />
+                      <div>
+                        <span className="text-sm font-semibold text-gray-900">Premium</span>
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          All Standard checks plus credit score (BVN)
+                        </p>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
 

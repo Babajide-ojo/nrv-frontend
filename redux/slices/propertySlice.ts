@@ -14,7 +14,6 @@ interface FormData {
     unit: string;
     city: string;
     state: string;
-    zipCode: string;
     file: any;
     createdBy: string;
 }

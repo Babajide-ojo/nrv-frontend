@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { getApplicationCount } from "@/redux/slices/propertySlice";
+import { fetchPlans } from "@/redux/slices/plansSlice";
 import {
   Bar,
   BarChart,
@@ -23,10 +24,14 @@ import {
   FaFileSignature,
   FaHome,
   FaUserShield,
+  FaCrown,
 } from "react-icons/fa";
 import DashboardOverview from "./DashboardOverview";
 import { API_URL } from "@/config/constant";
 import { getRelativeTime } from "@/helpers/utils";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import Link from "next/link";
 
 // Types
 interface User {
@@ -286,6 +291,9 @@ const DashboardScreen: React.FC = () => {
   const [activities, setActivities] = useState<DashboardActivityDisplay[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const { plans } = useSelector((state: RootState) => state.plans);
+  const [currentPlan, setCurrentPlan] = useState<any>(null);
 
   // Memoized metrics data with real % change from backend
   const metrics = useMemo((): MetricCard[] => {
@@ -333,6 +341,7 @@ const DashboardScreen: React.FC = () => {
       const [metricsResponse, dashboardResponse] = await Promise.all([
         dispatch(getApplicationCount({ id: currentUser._id }) as any),
         fetch(`${API_URL}/dashboard?userId=${currentUser._id}&limit=20`),
+        dispatch(fetchPlans() as any),
       ]);
 
       setCounts(metricsResponse.payload?.data || {});
@@ -370,6 +379,17 @@ const DashboardScreen: React.FC = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
+  // Determine current plan
+  useEffect(() => {
+    if (user?._id && plans.length > 0) {
+      const userPlanId = user.planId;
+      const plan = plans.find((p: any) => p._id === userPlanId) || plans.find((p: any) => p.slug === 'premium');
+      if (plan) {
+        setCurrentPlan(plan);
+      }
+    }
+  }, [user, plans]);
+
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center">
@@ -381,14 +401,54 @@ const DashboardScreen: React.FC = () => {
   return (
     <div className="p-6 space-y-6 font-jakarta">
       {/* Greeting */}
-      <div>
-        <h1 className="text-2xl font-semibold">
-          Welcome Back, {user?.firstName || "Landlord"}
-        </h1>
-        <p className="text-gray-500">
-          Manage your properties, track applications, and handle maintenance
-          requests—all in one place.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold">
+            Welcome Back, {user?.firstName || "Landlord"}
+          </h1>
+          <p className="text-gray-500">
+            Manage your properties, track applications, and handle maintenance
+            requests—all in one place.
+          </p>
+        </div>
+
+        {currentPlan && (
+          <Link href="/dashboard/landlord/settings/plans" className="hidden md:block">
+            <div className={`flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md ${
+              currentPlan.slug === 'premium' 
+                ? 'bg-gray-900 text-white border-gray-800' 
+                : 'bg-white text-gray-800 border-gray-200'
+            }`}>
+              <div className={`p-1.5 rounded-full ${
+                currentPlan.slug === 'premium' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
+              }`}>
+                <FaCrown size={14} />
+              </div>
+              <div>
+                <p className="text-xs opacity-80 uppercase tracking-wider font-medium">Current Plan</p>
+                <p className="font-bold text-sm">{currentPlan.name}</p>
+              </div>
+              <div className="h-8 w-[1px] bg-current opacity-20 mx-1"></div>
+              <div className="text-right">
+                <p className="text-xs opacity-80">Verification credits</p>
+                <p className="font-bold text-sm">
+                  Standard{" "}
+                  {Math.max(
+                    0,
+                    ((user as any)?.standardVerificationBalance ?? 0) -
+                      ((user as any)?.standardVerificationUsed ?? 0)
+                  )}{" "}
+                  · Premium{" "}
+                  {Math.max(
+                    0,
+                    ((user as any)?.premiumVerificationBalance ?? 0) -
+                      ((user as any)?.premiumVerificationUsed ?? 0)
+                  )}
+                </p>
+              </div>
+            </div>
+          </Link>
+        )}
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">

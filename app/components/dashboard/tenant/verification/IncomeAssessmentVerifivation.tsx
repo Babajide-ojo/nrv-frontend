@@ -189,6 +189,7 @@ const UploadedDocumentDisplay = ({
 const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const verificationIdFromQuery = searchParams.get("verificationId");
   const [formData, setFormData] = useState<FormData>({
     bankStatement: null,
     utilityBill: null,
@@ -332,6 +333,12 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
       }
       setIsPrefilled(true);
       toast.success("Documents submitted successfully.");
+      const requestId = verificationId || verificationIdFromQuery;
+      if (requestId) {
+        setTimeout(() => {
+          router.push(`/dashboard/tenant/verification?verificationId=${requestId}&completed=1`);
+        }, 1500);
+      }
     } catch (error: any) {
       toast.error(error?.message || 'Failed to upload documents.');
     } finally {

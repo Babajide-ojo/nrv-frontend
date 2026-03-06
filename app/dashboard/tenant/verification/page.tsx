@@ -183,9 +183,22 @@ const TenantVerificationSummaryPage = () => {
       );
     }
 
+    const justCompleted = searchParams.get("completed") === "1";
+
     return (
       <TenantLayout path="Verification" mainPath=" / My Submissions" subMainPath="Details">
         <div className="max-w-4xl mx-auto w-full p-4 sm:p-6">
+          {justCompleted && (
+            <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 text-green-800">
+              <p className="font-semibold">Verification complete</p>
+              <p className="text-sm mt-1">Your details have been sent to our verification team. You can view the details below.</p>
+              <p className="text-xs mt-2 text-green-700/90">
+                Your information is handled by our verification team in line with our{" "}
+                <a href="/privacy" className="underline font-medium hover:text-green-900">Privacy Notice</a>
+                {" "}and is used only for verification purposes.
+              </p>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">My verification submission</h1>
@@ -197,6 +210,10 @@ const TenantVerificationSummaryPage = () => {
                 ) : (
                   "Submission details"
                 )}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Your data is confidential and processed only by our verification team in accordance with our{" "}
+                <a href="/privacy" className="text-nrvPrimaryGreen hover:underline">Privacy Notice</a>.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">

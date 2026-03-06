@@ -23,6 +23,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     nin: "",
     dateOfBirth: "",
     gender: "",
@@ -90,6 +91,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           firstName: firstName || prev.firstName,
           lastName: lastName || prev.lastName,
           email: initialData.email || prev.email,
+          phone: initialData.phone || prev.phone,
           nin: initialData.nin || prev.nin,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
@@ -100,6 +102,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           firstName: firstName || prev.firstName,
           lastName: lastName || prev.lastName,
           email: initialData.email || prev.email,
+          phone: initialData.phone || prev.phone,
           nin: initialData.nin || prev.nin,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
@@ -162,6 +165,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             firstName,
             lastName,
             email: data.email || "",
+            phone: data.phone || "",
             nin: data.nin || "",
             dateOfBirth: data.dateOfBirth ? format(new Date(data.dateOfBirth), "yyyy-MM-dd") : "",
             gender: data.gender || "",
@@ -188,6 +192,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     "firstName",
     "lastName",
     "email",
+    "phone",
     "nin",
     "dateOfBirth",
     "gender",
@@ -233,6 +238,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       fullName,
       dateOfBirth: dateOfBirthISO,
       email: formData.email,
+      phone: formData.phone || undefined,
       nin: formData.nin,
       gender: formData.gender,
       address: formData.address,
@@ -289,6 +295,18 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               error={errors.email}
               disabled={isPrefilled}
             />
+            <InputField
+              label="Phone Number"
+              name="phone"
+              placeholder="e.g. 08012345678"
+              value={formData.phone}
+              onChange={handleInputChange}
+              error={errors.phone}
+              disabled={isPrefilled}
+            />
+            <p className="text-xs text-[#807F94] sm:col-span-2 -mt-3">
+              Used for fraud screening during verification.
+            </p>
             <InputField
               label="NIN (National Identification Number)"
               name="nin"
@@ -363,7 +381,11 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             variant="outline"
             onClick={() => {
               if (!verificationId) {
-                alert('Verification ID missing.');
+                alert('Verification link missing. Please use the link from your landlord\'s email.');
+                return;
+              }
+              if (allFieldsFilled && !isPrefilled) {
+                handleSubmit();
                 return;
               }
               router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);

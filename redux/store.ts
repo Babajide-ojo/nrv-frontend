@@ -1,12 +1,20 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
 import userReducer from "./slices/userSlice";
 import propertyReducer from './slices/propertySlice';
 import maintenanceReducer from './slices/maintenanceSlice';
 import messageReducer from './slices/messageSlice';
 import documentReducer from './slices/documentSlice';
 import verificationReducer from './slices/verificationSlice';
+import plansReducer from './slices/plansSlice';
+
+// Storage: localStorage in browser, noop on server (avoids "failed to create sync storage" during SSR)
+const noopStorage = {
+  getItem: () => Promise.resolve(null),
+  setItem: () => Promise.resolve(),
+  removeItem: () => Promise.resolve(),
+};
+const storage = typeof window === 'undefined' ? noopStorage : require('redux-persist/lib/storage').default;
 
 // Root reducer
 const rootReducer = combineReducers({
@@ -16,6 +24,7 @@ const rootReducer = combineReducers({
   messages: messageReducer,
   document: documentReducer,
   verification: verificationReducer,
+  plans: plansReducer,
 });
 
 // Persist configuration
@@ -23,7 +32,7 @@ const persistConfig = {
   key: 'nrv-root',
   storage,
   whitelist: ['user'], // Only persist user data
-  blacklist: ['property', 'maintenance', 'messages', 'document', 'verification'], // Don't persist these
+  blacklist: ['property', 'maintenance', 'messages', 'document', 'verification', 'plans'], // Don't persist these
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

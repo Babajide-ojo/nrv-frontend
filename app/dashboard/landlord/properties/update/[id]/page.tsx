@@ -38,11 +38,9 @@ const UpdatePropertyScreen = () => {
   const router = useRouter();
   const { id } = useParams();
   const [propertyData, setPropertyData] = useState({
-    propertyName: "",
     streetAddress: "",
     city: "",
     state: { label: "", value: "" },
-    zipCode: "",
   });
 
   useEffect(() => {
@@ -59,11 +57,9 @@ const UpdatePropertyScreen = () => {
             );
 
             setPropertyData({
-              propertyName: data.propertyName || "",
               streetAddress: data.streetAddress || "",
               city: data.city || "",
               state: matchedState || { label: "", value: "" },
-              zipCode: data.zipCode || "",
             });
 
             setBuildingType({
@@ -96,18 +92,12 @@ const UpdatePropertyScreen = () => {
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
-    if (!propertyData.propertyName.trim()) {
-      errors.propertyName = "Property name is required";
-    }
     if (!propertyData.streetAddress.trim()) {
       errors.streetAddress = "Street address is required";
     }
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
     }
-    // if (!propertyData.zipCode.trim()) {
-    //   errors.zipCode = "Zip code is required";
-    // }
     if (!propertyData.state.value) {
       errors.state = "State is required";
     }
@@ -126,11 +116,9 @@ const UpdatePropertyScreen = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("propertyName", propertyData.propertyName);
     formData.append("streetAddress", propertyData.streetAddress);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state.value);
-    formData.append("zipCode", propertyData.zipCode);
     formData.append("propertyType", JSON.stringify(buildingType));
     if (selectedFile) {
       formData.append("file", selectedFile);
@@ -141,11 +129,9 @@ const UpdatePropertyScreen = () => {
       setLoading(true);
       await dispatch(updateProperty({ id, body: formData }) as any).unwrap();
       setPropertyData({
-        propertyName: "",
         streetAddress: "",
         city: "",
         state: { label: "", value: "" },
-        zipCode: "",
       });
       setSelectedFile(null);
       setLoading(false);
@@ -258,15 +244,6 @@ const UpdatePropertyScreen = () => {
 
                     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <InputField
-                        label="Name of Property"
-                        name="propertyName"
-                        required
-                        value={propertyData.propertyName}
-                        onChange={handleInputChange}
-                        error={errors.propertyName}
-                        css="bg-nrvLightGreyBg"
-                      />
-                      <InputField
                         label="Property Address/Location"
                         name="streetAddress"
                         required
@@ -286,15 +263,6 @@ const UpdatePropertyScreen = () => {
                         ]}
                         placeholder="Select Building Type"
                         name={"buildingType"}
-                      />
-                      <InputField
-                        label="Zip Code"
-                        name="zipCode"
-                        required
-                        value={propertyData.zipCode}
-                        onChange={handleInputChange}
-                        error={errors.zipCode}
-                        css="bg-nrvLightGreyBg"
                       />
                       <InputField
                         label="City"

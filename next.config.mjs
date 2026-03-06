@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['res.cloudinary.com', 's3-alpha-sig.figma.com', 'avataaars.io'],
+        remotePatterns: [
+          { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**' },
+          { protocol: 'https', hostname: 's3-alpha-sig.figma.com', pathname: '/**' },
+          { protocol: 'https', hostname: 'avataaars.io', pathname: '/**' },
+        ],
       },
       webpack(config, { isServer }) {
         if (!isServer) {

@@ -23,7 +23,6 @@ interface FormData {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
   familyType: string;
   rentAmount: string;
   securityDeposit: string;
@@ -45,7 +44,6 @@ const OnboardingFormScreen: React.FC = () => {
     unit: "",
     city: "",
     state: "",
-    zipCode: "",
     familyType: "",
     securityDeposit: "",
     rentAmount: "",
@@ -66,9 +64,6 @@ const OnboardingFormScreen: React.FC = () => {
     if (!formData.state.trim()) {
       errors.state = "State is required";
     }
-    // if (!formData.zipCode.trim()) {
-    //   errors.zipCode = "Zip code is required";
-    // }
     if (!formData.familyType.trim()) {
       errors.familyType = "Family type is required";
     }

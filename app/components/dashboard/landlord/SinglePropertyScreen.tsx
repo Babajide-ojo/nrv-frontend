@@ -47,7 +47,6 @@ interface Property {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
 }
 
 interface PropertyData {
@@ -56,7 +55,6 @@ interface PropertyData {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
   propertyType: string;
 }
 
@@ -85,7 +83,6 @@ const SinglePropertyScreen = () => {
     unit: "",
     city: "",
     state: "",
-    zipCode: "",
     propertyType: "",
   });
 
@@ -101,9 +98,6 @@ const SinglePropertyScreen = () => {
     if (!propertyData.state.trim()) {
       errors.state = "State is required";
     }
-    // if (!propertyData.zipCode.trim()) {
-    //   errors.zipCode = "Zip code is required";
-    // }
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -120,7 +114,6 @@ const SinglePropertyScreen = () => {
         unit: propertyData.unit,
         city: propertyData.city,
         state: propertyData.state,
-        zipCode: propertyData.zipCode,
         propertyType: selectedOption.value,
       },
       id: propertyData._id,
@@ -134,7 +127,6 @@ const SinglePropertyScreen = () => {
         unit: "",
         city: "",
         state: "",
-        zipCode: "",
         propertyType: "",
       });
       const properties = await dispatch(getPropertyById(id) as any).unwrap();
@@ -485,18 +477,6 @@ const SinglePropertyScreen = () => {
                                   error={errors.state} // Corrected error prop name
                                 />
                               </div>
-                            </div>
-                            <div className="w-full mt-4">
-                              <InputField
-                                // css="bg-white"
-                                label="Zip Code"
-                                placeholder="Enter Zip Code"
-                                inputType="text"
-                                name="zipCode"
-                                value={propertyData.zipCode}
-                                onChange={handleInputChange}
-                                error={errors.zipCode} // Corrected error prop name
-                              />
                             </div>
                             <div className="w-full mt-4">
                               <label className="text-nrvGreyBlack mb-2 text-sm">

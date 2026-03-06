@@ -41,6 +41,11 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
 
   useEffect(() => {
     const idFromQuery = searchParams.get("verificationId");
+    if (typeof window !== "undefined" && idFromQuery) {
+      const storedResponseId = localStorage.getItem("verificationResponseId");
+      if (storedResponseId) setVerificationResponseId(storedResponseId);
+      if (idFromQuery) setVerificationId(idFromQuery);
+    }
     const fetchVerification = async () => {
       let verificationIdParam = idFromQuery || verificationId || "";
       let tenantEmail: string | null = null;
@@ -65,13 +70,16 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             role: data.roleInCompany || data.role || "",
             dateJoined: data.dateJoined ? format(new Date(data.dateJoined), "yyyy-MM-dd") : "",
             companyAddress: data.companyAddress || "",
-            monthlyIncome: data.monthlyIncome ? String(data.monthlyIncome) : "",
+            monthlyIncome: data.monthlyIncome != null ? String(data.monthlyIncome) : "",
           };
           setFormData(prefill);
           setPrefilledData(prefill);
           setIsPrefilled(!!data._id);
           setVerificationId(data.verificationId || verificationIdParam);
-          if (data._id) setVerificationResponseId(data._id);
+          if (data._id) {
+            setVerificationResponseId(data._id);
+            localStorage.setItem("verificationResponseId", data._id);
+          }
         }
       } catch {}
     };
@@ -104,27 +112,23 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
   }, [formData, prefilledData]);
 
   const handleSubmit = async () => {
-    if (allFieldsFilled && isPrefilled) {
-      if (!verificationId) {
-        alert('Verification ID missing.');
-        return;
-      }
-      router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
+    if (!verificationId) {
+      alert('Verification ID missing.');
       return;
     }
     if (!verificationResponseId) {
       alert('Verification response ID missing.');
       return;
     }
-    const payload = {
-      employmentStatus: formData.employmentStatus,
-      roleInCompany: formData.role,
-      companyName: formData.nameOfCompany,
-      companyAddress: formData.companyAddress,
-      monthlyIncome: Number(formData.monthlyIncome),
-      dateJoined: formData.dateJoined,
-      verificationId: verificationId,
+    const monthlyIncomeNum = formData.monthlyIncome ? Number(formData.monthlyIncome) : undefined;
+    const payload: Record<string, unknown> = {
+      employmentStatus: formData.employmentStatus || undefined,
+      roleInCompany: formData.role || undefined,
+      companyName: formData.nameOfCompany || undefined,
+      companyAddress: formData.companyAddress || undefined,
+      dateJoined: formData.dateJoined || undefined,
     };
+    if (monthlyIncomeNum != null && !Number.isNaN(monthlyIncomeNum)) payload.monthlyIncome = monthlyIncomeNum;
     try {
       await apiService.put(`/verification/${verificationResponseId}/employment`, payload);
       router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
@@ -133,7 +137,6 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
     }
   };
 
-  console.log(formData);
   return (
     <div className="">
       <div className="pb-4 border-b border-gray-200 mb-5">
@@ -215,11 +218,11 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
           <Button
             variant="outline"
             onClick={() => {
-              if (!verificationResponseId) {
-                alert('Verification ID missing.');
+              if (!verificationId) {
+                alert('Verification link missing. Please use the link from your landlord\'s email.');
                 return;
               }
-              router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationResponseId}`);
+              router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
             }}
           >
             Next

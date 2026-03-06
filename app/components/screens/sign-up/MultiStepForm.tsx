@@ -99,12 +99,10 @@ interface UnitData {
 }
 
 interface PropertyData {
-  nameOfProperty: string;
   location: string;
   buildingType: string;
   city: string;
   state: string;
-  zipCode: string;
   units: UnitData[];
 }
 
@@ -125,12 +123,10 @@ const MultiStepForm = () => {
     value: "Residential",
   });
   const [propertyData, setPropertyData] = useState<PropertyData>({
-    nameOfProperty: "",
     location: "",
     buildingType: "Residential",
     city: "",
     state: "",
-    zipCode: "",
     units: [
       {
         description: "",
@@ -151,15 +147,9 @@ const MultiStepForm = () => {
   const validateForm = () => {
     let errors: { [key: string]: string } = {};
 
-    if (!propertyData.nameOfProperty.trim()) {
-      errors.nameOfProperty = "Property name is required";
-    }
     if (!propertyData.location.trim()) {
       errors.location = "Address/Location is required";
     }
-    // if (!propertyData.zipCode.trim()) {
-    //   errors.zipCode = "Zip code is required";
-    // }
     if (!propertyData.city.trim()) {
       errors.city = "City is required";
     }
@@ -196,12 +186,10 @@ const MultiStepForm = () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("nameOfProperty", propertyData.nameOfProperty);
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
-    formData.append("zipCode", propertyData.zipCode);
     formData.append("file", selectedFiles);
     
     formData.append(
@@ -214,12 +202,10 @@ const MultiStepForm = () => {
       setIsLoading(true);
       await dispatch(createProperty(formData) as any).unwrap();
       setPropertyData({
-        nameOfProperty: "",
         location: "",
         buildingType: "Residential",
         city: "",
         state: "",
-        zipCode: "",
         units: [
           {
             description: "",
@@ -371,15 +357,6 @@ const MultiStepForm = () => {
             </p>
 
             <InputField
-              label="Name of Property"
-              name="nameOfProperty"
-              required
-              value={propertyData.nameOfProperty}
-              onChange={handleInputChange}
-              error={errors.nameOfProperty}
-              css="bg-nrvLightGreyBg"
-            />
-            <InputField
               label="Property Address/Location"
               name="location"
               required
@@ -401,16 +378,6 @@ const MultiStepForm = () => {
                 ]}
                 placeholder="Select Building Type"
                 name={"buildingType"}
-              />
-
-              <InputField
-                label="Zip Code"
-                name="zipCode"
-                required
-                value={propertyData.zipCode}
-                onChange={handleInputChange}
-                error={errors.zipCode}
-                css="bg-nrvLightGreyBg"
               />
             </div>
 

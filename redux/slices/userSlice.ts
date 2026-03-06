@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from '../../config/constant';
 import { 
@@ -406,6 +406,12 @@ const userSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    /** Update stored user (e.g. after payment so credit balances refresh). */
+    setUserFromPayment: (state, action: PayloadAction<{ user: any }>) => {
+      if (state.data && action.payload.user) {
+        state.data = { ...state.data, user: action.payload.user };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -595,5 +601,5 @@ const userSlice = createSlice({
 });
 
 // Export actions and reducer
-export const { clearUserToken, clearError } = userSlice.actions;
+export const { clearUserToken, clearError, setUserFromPayment } = userSlice.actions;
 export default userSlice.reducer;

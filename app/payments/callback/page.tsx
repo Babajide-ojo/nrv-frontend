@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 import { API_URL } from "@/config/constant";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { setUserFromPayment } from "@/redux/slices/userSlice";
 
 export default function PaymentCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const dispatch = useDispatch();
   const [verifying, setVerifying] = useState(true);
 
   useEffect(() => {
@@ -22,20 +25,15 @@ export default function PaymentCallbackPage() {
       }
 
       try {
-        await axios.post(`${API_URL}/payments/verify/${reference}`);
+        const res = await axios.post(`${API_URL}/payments/verify/${reference}`);
+        const updatedUser = res.data?.data?.user ?? res.data?.user;
 
-        // Refresh user data so balances update in localStorage
-        const stored = localStorage.getItem("nrv-user");
-        if (stored) {
-          try {
-            const parsed = JSON.parse(stored);
-            const userId = parsed?.user?._id ?? parsed?._id;
-            const token = parsed?.accessToken;
-            if (userId && token) {
-              const res = await axios.get(`${API_URL}/users/${userId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              const updatedUser = res.data?.data || res.data;
+        // Update localStorage and Redux so credit counts update on the Plans page
+        if (updatedUser) {
+          const stored = localStorage.getItem("nrv-user");
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
               localStorage.setItem(
                 "nrv-user",
                 JSON.stringify({
@@ -43,10 +41,11 @@ export default function PaymentCallbackPage() {
                   user: updatedUser,
                 }),
               );
+            } catch {
+              // ignore
             }
-          } catch {
-            // ignore refresh errors, balances will still update on next login
           }
+          dispatch(setUserFromPayment({ user: updatedUser }));
         }
 
         toast.success("Payment successful. Your credits have been updated.");

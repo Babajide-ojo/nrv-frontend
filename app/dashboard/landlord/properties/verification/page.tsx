@@ -89,7 +89,7 @@ export default function TenantVerification() {
               className="bg-green-900 text-white px-4 py-2 text-sm rounded-md hover:bg-green-800 transition"
               onClick={() => router.push(`/dashboard/landlord/properties/verification/request`)}
             >
-              + New Tenant Request
+              + New Verification Request
             </button>
           </div>
 

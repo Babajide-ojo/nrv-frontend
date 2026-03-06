@@ -6,60 +6,69 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { fetchPlans } from "../../../../../redux/slices/plansSlice";
-import { addCredits } from "../../../../../redux/slices/userSlice";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import { RootState } from "../../../../../redux/store";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { API_URL } from "../../../../../config/constant";
 
-type AddingType = "standardVerification" | "premiumVerification" | null;
+interface PaymentRecord {
+  _id: string;
+  planId?: string;
+  planName?: string;
+  amountNaira: number;
+  quantity?: number;
+  status: string;
+  paidAt?: string;
+  createdAt?: string;
+}
 
 const PlansPage = () => {
   const dispatch = useDispatch();
   const { plans, loading } = useSelector((state: RootState) => state.plans);
   const user = useSelector((state: RootState) => state.user.data);
-  const userLoading = useSelector((state: RootState) => state.user.loading);
-  const [addingType, setAddingType] = useState<AddingType>(null);
   const [purchasingPlanId, setPurchasingPlanId] = useState<string | null>(null);
+  const [quantityByPlanId, setQuantityByPlanId] = useState<Record<string, number>>({});
+  const [paymentHistory, setPaymentHistory] = useState<PaymentRecord[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const userDoc = user?.user ?? user;
   const userId = userDoc?._id ?? (user as any)?._id;
-  const standardBalance = userDoc?.standardVerificationBalance ?? 0;
-  const standardUsed = userDoc?.standardVerificationUsed ?? 0;
-  const premiumBalance = userDoc?.premiumVerificationBalance ?? 0;
-  const premiumUsed = userDoc?.premiumVerificationUsed ?? 0;
 
   useEffect(() => {
     dispatch(fetchPlans() as any);
   }, [dispatch]);
 
-  const handleAddOne = async (type: AddingType) => {
-    if (!userId || !type) return;
-    setAddingType(type);
-    const payload =
-      type === "standardVerification"
-        ? { userId, standardVerification: 1 }
-        : { userId, premiumVerification: 1 };
-    try {
-      const updated = await dispatch(addCredits(payload) as any).unwrap();
-      localStorage.setItem("nrv-user", JSON.stringify(updated));
-      toast.success("1 credit added.");
-    } catch (err: any) {
-      toast.error(err || "Failed to add credit.");
-    } finally {
-      setAddingType(null);
-    }
+  useEffect(() => {
+    if (!userId) return;
+    setHistoryLoading(true);
+    axios
+      .get(`${API_URL}/payments/history/${userId}`)
+      .then((res) => {
+        const data = res.data?.data ?? res.data;
+        setPaymentHistory(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setPaymentHistory([]))
+      .finally(() => setHistoryLoading(false));
+  }, [userId]);
+
+  const getQuantity = (planId: string) => quantityByPlanId[planId] ?? 1;
+  const setQuantity = (planId: string, value: number) => {
+    const q = Math.max(1, Math.min(99, Math.floor(value)));
+    setQuantityByPlanId((prev) => ({ ...prev, [planId]: q }));
   };
 
-  const handlePurchase = async (planId: string, amountNaira: number) => {
+  const handlePurchase = async (planId: string, packPriceNaira: number) => {
     if (!userId) return;
+    const quantity = getQuantity(planId);
+    const amountNaira = packPriceNaira * quantity;
     setPurchasingPlanId(planId);
     try {
       const res = await axios.post(`${API_URL}/payments/initialize-pack`, {
         userId,
         planId,
         amountNaira,
+        quantity,
       });
       const data = res.data?.data || res.data;
       const authUrl = data?.authorization_url;
@@ -82,40 +91,13 @@ const PlansPage = () => {
       <ToastContainer />
       <LandLordLayout path="Plans" mainPath="Settings" subMainPath="Plans">
         <div className="max-w-4xl mx-auto p-6">
-          <div className="mb-8">
+          <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 mb-1">
               Verification credits
             </h1>
-            <p className="text-gray-600 mb-4">
-              Buy verification credits one at a time or in packs.
+            <p className="text-gray-600">
+              Buy verification packs below.
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-4">
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Standard verification</p>
-                <p className="text-lg font-bold text-gray-900 mb-2">{standardUsed} / {standardBalance} used</p>
-                <button
-                  type="button"
-                  disabled={addingType !== null}
-                  onClick={() => handleAddOne("standardVerification")}
-                  className="text-sm font-medium text-green-600 hover:text-green-700 disabled:opacity-60"
-                >
-                  {addingType === "standardVerification" ? "Adding…" : "Add 1"}
-                </button>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Premium verification</p>
-                <p className="text-lg font-bold text-gray-900 mb-2">{premiumUsed} / {premiumBalance} used</p>
-                <button
-                  type="button"
-                  disabled={addingType !== null}
-                  onClick={() => handleAddOne("premiumVerification")}
-                  className="text-sm font-medium text-green-600 hover:text-green-700 disabled:opacity-60"
-                >
-                  {addingType === "premiumVerification" ? "Adding…" : "Add 1"}
-                </button>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500">Or buy a verification pack below for 5 credits at once.</p>
           </div>
 
           {loading === "pending" ? (
@@ -126,9 +108,11 @@ const PlansPage = () => {
             <div className="grid sm:grid-cols-2 gap-6">
               {plans.map((plan: any) => {
                 const isPremium = plan.slug === "premium";
-                const stdAdd = plan.standardVerificationAdded ?? (isPremium ? 20 : 5);
-                const premAdd = plan.premiumVerificationAdded ?? (isPremium ? 20 : 5);
+                const stdAdd = plan.standardVerificationAdded ?? 0;
+                const premAdd = plan.premiumVerificationAdded ?? 0;
                 const packPrice = isPremium ? 2000 : 1000; // in Naira
+                const quantity = getQuantity(plan._id);
+                const totalPrice = packPrice * quantity;
 
                 return (
                   <div
@@ -148,16 +132,19 @@ const PlansPage = () => {
                       {plan.description}
                     </p>
 
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Per purchase you get:</p>
-                    <div className="grid grid-cols-2 gap-2 mb-6">
-                      <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-                        <p className="text-xs text-gray-500">Standard verification</p>
-                        <p className="text-lg font-bold text-gray-900">+{stdAdd}</p>
-                      </div>
-                      <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-                        <p className="text-xs text-gray-500">Premium verification</p>
-                        <p className="text-lg font-bold text-gray-900">+{premAdd}</p>
-                      </div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Credits per pack:</p>
+                    <div className="mb-6">
+                      {isPremium ? (
+                        <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+                          <p className="text-xs text-gray-500">Premium verification</p>
+                          <p className="text-lg font-bold text-gray-900">+{premAdd}</p>
+                        </div>
+                      ) : (
+                        <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+                          <p className="text-xs text-gray-500">Standard verification</p>
+                          <p className="text-lg font-bold text-gray-900">+{stdAdd}</p>
+                        </div>
+                      )}
                     </div>
 
                     {plan.features?.length > 0 && (
@@ -171,14 +158,38 @@ const PlansPage = () => {
                       </ul>
                     )}
 
-                    <div className="mt-auto">
+                    <div className="mt-auto space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm text-gray-600">Quantity</span>
+                        <div className="flex items-center gap-2 border border-gray-200 rounded-lg overflow-hidden">
+                          <button
+                            type="button"
+                            disabled={purchasingPlanId === plan._id}
+                            onClick={() => setQuantity(plan._id, quantity - 1)}
+                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
+                          >
+                            −
+                          </button>
+                          <span className="min-w-[2rem] text-center font-medium">{quantity}</span>
+                          <button
+                            type="button"
+                            disabled={purchasingPlanId === plan._id}
+                            onClick={() => setQuantity(plan._id, quantity + 1)}
+                            className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
                       <button
                         type="button"
-                        disabled={purchasingPlanId !== null}
+                        disabled={purchasingPlanId === plan._id}
                         onClick={() => handlePurchase(plan._id, packPrice)}
                         className="w-full py-2.5 px-4 rounded-lg font-medium bg-gray-900 hover:bg-gray-800 text-white text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        {purchasingPlanId === plan._id ? "Processing…" : `Purchase ₦${packPrice.toLocaleString()}`}
+                        {purchasingPlanId === plan._id
+                          ? "Processing…"
+                          : `Purchase ${quantity} pack${quantity > 1 ? "s" : ""} · ₦${totalPrice.toLocaleString()}`}
                       </button>
                     </div>
                   </div>
@@ -186,6 +197,60 @@ const PlansPage = () => {
               })}
             </div>
           )}
+
+          <div className="mt-10">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">Purchase history</h2>
+            {historyLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-green-600"></div>
+              </div>
+            ) : paymentHistory.length === 0 ? (
+              <p className="text-sm text-gray-500 py-4">No purchases yet.</p>
+            ) : (
+              <div className="border border-gray-200 rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Plan</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Qty</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-700">Amount</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paymentHistory.map((p) => (
+                      <tr key={p._id} className="border-b border-gray-100 last:border-0">
+                        <td className="py-3 px-4 text-gray-600">
+                          {p.paidAt
+                            ? new Date(p.paidAt).toLocaleDateString()
+                            : p.createdAt
+                              ? new Date(p.createdAt).toLocaleDateString()
+                              : "—"}
+                        </td>
+                        <td className="py-3 px-4 text-gray-900">{p.planName ?? "Pack"}</td>
+                        <td className="py-3 px-4 text-right text-gray-600">{p.quantity ?? 1}</td>
+                        <td className="py-3 px-4 text-right text-gray-900">₦{(p.amountNaira ?? 0).toLocaleString()}</td>
+                        <td className="py-3 px-4">
+                          <span
+                            className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                              p.status === "success"
+                                ? "bg-green-100 text-green-800"
+                                : p.status === "failed"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-700"
+                            }`}
+                          >
+                            {p.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </LandLordLayout>
     </ProtectedRoute>

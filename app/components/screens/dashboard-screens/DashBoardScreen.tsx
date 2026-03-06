@@ -37,6 +37,7 @@ import Link from "next/link";
 interface User {
   firstName?: string;
   _id?: string;
+  planId?: string;
 }
 
 interface DashboardCounts {

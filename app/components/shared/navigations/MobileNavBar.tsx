@@ -1,127 +1,155 @@
-// MobileNavBar.tsx
 "use client";
 
-import React from "react";
-import { FaBars } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import { IoClose, IoPersonCircle } from "react-icons/io5";
+import React, { useEffect, useState } from "react";
+import { Menu, X, ArrowRight, Home } from "lucide-react";
 import NavLink from "./NavLink";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
-interface NavItem {
-  text: string;
-  route: string;
-}
+type NavItem =
+  | { text: string; targetId: string }
+  | { text: string; route: string };
 
-const navItems = [
+const navItems: NavItem[] = [
   { text: "Home", targetId: "home" },
-  { text: "About Us", targetId: "about" },
-  { text: "Services", targetId: "services" },
-  { text: "How it Works", targetId: "how-it-works" },
-  { text: "FAQs", targetId: "faqs" },
-  { text: "Contact Us", targetId: "contact" },
+  { text: "How It Works", targetId: "how-it-works" },
+  { text: "Features", targetId: "features" },
+  { text: "Explore Homes", targetId: "explore" },
+  { text: "Testimonials", targetId: "testimonials" },
 ];
 
 const MobileNavBar: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<any>(false);
-  const [currentUser, setCurrentUser] = useState<any>({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ accountType?: string } | null>(null);
   const router = useRouter();
+
   useEffect(() => {
     try {
       const userData = localStorage.getItem("nrv-user");
       if (userData) {
-        const user = JSON.parse(userData);
-        if (user) {
+        const parsed = JSON.parse(userData);
+        if (parsed?.user) {
           setIsLoggedIn(true);
-          setCurrentUser(user?.user);
+          setCurrentUser(parsed.user);
         }
       }
-    } catch (error) {
-      console.error("Error parsing user data from localStorage:", error);
-      // Clear invalid data
+    } catch {
       localStorage.removeItem("nrv-user");
     }
   }, []);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const close = () => setIsOpen(false);
 
   const handleNavTo = (path: string) => {
-    setIsOpen(false);
+    close();
     router.push(path);
   };
 
   return (
-    <div
-      className={`fixed top-0 left-0 w-full bg-white z-50 pt-4 pb-4 ${
-        isOpen ? "h-screen" : ""
-      }`}
-    >
-      <div className="flex justify-between items-center px-4">
-        <NavLink targetId="/">
-          <img src="/images/dark-green-logo.svg" alt="NaijaRentVerify" className="w-28 h-auto" />
+    <>
+      <header className="flex items-center justify-between h-[68px] px-4 w-full">
+        <NavLink targetId="home" className="flex items-center shrink-0">
+          <Image
+            src="/images/naija-rent-verify-logo.png"
+            alt="NaijaRentVerify"
+            width={130}
+            height={45}
+            className="h-9 w-auto"
+          />
         </NavLink>
-        {window.innerWidth <= 1000 && (
-          <div>
-            <button onClick={toggleMenu} className="text-nrvPrimaryGreen">
-              {isOpen ? <IoClose /> : <FaBars />}
-            </button>
-          </div>
-        )}
-      </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2.5 rounded-xl text-gray-600 hover:bg-[#03442C]/5 hover:text-[#03442C] transition-all duration-200"
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+        >
+          {isOpen ? <X size={24} /> : <Menu size={22} />}
+        </button>
+      </header>
+
+      {/* Full-screen overlay menu */}
       {isOpen && (
-        <div className="px-4 overflow-y-auto">
-          <nav>
-            {navItems.map(({ text, targetId }, index) => (
-              <div key={index}>
-                <div>
-                  <NavLink
-                    targetId={targetId}
-                    className="text-nrvPrimaryGreen py-3 block"
+        <div
+          className="fixed inset-0 top-[68px] z-40 bg-white/98 backdrop-blur-sm flex flex-col"
+          role="dialog"
+          aria-modal="true"
+        >
+          <nav className="flex-1 overflow-y-auto px-5 py-4">
+            <ul className="space-y-1">
+              {navItems.map((item, index) => (
+                <li key={index}>
+                  {"targetId" in item ? (
+                    <NavLink
+                      targetId={item.targetId}
+                      onAfterNavigate={close}
+                      className="flex items-center py-4 px-3 text-base font-medium text-gray-700 hover:text-[#03442C] hover:bg-[#03442C]/5 rounded-xl transition-all duration-200"
+                    >
+                      {item.text}
+                    </NavLink>
+                  ) : (
+                    <Link
+                      href={item.route}
+                      onClick={close}
+                      className="flex items-center py-4 px-3 text-base font-medium text-gray-700 hover:text-[#03442C] hover:bg-[#03442C]/5 rounded-xl transition-all duration-200"
+                    >
+                      {item.text}
+                    </Link>
+                  )}
+                </li>
+              ))}
+              {/* List a Home */}
+              <li>
+                <Link
+                  href="/sign-up?role=landlord"
+                  onClick={close}
+                  className="flex items-center gap-2 py-4 px-3 text-base font-semibold text-[#03442C] hover:bg-[#03442C]/5 rounded-xl transition-all duration-200"
+                >
+                  <Home className="w-4 h-4" />
+                  List a Home
+                </Link>
+              </li>
+            </ul>
+
+            <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col gap-3">
+              {isLoggedIn ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    close();
+                    if (currentUser?.accountType === "landlord") router.push("/dashboard/landlord");
+                    else if (currentUser?.accountType === "tenant") router.push("/dashboard/tenant");
+                  }}
+                  className="w-full py-4 rounded-xl bg-[#03442C] text-white font-semibold hover:bg-[#022f21] transition-all duration-200 flex items-center justify-center gap-2"
+                >
+                  Dashboard
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleNavTo("/sign-in")}
+                    className="w-full py-4 rounded-xl border-2 border-gray-200 text-gray-700 font-semibold hover:border-[#03442C]/30 hover:text-[#03442C] transition-all duration-200"
                   >
-                    {text}
-                  </NavLink>
-                </div>
-              </div>
-            ))}
+                    Sign In
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleNavTo("/sign-up")}
+                    className="w-full py-4 rounded-xl bg-[#03442C] text-white font-semibold hover:bg-[#022f21] shadow-md transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    Get Started
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+            </div>
           </nav>
-          {isLoggedIn ? (
-            <div
-              onClick={() => {
-                if (currentUser.accountType === "landlord") {
-                  router.push("/dashboard/landlord");
-                }
-                if (currentUser.accountType === "tenant") {
-                  router.push("/dashboard/tenant");
-                }
-              }}
-              className="cursor-pointer"
-            >
-              <IoPersonCircle size={50} className="text-nrvPrimaryGreen" />
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-3 mt-4">
-              <button
-                type="button"
-                onClick={() => handleNavTo("/sign-in")}
-                className="text-nrvPrimaryGreen font-medium py-2 px-4 rounded-lg hover:bg-[#03442C]/5 min-h-[44px] min-w-[44px]"
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => handleNavTo("/sign-up")}
-                className="bg-[#03442C] text-white font-semibold py-2 px-5 rounded-lg hover:bg-[#03442C]/90 min-h-[44px] min-w-[44px] transition-colors"
-              >
-                Get Started
-              </button>
-            </div>
-          )}
         </div>
       )}
-    </div>
+    </>
   );
 };
 

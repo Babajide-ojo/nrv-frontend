@@ -880,41 +880,41 @@ const TenantPropertiesScreen = () => {
                               </div>
                             </div>
 
-                                                         {/* Action Buttons */}
-                             <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
-                               <Button
+                            {/* Action Buttons */}
+                            <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                              <Button
+                                type="button"
+                                size="large"
+                                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                                variant="lightGrey"
+                                showIcon={false}
+                                onClick={() => {
+                                  resetForm();
+                                  setCurrentStep(1);
+                                }}
+                              >
+                            
+                                Back to Property
+                              </Button>
+                              <Button
                                  type="button"
-                                 size="large"
-                                 className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
-                                 variant="lightGrey"
-                                 showIcon={false}
-                                 onClick={() => {
-                                   resetForm();
-                                   setCurrentStep(1);
-                                 }}
-                               >
-                             
-                                 Back to Property
-                               </Button>
-                               <Button
-                                 type="button"
-                                 size="large"
-                                 className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
-                                 variant="darkPrimary"
-                                 showIcon={false}
+                                size="large"
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                                variant="darkPrimary"
+                                showIcon={false}
                                  onClick={() => {
                                    setFormData(values);
                                    setCurrentStep(3);
                                  }}
                                >
-                                 <div className="flex items-center">
-                                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                   </svg>
+                                  <div className="flex items-center">
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
                                    Continue to Review
-                                 </div>
-                               </Button>
-                             </div>
+                                  </div>
+                              </Button>
+                            </div>
 
                             {/* Application Tips */}
                             <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">

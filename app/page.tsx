@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 import HomePageLayout from "./components/layout/HomePageLayout";
-import LandingPage from "./components/screens/landing-page/LandingPage";
+// Previous marketing page kept for reference:
+// import LandingPage from "./components/screens/landing-page/LandingPage";
+import NewLanding from "./components/screens/landing-page/NewLanding";
 
 export default function Index() {
   const [code, setCode] = useState("");
@@ -50,7 +52,7 @@ export default function Index() {
         </div>
       ) : (
         <HomePageLayout>
-          <LandingPage />
+          <NewLanding />
         </HomePageLayout>
       )}
     </div>

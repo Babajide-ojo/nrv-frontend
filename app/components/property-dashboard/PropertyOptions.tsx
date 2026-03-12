@@ -13,8 +13,7 @@ import { useState } from "react";
 import CenterModal from "../shared/modals/CenterModal";
 import { updateRoomStatus } from "@/redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
 
@@ -74,7 +73,6 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
   };
   return (
     <div className="md:w-1/2 w-full mt-4 md:mt-0">
-        <ToastContainer />
       <div className="bg-white rounded rounded-2xl p-4 m-1">
         <div className="text-start text-nrvPrimaryGreen font-semibold text-[15px]  pb-4">
           Objectives

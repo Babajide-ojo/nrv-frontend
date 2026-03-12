@@ -22,8 +22,7 @@ import {
 import { SlCloudUpload } from "react-icons/sl";
 
 import SelectField from "../../shared/input-fields/SelectField";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import SingleRoom from "../../../dashboard/landlord/properties/rooms/[id]/page";
 import React from "react";
@@ -299,7 +298,6 @@ const SinglePropertyScreen = () => {
             </div>
           ) : (
             <div>
-              <ToastContainer />
               <div className="p-8">
                 <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
                   {/* Left Section */}

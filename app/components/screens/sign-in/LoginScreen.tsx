@@ -4,13 +4,17 @@ import { useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import dynamic from "next/dynamic";
+import { toast } from "react-toastify";
 
 // Components
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Carousel from "./Carousel";
+
+const Carousel = dynamic(() => import("./Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 import LoginForm from "./components/LoginForm";
 import LoginHeader from "./components/LoginHeader";
 import RememberMeCheckbox from "./components/RememberMeCheckbox";
@@ -88,18 +92,6 @@ const LoginScreen: React.FC = () => {
 
   return (
     <div className="font-jakarta flex justify-center h-screen bg-gray-100">
-      <ToastContainer 
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      
       {/* Left side - Carousel (hidden on mobile) */}
       <div className="hidden lg:block">
         <Carousel />

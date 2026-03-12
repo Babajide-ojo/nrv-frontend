@@ -5,8 +5,7 @@ import { MdArrowBackIos } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa";
 import { apiService } from "@/lib/api";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 interface VerificationResponse {
   _id: string;
@@ -226,7 +225,6 @@ const VerificationResponsePage = () => {
   if (loading) {
     return (
       <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <ToastContainer />
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -240,7 +238,6 @@ const VerificationResponsePage = () => {
   if (error) {
     return (
       <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <ToastContainer />
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
@@ -257,7 +254,6 @@ const VerificationResponsePage = () => {
   if (!verificationData) {
     return (
       <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <ToastContainer />
         <div className="m-6">
           <button
             onClick={() => router.push(verificationListPath)}
@@ -279,7 +275,6 @@ const VerificationResponsePage = () => {
 
   return (
     <LandLordLayout path="Verification" mainPath="/ Verification Response">
-      <ToastContainer />
       <div className="px-4 sm:px-6 py-4 sm:py-6 bg-[#FAFAFA] min-h-screen">
         <div className="max-w-[1300px] mx-auto" ref={reportRef}>
           {/* Back + Export – responsive nav */}

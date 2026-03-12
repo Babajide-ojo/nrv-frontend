@@ -6,7 +6,6 @@ import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getAllPropertyForTenant } from "../../../../redux/slices/propertySlice";
-import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "../../../components/layout/TenantLayout";
 import PropertyCard from "../../../components/shared/cards/PropertyCard";
 import InputField from "../../../components/shared/input-fields/InputFields";

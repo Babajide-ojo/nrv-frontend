@@ -6,8 +6,6 @@ import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRou
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getPropertyByIdForTenant } from "../../../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
@@ -54,7 +52,6 @@ const RentedPropertiesScreen = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
             {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="text-white"></div>

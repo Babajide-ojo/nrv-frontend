@@ -9,8 +9,6 @@ import {
   getApplicationsById,
   getPropertyByIdForTenant,
 } from "../../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import Link from "next/link";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
@@ -123,7 +121,6 @@ const RentedPropertiesScreen = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
             {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="text-white">Loading...</div>

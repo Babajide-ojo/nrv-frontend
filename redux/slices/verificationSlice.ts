@@ -27,6 +27,27 @@ export const requestVerification = createAsyncThunk<any, {}>(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/verification/tenant`, payload);
+      
+      console.log('[requestVerification] Full response.data:', response.data);
+      console.log('[requestVerification] response.data.user:', response.data?.user);
+      console.log('[requestVerification] response.data.data?.user:', response.data?.data?.user);
+      
+      // Update localStorage with the fresh user data (includes updated credit counts)
+      // Check both possible locations for user data
+      const updatedUser = response.data?.user || response.data?.data?.user;
+      if (updatedUser) {
+        console.log('[requestVerification] Found user, standardVerificationUsed:', updatedUser.standardVerificationUsed);
+        const stored = localStorage.getItem("nrv-user");
+        if (stored) {
+          const current = JSON.parse(stored);
+          current.user = updatedUser;
+          localStorage.setItem("nrv-user", JSON.stringify(current));
+          console.log('[requestVerification] localStorage updated');
+        }
+      } else {
+        console.log('[requestVerification] No user data in response');
+      }
+      
       return response.data;
     } catch (error: any) {
       return rejectWithValue(extractErrorMessage(error));

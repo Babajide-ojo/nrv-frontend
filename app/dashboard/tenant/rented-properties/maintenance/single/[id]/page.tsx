@@ -1,6 +1,5 @@
 "use client";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import LoadingPage from "@/app/components/loaders/LoadingPage";
@@ -71,8 +70,6 @@ const SingleMaintainance = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
-
             <div className="md:py-10 md:px-20 p-5">
               <div className=" mb-8">
                 <div className="text-nrvGreyBlack mb-4 flex gap-3">

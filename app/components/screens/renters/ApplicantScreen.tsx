@@ -4,8 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateApplicationStatus, getApplicationCount } from "../../../../redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { formatDateToWords } from "@/helpers/utils";
 import { RefreshCcw } from "lucide-react";
 import DataTable, { BaseRow } from "../../shared/tables/DataTable";
@@ -127,10 +126,8 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
 
   return (
     <div>
-      <ToastContainer />
       {currentStep === 1 && (
         <div>
-          <ToastContainer />
           <div className="space-y-12 p-4 font-jakarta">
             {/* Header */}
             <div className="flex items-center justify-between w-full gap-5 flex-wrap">

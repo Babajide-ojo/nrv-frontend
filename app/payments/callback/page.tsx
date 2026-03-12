@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { API_URL } from "@/config/constant";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { setUserFromPayment } from "@/redux/slices/userSlice";
 
 export default function PaymentCallbackPage() {
@@ -69,7 +68,6 @@ export default function PaymentCallbackPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <ToastContainer />
       <div className="bg-white shadow-md rounded-xl px-6 py-8 max-w-md w-full text-center">
         <h1 className="text-xl font-semibold mb-2">Verifying payment…</h1>
         <p className="text-gray-600 mb-4">

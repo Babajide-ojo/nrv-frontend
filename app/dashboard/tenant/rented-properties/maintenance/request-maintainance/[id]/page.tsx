@@ -3,7 +3,7 @@
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import LoadingPage from "@/app/components/loaders/LoadingPage";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useState, useEffect, useRef } from "react";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import Button from "@/app/components/shared/buttons/Button";
@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 import { createMaintenance } from "@/redux/slices/maintenanceSlice";
 import { useParams, useRouter } from "next/navigation";
 import { SlCloudUpload } from "react-icons/sl";
-import "react-toastify/dist/ReactToastify.css";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
 import { Router } from "next/router";
 
@@ -104,7 +103,6 @@ const RequestMaintainance = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
             <div className="py-10 md:px-20 px-4">
               <div>
                 <div className="flex gap-4">

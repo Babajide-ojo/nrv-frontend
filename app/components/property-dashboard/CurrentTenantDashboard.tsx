@@ -16,8 +16,7 @@ import {
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import CenterModal from "../shared/modals/CenterModal";
 import FileUploader from "../shared/upload/FileUploader";
@@ -373,7 +372,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
 
   return (
     <div className="pb-4 md:pb-0">
-      <ToastContainer />
       <div>
         {tenantDetails.data != null ? (
           <div>

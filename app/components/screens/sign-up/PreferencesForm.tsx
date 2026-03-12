@@ -7,7 +7,7 @@ import DatePickerField from "../../shared/input-fields/DatePickerField";
 import { updateUser } from "@/redux/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Modal from "../../shared/modals/Modal";
 import CenterModal from "../../shared/modals/CenterModal";
 import Link from "next/link";
@@ -234,7 +234,6 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
 
   return (
     <div className="flex flex-col justify-center w-full min-h-screen">
-      <ToastContainer />
       <div className="bg-white p-6 rounded-2xl w-full">
         <h2 className="text-2xl font-semibold text-center mb-2">
           Set Up Preferences

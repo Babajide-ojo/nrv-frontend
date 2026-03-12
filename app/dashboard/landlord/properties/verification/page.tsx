@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
@@ -74,7 +72,6 @@ export default function TenantVerification() {
 
   return (
     <>
-      <ToastContainer />
       <LandLordLayout path="Tenant Verification">
         <div className="w-full max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">

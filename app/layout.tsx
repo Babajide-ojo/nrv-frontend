@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "../globals.css";
+import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
+import { ToastContainer } from "react-toastify";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +19,7 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
           <div className="min-h-screen">{children}</div>
+          <ToastContainer position="top-right" autoClose={4000} />
         </Providers>
       </body>
     </html>

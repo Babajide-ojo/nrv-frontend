@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import Button from "../../../../components/shared/buttons/Button";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import TenantLayout from "../../../../components/layout/TenantLayout";
@@ -303,7 +302,6 @@ const TenantPropertiesScreen = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout mainPath="/dashboard/tenant/properties">
-            <ToastContainer />
             {currentStep === 1 && (
               <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 {/* Enhanced Header Section */}

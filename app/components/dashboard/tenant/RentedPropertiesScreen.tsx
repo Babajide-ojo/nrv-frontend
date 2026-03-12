@@ -13,8 +13,6 @@ import {
   getPropertyByUserId,
   getRentedApartmentsForTenant,
 } from "../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import { FcHome } from "react-icons/fc";

@@ -9,8 +9,7 @@ import {
   updateProperty,
   getPropertyById,
 } from "../../../../../../redux/slices/propertySlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useRouter, useParams } from "next/navigation";
 import PropertySuccess from "@/app/components/loaders/PropertySuccess";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
@@ -181,7 +180,6 @@ const UpdatePropertyScreen = () => {
             mainPath="Manage Properties"
             subMainPath="Update Property"
           >
-            <ToastContainer />
             {currentAmountStep === 0 && (
               <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
                 <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">

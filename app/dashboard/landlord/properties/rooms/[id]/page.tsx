@@ -5,8 +5,7 @@ import LandLordLayout from "../../../../../components/layout/LandLordLayout";
 import Button from "../../../../../components/shared/buttons/Button";
 import { useEffect, useState } from "react";
 import PropertyMarketing from "../../../../../components/property-dashboard/PropertyMarketing";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { getRoomById } from "../../../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
@@ -108,7 +107,6 @@ const SingleRoom = () => {
   return (
     <div>
       <ProtectedRoute>
-        <ToastContainer />
         <LandLordLayout
           path="Properties"
           mainPath="Manage Property"

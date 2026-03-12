@@ -1,5 +1,4 @@
 "use client";
-import { ToastContainer } from "react-toastify";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import LoadingPage from "@/app/components/loaders/LoadingPage";
@@ -52,7 +51,6 @@ const Maintainance = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
 
             <div className="md:py-10 md:px-20 p-5">
               <div className="flex justify-between items-center  mb-8">

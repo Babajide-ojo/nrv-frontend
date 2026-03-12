@@ -8,8 +8,6 @@ import Button from "../../../components/shared/buttons/Button";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getPropertyByUserId } from "../../../../redux/slices/propertySlice";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -125,7 +123,6 @@ const PropertiesScreen = () => {
   return (
     <ProtectedRoute>
       <LandLordLayout mainPath="Properties" subMainPath="Manage Properties">
-        <ToastContainer />
         <div className="p-6 w-full font-jakarta">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
             <div className="w-full md:w-auto">

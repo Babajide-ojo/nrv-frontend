@@ -9,7 +9,7 @@ import {
   getApplicationsById,
   updateApplicationStatus,
 } from "@/redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Image from "next/image";
 import { format, startOfToday } from "date-fns";
 `import PdfIcon from "../../icons/PdfIcon";
@@ -21,7 +21,6 @@ import {
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
-import "react-toastify/dist/ReactToastify.css";
 import { ApplicationStatus, getFileExtension } from "@/helpers/utils";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -278,7 +277,6 @@ const TenantScreen = () => {
 
   return (
     <div className="mx-4 sm:mx-5 my-4">
-      <ToastContainer />
       {/* Breadcrumb and Back Button */}
       <div className="flex items-center justify-between gap-5 mb-4">
         <div className="flex items-center gap-3 text-sm">

@@ -5,8 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SlCloudUpload } from "react-icons/sl";
 import { MdDelete, MdOutlineDeleteOutline } from "react-icons/md";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getPropertyById,
@@ -163,7 +162,6 @@ const PropertyDocuments = () => {
   };
   return (
     <div className="pb-12 md:pb-0 md:flex gap-6">
-      <ToastContainer />
       <div className="md:w-1/2 w-full">
         <div className="bg-white max-w-full w-120 rounded rounded-2xl p-4">
           <div className="flex justify-between mb-4">

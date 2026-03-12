@@ -11,8 +11,7 @@ import {
   getPropertyByUserId,
   createRooms,
 } from "../../../../../../redux/slices/propertySlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
@@ -232,7 +231,6 @@ const CreateRoom = () => {
             mainPath="Manage Apartment"
             subMainPath="Add New Apartment"
           >
-            <ToastContainer />
             <form onSubmit={handleSubmit}>
               <div className="max-w-6xl w-full mx-auto p-8">
                 <div className="text-2xl flex gap-3 mb-4">

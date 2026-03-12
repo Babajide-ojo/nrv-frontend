@@ -9,8 +9,7 @@ import {
   inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import CenterModal from "../../shared/modals/CenterModal";
 import InputField from "../../shared/input-fields/InputFields";
 import { RefreshCcw } from "lucide-react";
@@ -122,10 +121,8 @@ const TenantApplications = () => {
 
   return (
     <div className="pb-16">
-      <ToastContainer />
       {currentStep === 1 && (
         <div>
-          <ToastContainer />
           <div className="space-y-12 p-4 font-jakarta">
             {/* Header */}
             <div className="flex items-center justify-between w-full">

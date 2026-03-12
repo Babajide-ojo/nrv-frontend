@@ -4,19 +4,23 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
+import dynamic from "next/dynamic";
 import { createUser } from "../../../../redux/slices/userSlice";
 import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import Button from "@/app/components/shared/buttons/Button";
 import CheckBox from "@/app/components/shared/input-fields/CheckBox";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Carousel from "../sign-in/Carousel";
 import { CheckCircle, Smile, User } from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import AccountSideBar from "./AccountSideBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+
+const Carousel = dynamic(() => import("../sign-in/Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 
 const validationSchema = yup.object({
   firstName: yup.string().required("First Name is required"),
@@ -90,7 +94,6 @@ const SignUpMultiForm = () => {
 
   return (
     <div className="font-jakarta">
-      <ToastContainer />
       {currentStep === 1 && (
         <div className="flex w-full">
           <div className="hidden md:block md:w-1/2 justify-center">

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import * as yup from "yup";
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import "react-toastify/dist/ReactToastify.css";
 import FormikSelectField from "../shared/input-fields/FormikSelectField";
 import { createExpense } from "@/redux/slices/propertySlice";
 import { SlCloudUpload } from "react-icons/sl";
@@ -149,7 +148,6 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
 
   return (
     <div className="container">
-      <ToastContainer />
       <div className="max-w-lg mx-auto flex-grow w-full">
         <div className="flex justify-between">
           <div className="" onClick={onExpenseSubmit}>

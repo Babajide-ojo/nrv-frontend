@@ -10,8 +10,7 @@ import {
   createProperty,
   getPropertyByUserId,
 } from "../../../../../redux/slices/propertySlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import PropertySuccess from "../../../loaders/PropertySuccess";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
@@ -326,8 +325,6 @@ const CreatePropertyScreen = () => {
             mainPath="Manage Properties"
             subMainPath="Add Property"
           >
-            <ToastContainer />
-            
             {currentAmountStep === 0 && (
               <form
                 onSubmit={handleNextAndVerify}

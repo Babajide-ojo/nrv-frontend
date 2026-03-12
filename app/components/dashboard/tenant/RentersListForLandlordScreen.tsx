@@ -5,7 +5,6 @@ import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
 import { FaPencil } from "react-icons/fa6";
 import { getTenantsOnboardedByLandlord } from "@/redux/slices/userSlice";
 import { getAllLandlordApartment, getApplicationsByLandlordId } from "@/redux/slices/propertySlice";

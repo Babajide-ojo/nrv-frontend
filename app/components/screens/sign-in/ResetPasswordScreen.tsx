@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Carousel from "./Carousel";
+
+const Carousel = dynamic(() => import("./Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, resetPassword } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { MdOutlineMail } from "react-icons/md";
 import { MdOutlineKey } from "react-icons/md";
 
@@ -77,7 +81,6 @@ const ResetPasswordScreen: React.FC = () => {
         minHeight: "85vh",
       }}
     >
-      <ToastContainer />
       <div
         className="w-full sm:w-1/2 p-8 justify-center h-screen"
         style={{

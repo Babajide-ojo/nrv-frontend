@@ -6,10 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { createUser, updateUser } from "../../../../redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 import OnboardingCard from "../../shared/cards/OnboardingCard";
-import Carousel from "./Carousel";
+
+const Carousel = dynamic(() => import("./Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 import {
   enquiryData,
   onboardingOptions,
@@ -117,7 +121,6 @@ const OnboardingFormScreen: React.FC = () => {
 
   return (
     <div className="">
-      <ToastContainer />
       <div className="h-screen">
         <div className="">
           {currentStep === 1 && (

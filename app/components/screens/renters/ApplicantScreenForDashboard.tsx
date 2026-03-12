@@ -9,8 +9,7 @@ import {
   inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { FcHome } from "react-icons/fc";
 
 const ApplicantScreenForDashboard = () => {
@@ -57,7 +56,6 @@ const ApplicantScreenForDashboard = () => {
 
   return (
     <div>
-      <ToastContainer />
       {isLoading ? (
         <div className="w-full mx-auto">
           {[...Array(2)].map((_, index) => (

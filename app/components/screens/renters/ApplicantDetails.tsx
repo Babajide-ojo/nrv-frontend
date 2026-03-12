@@ -22,7 +22,6 @@ import {
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
 import { getFileExtension } from "@/helpers/utils";
-import "react-toastify/dist/ReactToastify.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";

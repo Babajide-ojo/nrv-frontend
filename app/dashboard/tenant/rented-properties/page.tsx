@@ -14,8 +14,7 @@ import {
   getPropertyByUserId,
   getRentedApartmentsForTenant,
 } from "../../../../redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
@@ -82,7 +81,6 @@ const RentedPropertiesScreen = () => {
       ) : (
         <ProtectedRoute>
           <TenantLayout>
-            <ToastContainer />
             {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="text-white"></div>

@@ -6,9 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { requestVerification } from "@/redux/slices/verificationSlice";
-import "react-toastify/dist/ReactToastify.css";
 import { useRouter, useSearchParams } from "next/navigation";
 
 
@@ -101,7 +100,6 @@ export default function OnboardTenant() {
 
   return (
     <>
-      <ToastContainer />
       <LandLordLayout path="Tenant Verification">
         <div className="max-w-4xl mx-auto p-6">
           <h2 className="text-2xl font-semibold mb-6">New Verification Request</h2>

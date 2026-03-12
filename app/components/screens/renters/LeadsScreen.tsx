@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Button from "../../shared/buttons/Button";
 import { getApplicationsByLandlordId, updateApplicationStatus } from "../../../../redux/slices/propertySlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import CenterModal from "../../shared/modals/CenterModal";
 import { FcHome } from "react-icons/fc";
 
@@ -76,7 +75,6 @@ const LeadScreen = () => {
   }, []);
   return (
     <div>
-      <ToastContainer />
       {currentStep === 1 && (
         <div className="w-full md:w-2/5 mx-auto">
           {properties && properties.length > 0 ? (

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import EmptyState from "../empty-state/EmptyState";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
 import { FaPencil } from "react-icons/fa6";
 import { getConversation, sendMessage } from "@/redux/slices/messageSlice";
 import { useParams } from "next/navigation";

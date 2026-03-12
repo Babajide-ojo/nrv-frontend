@@ -15,8 +15,7 @@ import { updateMaintenance } from "@/redux/slices/maintenanceSlice";
 import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { BsWindowSidebar } from "react-icons/bs";
 
@@ -57,7 +56,6 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <ToastContainer />
       <h1 className="text-2xl font-semibold">Assign Expert to Request</h1>
       <p className=" text-[#807F94] mt-2 text-[13px]  mb-6">
         Kindly fill in all the necessary information, this details will be added

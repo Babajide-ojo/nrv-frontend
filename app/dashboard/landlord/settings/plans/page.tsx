@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { fetchPlans } from "../../../../../redux/slices/plansSlice";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
@@ -88,7 +87,6 @@ const PlansPage = () => {
 
   return (
     <ProtectedRoute>
-      <ToastContainer />
       <LandLordLayout path="Buy verification credit" mainPath="Settings" subMainPath="Buy verification credit">
         <div className="max-w-4xl mx-auto p-6">
           <div className="mb-6">

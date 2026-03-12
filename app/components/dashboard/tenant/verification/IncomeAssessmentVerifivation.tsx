@@ -6,8 +6,7 @@ import { useState, useEffect, useMemo } from "react";
 import { SlCloudUpload } from "react-icons/sl";
 import { FiX } from "react-icons/fi";
 import { apiService } from "@/lib/api";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 interface FormData {
   bankStatement: File | null;
@@ -373,7 +372,6 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
 
   return (
     <div className="">
-      <ToastContainer position="top-right" autoClose={3000} />
       <div className="pb-6 border-b border-gray-100 mb-8">
         <h3 className="text-xl font-semibold text-gray-900">Affordability Check</h3>
         <p className="text-sm text-gray-500 mt-1">

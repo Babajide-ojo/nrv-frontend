@@ -51,7 +51,7 @@ export default function Index() {
           </form>
         </div>
       ) : (
-        <HomePageLayout>
+        <HomePageLayout showFooter={false}>
           <NewLanding />
         </HomePageLayout>
       )}

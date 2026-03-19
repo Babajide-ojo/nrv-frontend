@@ -226,7 +226,33 @@ const NewLanding = () => {
     (listFilters.minimiumPrice?.toString()?.trim() ?? "") !== "" ||
     (listFilters.maximiumPrice?.toString()?.trim() ?? "") !== "";
 
+  const [accountType, setAccountType] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      if (!raw) {
+        setAccountType(null);
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as any;
+      const type = String(parsed?.user?.accountType || "").toLowerCase();
+      setAccountType(type || null);
+    } catch {
+      setAccountType(null);
+    }
+  }, []);
+
   const router = useRouter();
+
+  const goToPropertyDetails = (propertyId: string) => {
+    if (accountType === "tenant") {
+      router.push(`/dashboard/tenant/properties/${propertyId}`);
+    } else {
+      router.push(`/properties/${propertyId}`);
+    }
+  };
 
   return (
     <div className="font-jakarta bg-[#FAFAF9] text-[#031B14] antialiased">
@@ -627,11 +653,11 @@ const NewLanding = () => {
                     key={room._id}
                     role="button"
                     tabIndex={0}
-                    onClick={() => router.push(`/dashboard/tenant/properties/${room._id}`)}
+                    onClick={() => goToPropertyDetails(room._id)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
-                        router.push(`/dashboard/tenant/properties/${room._id}`);
+                        goToPropertyDetails(room._id);
                       }
                     }}
                     className="group rounded-xl overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-[#03442C]/20 transition-all duration-200 cursor-pointer"
@@ -666,7 +692,7 @@ const NewLanding = () => {
 
           <div className="text-center">
             <Link
-              href="/dashboard/tenant/properties"
+              href="#explore"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-[#03442C] text-[#03442C] font-semibold hover:bg-[#03442C] hover:text-white transition-all duration-200"
             >
               Browse All Listings

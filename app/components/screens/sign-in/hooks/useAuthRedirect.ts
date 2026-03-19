@@ -1,15 +1,32 @@
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { UserData } from "../types";
 import { ROUTES } from "../constants";
 
 export const useAuthRedirect = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const redirectUser = useCallback((userData: UserData) => {
-    console.log({j: userData})
-    const userAccountType = userData?.user?.accountType || "";
-    const userStatus = userData?.user?.status || "";
+    const userAccountType = String(userData?.user?.accountType || "").toLowerCase();
+    const userStatus = String(userData?.user?.status || "");
+
+    const redirectFromQuery =
+      searchParams.get("redirect") || searchParams.get("returnUrl");
+
+    // Prevent open redirects: only allow internal relative paths.
+    const safeRedirect =
+      redirectFromQuery &&
+      typeof redirectFromQuery === "string" &&
+      redirectFromQuery.startsWith("/") &&
+      !redirectFromQuery.startsWith("//")
+        ? redirectFromQuery
+        : null;
+
+    const propertyMatch = safeRedirect
+      ? safeRedirect.match(/^\/properties\/([^\/?#]+)/)
+      : null;
+    const redirectPropertyId = propertyMatch?.[1] ?? null;
 
     // Handle inactive users
     if (userStatus === "inactive") {
@@ -24,6 +41,19 @@ export const useAuthRedirect = () => {
 
     // Handle active users based on account type
     if (userStatus === "active") {
+      // If the user came from a public property deep link (`/properties/:id`),
+      // send them directly to the tenant dashboard property details page.
+      if (userAccountType === "tenant" && redirectPropertyId) {
+        router.push(`/dashboard/tenant/properties/${redirectPropertyId}`);
+        return;
+      }
+
+      // Other deep links (best-effort).
+      if (safeRedirect) {
+        router.push(safeRedirect);
+        return;
+      }
+
       switch (userAccountType) {
         case "landlord":
           router.push(ROUTES.LANDLORD_DASHBOARD);
@@ -37,7 +67,7 @@ export const useAuthRedirect = () => {
           break;
       }
     }
-  }, [router]);
+  }, [router, searchParams]);
 
   return {
     redirectUser,

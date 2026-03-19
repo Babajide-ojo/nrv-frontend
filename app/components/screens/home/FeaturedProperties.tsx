@@ -1,3 +1,5 @@
+"use client";
+
 import { MapPin, Bed, Bath, Ruler } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -30,6 +32,7 @@ const CARD_LIMIT = 4;
 const FeaturedProperties = () => {
   const [properties, setProperties] = useState<ReturnType<typeof mapRoomToProperty>[]>([]);
   const [loading, setLoading] = useState(true);
+  const [accountType, setAccountType] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +50,22 @@ const FeaturedProperties = () => {
       }
     })();
     return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      if (!raw) {
+        setAccountType(null);
+        return;
+      }
+
+      const parsed = JSON.parse(raw) as any;
+      const type = String(parsed?.user?.accountType || "").toLowerCase();
+      setAccountType(type || null);
+    } catch {
+      setAccountType(null);
+    }
   }, []);
 
   if (loading) {
@@ -115,7 +134,11 @@ const FeaturedProperties = () => {
           {properties.map((property) => (
             <Link
               key={property.id}
-              href={`/dashboard/tenant/properties/${property.id}`}
+              href={
+                accountType === "tenant"
+                  ? `/dashboard/tenant/properties/${property.id}`
+                  : `/properties/${property.id}`
+              }
               className="group block rounded-2xl border border-[#E9F4E74D] overflow-hidden bg-[#0D3520] hover:border-[#BBFF37]/50 transition-all duration-300"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden">

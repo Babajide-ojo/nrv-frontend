@@ -364,6 +364,24 @@ export const updateRoomStatus = createAsyncThunk<any, {}>(
     }
 );
 
+export const requestRoomApproval = createAsyncThunk<any, string>(
+  "room/request-approval",
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response: any = await axios.post(
+        `${API_URL}/rooms/${roomId}/request-approval`,
+      );
+      return response.data;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to request approval";
+      return rejectWithValue(message);
+    }
+  },
+);
+
 export const getApplicationCount = createAsyncThunk<any, {}>(
     "landlord/application-count",
     async (formData: any, { rejectWithValue }) => {

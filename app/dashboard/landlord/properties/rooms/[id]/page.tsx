@@ -6,12 +6,15 @@ import Button from "../../../../../components/shared/buttons/Button";
 import { useEffect, useState } from "react";
 import PropertyMarketing from "../../../../../components/property-dashboard/PropertyMarketing";
 import { toast } from "react-toastify";
-import { getRoomById } from "../../../../../../redux/slices/propertySlice";
+import {
+  getRoomById,
+  requestRoomApproval,
+  updateRoomStatus,
+} from "../../../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
 import PropertyUnitDetails from "../../../../../components/property-dashboard/PropertyUnitDetails";
 import CenterModal from "@/app/components/shared/modals/CenterModal";
-import { updateRoomStatus } from "../../../../../../redux/slices/propertySlice";
 import CurrentTenantDashboard from "../../../../../components/property-dashboard/CurrentTenantDashboard";
 import PropertyExpenses from "@/app/components/room-dashboard/PropertyExpenses";
 import copy from "copy-to-clipboard";
@@ -29,6 +32,8 @@ const SingleRoom = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRequestApprovalModalOpen, setIsRequestApprovalModalOpen] = useState(false);
+  const [requestingApproval, setRequestingApproval] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -78,6 +83,20 @@ const SingleRoom = () => {
     } finally {
       setIsLoading(false);
       setIsModalOpen(false);
+    }
+  };
+
+  const handleRequestApproval = async () => {
+    try {
+      setRequestingApproval(true);
+      await dispatch(requestRoomApproval(id as string) as any).unwrap();
+      toast.success("Approval request sent. Admin will review for public listing.");
+      fetchData();
+      setIsRequestApprovalModalOpen(false);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to request approval");
+    } finally {
+      setRequestingApproval(false);
     }
   };
 
@@ -166,6 +185,28 @@ const SingleRoom = () => {
                               : "Unlist Apartment"}
                           </div>
                         </button>
+                        {singleRoom?.approved ? (
+                          <span className="px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto bg-[#E7F6EC] text-[#099137] border border-[#099137]">
+                            Approved for listing
+                          </span>
+                        ) : singleRoom?.approvalRequested ? (
+                          <span className="px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto bg-[#F7F6F2] text-[#344054] border border-muted">
+                            Approval requested – pending admin
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setIsRequestApprovalModalOpen(true)
+                            }
+                            disabled={requestingApproval}
+                            className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto disabled:opacity-60"
+                          >
+                            {requestingApproval
+                              ? "Requesting..."
+                              : "Request approval for listing"}
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -295,12 +336,51 @@ const SingleRoom = () => {
               <Button
                 size="large"
                 className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
-                variant="bluebg"
+                variant="primary"
                 showIcon={false}
                 isLoading={isLoading}
               >
                 <div className="flex gap-3" onClick={updateRoom}>
                   Continue
+                </div>
+              </Button>
+            </div>
+          </div>
+        </CenterModal>
+        <CenterModal
+          isOpen={isRequestApprovalModalOpen}
+          onClose={() => {
+            setIsRequestApprovalModalOpen(false);
+          }}
+        >
+          <div className="mx-auto text-center p-4">
+            <p className="text-nrvLightGrey text-md">
+              Request admin approval for this unit to be visible on the public listing site.
+              Tenants will be able to view and apply after approval.
+            </p>
+
+            <div className="mt-8 flex gap-3 justify-center text-center items-center">
+              <Button
+                size="large"
+                className="text-red-500 border border-red-500 mt-2 rounded-md"
+                variant="ordinary"
+                showIcon={false}
+                onClick={() => setIsRequestApprovalModalOpen(false)}
+              >
+                <div className="flex gap-3">Cancel</div>
+              </Button>
+              <Button
+                size="large"
+                className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
+                variant="primary"
+                showIcon={false}
+                isLoading={requestingApproval}
+              >
+                <div
+                  className="flex gap-3"
+                  onClick={handleRequestApproval}
+                >
+                  Confirm
                 </div>
               </Button>
             </div>

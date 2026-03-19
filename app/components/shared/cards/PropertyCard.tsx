@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { FaAirbnb } from "react-icons/fa6";
 import { CgStyle } from "react-icons/cg";
+import WatermarkedImage from "../WatermarkedImage";
 
 interface PropertyCardProps {
   imageUrl: string;
@@ -37,10 +38,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
     <div className="w-full h-full flex flex-col bg-white shadow-lg border border-gray-100 rounded-2xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
       {/* Image section with overlay button */}
       <div className="relative h-80 rounded-xl overflow-hidden mb-4 shrink-0">
-        <img
-          src={imageUrl || property?.imageUrls?.[0] || property?.file || property?.propertyId?.file}
+        <WatermarkedImage
+          src={
+            imageUrl ||
+            property?.imageUrls?.[0] ||
+            property?.file ||
+            property?.propertyId?.file
+          }
           alt="property"
-          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+          variant="compact"
+          wrapperClassName="w-full h-full"
+          imageClassName="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
         />
         <button className="absolute bottom-4 right-4 bg-white text-gray-800 font-semibold text-sm px-4 py-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors duration-200">
           View Details

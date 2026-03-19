@@ -6,6 +6,7 @@ import Image from "next/image";
 import HomePageLayout from "@/app/components/layout/HomePageLayout";
 import { API_URL } from "@/config/constant";
 import { ArrowLeft, Bed, Bath, Building, Home, MapPin } from "lucide-react";
+import WatermarkedImage from "@/app/components/shared/WatermarkedImage";
 
 type RoomResponse = {
   _id: string;
@@ -146,21 +147,15 @@ export default function PublicPropertyDetailsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-6">
                 <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
                   <div className="relative w-full aspect-[4/3] bg-gray-100">
-                    {mainImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={mainImage}
-                        alt={title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src="/images/featured-img.svg"
-                        alt={title}
-                        fill
-                        className="object-cover"
-                      />
-                    )}
+                    <WatermarkedImage
+                      src={
+                        mainImage ||
+                        "/images/featured-img.svg"
+                      }
+                      alt={title}
+                      wrapperClassName="w-full h-full"
+                      imageClassName="object-cover w-full h-full"
+                    />
                     <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-[#03442C] border border-[#03442C]/20">
                       Verified listing
                     </span>

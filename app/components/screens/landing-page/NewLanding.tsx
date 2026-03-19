@@ -676,7 +676,12 @@ const NewLanding = () => {
                       ) : (
                         <Image src="/images/featured-img.svg" alt={label} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 100vw, 33vw" />
                       )}
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-[#03442C] text-white text-xs font-medium">
+                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-0">
+                        <div className="rotate-[-30deg] font-extrabold tracking-widest text-white/85 bg-black/40 border border-white/25 text-[11px] sm:text-[13px] px-2.5 py-1.5 whitespace-nowrap rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+                          Naijarentverify
+                        </div>
+                      </div>
+                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-[#03442C] text-white text-xs font-medium z-10">
                         Verified
                       </span>
                     </div>

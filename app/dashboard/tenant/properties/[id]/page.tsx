@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { API_URL } from "@/config/constant";
+import WatermarkedImage from "@/app/components/shared/WatermarkedImage";
 
 /** Ensure image URL is absolute so it loads from backend/Cloudinary when relative */
 function toAbsoluteImageUrl(url: string | null | undefined): string | null {
@@ -368,12 +369,21 @@ const TenantPropertiesScreen = () => {
                               </div>
                             </div>
                           ) : (
-                            <img
+                            <WatermarkedImage
                               src={property.imageUrls[selectedImageIndex]}
                               alt="property"
-                              className={`w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105 ${
-                                imageLoading || imageError ? 'opacity-0' : 'opacity-100'
+                              wrapperClassName="w-full h-full"
+                              imageClassName={`w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105 ${
+                                imageLoading || imageError
+                                  ? "opacity-0"
+                                  : "opacity-100"
                               }`}
+                              overlayClassName={`${
+                                imageLoading || imageError
+                                  ? "opacity-0"
+                                  : "opacity-100"
+                              }`}
+                              variant="default"
                               onClick={() => setShowImageModal(true)}
                               onLoad={handleImageLoad}
                               onError={handleImageError}
@@ -430,10 +440,12 @@ const TenantPropertiesScreen = () => {
                                   }`}
                                 >
                                   <div className="relative w-full h-full">
-                                    <img
+                                    <WatermarkedImage
                                       src={imageUrl}
                                       alt={`Property ${index + 1}`}
-                                      className="w-full h-full object-cover"
+                                      wrapperClassName="w-full h-full"
+                                      imageClassName="w-full h-full object-cover"
+                                      variant="compact"
                                       onLoad={() => {
                                         if (index === selectedImageIndex) {
                                           setImageLoading(false);
@@ -1317,10 +1329,12 @@ const TenantPropertiesScreen = () => {
                       </div>
                     </div>
                   ) : (
-                    <img
+                    <WatermarkedImage
                       src={property.imageUrls[selectedImageIndex]}
                       alt="property"
-                      className="w-full h-full object-contain"
+                      wrapperClassName="w-full h-full"
+                      imageClassName="w-full h-full object-contain"
+                      variant="default"
                     />
                   )}
                   
@@ -1366,10 +1380,12 @@ const TenantPropertiesScreen = () => {
                               : 'border-gray-200 hover:border-gray-300'
                           }`}
                         >
-                          <img
+                          <WatermarkedImage
                             src={imageUrl}
                             alt={`Property ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            wrapperClassName="w-full h-full"
+                            imageClassName="w-full h-full object-cover"
+                            variant="compact"
                           />
                         </button>
                       ))}

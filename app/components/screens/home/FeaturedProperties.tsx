@@ -6,6 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 import Button from "../../shared/buttons/Button";
 import { API_URL } from "@/config/constant";
+import WatermarkedImage from "../../shared/WatermarkedImage";
 
 const defaultImage = "/images/featured-img.svg";
 
@@ -142,10 +143,12 @@ const FeaturedProperties = () => {
               className="group block rounded-2xl border border-[#E9F4E74D] overflow-hidden bg-[#0D3520] hover:border-[#BBFF37]/50 transition-all duration-300"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden">
-                <img
+                <WatermarkedImage
                   src={property.image}
                   alt={property.type}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  variant="compact"
+                  wrapperClassName="w-full h-full"
+                  imageClassName="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                 />
                 <span className="absolute top-3 left-3 rounded-full bg-[#0D3520]/90 text-[#BBFF37] text-xs font-medium px-2.5 py-1">
                   {property.type}

@@ -72,7 +72,7 @@ const MobileNavBar: React.FC = () => {
       {/* Full-screen overlay menu */}
       {isOpen && (
         <div
-          className="fixed inset-0 top-[68px] z-40 bg-white/98 backdrop-blur-sm flex flex-col"
+          className="fixed inset-0 top-[68px] z-60 bg-white flex flex-col"
           role="dialog"
           aria-modal="true"
         >

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
-import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
 import { IoAddCircle } from "react-icons/io5";
 import { useRouter } from "next/navigation";
@@ -120,23 +119,17 @@ const RentersListScreen = () => {
       <div className="text-xl">Messages 🏘️</div>
 
       {isLoading ? (
-        <div className="w-full mx-auto">
-          {[...Array(2)].map((_, index) => (
-            <div key={index} className="flex mt-4 rounded-2xl p-4">
-              <div className="w-1/5">
-                <div className="h-20 rounded"></div>{" "}
-                {/* Placeholder for image */}
-              </div>
-              <div className="w-4/5">
-                <div className="flex justify-between w-full">
-                  <div className="h-6 rounded w-1/2"></div>{" "}
-                  {/* Placeholder for name */}
-                  <div className="h-6 rounded w-1/2 text-right"></div>{" "}
-                  {/* Placeholder for apartment ID */}
+        <div className="md:mx-auto mt-8 mx-4 space-y-4">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="p-4 rounded-lg w-full flex justify-between items-center bg-white border border-gray-100 animate-pulse">
+              <div className="flex gap-4 items-center w-full">
+                <div className="w-12 h-12 rounded-full bg-gray-200 flex-shrink-0"></div>
+                <div className="space-y-2 w-full max-w-sm">
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-3 bg-gray-100 rounded w-3/4"></div>
                 </div>
-                <div className="h-4 rounded mt-4"></div>{" "}
-                {/* Placeholder for address */}
               </div>
+              <div className="w-8 h-8 rounded-full bg-gray-100 flex-shrink-0"></div>
             </div>
           ))}
         </div>
@@ -145,9 +138,16 @@ const RentersListScreen = () => {
           {properties?.length < 1 ? (
             <div className="">
               <div className="flex justify-center items-center">
-                <div className="">
-                  <EmptyState />
-                  <p className="text-nrvLightGrey m-2">No Tenant Yet</p>
+                <div className="w-full max-w-md text-center rounded-2xl border border-gray-200 bg-white p-8 mt-6">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+                    <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-700 font-medium">No conversations yet</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Start a chat from a rented apartment when available.
+                  </p>
                 </div>
               </div>
             </div>

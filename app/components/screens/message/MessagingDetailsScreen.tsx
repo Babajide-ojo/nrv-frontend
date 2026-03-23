@@ -177,21 +177,27 @@ const MessagingDetailsScreen = ({source}: any) => {
   return (
     <div className="w-full">
       {isLoading ? (
-        <div className="w-full mx-auto">
-          {[...Array(2)].map((_, index) => (
-            <div key={index} className="flex mt-4 rounded-2xl p-4">
-              <div className="w-1/5">
-                <div className="h-20 rounded"></div>
+        <div className="w-full mx-auto p-4 space-y-6">
+          {/* Header Skeleton */}
+          <div className="flex items-center gap-4 border-b pb-4">
+            <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+          </div>
+          
+          {/* Messages Skeleton */}
+          <div className="space-y-4">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                <div className={`h-16 rounded-2xl bg-gray-100 animate-pulse ${index % 2 === 0 ? 'w-2/3 rounded-tl-none' : 'w-1/2 rounded-tr-none bg-emerald-50'}`}></div>
               </div>
-              <div className="w-4/5">
-                <div className="flex justify-between w-full">
-                  <div className="h-6 rounded w-1/2"></div>
-                  <div className="h-6 rounded w-1/2 text-right"></div>
-                </div>
-                <div className="h-4 rounded mt-4"></div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          {/* Input Skeleton */}
+          <div className="mt-auto pt-4 border-t flex gap-2">
+            <div className="h-12 bg-gray-100 rounded-full flex-grow animate-pulse"></div>
+            <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
+          </div>
         </div>
       ) : (
         <div>

@@ -1,9 +1,9 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import LoadingPage from "@/app/components/loaders/LoadingPage";
-import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getMaintenanceById, markIssueAsResolved } from '@/redux/slices/maintenanceSlice';
@@ -63,13 +63,41 @@ const SingleMaintainance = () => {
   useEffect(() => {
     setIsLoading(false);
   }, []);
+
   return (
-    <div>
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
+    <main>
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="md:py-10 md:px-20 p-5 space-y-8 animate-pulse">
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div className="h-6 bg-gray-200 rounded w-48"></div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-5 bg-gray-100 rounded w-48"></div>
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  <div className="h-20 bg-gray-100 rounded w-full"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="flex gap-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="w-32 h-32 bg-gray-200 rounded-lg"></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
             <div className="md:py-10 md:px-20 p-5">
               <div className=" mb-8">
                 <div className="text-nrvGreyBlack mb-4 flex gap-3">
@@ -183,10 +211,11 @@ const SingleMaintainance = () => {
           </div>
         </div>
       </CenterModal>
+            </>
+          )}
           </TenantLayout>
         </ProtectedRoute>
-      )}
-    </div>
+    </main>
   );
 };
 

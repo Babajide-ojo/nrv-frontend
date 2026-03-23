@@ -98,11 +98,32 @@ const RequestMaintainance = () => {
 
   return (
     <div>
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="py-10 md:px-20 px-4 space-y-6 animate-pulse">
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div className="h-6 bg-gray-200 rounded w-48"></div>
+              </div>
+              <div className="h-4 bg-gray-200 rounded w-64 mb-8"></div>
+              <div className="md:w-3/5 w-full bg-white p-8 rounded-lg space-y-6">
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="h-12 bg-gray-100 rounded-lg w-full"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="h-32 bg-gray-100 rounded-lg w-full"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="h-32 bg-gray-100 rounded-lg w-full border-2 border-dashed border-gray-200"></div>
+                </div>
+                <div className="h-12 bg-gray-200 rounded-lg w-full mt-4"></div>
+              </div>
+            </div>
+          ) : (
             <div className="py-10 md:px-20 px-4">
               <div>
                 <div className="flex gap-4">
@@ -214,9 +235,9 @@ const RequestMaintainance = () => {
                 </div>
               </div>
             </div>
-          </TenantLayout>
-        </ProtectedRoute>
-      )}
+          )}
+        </TenantLayout>
+      </ProtectedRoute>
     </div>
   );
 };

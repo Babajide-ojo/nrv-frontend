@@ -1,6 +1,5 @@
 "use client";
 
-import LoadingPage from "../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
@@ -11,27 +10,13 @@ import TenantLayout from "@/app/components/layout/TenantLayout";
 import RentersListScreen from "@/app/components/dashboard/tenant/RentersListScreen";
 
 const Page = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
-
-    return () => clearTimeout(timer);
-  }, []);
   return (
     <div>
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
-          
-            <RentersListScreen />
-          </TenantLayout>
-        </ProtectedRoute>
-      )}
+      <ProtectedRoute>
+        <TenantLayout>
+          <RentersListScreen />
+        </TenantLayout>
+      </ProtectedRoute>
     </div>
   );
 };

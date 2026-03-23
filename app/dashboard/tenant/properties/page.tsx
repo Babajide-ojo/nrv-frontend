@@ -74,12 +74,23 @@ const TenantPropertiesScreen = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const formatMoneyLike = (raw: string) => {
+      const digits = raw.replace(/[^\d]/g, "");
+      if (!digits) return "";
+      return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const nextValue =
+      name === "minimiumPrice" || name === "maximiumPrice"
+        ? formatMoneyLike(value)
+        : value;
+
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
     if (name === "searchTerm") {
       if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
       searchDebounceRef.current = setTimeout(() => {
         setPage(1);
-        fetchData({ page: 1, filters: { ...formData, searchTerm: value } });
+        fetchData({ page: 1, filters: { ...formData, searchTerm: nextValue } });
       }, DEBOUNCE_MS);
     }
   };
@@ -120,117 +131,125 @@ const TenantPropertiesScreen = () => {
     formData.minimiumPrice !== "" && formData.minimiumPrice != null
       ? String(formData.minimiumPrice).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       : "";
+  const maxPriceDisplay =
+    formData.maximiumPrice !== "" && formData.maximiumPrice != null
+      ? String(formData.maximiumPrice).replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : "";
 
   return (
     <div>
-      {initialLoad && !properties.length && !isListLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
-            <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                <div>
-                  <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">
-                    Available Rooms & Apartments
-                  </h1>
-                  <p className="text-nrvLightGrey text-sm mt-1">
-                    Browse and apply for available rooms and apartments
-                  </p>
-                </div>
-                <Btn
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 shrink-0 w-fit"
-                  onClick={handleRefresh}
-                  disabled={isListLoading}
-                >
-                  <RefreshCcw className={`w-4 h-4 ${isListLoading ? "animate-spin" : ""}`} />
-                  Refresh
-                </Btn>
+      <ProtectedRoute>
+        <TenantLayout>
+          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">
+                  Available Rooms & Apartments
+                </h1>
+                <p className="text-nrvLightGrey text-sm mt-1">
+                  Browse and apply for available rooms and apartments
+                </p>
               </div>
+              <Btn
+                variant="outline"
+                size="sm"
+                className="gap-2 shrink-0 w-fit"
+                onClick={handleRefresh}
+                disabled={isListLoading}
+              >
+                <RefreshCcw className={`w-4 h-4 ${isListLoading ? "animate-spin" : ""}`} />
+                Refresh
+              </Btn>
+            </div>
 
-              <section className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 sm:p-5 mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <SlidersHorizontal className="w-5 h-5 text-gray-600" />
-                  <h2 className="text-base font-semibold text-nrvGreyBlack">
-                    Filter by location and budget
-                  </h2>
+              <section className="rounded-2xl border border-gray-200 bg-white shadow-sm p-5 sm:p-6 mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-green-50 p-2 rounded-lg">
+                    <SlidersHorizontal className="w-5 h-5 text-green-700" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">
+                      Find your perfect home
+                    </h2>
+                    <p className="text-sm text-gray-500">Filter by location and budget</p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="lg:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Search by location
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
+                  <div className="md:col-span-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Location
                     </label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="search"
                         name="searchTerm"
-                        placeholder="City, state or address"
+                        placeholder="City, state or address..."
                         value={formData.searchTerm}
                         onChange={handleInputChange}
                         onKeyDown={handleSearchKeyDown}
-                        className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/20 focus:border-green-600 focus:bg-white transition-all"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Updates as you type (no need to click Apply)</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Minimum price (₦)
+                  <div className="md:col-span-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Min Price (₦)
                     </label>
                     <InputField
-                      css="bg-white border border-gray-300 rounded-lg text-sm"
-                      placeholder="e.g. 100000"
+                      css="bg-gray-50 border border-gray-300 rounded-xl text-sm py-2.5 focus:bg-white transition-all"
+                      placeholder="e.g. 100,000"
                       name="minimiumPrice"
                       value={minPriceDisplay}
                       onChange={handleInputChange}
                       onKeyPress={(e: any) => e.key === "Enter" && handleApplyFilters()}
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Maximum price (₦)
+                  <div className="md:col-span-3">
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Max Price (₦)
                     </label>
                     <InputField
-                      css="bg-white border border-gray-300 rounded-lg text-sm"
-                      placeholder="e.g. 5000000"
+                      css="bg-gray-50 border border-gray-300 rounded-xl text-sm py-2.5 focus:bg-white transition-all"
+                      placeholder="e.g. 5,000,000"
                       inputType="text"
                       name="maximiumPrice"
-                      value={formData.maximiumPrice}
+                      value={maxPriceDisplay}
                       onChange={handleInputChange}
                       onKeyPress={(e: any) => e.key === "Enter" && handleApplyFilters()}
                     />
                   </div>
-                  <div className="flex flex-wrap items-end gap-2 sm:flex-nowrap">
+                  <div className="md:col-span-2 flex gap-2 h-[42px]">
                     <Button
                       size="small"
-                      className="flex-1 sm:flex-none text-white bg-green-700 hover:bg-green-800 border-0"
+                      className="flex-1 h-full text-white bg-green-700 hover:bg-green-800 border-0 rounded-xl font-medium shadow-sm"
                       variant="ordinary"
                       showIcon={false}
                       onClick={handleApplyFilters}
                       disabled={isListLoading}
                     >
-                      Apply filters
+                      Apply
                     </Button>
                     <Button
                       size="small"
-                      className="flex-1 sm:flex-none text-nrvDarkGrey bg-gray-200 hover:bg-gray-300 border-0 gap-1"
+                      className="px-3 h-full text-gray-600 bg-gray-100 hover:bg-gray-200 border-0 rounded-xl"
                       variant="ordinary"
                       showIcon={false}
                       onClick={handleClearFilters}
                       disabled={!hasActiveFilters || isListLoading}
+                      title="Clear filters"
                     >
                       <X className="w-4 h-4" />
-                      Clear
                     </Button>
                   </div>
                 </div>
                 {hasActiveFilters && (
-                  <p className="text-xs text-gray-500 mt-3">
-                    Filters applied. Change values and click &quot;Apply filters&quot; to update, or &quot;Clear&quot; to reset.
-                  </p>
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
+                    <p className="text-xs text-gray-600 font-medium">
+                      Filters applied. Change values and click Apply to update.
+                    </p>
+                  </div>
                 )}
               </section>
 
@@ -242,16 +261,16 @@ const TenantPropertiesScreen = () => {
                 </h2>
               </div>
 
-              {isListLoading && !initialLoad ? (
+              {isListLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
                       className="rounded-2xl border border-gray-100 bg-white p-4 animate-pulse"
                     >
-                      <div className="h-80 rounded-xl bg-gray-200 mb-4" />
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                      <div className="h-4 bg-gray-100 rounded w-1/2 mb-2" />
+                      <div className="h-64 rounded-xl bg-gray-200 mb-4" />
+                      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                      <div className="h-4 bg-gray-100 rounded w-1/2 mb-4" />
                       <div className="h-6 bg-gray-200 rounded w-1/3" />
                     </div>
                   ))}
@@ -289,7 +308,7 @@ const TenantPropertiesScreen = () => {
                     >
                       <PropertyCard
                         imageUrl={
-                          room?.imageUrls?.[0] || room?.file || room?.propertyId?.file
+                          room?.imageUrls?.[0] || room?.file || "/images/featured-img.svg"
                         }
                         address={`${room?.propertyId?.streetAddress ?? ""} ${room?.propertyId?.city ?? ""} ${room?.propertyId?.state ?? ""}`.trim()}
                         rentAmount={room?.rentAmount}
@@ -326,7 +345,6 @@ const TenantPropertiesScreen = () => {
             </div>
           </TenantLayout>
         </ProtectedRoute>
-      )}
     </div>
   );
 };

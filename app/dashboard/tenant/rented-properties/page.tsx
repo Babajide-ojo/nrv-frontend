@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
-import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";
 import { Button as UiButton } from "@/components/ui/button";
 import { IoAddCircle } from "react-icons/io5";
@@ -76,12 +75,32 @@ const RentedPropertiesScreen = () => {
 
   return (
     <div>
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
-            {isPageLoading && (
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">
+                    View Rented Apartments
+                  </h1>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="rounded-xl overflow-hidden shadow border animate-pulse">
+                    <div className="h-48 bg-gray-200" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-5 bg-gray-200 rounded w-1/3" />
+                      <div className="h-4 bg-gray-100 rounded w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="text-white"></div>
               </div>
@@ -90,10 +109,17 @@ const RentedPropertiesScreen = () => {
               <div className="p-8 w-full">
                 <div className="text-2xl">View Rented Apartments</div>
 
-                <div className="w-full h-screen flex justify-center items-center">
-                  <div className="">
-                    <EmptyState />
-                    <p className="text-nrvLightGrey m-2">No Rented Apartment</p>
+                <div className="w-full h-[60vh] flex justify-center items-center">
+                  <div className="w-full max-w-md text-center rounded-2xl border border-gray-200 bg-white p-8">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-700 font-medium">No rented apartment yet</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Once you rent a unit, it will appear here.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -199,10 +225,11 @@ const RentedPropertiesScreen = () => {
                   </Button>
                 </div> */}
               </div>
-            )}
-          </TenantLayout>
-        </ProtectedRoute>
-      )}
+              )}
+            </>
+          )}
+        </TenantLayout>
+      </ProtectedRoute>
     </div>
   );
 };

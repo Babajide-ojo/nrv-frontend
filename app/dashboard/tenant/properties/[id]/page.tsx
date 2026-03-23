@@ -115,7 +115,7 @@ const TenantPropertiesScreen = () => {
             ? raw.imageUrls.map((u: string) => toAbsoluteImageUrl(u)).filter(Boolean)
             : [];
           if (fromArray.length > 0) return fromArray;
-          const fallbacks = [raw?.file, raw?.propertyId?.file]
+          const fallbacks = [raw?.file]
             .map((u) => toAbsoluteImageUrl(u))
             .filter(Boolean);
           return fallbacks;
@@ -136,7 +136,7 @@ const TenantPropertiesScreen = () => {
           email: raw?.propertyId.createdBy.email,
           phoneNumber: raw?.propertyId.createdBy.phoneNumber,
           id: raw?.propertyId.createdBy._id,
-          reviews: 345,
+          reviews: null,
           imageUrl: "/owner.jpg", // placeholder
         },
       };
@@ -298,12 +298,65 @@ const TenantPropertiesScreen = () => {
 
   return (
     <div className="pb-10 bg-gray-50 min-h-screen">
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout mainPath="/dashboard/tenant/properties">
-            {currentStep === 1 && (
+      <ProtectedRoute>
+        <TenantLayout mainPath="/dashboard/tenant/properties">
+          {isLoading ? (
+            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+              {/* Header Skeleton */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div className="border-l h-6 mx-2"></div>
+                    <div>
+                      <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+                      <div className="h-4 bg-gray-100 rounded w-32"></div>
+                    </div>
+                  </div>
+                  <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                </div>
+              </div>
+
+              {/* Main Content Grid Skeleton */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column Skeleton */}
+                <div className="lg:col-span-1 space-y-6">
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="h-80 bg-gray-200"></div>
+                    <div className="p-4 flex gap-2 overflow-hidden">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0"></div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="h-12 bg-gray-200 rounded-xl w-full"></div>
+                </div>
+
+                {/* Right Column Skeleton */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Property Info Card Skeleton */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="space-y-3 w-1/2">
+                        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                        <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+                      </div>
+                      <div className="h-8 bg-gray-200 rounded w-24"></div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-gray-100">
+                      {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="space-y-2">
+                          <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+                          <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : currentStep === 1 && (
               <div className="p-4 md:p-8 max-w-7xl mx-auto">
                 {/* Enhanced Header Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
@@ -619,7 +672,9 @@ const TenantPropertiesScreen = () => {
                           </p>
                           <div className="flex items-center text-sm text-yellow-600">
                             <Star className="w-4 h-4 mr-1" fill="currentColor" />
-                            {property?.owner?.reviews} Reviews
+                            {property?.owner?.reviews != null
+                              ? `${property.owner.reviews} Reviews`
+                              : "Verified owner"}
                           </div>
                         </div>
                       </div>
@@ -778,7 +833,7 @@ const TenantPropertiesScreen = () => {
                               {/* Employment Section */}
                               <div className="bg-gray-50 rounded-xl p-4">
                                 <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
                                   Employment & Income
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -927,16 +982,16 @@ const TenantPropertiesScreen = () => {
                             </div>
 
                             {/* Application Tips */}
-                            <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                               <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                 </div>
                                 <div>
-                                  <h5 className="font-medium text-blue-800 mb-2 text-sm">Application Tips</h5>
-                                  <ul className="text-xs text-blue-700 space-y-1">
+                                  <h5 className="font-medium text-emerald-800 mb-2 text-sm">Application Tips</h5>
+                                  <ul className="text-xs text-emerald-700 space-y-1">
                                     <li>• Ensure all information is accurate and up-to-date</li>
                                     <li>• Provide complete contact details for verification</li>
                                     <li>• Be honest about your income and employment status</li>
@@ -1074,7 +1129,7 @@ const TenantPropertiesScreen = () => {
                         {/* Employment Review */}
                         <div className="bg-gray-50 rounded-xl p-4">
                           <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
                             Employment & Income
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1148,16 +1203,16 @@ const TenantPropertiesScreen = () => {
                       </div>
 
                       {/* Final Review Tips */}
-                      <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
                         <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
                           <div>
-                            <h5 className="font-medium text-blue-800 mb-2 text-sm">Final Review Checklist</h5>
-                            <ul className="text-xs text-blue-700 space-y-1">
+                            <h5 className="font-medium text-emerald-800 mb-2 text-sm">Final Review Checklist</h5>
+                            <ul className="text-xs text-emerald-700 space-y-1">
                               <li>• All personal information is accurate and complete</li>
                               <li>• Employment details are up-to-date</li>
                               <li>• Move-in date is realistic and works for you</li>
@@ -1288,7 +1343,7 @@ const TenantPropertiesScreen = () => {
                   </Button>
                 </Link>
                 <Link className="flex-1" href={`mailto:${property?.owner?.email}`}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" variant="darkPrimary">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" variant="darkPrimary">
                     <div className="flex items-center gap-2 py-1">
                       <Mail className="h-4 w-4" />
                       Email
@@ -1399,8 +1454,7 @@ const TenantPropertiesScreen = () => {
             </DialogContent>
           </Dialog>
         </TenantLayout>
-        </ProtectedRoute>
-      )}
+      </ProtectedRoute>
     </div>
   );
 };

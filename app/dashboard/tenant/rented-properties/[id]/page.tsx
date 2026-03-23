@@ -116,12 +116,63 @@ const RentedPropertiesScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 ">
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <TenantLayout>
-            {isPageLoading && (
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="p-6 md:p-8 mb-40 space-y-8 animate-pulse">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div>
+                  <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                </div>
+              </div>
+              <div className="mt-5 flex flex-col border border-nrvLightGray rounded-2xl bg-white overflow-hidden">
+                <div className="px-10 py-4 bg-[#E4E7EC] flex items-center gap-5">
+                  <div className="rounded-full h-12 w-12 bg-gray-300"></div>
+                  <div className="space-y-2">
+                    <div className="h-5 bg-gray-300 rounded w-40"></div>
+                    <div className="h-4 bg-gray-300 rounded w-24"></div>
+                  </div>
+                </div>
+                <div className="px-4 py-4 gap-5 md:gap-0 flex flex-col md:flex-row">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="flex flex-col items-center w-60 md:border-r last:border-0 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      <div className="h-5 bg-gray-200 rounded w-32"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-5 flex flex-col border border-nrvLightGray rounded-2xl bg-white overflow-hidden">
+                <div className="p-4 pt-7 border-b">
+                  <div className="h-6 bg-gray-200 rounded w-48"></div>
+                </div>
+                <div className="flex flex-col-reverse md:flex-row px-4">
+                  <div className="md:border-r w-full md:w-[70%] py-4 space-y-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex flex-col sm:flex-row border-b pb-4 space-y-4 sm:space-y-0">
+                        <div className="w-60 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                          <div className="h-5 bg-gray-200 rounded w-32"></div>
+                        </div>
+                        <div className="sm:border-l sm:pl-5 space-y-2">
+                          <div className="h-4 bg-gray-200 rounded w-32"></div>
+                          <div className="h-5 bg-gray-200 rounded w-48"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="w-full md:w-[30%] p-4 space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                    <div className="h-32 bg-gray-200 rounded-xl w-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div className="text-white">Loading...</div>
               </div>
@@ -314,6 +365,8 @@ const RentedPropertiesScreen = () => {
                 </div>
               </div>
             )}
+            </>
+          )}
           </TenantLayout>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogContent className="sm:max-w-md">
@@ -387,7 +440,6 @@ const RentedPropertiesScreen = () => {
             </DialogContent>
           </Dialog>
         </ProtectedRoute>
-      )}
     </div>
   );
 };

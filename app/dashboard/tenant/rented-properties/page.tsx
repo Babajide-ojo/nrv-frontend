@@ -19,6 +19,17 @@ import TenantLayout from "@/app/components/layout/TenantLayout";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
 import { RefreshCcw } from "lucide-react";
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -195,7 +206,7 @@ const RentedPropertiesScreen = () => {
                     >
                       <PropertyCard
                         imageUrl={property?.propertyId?.file}
-                        address={property?.propertyId?.propertyId?.street}
+                        address={formatAddress(property?.propertyId?.propertyId?.streetAddress || property?.propertyId?.propertyId?.street)}
                         rentAmount={property?.propertyId?.rentAmount}
                         property={property?.propertyId}
                       />

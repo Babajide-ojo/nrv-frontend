@@ -11,6 +11,7 @@ import Notes from "../../icons/Notes";
 import Users from "../../icons/Users";
 import { LuMapPin } from "react-icons/lu";
 import { API_URL } from "@/config/constant";
+import PropertyCard from "@/app/components/shared/cards/PropertyCard";
 
 function getRoomFromItem(item: any) {
   const room = item?.propertyId;
@@ -87,7 +88,7 @@ const RentedApartments = ({
         </div>
 
         {exploreLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="rounded-xl border border-gray-200 bg-white p-3 animate-pulse">
                 <div className="h-40 rounded-lg bg-gray-200 mb-3" />
@@ -102,15 +103,16 @@ const RentedApartments = ({
             <p className="text-sm font-medium text-gray-700">No properties available to explore right now.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {exploreProperties.slice(0, 6).map((room: any, index: number) => {
               const imageUrl = room?.imageUrls?.[0] || room?.file || room?.propertyId?.file || null;
               const title = room?.name || room?.description || "Apartment";
               const property = room?.propertyId;
-              const location =
+              const location = formatAddress(
                 property?.streetAddress ||
                 [property?.city, property?.state].filter(Boolean).join(", ") ||
-                "—";
+                "—"
+              );
               const rent = room?.rentAmount;
               return (
                 <div
@@ -124,21 +126,14 @@ const RentedApartments = ({
                       router.push(`/dashboard/tenant/properties/${room._id}`);
                     }
                   }}
-                  className="rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-green-300 transition-all cursor-pointer"
+                  className="cursor-pointer"
                 >
-                  <div className="relative h-40">
-                    <PropertyImage imageUrl={imageUrl} title={title} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="p-3 space-y-1">
-                    <p className="text-sm font-medium text-gray-800 line-clamp-1">{title}</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 line-clamp-1">
-                      <LuMapPin /> {location}
-                    </p>
-                    <p className="text-sm font-semibold text-[#03442C]">
-                      {rent != null ? `₦${Number(rent).toLocaleString()}` : "—"}{" "}
-                      <span className="text-[11px] font-normal text-gray-500">/ Per Annum</span>
-                    </p>
-                  </div>
+                  <PropertyCard
+                    imageUrl={imageUrl || ""}
+                    address={location}
+                    rentAmount={rent}
+                    property={room}
+                  />
                 </div>
               );
             })}
@@ -186,10 +181,11 @@ const RentedApartments = ({
               property?.file ||
               null;
             const title = room?.name || "Apartment";
-            const address =
+            const address = formatAddress(
               property?.streetAddress ||
               [property?.city, property?.state].filter(Boolean).join(", ") ||
-              "—";
+              "—"
+            );
             const rent = room?.rentAmount;
             const beds = room?.noOfRooms ?? "—";
             const baths = room?.noOfBaths ?? "—";
@@ -198,49 +194,15 @@ const RentedApartments = ({
             return (
               <div
                 key={item._id ?? index}
-                className="rounded-xl overflow-hidden shadow border"
+                className="cursor-pointer"
+                onClick={() => router.push(`/dashboard/tenant/rented-properties/${property?._id}`)}
               >
-                <div className="relative h-58">
-                  <PropertyImage imageUrl={imageUrl} title={title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col justify-end">
-                    <h3 className="text-white text-lg font-semibold">{title}</h3>
-                    <p className="text-white text-sm flex items-center gap-1">
-                      <LuMapPin /> {address}
-                    </p>
-                  </div>
-                </div>
-                <div className="p-4 space-y-3 text-sm">
-                  <p className="text-[#03442C] font-semibold text-base">
-                    {rent != null ? `₦${Number(rent).toLocaleString()}` : "—"}{" "}
-                    <span className="text-gray-500 text-sm">/ Per Annum</span>
-                  </p>
-                  <p className="text-gray-500 text-[12px] font-light -mt-2">
-                    View details and manage your tenancy.
-                  </p>
-                  <div className="flex justify-between text-xs text-[#03442C] mt-2 p-3 bg-[#ECECEE]">
-                    <div>
-                      <p className="font-medium text-[8px]">Bedroom</p>
-                      <div className="flex items-center gap-1">
-                        <FaBed />
-                        <p className="text-[10px] font-medium">{beds}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="font-medium text-[8px]">Bathroom</p>
-                      <div className="flex items-center gap-1">
-                        <FaBath />
-                        <p className="text-[10px] font-medium">{baths}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="font-medium text-[8px]">Style</p>
-                      <div className="flex items-center gap-1">
-                        <FaPaintRoller />
-                        <p className="text-[10px] font-medium">{style}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <PropertyCard
+                  imageUrl={imageUrl || ""}
+                  address={address}
+                  rentAmount={rent}
+                  property={room}
+                />
               </div>
             );
           })}
@@ -249,6 +211,17 @@ const RentedApartments = ({
       </section>
     </div>
   );
+};
+
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
 };
 
 const TenantDashboardScreen = () => {

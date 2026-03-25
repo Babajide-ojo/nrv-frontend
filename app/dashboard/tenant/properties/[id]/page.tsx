@@ -65,6 +65,17 @@ function toAbsoluteImageUrl(url: string | null | undefined): string | null {
   return u.startsWith("/") ? `${base}${u}` : `${base}/${u}`;
 }
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
@@ -122,7 +133,7 @@ const TenantPropertiesScreen = () => {
         })(),
         price: raw?.rentAmount,
         apartmentName: raw?.apartmentType,
-        address: `${raw?.propertyId.streetAddress}, ${raw?.propertyId.city}, ${raw.propertyId.state}`,
+        address: formatAddress([raw?.propertyId?.streetAddress, raw?.propertyId?.city, raw?.propertyId?.state].filter(Boolean).join(", ")),
         description: raw?.description,
         flatNumber: raw?.roomId,
         bedrooms: raw?.noOfRooms,
@@ -674,7 +685,7 @@ const TenantPropertiesScreen = () => {
                             <Star className="w-4 h-4 mr-1" fill="currentColor" />
                             {property?.owner?.reviews != null
                               ? `${property.owner.reviews} Reviews`
-                              : "Verified owner"}
+                              : "Owner"}
                           </div>
                         </div>
                       </div>
@@ -689,43 +700,43 @@ const TenantPropertiesScreen = () => {
               <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
                 <div className="max-w-4xl mx-auto">
                   {/* Progress Indicator */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="mb-6 overflow-x-auto pb-4 hide-scrollbar">
+                    <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-green-600">Property Selected</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Property Selected</p>
                           </div>
                         </div>
                         
-                        <div className="w-12 h-0.5 bg-green-200"></div>
+                        <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0"></div>
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-green-600">Application Form</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Application Form</p>
                           </div>
                         </div>
                         
-                        <div className="w-12 h-0.5 bg-gray-200"></div>
+                        <div className="w-6 sm:w-12 h-0.5 bg-gray-200 shrink-0"></div>
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-gray-400">Review & Submit</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-gray-400 whitespace-nowrap">Review & Submit</p>
                           </div>
                         </div>
                       </div>
@@ -735,20 +746,20 @@ const TenantPropertiesScreen = () => {
                   {/* Form Container */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 text-white">
-                      <div className="flex items-center gap-3">
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => setCurrentStep(1)}
-                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105"
+                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105 shrink-0"
                         >
                           <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <div>
-                          <h2 className="text-xl font-bold">
+                        <div className="min-w-0">
+                          <h2 className="text-lg sm:text-xl font-bold truncate">
                             Tenant Application Form 🏘️
                           </h2>
-                          <p className="text-green-100 text-sm mt-1">
+                          <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
                             Complete your application for {property?.apartmentType} • {property?.apartmentStyle}
                           </p>
                         </div>
@@ -772,23 +783,23 @@ const TenantPropertiesScreen = () => {
                         {({ isSubmitting, resetForm, values }) => (
                           <Form className="w-full">
                             {/* Property Summary Card */}
-                            <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
-                              <div className="flex items-center justify-between">
+                          <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
                                     <Building className="w-6 h-6 text-green-600" />
                                   </div>
                                   <div>
-                                    <h3 className="text-lg font-bold text-gray-800">
+                                    <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                                       {property?.apartmentType} • {property?.apartmentStyle}
                                     </h3>
-                                    <p className="text-gray-600 text-sm">{property?.address}</p>
+                                    <p className="text-gray-600 text-sm line-clamp-1">{property?.address}</p>
                                     <p className="text-xl font-bold text-green-600 mt-1">
                                       ₦{property?.price?.toLocaleString()}/year
                                     </p>
                                   </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="sm:text-right flex sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-t-0 pt-3 sm:pt-0">
                                   <div className="text-xs text-gray-500">Unit Number</div>
                                   <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
                                 </div>
@@ -871,10 +882,10 @@ const TenantPropertiesScreen = () => {
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-8 block">
+                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
                                       Desired Move-in Date
                                     </Label>
-                                    <div className="h-10 rounded-lg border border-gray-200 px-3 bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/20 transition-all duration-200">
+                                    <div className="h-10 rounded-lg border border-gray-200 px-3 bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/20 transition-all duration-200 flex items-center">
                                       <LocalizationProvider dateAdapter={AdapterDateFns}>
                                         <DatePicker
                                           value={values.desiredMoveInDate}
@@ -890,6 +901,7 @@ const TenantPropertiesScreen = () => {
                                               sx: {
                                                 fontSize: "13px",
                                                 boxShadow: "none",
+                                                paddingTop: "4px",
                                                 "&:hover": {
                                                   boxShadow: "none",
                                                   borderColor: "#10B981",
@@ -946,11 +958,11 @@ const TenantPropertiesScreen = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                            <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">
                               <Button
                                 type="button"
                                 size="large"
-                                className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                                className="w-full sm:flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
                                 variant="lightGrey"
                                 showIcon={false}
                                 onClick={() => {
@@ -964,7 +976,7 @@ const TenantPropertiesScreen = () => {
                               <Button
                                  type="button"
                                 size="large"
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
                                 variant="darkPrimary"
                                 showIcon={false}
                                  onClick={() => {
@@ -972,7 +984,7 @@ const TenantPropertiesScreen = () => {
                                    setCurrentStep(3);
                                  }}
                                >
-                                  <div className="flex items-center">
+                                  <div className="flex items-center justify-center w-full">
                                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -1014,43 +1026,43 @@ const TenantPropertiesScreen = () => {
               <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
                 <div className="max-w-4xl mx-auto">
                   {/* Progress Indicator */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-center mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="mb-6 overflow-x-auto pb-4 hide-scrollbar">
+                    <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-green-600">Property Selected</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Property Selected</p>
                           </div>
                         </div>
                         
-                        <div className="w-12 h-0.5 bg-green-200"></div>
+                        <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0"></div>
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-green-600">Application Form</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Application Form</p>
                           </div>
                         </div>
                         
-                        <div className="w-12 h-0.5 bg-gray-200"></div>
+                        <div className="w-6 sm:w-12 h-0.5 bg-gray-200 shrink-0"></div>
                         
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center shrink-0">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <div className="ml-2">
-                            <p className="text-xs font-medium text-gray-400">Review & Submit</p>
+                          <div className="ml-1.5 sm:ml-2">
+                            <p className="text-[10px] sm:text-xs font-medium text-gray-400 whitespace-nowrap">Review & Submit</p>
                           </div>
                         </div>
                       </div>
@@ -1060,20 +1072,20 @@ const TenantPropertiesScreen = () => {
                   {/* Review Container */}
                   <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4 text-white">
-                      <div className="flex items-center gap-3">
+                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <button
                           type="button"
                           onClick={() => setCurrentStep(2)}
-                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105"
+                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105 shrink-0"
                         >
                           <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <div>
-                          <h2 className="text-xl font-bold">
+                        <div className="min-w-0">
+                          <h2 className="text-lg sm:text-xl font-bold truncate">
                             Review & Submit Application 📋
                           </h2>
-                          <p className="text-green-100 text-sm mt-1">
+                          <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
                             Review your application details before final submission
                           </p>
                         </div>
@@ -1081,25 +1093,25 @@ const TenantPropertiesScreen = () => {
                     </div>
 
                     {/* Review Content */}
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       {/* Property Summary Card */}
                       <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
                               <Building className="w-6 h-6 text-green-600" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-bold text-gray-800">
+                              <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                                 {property?.apartmentType} • {property?.apartmentStyle}
                               </h3>
-                              <p className="text-gray-600 text-sm">{property?.address}</p>
+                              <p className="text-gray-600 text-sm line-clamp-1">{property?.address}</p>
                               <p className="text-xl font-bold text-green-600 mt-1">
                                 ₦{property?.price?.toLocaleString()}/year
                               </p>
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="sm:text-right flex sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-t-0 pt-3 sm:pt-0">
                             <div className="text-xs text-gray-500">Unit Number</div>
                             <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
                           </div>
@@ -1166,11 +1178,11 @@ const TenantPropertiesScreen = () => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
+                      <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">
                         <Button
                           type="button"
                           size="large"
-                          className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
+                          className="w-full sm:flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
                           variant="lightGrey"
                           showIcon={false}
                           onClick={() => setCurrentStep(2)}
@@ -1180,19 +1192,19 @@ const TenantPropertiesScreen = () => {
                         <Button
                           type="button"
                           size="large"
-                          className="flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                          className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
                           variant="darkPrimary"
                           showIcon={false}
                           onClick={() => handleSubmit(formData)}
                           disabled={loading}
                         >
                           {loading ? (
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-center w-full">
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                               Submitting...
                             </div>
                           ) : (
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-center w-full">
                               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>

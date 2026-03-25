@@ -19,12 +19,12 @@ const AboutUsPage = () => {
           </p>
           <h2 className="text-xl font-semibold text-[#03442C] mt-8 mb-4">Our Mission</h2>
           <p className="mb-4">
-            To create a seamless, secure, and stress-free rental ecosystem where property owners can maximize their returns and tenants can find verified homes with confidence.
+            To create a seamless, secure, and stress-free rental ecosystem where property owners can maximize their returns and tenants can find homes with confidence.
           </p>
           <h2 className="text-xl font-semibold text-[#03442C] mt-8 mb-4">What We Do</h2>
           <ul className="list-disc pl-5 space-y-2">
             <li>Comprehensive Tenant Screening & Background Checks</li>
-            <li>Verified Property Listings</li>
+            <li>Property Listings</li>
             <li>Secure Rent Payment Processing</li>
             <li>Efficient Property Management Tools</li>
             <li>Maintenance Request Tracking</li>

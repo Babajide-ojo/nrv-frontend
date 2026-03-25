@@ -332,7 +332,7 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
                   className="w-16 h-16 mx-auto rounded-full"
                 />
                 <div className="text-green-700 text-xs font-medium mt-1">
-                  Account Verified
+                  Account Confirmed
                 </div>
                 <div className="text-md font-semibold mt-1">
                   {application?.applicant?.fullName}

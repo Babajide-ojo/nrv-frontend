@@ -428,7 +428,7 @@ const SingleMaintainance = () => {
               </div>
               <div className="flex justify-center my-8">
                 <Image
-                  src="/images/verified-user-icon.svg"
+                  src="/images/confirmed-user-icon.svg"
                   alt="Property Image"
                   width={300}
                   height={300}

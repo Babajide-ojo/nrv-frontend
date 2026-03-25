@@ -133,7 +133,7 @@ const SignUpMultiForm = () => {
                     icon: <User className="text-gray-500" />,
                     text: "Sign Up as a Tenant",
                     description:
-                      "Sign up as a Tenant to Find and secure your dream home with verified listings, Complete your rental agreement and payments securely without stress and extra cost or fee.",
+                      "Sign up as a Tenant to Find and secure your dream home with genuine listings, Complete your rental agreement and payments securely without stress and extra cost or fee.",
                   },
                 ].map(({ role, icon, text, description }) => (
                   <div

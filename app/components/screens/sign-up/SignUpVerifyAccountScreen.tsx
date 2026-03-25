@@ -58,7 +58,7 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
       localStorage.removeItem("stepToLoad");
       if (mode === "login") {
-        toast.success("Account verified. Redirecting...");
+        toast.success("Account confirmed. Redirecting...");
         const accountType = response?.user?.accountType;
         if (accountType === "tenant") {
           router.push("/dashboard/tenant");

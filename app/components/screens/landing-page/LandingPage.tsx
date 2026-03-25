@@ -100,7 +100,7 @@ const LogosSection = () => (
 const IntroSection = () => (
   <div className="bg-white px-4 py-8 sm:p-12 text-left">
     <p className="text-[#03442C] font-medium text-xl sm:text-2xl md:text-3xl leading-snug landing-heading-2">
-      Whether you’re a landlord looking to maximize your returns or a tenant searching for a verified home, NaijaRentVerify is here to make renting easier, safer, and more efficient.
+      Whether you’re a landlord looking to maximize your returns or a tenant searching for a home, NaijaRentVerify is here to make renting easier, safer, and more efficient.
     </p>
     <div className="mt-6">
       <Button
@@ -147,9 +147,9 @@ const FeatureSection: React.FC = () => {
     {
       imageUrl:
         "https://res.cloudinary.com/dzv98o7ds/image/upload/v1716321117/cxs0ybb8jty0n67p7c5g.png",
-      title: "Verified Listing",
+      title: "Property Listing",
       description:
-        "Browse 100% verified properties with no hidden surprises. Transparent pricing and detailed property descriptions.",
+        "Browse 100% genuine properties with no hidden surprises. Transparent pricing and detailed property descriptions.",
     },
     {
       imageUrl:

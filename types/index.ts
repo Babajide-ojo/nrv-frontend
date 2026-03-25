@@ -211,8 +211,8 @@ export interface VerificationData {
 export interface ScreeningReport {
   _id: string;
   tenantId: string;
-  bvnVerified: boolean;
-  ninVerified: boolean;
+  bvnConfirmed: boolean;
+  ninConfirmed: boolean;
   criminalRecord: boolean;
   evictionHistory: boolean;
   creditScore?: number;

@@ -51,7 +51,7 @@ const FEATURES = [
     icon: MapPin,
     title: "Property Listings",
     description:
-      "List your available properties with photos, maps, and details to attract verified tenants.",
+      "List your available properties with photos, maps, and details to attract tenants.",
   },
 ];
 
@@ -89,7 +89,7 @@ const TESTIMONIALS = [
   {
     quote: "Finally, a verification report that actually tells me what to do. The risk band and clear recommendation made my last two lettings stress-free.",
     author: "Landlord, Abuja",
-    avatar: "/images/verified-user-icon.svg",
+    avatar: "/images/confirmed-user-icon.svg",
   },
 ];
 
@@ -330,7 +330,7 @@ const NewLanding = () => {
                 />
                 <div className="absolute inset-0 bg-[#03442C]/50 pointer-events-none" aria-hidden />
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-4 py-3 flex justify-between text-white text-sm">
-                  <span><strong>1,000+</strong> Verified</span>
+                  <span><strong>1,000+</strong> Processed</span>
                   <span><strong>1,500+</strong> Homes</span>
                   <span><strong>98%</strong> Success</span>
                 </div>
@@ -350,7 +350,7 @@ const NewLanding = () => {
             </p>
             <div className="grid sm:grid-cols-3 gap-4">
               {[
-                { icon: "verified", label: "Tenant Trust Score", sub: "0–100 with Low / Moderate / High risk band" },
+                { icon: "confirmed", label: "Tenant Trust Score", sub: "0–100 with Low / Moderate / High risk band" },
                 { icon: "shield", label: "Verification status", sub: "Identity, employment, guarantor, address" },
                 { icon: "usercheck", label: "Clear recommendation", sub: "Approve, proceed with caution, or request more info" },
               ].map((item, i) => (
@@ -359,8 +359,8 @@ const NewLanding = () => {
                   className="flex flex-col items-center text-center p-3 rounded-xl hover:bg-emerald-50/50 hover:scale-[1.02] transition-all duration-200 cursor-default"
                 >
                   <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-2 overflow-hidden">
-                    {item.icon === "verified" ? (
-                      <Image src="/images/verified-user-icon.svg" alt="" width={32} height={32} />
+                    {item.icon === "confirmed" ? (
+                      <Image src="/images/confirmed-user-icon.svg" alt="" width={32} height={32} />
                     ) : item.icon === "shield" ? (
                       <Shield className="w-6 h-6 text-[#03442C]" />
                     ) : (
@@ -466,7 +466,7 @@ const NewLanding = () => {
                 <div className="relative h-16 sm:h-20 rounded-lg overflow-hidden">
                   <Image
                     src="/images/featured-img.svg"
-                    alt="Verified Lagos apartment"
+                    alt="Lagos apartment"
                     fill
                     className="object-cover"
                     sizes="(max-width: 640px) 33vw, 15vw"
@@ -512,9 +512,9 @@ const NewLanding = () => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { value: "1,000+", label: "Tenants Verified" },
+              { value: "1,000+", label: "Tenants Processed" },
               { value: "1,500+", label: "Homes Listed" },
-              { value: "98%", label: "Verification Success Rate" },
+              { value: "98%", label: "Success Rate" },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -528,11 +528,11 @@ const NewLanding = () => {
         </div>
       </section>
 
-      {/* Explore Verified Homes – id="explore" */}
+      {/* Explore Homes – id="explore" */}
       <section id="explore" className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-b from-[#F3F4F6] to-white scroll-mt-24">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#031B14] text-center mb-2">
-            Explore Verified Homes
+            Explore Homes
           </h2>
           <p className="text-gray-600 text-sm sm:text-base max-w-lg mx-auto text-center mb-6">
             Browse listings across Lagos, Abuja, and more. Search by location and filter by rent range.
@@ -676,14 +676,11 @@ const NewLanding = () => {
                       ) : (
                         <Image src="/images/featured-img.svg" alt={label} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 100vw, 33vw" />
                       )}
-                      <div className="absolute inset-0 pointer-events-none flex items-end justify-start p-2 z-10">
-                        <div className="font-semibold tracking-wide text-white/90 bg-black/55 border border-white/25 text-[11px] sm:text-[13px] px-2.5 py-1.5 whitespace-nowrap rounded-md shadow-[0_6px_18px_rgba(0,0,0,0.35)]">
+                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
+                        <div className="rotate-[-30deg] font-extrabold tracking-widest text-white/45 bg-black/20 border border-white/15 text-[22px] sm:text-[28px] px-5 py-2.5 whitespace-nowrap rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
                           Naijarentverify
                         </div>
                       </div>
-                      <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-[#03442C] text-white text-xs font-medium z-10">
-                        Verified
-                      </span>
                     </div>
                     <div className="p-3">
                       <p className="text-sm font-medium text-[#031B14] line-clamp-2">{label}</p>
@@ -735,83 +732,145 @@ const NewLanding = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="relative px-4 sm:px-6 lg:px-12 py-10 sm:py-14 bg-[#03442C] text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 2px 2px, white 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-white/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold">
-            Ready to make better rent decisions?
-          </h2>
-          <p className="mt-2 text-emerald-100/90 text-sm sm:text-base">
-            Join the beta. Create an account and run your first verification in minutes.
-          </p>
-          <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/sign-up?role=landlord"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-[#03442C] font-semibold hover:bg-emerald-50 hover:shadow-lg transition-all duration-200"
-            >
-              Create landlord account
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-            <Link
-              href="/sign-in"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border-2 border-white/50 font-semibold hover:bg-white/10 hover:border-white/70 transition-all duration-200"
-            >
-              Sign in
-            </Link>
+      {/* Footer CTA */}
+      <section className="px-4 sm:px-6 lg:px-12 py-10 sm:py-14 bg-[#0D3520] text-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-[#0D3520] rounded-2xl border border-white/10 px-6 sm:px-10 py-10 sm:py-12 text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
+              Ready to Rent with Confidence?
+            </h2>
+            <p className="mt-3 text-white/70 text-sm sm:text-base max-w-2xl mx-auto leading-7">
+              Join thousands of Nigerian landlords and tenants who trust NaijaRentVerify for safer, smarter
+              renting.
+            </p>
+
+            <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center justify-center gap-2 bg-white text-[#0D3520] font-semibold px-6 py-3 rounded-full hover:shadow-sm transition-all duration-200"
+              >
+                Create Free Account <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/#explore"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-white/25 text-white/90 hover:text-white hover:border-white/35 transition-colors duration-200"
+              >
+                View Properties
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer – id="contact" */}
-      <footer id="contact" className="px-4 sm:px-6 lg:px-12 py-8 bg-[#022419] text-white scroll-mt-24">
+      <footer id="contact" className="px-4 sm:px-6 lg:px-12 py-8 bg-[#0D3520] text-white scroll-mt-24">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="h-px bg-white/15 mt-10" />
+
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-10">
+            {/* Brand */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Naija Rent Verify</h3>
-              <p className="text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-white/80" />
+                <span className="font-semibold text-white/90">NaijaRentVerify</span>
+              </div>
+              <p className="mt-3 text-sm text-white/60 leading-6 max-w-[230px]">
                 Nigeria&apos;s trusted platform for tenant verification and property management.
               </p>
             </div>
+
+            {/* Platform */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Platform</h3>
-              <ul className="space-y-1.5 text-sm text-gray-400">
+              <h3 className="text-sm font-semibold text-white/90">Platform</h3>
+              <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
                 <li>
-                  <Link href="/sign-in" className="hover:text-white transition-colors">Browse Listings</Link>
+                  <Link href="/#explore" className="hover:text-white transition-colors">
+                    Browse Listings
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/sign-up?role=landlord" className="hover:text-white transition-colors">Landlord Sign Up</Link>
+                  <Link href="/sign-up?role=landlord" className="hover:text-white transition-colors">
+                    Landlord Sign Up
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/sign-up?role=tenant" className="hover:text-white transition-colors">Tenant Sign Up</Link>
+                  <Link href="/sign-up?role=tenant" className="hover:text-white transition-colors">
+                    Tenant Sign Up
+                  </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard/landlord/properties/verification" className="hover:text-white transition-colors">Verify Tenants</Link>
+                  <Link
+                    href="/dashboard/landlord/properties/verification/request"
+                    className="hover:text-white transition-colors"
+                  >
+                    Verify Tenants
+                  </Link>
                 </li>
               </ul>
             </div>
+
+            {/* Legal */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Legal</h3>
-              <ul className="space-y-1.5 text-sm text-gray-400">
-                <li><Link href="/legal" className="hover:text-white transition-colors">Terms of Service</Link></li>
-                <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/contact-us" className="hover:text-white transition-colors">Contact Us</Link></li>
+              <h3 className="text-sm font-semibold text-white/90">Legal</h3>
+              <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
+                <li>
+                  <Link href="/legal" className="hover:text-white transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="hover:text-white transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy?tab=data-processing" className="hover:text-white transition-colors">
+                    Data Processing Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/legal?tab=disclaimer" className="hover:text-white transition-colors">
+                    Legal Disclaimer
+                  </Link>
+                </li>
               </ul>
             </div>
+
+            {/* Resources */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Resources</h3>
-              <ul className="space-y-1.5 text-sm text-gray-400">
-                <li><Link href="/contact-us" className="hover:text-white transition-colors">Contact Us</Link></li>
-                <li><Link href="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
+              <h3 className="text-sm font-semibold text-white/90">Resources</h3>
+              <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
+                <li>
+                  <Link href="/privacy" className="hover:text-white transition-colors">
+                    Safety Tips
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact-us" className="hover:text-white transition-colors">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact-us?subject=problem" className="hover:text-white transition-colors">
+                    Report a Problem
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} Naija Rent Verify. All rights reserved.</p>
-            <div className="flex items-center gap-4">
-              <Link href="/sign-in" className="hover:text-white transition-colors">Sign in</Link>
-              <Link href="/sign-up" className="hover:text-white transition-colors">Sign up</Link>
+
+          {/* Footer bottom */}
+          <div className="mt-10 border-t border-white/10 pt-6 text-center">
+            <p className="text-xs sm:text-sm text-white/60">
+              2026 NaijaRentVerify. All rights reserved.
+            </p>
+            <div className="mt-2 flex items-center justify-center gap-6 text-[11px] text-white/45">
+              <Link href="/about-us" className="hover:text-white transition-colors">
+                About Portal
+              </Link>
+              <Link href="/sign-in" className="hover:text-white transition-colors">
+                Admin Portal
+              </Link>
             </div>
           </div>
         </div>

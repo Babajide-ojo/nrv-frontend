@@ -38,6 +38,17 @@ function toAbsoluteImageUrl(url?: string | null): string | null {
   return u.startsWith("/") ? `${base}${u}` : `${base}/${u}`;
 }
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 export default function PublicPropertyDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -82,13 +93,14 @@ export default function PublicPropertyDetailsPage() {
 
   const address = useMemo(() => {
     if (!room?.propertyId) return "";
-    return [
+    const rawAddress = [
       room.propertyId.streetAddress,
       room.propertyId.city,
       room.propertyId.state,
     ]
       .filter(Boolean)
       .join(", ");
+    return formatAddress(rawAddress);
   }, [room]);
 
   const rentText = useMemo(() => {
@@ -156,9 +168,6 @@ export default function PublicPropertyDetailsPage() {
                       wrapperClassName="w-full h-full"
                       imageClassName="object-cover w-full h-full"
                     />
-                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/90 text-xs font-semibold text-[#03442C] border border-[#03442C]/20">
-                      Verified listing
-                    </span>
                   </div>
                 </div>
 
@@ -178,7 +187,7 @@ export default function PublicPropertyDetailsPage() {
                   <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 space-y-1">
                     <p className="text-xl font-bold text-[#03442C]">{rentText}</p>
                     <p className="text-xs text-emerald-800">
-                      Pricing and availability subject to verification by the landlord.
+                      Pricing and availability subject to confirmation by the landlord.
                     </p>
                   </div>
 

@@ -66,6 +66,17 @@ function PropertyImage({
   );
 }
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 const RentedPropertiesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -153,10 +164,11 @@ const RentedPropertiesScreen = () => {
                   property?.file ||
                   null;
                 const title = room?.name || "Apartment";
-                const address =
+                const address = formatAddress(
                   property?.streetAddress ||
                   [property?.city, property?.state].filter(Boolean).join(", ") ||
-                  "—";
+                  "—"
+                );
                 const rent = room?.rentAmount;
                 const beds = room?.noOfRooms ?? "—";
                 const baths = room?.noOfBaths ?? "—";

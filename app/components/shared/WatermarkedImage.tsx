@@ -29,8 +29,8 @@ export default function WatermarkedImage({
 }: WatermarkedImageProps) {
   const watermarkClasses =
     variant === "compact"
-      ? "text-[10px] sm:text-[12px] px-2 py-1"
-      : "text-[11px] sm:text-[13px] px-2.5 py-1.5";
+      ? "text-[16px] sm:text-[20px] px-4 py-2"
+      : "text-[28px] sm:text-[38px] md:text-[48px] px-8 py-4";
 
   return (
     <div
@@ -47,10 +47,10 @@ export default function WatermarkedImage({
         onError={onError}
       />
       <div
-        className={`absolute inset-0 pointer-events-none flex items-end justify-start p-2 z-10 ${overlayClassName}`}
+        className={`absolute inset-0 pointer-events-none flex items-center justify-center z-10 ${overlayClassName}`}
       >
         <div
-          className={`font-semibold tracking-wide text-white/90 bg-black/55 border border-white/25 ${watermarkClasses} whitespace-nowrap rounded-md shadow-[0_6px_18px_rgba(0,0,0,0.35)]`}
+          className={`rotate-[-30deg] font-extrabold tracking-widest text-white/45 bg-black/20 border border-white/15 ${watermarkClasses} whitespace-nowrap rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.2)]`}
         >
           {watermarkText}
         </div>
@@ -58,4 +58,3 @@ export default function WatermarkedImage({
     </div>
   );
 }
-

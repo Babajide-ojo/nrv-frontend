@@ -40,7 +40,7 @@ interface VerificationResponse {
   maritalStatus?: string;
   employerName?: string;
   previousLandlordComments?: Array<{ comment: string; landlordName: string }>;
-  videoSelfieVerified?: string;
+  videoSelfieConfirmed?: string;
   personalReport?: { status: string; comment?: string };
   employmentReport?: { status: string; comment?: string };
   guarantorReport?: { status: string; comment?: string };
@@ -150,7 +150,7 @@ const VerificationResponsePage = () => {
     if (!verificationData.identificationDocumentUrl) return "Not provided";
     const analysis = verificationData.identificationDocumentAnalysis as { status?: string } | undefined;
     if (analysis?.status === "failed") return "Failed";
-    if (analysis?.status) return "Verified";
+    if (analysis?.status) return "Confirmed";
     return "Not run";
   };
 
@@ -162,7 +162,7 @@ const VerificationResponsePage = () => {
     if (!verificationData.utilityBillUrl) return "Not provided";
     const analysis = verificationData.utilityBillAnalysis as { status?: string } | undefined;
     if (analysis?.status === "failed") return "Failed";
-    if (analysis?.status) return "Verified";
+    if (analysis?.status) return "Confirmed";
     return "Not run";
   };
 
@@ -366,23 +366,23 @@ const VerificationResponsePage = () => {
                   <tbody>
                     <tr className="border-b border-gray-200">
                       <td className="px-3 sm:px-4 py-3 text-gray-900">Identity Verification</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-900">{((verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch) ? "Verified" : "Partial Match"}</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{(verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch ? "NIN verified and matches tenant details" : "NIN verified but name/DOB mismatch"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{((verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch) ? "Confirmed" : "Partial Match"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{(verificationData.ninVerificationResult as any)?.namesMatch && (verificationData.ninVerificationResult as any)?.dobMatch ? "NIN confirmed and matches tenant details" : "NIN confirmed but name/DOB mismatch"}</td>
                     </tr>
                     <tr className="border-b border-gray-200">
                       <td className="px-3 sm:px-4 py-3 text-gray-900">Phone Verification</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.phoneVerificationStatus === "valid" ? "Verified" : "Invalid"}</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{verificationData.phoneVerificationStatus === "valid" ? "Phone number verified" : "Phone not verified"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{verificationData.phoneVerificationStatus === "valid" ? "Confirmed" : "Invalid"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{verificationData.phoneVerificationStatus === "valid" ? "Phone number confirmed" : "Phone not confirmed"}</td>
                     </tr>
                     <tr className="border-b border-gray-200">
                       <td className="px-3 sm:px-4 py-3 text-gray-900">Address Verification</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getUtilityBillStatus() === "Verified" ? "Verified" : "Pending"}</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getUtilityBillStatus() === "Verified" ? "Utility bill confirmed" : "Utility bill review pending or failed"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getUtilityBillStatus() === "Confirmed" ? "Confirmed" : "Pending"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getUtilityBillStatus() === "Confirmed" ? "Utility bill confirmed" : "Utility bill review pending or failed"}</td>
                     </tr>
                     <tr>
                       <td className="px-3 sm:px-4 py-3 text-gray-900">Employment Verification</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Verified" ? "Verified" : "Pending"}</td>
-                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Verified" ? "Active employment confirmed" : "Employment review pending"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-900">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Confirmed" ? "Confirmed" : "Pending"}</td>
+                      <td className="px-3 sm:px-4 py-3 text-gray-600 text-xs sm:text-sm">{getSectionDisplay(verificationData.employmentReport, verificationData.landlordReport?.employmentSection) === "Confirmed" ? "Active employment confirmed" : "Employment review pending"}</td>
                     </tr>
                   </tbody>
                 </table>

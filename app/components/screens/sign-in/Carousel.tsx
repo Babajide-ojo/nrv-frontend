@@ -43,7 +43,7 @@ export default function RentalManagement() {
         <p className="mt-12 text-lg text-gray-200 italic font-light">
           &#34;At <span className="font-semibold">NaijaRentVerify</span>, we
           simplify rental property management for landlords and tenants alike.
-          From verified listings to seamless transactions, we ensure every step
+          From genuine listings to seamless transactions, we ensure every step
           is transparent, secure, and stress-free.&#34;
         </p>
       </div>

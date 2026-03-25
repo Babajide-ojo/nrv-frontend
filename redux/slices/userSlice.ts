@@ -253,7 +253,7 @@ console.log({response})
       };
 
       console.log({userData})
-      // Only persist a session for verified/active users.
+      // Only persist a session for active users.
       // For inactive users, store the email so they can verify, but don't create a session token.
       if (userData?.user?.status === "inactive") {
         localStorage.removeItem("nrv-user");

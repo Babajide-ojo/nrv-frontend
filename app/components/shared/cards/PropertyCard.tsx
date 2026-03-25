@@ -21,6 +21,18 @@ interface PropertyCardProps {
   property: any;
 }
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  // Repeat removal of leading address indicators (No, Plot, Block, or just numbers)
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 const PropertyCard: React.FC<PropertyCardProps> = ({
   imageUrl,
   address,
@@ -28,7 +40,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   property,
 }) => {
   const description = property?.description || property?.propertyId?.description || "Room Description";
-  const addressText = address?.trim() || `${property?.propertyId?.streetAddress ?? ""} ${property?.propertyId?.city ?? ""} ${property?.propertyId?.state ?? ""}`.trim() || "—";
+  const rawAddress = address?.trim() || `${property?.propertyId?.streetAddress ?? ""} ${property?.propertyId?.city ?? ""} ${property?.propertyId?.state ?? ""}`.trim() || "—";
+  const addressText = formatAddress(rawAddress);
   const bedrooms = property?.noOfRooms ?? property?.propertyId?.noOfRooms ?? "N/A";
   const bathrooms = property?.noOfBaths ?? property?.propertyId?.noOfBaths ?? "N/A";
   const style = (property?.apartmentStyle ?? property?.propertyId?.apartmentStyle)?.toString()?.trim() || "N/A";
@@ -107,32 +120,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
       </div>
 
-      {/* Amenities */}
-     {/* <div className="mb-4">
-        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
-          <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-          Available Amenities
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {property?.otherAmentities?.map((item: string, idx: number) => (
-            <span
-              key={idx}
-              className="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium border border-green-200"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-        {(!property?.otherAmentities || property?.otherAmentities.length === 0) && (
-          <p className="text-gray-400 text-xs italic">No amenities listed</p>
-        )}
-      </div>
-
-      {/* Room Status */}
-      <div className="pt-3 border-t border-gray-100 shrink-0">
-        <div className="flex items-center justify-between mb-2">
+      {/* Additional Info */}
+      <div className="pt-3 border-t border-gray-100 shrink-0 space-y-2">
+        <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600 font-medium">Status:</span>
-          <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
             property?.assignedToTenant 
               ? 'bg-red-100 text-red-700 border border-red-200' 
               : 'bg-green-100 text-green-700 border border-green-200'
@@ -142,9 +134,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         </div>
         {property?.leaseTerms && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Lease Terms:</span>
-            <span className="text-sm font-medium text-gray-800 bg-gray-100 px-3 py-1 rounded-full">
+            <span className="text-sm text-gray-600 font-medium">Lease Terms:</span>
+            <span className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-1 rounded-md border border-gray-100">
               {property.leaseTerms}
+            </span>
+          </div>
+        )}
+        {property?.paymentOption && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600 font-medium">Payment:</span>
+            <span className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-1 rounded-md border border-gray-100">
+              {property.paymentOption}
             </span>
           </div>
         )}

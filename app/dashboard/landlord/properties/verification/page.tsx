@@ -159,7 +159,7 @@ export default function TenantVerification() {
                         label = "Pending";
                       } else if (val === "approved") {
                         colorClass = "bg-green-100 text-green-700";
-                        label = "Tenant Verified";
+                        label = "Approved";
                       } else if (val === "rejected") {
                         colorClass = "bg-red-100 text-red-700";
                         label = "Rejected";

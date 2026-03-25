@@ -53,7 +53,7 @@ const CompleteProfileSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>
@@ -94,7 +94,7 @@ const CompleteProfileSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>

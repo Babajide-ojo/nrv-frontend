@@ -38,6 +38,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
 const RentedPropertiesScreen = () => {
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
@@ -189,7 +200,7 @@ const RentedPropertiesScreen = () => {
                       </span>
                     </h3>
                     <p className="-mt-1 text-xs">
-                      {property?.propertyId?.propertyId?.streetAddress}
+                      {formatAddress(property?.propertyId?.propertyId?.streetAddress)}
                     </p>
                   </div>
                 </div>
@@ -248,7 +259,7 @@ const RentedPropertiesScreen = () => {
                             Apartment Address/Location
                           </p>
                           <p className="text-semibold font-medium">
-                            {property?.propertyId?.propertyId?.streetAddress}{" "}
+                            {formatAddress(property?.propertyId?.propertyId?.streetAddress)}{" "}
                             {property?.propertyId?.propertyId?.state}
                           </p>
                         </div>

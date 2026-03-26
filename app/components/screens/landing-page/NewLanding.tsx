@@ -30,6 +30,12 @@ const FEATURES = [
       "Comprehensive background checks including employment, identity, and rental history verification for Nigerian tenants.",
   },
   {
+    icon: FileCheck,
+    title: "Rent Payment Tracking",
+    description:
+      "Track all rent payments in one place. Never lose track of who has paid and who owes.",
+  },
+  {
     icon: Building2,
     title: "Property Management",
     description:
@@ -82,13 +88,27 @@ const NIGERIAN_BULLETS = [
 
 const TESTIMONIALS = [
   {
-    quote: "I can see at a glance whether to offer the unit, without digging through raw data. The Tenant Trust Score and recommendation save me time on every application.",
-    author: "Property manager, Lagos",
+    quote:
+      "Naija Rent Verify saved me from a terrible tenant experience. The verification report was thorough and I could make an informed decision. Highly recommended for every Lagos landlord!",
+    name: "Chinedu Okafor",
+    role: "Landlord",
+    location: "Lagos",
+    avatar: "/images/onboarding-profile-img.svg",
+  },
+  {
+    quote:
+      "As a tenant, having a verified profile made it so much easier to find a good apartment. Landlords trusted me immediately and the whole process was smooth.",
+    name: "Amara Nwosu",
+    role: "Tenant",
+    location: "Abuja",
     avatar: "/images/dami.svg",
   },
   {
-    quote: "Finally, a verification report that actually tells me what to do. The risk band and clear recommendation made my last two lettings stress-free.",
-    author: "Landlord, Abuja",
+    quote:
+      "Managing 15 properties became so much easier with Naija Rent Verify. Rent tracking, maintenance requests, and tenant communication all in one place.",
+    name: "Funke Adeyemi",
+    role: "Property Manager",
+    location: "Port Harcourt",
     avatar: "/images/confirmed-user-icon.svg",
   },
 ];
@@ -508,46 +528,19 @@ const NewLanding = () => {
       </section>
 
       {/* Everything You Need + Features grid – id="features" */}
-      <section id="features" className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-white scroll-mt-24">
+      <section id="features" className="px-4 sm:px-6 lg:px-12 py-10 sm:py-14 bg-[#EDF1EF] scroll-mt-24">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-2">
-            <span className="inline-block px-3 py-1 rounded-full bg-emerald-100 text-[#03442C] text-xs font-semibold uppercase tracking-wide">
-              Why NaijaRentVerify
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#031B14] text-center mb-2">
-            Everything You Need to Manage Rentals
-          </h2>
-          <p className="text-center text-gray-600 text-sm sm:text-base max-w-xl mx-auto mb-6">
-            From verification to property management, we support the entire landlord-tenant relationship.
-          </p>
-          {/* First row - 3 cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            {FEATURES.slice(0, 3).map((f) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="group rounded-2xl border border-gray-200 bg-[#FAFAF9] p-4 hover:border-[#03442C]/30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                className="rounded-2xl border border-[#DCE3DE] bg-white p-5 sm:p-6 shadow-sm"
               >
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3 group-hover:bg-[#03442C] group-hover:scale-110 transition-all duration-200">
-                  <f.icon className="w-5 h-5 text-[#03442C] group-hover:text-white transition-colors" />
+                <div className="w-10 h-10 rounded-xl bg-[#EEF5F0] flex items-center justify-center mb-4">
+                  <f.icon className="w-5 h-5 text-[#0E6B43]" />
                 </div>
-                <h3 className="text-base font-bold text-[#031B14] mb-1">{f.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{f.description}</p>
-              </div>
-            ))}
-          </div>
-          {/* Second row - 2 cards centered */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {FEATURES.slice(3).map((f) => (
-              <div
-                key={f.title}
-                className="group rounded-2xl border border-gray-200 bg-[#FAFAF9] p-4 hover:border-[#03442C]/30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3 group-hover:bg-[#03442C] group-hover:scale-110 transition-all duration-200">
-                  <f.icon className="w-5 h-5 text-[#03442C] group-hover:text-white transition-colors" />
-                </div>
-                <h3 className="text-base font-bold text-[#031B14] mb-1">{f.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{f.description}</p>
+                <h3 className="text-lg font-semibold text-[#15231B] mb-3">{f.title}</h3>
+                <p className="text-base text-[#4C5B52] leading-8">{f.description}</p>
               </div>
             ))}
           </div>
@@ -823,6 +816,16 @@ const NewLanding = () => {
             </div>
           )}
 
+          <div className="text-center">
+            <Link
+              href="#explore"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-[#03442C] text-[#03442C] font-semibold hover:bg-[#03442C] hover:text-white transition-all duration-200"
+            >
+              Browse All Listings
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+
           {/* Lagos Property Price Heat Map */}
           <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
@@ -1000,39 +1003,40 @@ const NewLanding = () => {
             </div>
           </div>
 
-          <div className="text-center">
-            <Link
-              href="#explore"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-[#03442C] text-[#03442C] font-semibold hover:bg-[#03442C] hover:text-white transition-all duration-200"
-            >
-              Browse All Listings
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* Testimonials – id="testimonials" */}
-      <section id="testimonials" className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-[#FAFAF9] scroll-mt-24">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#031B14] text-center mb-5">
-            Trusted by Landlords & Tenants
+      <section id="testimonials" className="px-4 sm:px-6 lg:px-12 py-10 sm:py-14 bg-[#EDF1EF] scroll-mt-24">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#031B14] text-center leading-tight">
+            Trusted by Landlords & <br className="hidden sm:block" />
+            Tenants Across Nigeria
           </h2>
-          <div className="grid md:grid-cols-2 gap-4">
+          <p className="text-center text-gray-600 mt-3 mb-8">
+            See what our users have to say about their experience.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {TESTIMONIALS.map((t, i) => (
               <div
                 key={i}
-                className="rounded-2xl bg-white border border-gray-200 p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-[#03442C]/15 transition-all duration-200"
+                className="rounded-2xl bg-white border border-gray-200 p-5 sm:p-6 shadow-sm"
               >
-                <p className="text-3xl font-serif text-[#03442C]/30 leading-none mb-2">&ldquo;</p>
-                <blockquote className="text-gray-600 text-sm leading-relaxed -mt-1 mb-4">
+                <div className="text-[#0A7A4B] text-sm tracking-[2px] mb-4">★★★★★</div>
+                <blockquote className="text-gray-700 text-[15px] leading-7 mb-4 min-h-[140px]">
                   {t.quote}
                 </blockquote>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 overflow-hidden flex items-center justify-center shrink-0">
-                    <Image src={t.avatar} alt="" width={40} height={40} className="object-cover" />
+                <div className="border-t border-gray-200 pt-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 overflow-hidden flex items-center justify-center shrink-0 border border-gray-200">
+                    <Image src={t.avatar} alt={t.name} width={40} height={40} className="object-cover" />
                   </div>
-                  <p className="text-sm font-semibold text-[#03442C]">{t.author}</p>
+                  <div>
+                    <p className="text-sm font-semibold text-[#031B14]">{t.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {t.role}, {t.location}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

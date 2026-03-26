@@ -262,7 +262,7 @@ export default function PublicPropertyDetailsPage() {
                     }}
                     className="mt-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#03442C] text-white text-sm font-semibold hover:bg-[#022419] transition-colors"
                   >
-                    Contact landlord / Apply
+                    Sign in to contact landlord/apply
                   </button>
                   <p className="text-[11px] text-gray-500 text-center">
                     You&apos;ll be asked to sign in or create an account before sending an application or message.

@@ -50,7 +50,7 @@ const MobileNavBar: React.FC = () => {
   return (
     <>
       <header className="flex items-center justify-between h-[68px] px-4 w-full">
-        <NavLink targetId="home" className="flex items-center shrink-0">
+        <Link href="/" className="flex items-center shrink-0" onClick={close}>
           <Image
             src="/images/naija-rent-verify-logo.png"
             alt="NaijaRentVerify"
@@ -58,7 +58,7 @@ const MobileNavBar: React.FC = () => {
             height={45}
             className="h-9 w-auto"
           />
-        </NavLink>
+        </Link>
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}

@@ -44,7 +44,7 @@ const DesktopNavBar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[72px]">
           {/* Logo */}
-          <NavLink targetId="home" className="flex items-center shrink-0 group">
+          <Link href="/" className="flex items-center shrink-0 group">
             <Image
               src="/images/naija-rent-verify-logo.png"
               alt="NaijaRentVerify"
@@ -53,7 +53,7 @@ const DesktopNavBar: React.FC = () => {
               className="h-10 w-auto group-hover:opacity-90 transition-opacity"
               priority
             />
-          </NavLink>
+          </Link>
 
           {/* Nav links */}
           <nav className="hidden lg:flex items-center">

@@ -226,6 +226,74 @@ const NewLanding = () => {
     (listFilters.minimiumPrice?.toString()?.trim() ?? "") !== "" ||
     (listFilters.maximiumPrice?.toString()?.trim() ?? "") !== "";
 
+  // Heatmap (rent insights)
+  const [heatmapState, setHeatmapState] = useState<string>('Lagos');
+  const [heatmapYear, setHeatmapYear] = useState<string>(''); // '' => all years
+  const [heatmapAreaSearch, setHeatmapAreaSearch] = useState<string>('');
+  const [heatmapLoading, setHeatmapLoading] = useState<boolean>(false);
+  const [heatmapData, setHeatmapData] = useState<{
+    state: string;
+    year?: number;
+    areas: Array<{ city: string; avgAnnualRent: number; listingsCount: number }>;
+    minAvgAnnualRent: number;
+    maxAvgAnnualRent: number;
+  } | null>(null);
+
+  const [heatmapInsightsLoading, setHeatmapInsightsLoading] = useState<boolean>(false);
+  const [heatmapInsights, setHeatmapInsights] = useState<{
+    provider: "gemini" | "fallback";
+    generatedAt: string;
+    summary: string;
+    bullets: string[];
+    disclaimer: string;
+  } | null>(null);
+
+  const heatmapYears = (() => {
+    const current = new Date().getFullYear();
+    return [current - 4, current - 3, current - 2, current - 1, current].map(String);
+  })();
+
+  const fetchHeatmap = useCallback(async () => {
+    setHeatmapLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (heatmapState?.trim()) params.append('state', heatmapState.trim());
+      if (heatmapYear?.trim()) params.append('year', heatmapYear.trim());
+
+      const url = `${API_URL}/properties/rent-heatmap?${params.toString()}`;
+      const res = await axios.get(url);
+      setHeatmapData(res?.data?.data ?? null);
+    } catch {
+      setHeatmapData(null);
+    } finally {
+      setHeatmapLoading(false);
+    }
+  }, [heatmapState, heatmapYear]);
+
+  useEffect(() => {
+    fetchHeatmap();
+  }, [fetchHeatmap]);
+
+  const fetchHeatmapInsights = useCallback(async () => {
+    setHeatmapInsightsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (heatmapState?.trim()) params.append('state', heatmapState.trim());
+      if (heatmapYear?.trim()) params.append('year', heatmapYear.trim());
+      const url = `${API_URL}/properties/rent-heatmap/insights?${params.toString()}`;
+      const res = await axios.get(url);
+      setHeatmapInsights(res?.data?.data ?? null);
+    } catch {
+      setHeatmapInsights(null);
+    } finally {
+      setHeatmapInsightsLoading(false);
+    }
+  }, [heatmapState, heatmapYear]);
+
+  useEffect(() => {
+    fetchHeatmapInsights();
+  }, [fetchHeatmapInsights]);
+
   const [accountType, setAccountType] = useState<string | null>(null);
 
   useEffect(() => {
@@ -252,6 +320,69 @@ const NewLanding = () => {
     } else {
       router.push(`/properties/${propertyId}`);
     }
+  };
+
+  const formatNaira = (amount: number) =>
+    Number.isFinite(amount)
+      ? `₦${Math.round(amount).toLocaleString()}`
+      : "—";
+
+  const normalizeAreaKey = (value: string) =>
+    String(value || "")
+      .toLowerCase()
+      .replace(/\./g, "")
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const heatmapAreas = heatmapData?.areas ?? [];
+  const heatmapAreasFiltered = heatmapAreaSearch.trim()
+    ? heatmapAreas.filter((a) =>
+        normalizeAreaKey(a.city).includes(normalizeAreaKey(heatmapAreaSearch)),
+      )
+    : heatmapAreas;
+
+  const mostExpensive = heatmapAreas[0];
+  const mostAffordable = heatmapAreas.length ? heatmapAreas[heatmapAreas.length - 1] : undefined;
+
+  const lagosAverage = (() => {
+    if (!heatmapAreas.length) return 0;
+    const totalCount = heatmapAreas.reduce((acc, a) => acc + (a.listingsCount || 0), 0);
+    if (!totalCount) return 0;
+    const weightedSum = heatmapAreas.reduce(
+      (acc, a) => acc + (a.avgAnnualRent || 0) * (a.listingsCount || 0),
+      0,
+    );
+    return Math.round(weightedSum / totalCount);
+  })();
+
+  const bubbleSlots = [
+    { label: "Eko Atlantic City", left: "7%", top: "28%" },
+    { label: "Maryland", left: "22%", top: "41%" },
+    { label: "Ikeja", left: "50%", top: "45%" },
+    { label: "Lekki", left: "67%", top: "54%" },
+    { label: "Magodo", left: "78%", top: "37%" },
+    { label: "V. Island (VI)", left: "61%", top: "27%" },
+    { label: "Badagry", left: "86%", top: "56%" },
+  ] as const;
+
+  const getHeatColor = (avgAnnualRent: number) => {
+    const min = heatmapData?.minAvgAnnualRent ?? 0;
+    const max = heatmapData?.maxAvgAnnualRent ?? 0;
+    const denom = max - min;
+    const ratio = denom > 0 ? (avgAnnualRent - min) / denom : 0.5;
+    const t = Math.max(0, Math.min(1, ratio));
+
+    // Interpolate emerald (#10B981) -> red (#EF4444)
+    const emerald = { r: 16, g: 185, b: 129 };
+    const red = { r: 239, g: 68, b: 68 };
+    const r = Math.round(emerald.r + (red.r - emerald.r) * t);
+    const g = Math.round(emerald.g + (red.g - emerald.g) * t);
+    const b = Math.round(emerald.b + (red.b - emerald.b) * t);
+
+    return {
+      backgroundColor: `rgba(${r}, ${g}, ${b}, 0.75)`,
+    };
   };
 
   return (
@@ -692,6 +823,183 @@ const NewLanding = () => {
             </div>
           )}
 
+          {/* Lagos Property Price Heat Map */}
+          <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
+              <div>
+                <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#03442C] bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full mb-3">
+                  <Sparkles className="w-4 h-4" />
+                  Rent Insights
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900">Lagos Property Price Heat Map</h3>
+                <p className="text-gray-600 text-sm mt-2 max-w-2xl">
+                  Explore average annual rent prices across Lagos neighborhoods. Warmer colors indicate higher prices. Click any area for detailed insights.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto">
+                <div className="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Most Expensive</p>
+                  <p className="text-sm font-bold text-gray-900 mt-1">
+                    {heatmapLoading ? "Loading..." : mostExpensive?.city ?? "—"}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {heatmapLoading || !mostExpensive
+                      ? "—"
+                      : `${formatNaira(mostExpensive.avgAnnualRent)}/yr • ${mostExpensive.listingsCount} listings`}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Most Affordable</p>
+                  <p className="text-sm font-bold text-gray-900 mt-1">
+                    {heatmapLoading ? "Loading..." : mostAffordable?.city ?? "—"}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {heatmapLoading || !mostAffordable
+                      ? "—"
+                      : `${formatNaira(mostAffordable.avgAnnualRent)}/yr • ${mostAffordable.listingsCount} listings`}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-white px-4 py-3">
+                  <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Lagos Average</p>
+                  <p className="text-sm font-bold text-gray-900 mt-1">
+                    {heatmapLoading ? "Loading..." : formatNaira(lagosAverage)}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {heatmapLoading ? "—" : `${heatmapAreas.length} areas shown`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-semibold text-gray-700">Filters:</span>
+                <select
+                  value={heatmapState}
+                  onChange={(e) => {
+                    setHeatmapState(e.target.value);
+                    setHeatmapAreaSearch("");
+                  }}
+                  className="px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#03442C]/20"
+                >
+                  <option value="Lagos">Lagos</option>
+                  <option value="Abuja">Abuja</option>
+                  <option value="Rivers">Rivers</option>
+                </select>
+                <select
+                  value={heatmapYear}
+                  onChange={(e) => setHeatmapYear(e.target.value)}
+                  className="px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#03442C]/20"
+                >
+                  <option value="">All Years</option>
+                  {heatmapYears.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <div className="relative">
+                  <input
+                    value={heatmapAreaSearch}
+                    onChange={(e) => setHeatmapAreaSearch(e.target.value)}
+                    className="px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#03442C]/20 w-[220px]"
+                    placeholder="Search area..."
+                  />
+                </div>
+              </div>
+              <div className="text-xs text-gray-500">
+                {heatmapLoading ? "Loading..." : `${heatmapAreasFiltered.length} areas shown`}
+              </div>
+            </div>
+
+            {/* Heatmap */}
+            <div className="relative h-[420px] rounded-xl border border-gray-200 overflow-hidden bg-[linear-gradient(to_right,rgba(3,68,44,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(3,68,44,0.08)_1px,transparent_1px)] bg-[size:32px_32px]">
+              {heatmapLoading && (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+                  Loading rent insights...
+                </div>
+              )}
+
+              {/* Bubbles (now driven by API data) */}
+              {bubbleSlots.map((slot) => {
+                const area = heatmapAreasFiltered.find(
+                  (a) => normalizeAreaKey(a.city) === normalizeAreaKey(slot.label),
+                );
+                if (!area) return null;
+
+                const min = heatmapData?.minAvgAnnualRent ?? 0;
+                const max = heatmapData?.maxAvgAnnualRent ?? 0;
+                const denom = max - min;
+                const ratio = denom > 0 ? (area.avgAnnualRent - min) / denom : 0.5;
+                const size = Math.round(12 + Math.max(0, Math.min(1, ratio)) * 22);
+                const color = getHeatColor(area.avgAnnualRent).backgroundColor;
+
+                return (
+                  <div
+                    key={slot.label}
+                    className="absolute"
+                    style={{ left: slot.left, top: slot.top }}
+                  >
+                    <div className="flex flex-col items-center -translate-x-1/2 -translate-y-full">
+                      <div
+                        className="mb-1 text-[11px] bg-white/90 border border-gray-200 px-2 py-0.5 rounded-full text-gray-700 whitespace-nowrap"
+                        title={`${area.city}: ${formatNaira(area.avgAnnualRent)}/yr • ${area.listingsCount} listings`}
+                      >
+                        {area.city}
+                      </div>
+                      <div
+                        className="rounded-full border-2 border-white shadow-sm"
+                        style={{ width: size, height: size, backgroundColor: color }}
+                        aria-label={area.city}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Background crosshair / hint */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute left-[50%] top-[50%] w-[2px] h-[2px] bg-transparent" />
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[11px] font-semibold text-gray-600 uppercase tracking-wide">
+                  AI-powered market insights
+                </p>
+                <p className="text-[11px] text-gray-500">
+                  {heatmapInsightsLoading
+                    ? "Generating..."
+                    : heatmapInsights?.provider === "gemini"
+                      ? "Powered by AI"
+                      : "Auto summary"}
+                </p>
+              </div>
+
+              <p className="mt-2 text-sm text-gray-700">
+                {heatmapInsightsLoading
+                  ? "Generating insights from listing data..."
+                  : heatmapInsights?.summary ?? "Insights unavailable at the moment."}
+              </p>
+
+              {!heatmapInsightsLoading && heatmapInsights?.bullets?.length ? (
+                <ul className="mt-2 list-disc pl-5 text-xs text-gray-600 space-y-1">
+                  {heatmapInsights.bullets.slice(0, 5).map((b, idx) => (
+                    <li key={idx}>{b}</li>
+                  ))}
+                </ul>
+              ) : null}
+
+              <p className="mt-2 text-[11px] text-gray-500 leading-5">
+                {heatmapInsights?.disclaimer ??
+                  "AI-generated insights based on aggregated listing data. Estimates are indicative."}
+              </p>
+            </div>
+          </div>
+
           <div className="text-center">
             <Link
               href="#explore"
@@ -770,10 +1078,10 @@ const NewLanding = () => {
           <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-10">
             {/* Brand */}
             <div>
-              <div className="flex items-center gap-2">
+              <Link href="/" className="inline-flex items-center gap-2">
                 <Shield className="w-4 h-4 text-white/80" />
                 <span className="font-semibold text-white/90">NaijaRentVerify</span>
-              </div>
+              </Link>
               <p className="mt-3 text-sm text-white/60 leading-6 max-w-[230px]">
                 Nigeria&apos;s trusted platform for tenant verification and property management.
               </p>

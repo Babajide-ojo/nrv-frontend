@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 const LoginHeader: React.FC = () => {
@@ -6,9 +7,9 @@ const LoginHeader: React.FC = () => {
     <div className="mb-8">
       {/* Mobile Logo */}
       <div className="lg:hidden mb-6">
-        <h1 className="text-2xl font-bold text-green-600">
-          NaijaRentVerify
-        </h1>
+        <Link href="/" className="inline-block">
+          <h1 className="text-2xl font-bold text-green-600">NaijaRentVerify</h1>
+        </Link>
       </div>
       
       {/* Desktop Logo (optional) */}

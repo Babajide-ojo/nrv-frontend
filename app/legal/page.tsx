@@ -183,7 +183,7 @@ const LegalPage = () => {
             <Link href="/legal?tab=disclaimer" className="hover:text-gray-900 transition-colors">
               Legal Disclaimer
             </Link>
-            <Link href="/privacy" className="hover:text-gray-900 transition-colors">
+            <Link href="/legal/safety-tips" className="hover:text-gray-900 transition-colors">
               Safety Tips
             </Link>
           </div>

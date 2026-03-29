@@ -52,7 +52,7 @@ const MobileNavBar: React.FC = () => {
       <header className="flex items-center justify-between h-[68px] px-4 w-full">
         <Link href="/" className="flex items-center shrink-0" onClick={close}>
           <Image
-            src="/images/naija-rent-verify-logo.png"
+            src="/images/nrv-logo-latest.jpg"
             alt="NaijaRentVerify"
             width={130}
             height={45}

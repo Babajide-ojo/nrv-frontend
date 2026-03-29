@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
-import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getAllPropertyForTenant } from "../../../../redux/slices/propertySlice";
 import TenantLayout from "../../../components/layout/TenantLayout";
@@ -12,6 +11,7 @@ import InputField from "../../../components/shared/input-fields/InputFields";
 import Button from "@/app/components/shared/buttons/Button";
 import { RefreshCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import { Button as Btn } from "@/components/ui/button";
+import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 
 const INITIAL_FILTERS = {
   searchTerm: "",
@@ -23,12 +23,12 @@ const LIMIT = 12;
 
 const TenantPropertiesScreen = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
   const [initialLoad, setInitialLoad] = useState(true);
   const [properties, setProperties] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [formData, setFormData] = useState<typeof INITIAL_FILTERS>(INITIAL_FILTERS);
   const [isListLoading, setIsListLoading] = useState(false);
+  const [propertyModalId, setPropertyModalId] = useState<string | null>(null);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const DEBOUNCE_MS = 400;
 
@@ -296,13 +296,13 @@ const TenantPropertiesScreen = () => {
                     <div
                       key={room._id}
                       className="cursor-pointer"
-                      onClick={() => router.push(`/dashboard/tenant/properties/${room._id}`)}
+                      onClick={() => setPropertyModalId(room._id)}
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          router.push(`/dashboard/tenant/properties/${room._id}`);
+                          setPropertyModalId(room._id);
                         }
                       }}
                     >
@@ -310,7 +310,7 @@ const TenantPropertiesScreen = () => {
                         imageUrl={
                           room?.imageUrls?.[0] || room?.file || "/images/featured-img.svg"
                         }
-                        address={`${room?.propertyId?.streetAddress ?? ""} ${room?.propertyId?.city ?? ""} ${room?.propertyId?.state ?? ""}`.trim()}
+                        address={[room?.propertyId?.city, room?.propertyId?.state].filter(Boolean).join(", ") || "—"}
                         rentAmount={room?.rentAmount}
                         property={room}
                       />
@@ -344,6 +344,14 @@ const TenantPropertiesScreen = () => {
               )}
             </div>
           </TenantLayout>
+
+          <PublicPropertyDetailsModal
+            roomId={propertyModalId}
+            open={propertyModalId !== null}
+            onOpenChange={(next) => {
+              if (!next) setPropertyModalId(null);
+            }}
+          />
         </ProtectedRoute>
     </div>
   );

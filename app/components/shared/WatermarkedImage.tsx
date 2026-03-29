@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useId } from "react";
 
 type WatermarkedImageProps = {
   src: string;
@@ -15,10 +15,14 @@ type WatermarkedImageProps = {
   onError?: React.ReactEventHandler<HTMLImageElement>;
 };
 
+/**
+ * Diagonal repeating text watermark (full image coverage), similar to stock-photo protection.
+ * Compact variant uses a denser tile for thumbnails / small cards.
+ */
 export default function WatermarkedImage({
   src,
   alt,
-  watermarkText = "Naijarentverify",
+  watermarkText = "NaijaRentVerify",
   variant = "default",
   wrapperClassName = "",
   imageClassName = "",
@@ -27,10 +31,15 @@ export default function WatermarkedImage({
   onLoad,
   onError,
 }: WatermarkedImageProps) {
-  const watermarkClasses =
+  const uid = useId().replace(/:/g, "");
+  const patternId = `nrv-wm-${uid}`;
+
+  const tile =
     variant === "compact"
-      ? "text-[16px] sm:text-[20px] px-4 py-2"
-      : "text-[28px] sm:text-[38px] md:text-[48px] px-8 py-4";
+      ? { w: 200, h: 88, fontSize: 11, y1: 52, y2: 22, x2: 100 }
+      : { w: 280, h: 112, fontSize: 14, y1: 68, y2: 28, x2: 140 };
+
+  const fill = "rgba(255, 255, 255, 0.38)";
 
   return (
     <div
@@ -47,13 +56,48 @@ export default function WatermarkedImage({
         onError={onError}
       />
       <div
-        className={`absolute inset-0 pointer-events-none flex items-center justify-center z-10 ${overlayClassName}`}
+        className={`absolute inset-0 pointer-events-none z-10 select-none ${overlayClassName}`}
+        aria-hidden
       >
-        <div
-          className={`rotate-[-30deg] font-extrabold tracking-widest text-white/45 bg-black/20 border border-white/15 ${watermarkClasses} whitespace-nowrap rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.2)]`}
+        <svg
+          className="h-full w-full"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
         >
-          {watermarkText}
-        </div>
+          <defs>
+            <pattern
+              id={patternId}
+              width={tile.w}
+              height={tile.h}
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(-38)"
+            >
+              <text
+                x="8"
+                y={tile.y1}
+                fill={fill}
+                fontSize={tile.fontSize}
+                fontFamily='ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif'
+                fontWeight="600"
+                letterSpacing="0.06em"
+              >
+                {watermarkText}
+              </text>
+              <text
+                x={tile.x2}
+                y={tile.y2}
+                fill={fill}
+                fontSize={tile.fontSize}
+                fontFamily='ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif'
+                fontWeight="600"
+                letterSpacing="0.06em"
+              >
+                {watermarkText}
+              </text>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+        </svg>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import Button from "../../../../components/shared/buttons/Button";
@@ -8,19 +8,17 @@ import { toast } from "react-toastify";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import TenantLayout from "../../../../components/layout/TenantLayout";
+import { getPropertyByIdForTenant } from "../../../../../redux/slices/propertySlice";
+import { TenantPropertyApplicationPanel } from "@/app/components/tenant/TenantPropertyApplicationPanel";
 import {
-  applyForProperty,
-  getPropertyByIdForTenant,
-} from "../../../../../redux/slices/propertySlice";
+  mapTenantRoomForApplication,
+  mapTenantRoomImageUrls,
+} from "@/app/lib/mapTenantRoomForApplication";
 import GoogleMapReact from "google-map-react";
 import CenterModal from "../../../../components/shared/modals/CenterModal";
 import copy from "copy-to-clipboard";
 import { FaCheckCircle } from "react-icons/fa";
 import BackIcon from "@/app/components/shared/icons/BackIcon";
-
-import CustomDatePicker from "@/app/components/shared/CustomDatePicker";
-import { Form, Formik } from "formik";
-import FormikInputField from "@/app/components/shared/input-fields/FormikInputField";
 
 import { SlCloudUpload } from "react-icons/sl";
 import { Badge } from "@/components/ui/badge";
@@ -41,11 +39,8 @@ import {
   Bath,
   Home,
   Building,
+  ExternalLink,
 } from "lucide-react";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { Label } from "@/components/ui/label";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { startOfToday } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -76,37 +71,72 @@ const formatAddress = (addr: string) => {
   return formatted.trim() || addr;
 };
 
+function deriveMonthlyYearly(rent: number, metrics?: string) {
+  const m = (metrics || "").toLowerCase();
+  if (m.includes("month")) {
+    return { monthly: rent, yearly: rent * 12 };
+  }
+  if (m.includes("quarter")) {
+    return { monthly: Math.round(rent / 3), yearly: rent * 4 };
+  }
+  if (m.includes("annual") || m.includes("annually")) {
+    return { monthly: Math.round(rent / 12), yearly: rent };
+  }
+  if (rent >= 300_000) {
+    return { monthly: Math.round(rent / 12), yearly: rent };
+  }
+  return { monthly: rent, yearly: rent * 12 };
+}
+
 const TenantPropertiesScreen = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
   const [property, setProperty] = useState<any>({});
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<any>(1);
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const [fileError, setFileError] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState<any>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [applicationData, setApplicationData] = useState<any>({
-    currentEmployer: "",
-    monthlyIncome: "",
-    currentResidence: "",
-    reasonForLeaving: "",
-    jobTitle: "",
-    desiredMoveInDate: new Date(),
-    ownerId: "",
-  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
-
   const dispatch = useDispatch();
   const router = useRouter();
 
+  /** City & state only — tenants never see street-level data in map search. */
+  const mapSearchQuery = useMemo(() => {
+    const a = (property?.address || "").trim();
+    if (!a || a === "—") return "Lagos, Nigeria";
+    return a.toLowerCase().includes("nigeria") ? a : `${a}, Nigeria`;
+  }, [property?.address]);
+
+  const mapEmbedSrc = useMemo(() => {
+    const q = encodeURIComponent(mapSearchQuery);
+    return `https://www.google.com/maps?q=${q}&z=14&output=embed`;
+  }, [mapSearchQuery]);
+
+  const mapsOpenHref = useMemo(() => {
+    const q = encodeURIComponent(mapSearchQuery);
+    return `https://www.google.com/maps/search/?api=1&query=${q}`;
+  }, [mapSearchQuery]);
+
+  const pricePerAnnum = useMemo(() => {
+    const rent = Number(property?.price) || 0;
+    if (!rent || rent <= 0) return 0;
+    return deriveMonthlyYearly(rent, property?.rentAmountMetrics).yearly;
+  }, [property?.price, property?.rentAmountMetrics]);
+
+  const rentParts = useMemo(() => {
+    const rent = Number(property?.price) || 0;
+    if (!rent || rent <= 0) return null;
+    const { monthly, yearly } = deriveMonthlyYearly(rent, property?.rentAmountMetrics);
+    return {
+      monthlyLabel: `₦${monthly.toLocaleString()}/mo`,
+      yearlyLabel: `₦${yearly.toLocaleString()}/yr`,
+    };
+  }, [property?.price, property?.rentAmountMetrics]);
 
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -117,39 +147,20 @@ const TenantPropertiesScreen = () => {
     };
     try {
       const response = await dispatch(getPropertyByIdForTenant(body) as any);
-      const raw = response?.payload?.data?.property; // Pass page parameter
-            let mapped = {
-        title: raw?.apartmentType + " • " + raw?.apartmentStyle,
+      const raw = response?.payload?.data?.property;
+      const hasApplied = Boolean(response?.payload?.data?.hasApplied);
+      const base = mapTenantRoomForApplication(raw, hasApplied);
+      const mapped = {
+        ...base,
+        _id: raw?._id,
         imageUrl: raw?.propertyId?.file,
-        imageUrls: (() => {
-          const fromArray = Array.isArray(raw?.imageUrls)
-            ? raw.imageUrls.map((u: string) => toAbsoluteImageUrl(u)).filter(Boolean)
-            : [];
-          if (fromArray.length > 0) return fromArray;
-          const fallbacks = [raw?.file]
-            .map((u) => toAbsoluteImageUrl(u))
-            .filter(Boolean);
-          return fallbacks;
-        })(),
-        price: raw?.rentAmount,
-        apartmentName: raw?.apartmentType,
-        address: formatAddress([raw?.propertyId?.streetAddress, raw?.propertyId?.city, raw?.propertyId?.state].filter(Boolean).join(", ")),
+        imageUrls: mapTenantRoomImageUrls(raw),
         description: raw?.description,
-        flatNumber: raw?.roomId,
+        apartmentName: raw?.apartmentType,
         bedrooms: raw?.noOfRooms,
         bathrooms: raw?.noOfBaths,
-        apartmentStyle: raw?.apartmentStyle,
         leaseTerms: raw?.leaseTerms,
         amenities: raw?.otherAmentities,
-        hasApplied:  response?.payload?.data.hasApplied,
-        owner: {
-          name: `${raw?.propertyId.createdBy.firstName} ${raw?.propertyId.createdBy.lastName}`,
-          email: raw?.propertyId.createdBy.email,
-          phoneNumber: raw?.propertyId.createdBy.phoneNumber,
-          id: raw?.propertyId.createdBy._id,
-          reviews: null,
-          imageUrl: "/owner.jpg", // placeholder
-        },
       };
       setProperty(mapped);
       //setProperty(response?.payload?.data);
@@ -159,14 +170,6 @@ const TenantPropertiesScreen = () => {
       setIsLoading(false);
       setIsPageLoading(false);
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setApplicationData((prevData: any) => ({
-      ...prevData,
-      [name]: value,
-    }));
   };
 
   const copyToClipboard = (text: any) => {
@@ -189,53 +192,6 @@ const TenantPropertiesScreen = () => {
           icon: <FaCheckCircle size={25} style={{ color: "#153969" }} />,
         }
       );
-    }
-  };
-
-  console.log({ property });
-  const handleSubmit = async (value: any) => {
-    const formData: any = new FormData();
-
-    formData.append("propertyId", id);
-    formData.append("applicant", user?._id);
-    formData.append("status", "New");
-    formData.append("ownerId", property?.owner.id);
-    formData.append("currentEmployer", value.currentEmployer);
-
-    formData.append("monthlyIncome", value.monthlyIncome);
-
-    formData.append("currentAddress", value.currentResidence);
-    formData.append("reasonForLeaving", value.reasonForLeaving);
-    formData.append("file", selectedFiles);
-
-    try {
-      setLoading(true);
-
-      await dispatch(applyForProperty(formData) as any).unwrap();
-      toast.success("Your property application has been sent to the landlord");
-      setApplicationData({
-        currentEmployer: "",
-        jobTitle: "",
-        monthlyIncome: "",
-        jobStartDate: "",
-        criminalRecord: "",
-        criminalRecordDetails: "",
-        numberOfVehicles: "",
-        petNumber: "",
-        smoker: "",
-        evictionHistory: "",
-        evictionDetails: "",
-        currentLandlord: "",
-        currentAddress: "",
-        reasonForLeaving: "",
-        leaseStartDate: "",
-        leaseEndDate: "",
-      });
-      setTimeout(() => {
-        router.push("/dashboard/tenant/properties");
-      }, 2000);
-    } catch (error: any) {
-      toast.error(error);
     }
   };
 
@@ -566,9 +522,24 @@ const TenantPropertiesScreen = () => {
                       <div className="flex justify-between items-start mb-6">
                         <div>
                           <p className="text-gray-500 text-sm font-medium mb-1">Price (Per Annum)</p>
-                          <h3 className="text-3xl font-bold text-green-700">
-                            ₦{property?.price?.toLocaleString()}
-                          </h3>
+                          {pricePerAnnum > 0 ? (
+                            <>
+                              <h3 className="text-3xl font-bold text-green-700">
+                                ₦{pricePerAnnum.toLocaleString()}
+                              </h3>
+                              {rentParts ? (
+                                <p className="text-sm text-gray-600 mt-1">
+                                  <span className="font-semibold text-green-700">
+                                    {rentParts.monthlyLabel}
+                                  </span>
+                                  <span className="text-gray-400 mx-2">·</span>
+                                  <span>{rentParts.yearlyLabel}</span>
+                                </p>
+                              ) : null}
+                            </>
+                          ) : (
+                            <h3 className="text-xl font-bold text-gray-800">Price on request</h3>
+                          )}
                         </div>
                         <Button
                           variant="darkPrimary"
@@ -628,6 +599,9 @@ const TenantPropertiesScreen = () => {
                             <p className="text-gray-800 font-medium leading-relaxed">
                               {property?.address}
                             </p>
+                            <p className="text-xs text-gray-500 mt-2">
+                              Street address is shared by the landlord when you schedule a viewing.
+                            </p>
                           </div>
                           <div className="w-2/3">
                             <div className="flex items-center gap-2 mb-2">
@@ -646,6 +620,12 @@ const TenantPropertiesScreen = () => {
                             {property?.description}
                           </p>
                         </div>
+                        {property?.paymentOption ? (
+                          <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 text-sm">
+                            <p className="text-xs text-gray-500 mb-1">Payment option</p>
+                            <p className="font-semibold text-gray-800">{property.paymentOption}</p>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
 
@@ -666,6 +646,48 @@ const TenantPropertiesScreen = () => {
                           </Badge>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Map — property address search (same embed pattern as public listing page) */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                      <div className="px-6 pt-6 pb-2">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Location map</h4>
+                        <p className="text-sm text-gray-500">
+                          Approximate area from city and state. The landlord shares the full street
+                          address when you arrange a viewing.
+                        </p>
+                      </div>
+                      <div className="relative aspect-[16/10] sm:aspect-[2/1] min-h-[220px] bg-gray-100 mx-6 mb-2 rounded-xl overflow-hidden">
+                        <iframe
+                          title="Approximate area map"
+                          src={mapEmbedSrc}
+                          className="absolute inset-0 z-0 h-full w-full border-0 grayscale-[0.15]"
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
+                        <div className="absolute inset-0 z-10 pointer-events-none flex flex-col">
+                          <div className="pointer-events-auto p-3">
+                            <a
+                              href={mapsOpenHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-gray-800 shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              Open in Maps
+                            </a>
+                          </div>
+                          <div className="flex flex-1 items-start justify-center pt-4 sm:pt-8">
+                            <span className="rounded-md bg-gray-900/90 px-2.5 py-1 text-[11px] font-medium text-white shadow-lg whitespace-nowrap">
+                              Approximate area
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="px-6 pb-6 text-xs text-gray-500">
+                        Map uses city and state only. Confirm the exact location with the landlord
+                        before paying rent.
+                      </p>
                     </div>
 
                     {/* Owner Information */}
@@ -695,548 +717,19 @@ const TenantPropertiesScreen = () => {
               </div>
             )}
 
-            {/* Application Form Step */}
             {currentStep === 2 && (
-              <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
-                <div className="max-w-4xl mx-auto">
-                  {/* Progress Indicator */}
-                  <div className="mb-6 overflow-x-auto pb-4 hide-scrollbar">
-                    <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
-                      <div className="flex items-center space-x-2 sm:space-x-3">
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Property Selected</p>
-                          </div>
-                        </div>
-                        
-                        <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0"></div>
-                        
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Application Form</p>
-                          </div>
-                        </div>
-                        
-                        <div className="w-6 sm:w-12 h-0.5 bg-gray-200 shrink-0"></div>
-                        
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-gray-400 whitespace-nowrap">Review & Submit</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Form Container */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(1)}
-                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105 shrink-0"
-                        >
-                          <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <div className="min-w-0">
-                          <h2 className="text-lg sm:text-xl font-bold truncate">
-                            Tenant Application Form 🏘️
-                          </h2>
-                          <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
-                            Complete your application for {property?.apartmentType} • {property?.apartmentStyle}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Form Content */}
-                    <div className="p-6">
-                      <Formik
-                        initialValues={{
-                          currentResidence: "",
-                          monthlyIncome: "",
-                          desiredMoveInDate: new Date(),
-                          currentEmployer: "",
-                          reasonForLeaving: "",
-                          jobTitle: "",
-                          ownerId: user?._id,
-                        }}
-                        onSubmit={(values, formikHelpers) => handleSubmit(values)}
-                      >
-                        {({ isSubmitting, resetForm, values }) => (
-                          <Form className="w-full">
-                            {/* Property Summary Card */}
-                          <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
-                                    <Building className="w-6 h-6 text-green-600" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
-                                      {property?.apartmentType} • {property?.apartmentStyle}
-                                    </h3>
-                                    <p className="text-gray-600 text-sm line-clamp-1">{property?.address}</p>
-                                    <p className="text-xl font-bold text-green-600 mt-1">
-                                      ₦{property?.price?.toLocaleString()}/year
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="sm:text-right flex sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-t-0 pt-3 sm:pt-0">
-                                  <div className="text-xs text-gray-500">Unit Number</div>
-                                  <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Form Fields */}
-                            <div className="space-y-4">
-                              {/* Personal Information Section */}
-                              <div className="bg-gray-50 rounded-xl p-4">
-                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                                  <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                                  Personal Information
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Current Residence Address
-                                    </Label>
-                                    <FormikInputField
-                                      name="currentResidence"
-                                      placeholder="Enter your current address"
-                                      value={values.currentResidence}
-                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Job Title / Business Type
-                                    </Label>
-                                    <FormikInputField
-                                      name="jobTitle"
-                                      placeholder="e.g., Software Engineer, Business Owner"
-                                      value={values.jobTitle}
-                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Employment Section */}
-                              <div className="bg-gray-50 rounded-xl p-4">
-                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                                  Employment & Income
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Current Employer
-                                    </Label>
-                                    <FormikInputField
-                                      name="currentEmployer"
-                                      placeholder="Company or organization name"
-                                      value={values.currentEmployer}
-                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Monthly Income
-                                    </Label>
-                                    <FormikInputField
-                                      name="monthlyIncome"
-                                      placeholder="₦0.00"
-                                      value={values.monthlyIncome}
-                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Move-in Details Section */}
-                              <div className="bg-gray-50 rounded-xl p-4">
-                                <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                                  Move-in Details
-                                </h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Desired Move-in Date
-                                    </Label>
-                                    <div className="h-10 rounded-lg border border-gray-200 px-3 bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/20 transition-all duration-200 flex items-center">
-                                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker
-                                          value={values.desiredMoveInDate}
-                                          minDate={startOfToday()}
-                                          slotProps={{
-                                            textField: {
-                                              fullWidth: true,
-                                              size: "small",
-                                              variant: "standard",
-                                              InputProps: {
-                                                disableUnderline: true,
-                                              },
-                                              sx: {
-                                                fontSize: "13px",
-                                                boxShadow: "none",
-                                                paddingTop: "4px",
-                                                "&:hover": {
-                                                  boxShadow: "none",
-                                                  borderColor: "#10B981",
-                                                },
-                                                "& .Mui-focused": {
-                                                  boxShadow: "none",
-                                                },
-                                                "& input": {
-                                                  color: "#374151",
-                                                  padding: "8px 4px",
-                                                },
-                                              },
-                                            },
-                                            day: {
-                                              sx: {
-                                                backgroundColor: "#F9FAFB",
-                                                "&.Mui-selected": {
-                                                  backgroundColor: "#10B981",
-                                                  color: "#ffffff",
-                                                },
-                                                "&.MuiPickersDay-today": {
-                                                  border: "2px solid #10B981",
-                                                  backgroundColor: "#10B981",
-                                                },
-                                                "&.MuiPickersDay-today.Mui-selected": {
-                                                  backgroundColor: "#10B981",
-                                                  color: "#fff",
-                                                },
-                                                "&:hover": {
-                                                  backgroundColor: "#10B981",
-                                                  color: "#ffffff",
-                                                },
-                                              },
-                                            },
-                                          }}
-                                        />
-                                      </LocalizationProvider>
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                      Reason for Moving
-                                    </Label>
-                                    <FormikInputField
-                                      name="reasonForLeaving"
-                                      placeholder="e.g., Job relocation, lease ending"
-                                      value={values.reasonForLeaving}
-                                      css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">
-                              <Button
-                                type="button"
-                                size="large"
-                                className="w-full sm:flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
-                                variant="lightGrey"
-                                showIcon={false}
-                                onClick={() => {
-                                  resetForm();
-                                  setCurrentStep(1);
-                                }}
-                              >
-                            
-                                Back to Property
-                              </Button>
-                              <Button
-                                 type="button"
-                                size="large"
-                                className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
-                                variant="darkPrimary"
-                                showIcon={false}
-                                 onClick={() => {
-                                   setFormData(values);
-                                   setCurrentStep(3);
-                                 }}
-                               >
-                                  <div className="flex items-center justify-center w-full">
-                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                   Continue to Review
-                                  </div>
-                              </Button>
-                            </div>
-
-                            {/* Application Tips */}
-                            <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                              <div className="flex items-start gap-3">
-                                <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>
-                                </div>
-                                <div>
-                                  <h5 className="font-medium text-emerald-800 mb-2 text-sm">Application Tips</h5>
-                                  <ul className="text-xs text-emerald-700 space-y-1">
-                                    <li>• Ensure all information is accurate and up-to-date</li>
-                                    <li>• Provide complete contact details for verification</li>
-                                    <li>• Be honest about your income and employment status</li>
-                                    <li>• The landlord will review your application within 24-48 hours</li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </div>
-                          </Form>
-                        )}
-                      </Formik>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Review & Submit Step */}
-            {currentStep === 3 && (
-              <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4">
-                <div className="max-w-4xl mx-auto">
-                  {/* Progress Indicator */}
-                  <div className="mb-6 overflow-x-auto pb-4 hide-scrollbar">
-                    <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
-                      <div className="flex items-center space-x-2 sm:space-x-3">
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Property Selected</p>
-                          </div>
-                        </div>
-                        
-                        <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0"></div>
-                        
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">Application Form</p>
-                          </div>
-                        </div>
-                        
-                        <div className="w-6 sm:w-12 h-0.5 bg-gray-200 shrink-0"></div>
-                        
-                        <div className="flex items-center shrink-0">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div className="ml-1.5 sm:ml-2">
-                            <p className="text-[10px] sm:text-xs font-medium text-gray-400 whitespace-nowrap">Review & Submit</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Review Container */}
-                  <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    {/* Header */}
-                    <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setCurrentStep(2)}
-                          className="p-1.5 hover:bg-white/20 rounded-lg transition-all duration-200 hover:scale-105 shrink-0"
-                        >
-                          <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <div className="min-w-0">
-                          <h2 className="text-lg sm:text-xl font-bold truncate">
-                            Review & Submit Application 📋
-                          </h2>
-                          <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
-                            Review your application details before final submission
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Review Content */}
-                    <div className="p-4 sm:p-6">
-                      {/* Property Summary Card */}
-                      <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
-                              <Building className="w-6 h-6 text-green-600" />
-                            </div>
-                            <div>
-                              <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
-                                {property?.apartmentType} • {property?.apartmentStyle}
-                              </h3>
-                              <p className="text-gray-600 text-sm line-clamp-1">{property?.address}</p>
-                              <p className="text-xl font-bold text-green-600 mt-1">
-                                ₦{property?.price?.toLocaleString()}/year
-                              </p>
-                            </div>
-                          </div>
-                          <div className="sm:text-right flex sm:flex-col justify-between sm:justify-start items-center sm:items-end border-t sm:border-t-0 pt-3 sm:pt-0">
-                            <div className="text-xs text-gray-500">Unit Number</div>
-                            <div className="text-xl font-bold text-gray-800">{property?.flatNumber}</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Application Details Review */}
-                      <div className="space-y-6">
-                        {/* Personal Information Review */}
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                            Personal Information
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Current Residence Address</p>
-                              <p className="text-gray-800 font-semibold">{formData?.currentResidence || 'Not provided'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Job Title / Business Type</p>
-                              <p className="text-gray-800 font-semibold">{formData?.jobTitle || 'Not provided'}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Employment Review */}
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
-                            Employment & Income
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Current Employer</p>
-                              <p className="text-gray-800 font-semibold">{formData?.currentEmployer || 'Not provided'}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Monthly Income</p>
-                              <p className="text-gray-800 font-semibold">₦{formData?.monthlyIncome || 'Not provided'}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Move-in Details Review */}
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                            Move-in Details
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Desired Move-in Date</p>
-                              <p className="text-gray-800 font-semibold">
-                                {formData?.desiredMoveInDate ? new Date(formData.desiredMoveInDate).toLocaleDateString() : 'Not provided'}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500 font-medium mb-1">Reason for Moving</p>
-                              <p className="text-gray-800 font-semibold">{formData?.reasonForLeaving || 'Not provided'}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">
-                        <Button
-                          type="button"
-                          size="large"
-                          className="w-full sm:flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200 h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 text-sm"
-                          variant="lightGrey"
-                          showIcon={false}
-                          onClick={() => setCurrentStep(2)}
-                        >
-                          Back to Edit
-                        </Button>
-                        <Button
-                          type="button"
-                          size="large"
-                          className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
-                          variant="darkPrimary"
-                          showIcon={false}
-                          onClick={() => handleSubmit(formData)}
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <div className="flex items-center justify-center w-full">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Submitting...
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center w-full">
-                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                              </svg>
-                              Submit Application
-                            </div>
-                          )}
-                        </Button>
-                      </div>
-
-                      {/* Final Review Tips */}
-                      <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h5 className="font-medium text-emerald-800 mb-2 text-sm">Final Review Checklist</h5>
-                            <ul className="text-xs text-emerald-700 space-y-1">
-                              <li>• All personal information is accurate and complete</li>
-                              <li>• Employment details are up-to-date</li>
-                              <li>• Move-in date is realistic and works for you</li>
-                              <li>• You're ready to proceed with the application</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TenantPropertyApplicationPanel
+                variant="page"
+                property={property}
+                propertyId={id as string}
+                user={user}
+                onBack={() => setCurrentStep(1)}
+                onSuccess={() => {
+                  setTimeout(() => {
+                    router.push("/dashboard/tenant/properties");
+                  }, 2000);
+                }}
+              />
             )}
 
           {/* Enhanced Contact Modal */}

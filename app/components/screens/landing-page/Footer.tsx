@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-semibold text-white/90">Resources</h3>
             <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
+                <Link href="/legal/safety-tips" className="hover:text-white transition-colors">
                   Safety Tips
                 </Link>
               </li>

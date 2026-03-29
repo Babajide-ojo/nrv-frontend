@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import {
   Shield,
-  FileCheck,
+  CreditCard,
   UserCheck,
   ArrowRight,
   Building2,
@@ -17,10 +16,12 @@ import {
   CheckCircle2,
   Sparkles,
   Search,
-  SlidersHorizontal,
-  X,
+  Home,
+  ChevronDown,
 } from "lucide-react";
 import { API_URL } from "@/config/constant";
+import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
+import PropertyCard from "@/app/components/shared/cards/PropertyCard";
 
 const FEATURES = [
   {
@@ -30,7 +31,7 @@ const FEATURES = [
       "Comprehensive background checks including employment, identity, and rental history verification for Nigerian tenants.",
   },
   {
-    icon: FileCheck,
+    icon: CreditCard,
     title: "Rent Payment Tracking",
     description:
       "Track all rent payments in one place. Never lose track of who has paid and who owes.",
@@ -57,7 +58,7 @@ const FEATURES = [
     icon: MapPin,
     title: "Property Listings",
     description:
-      "List your available properties with photos, maps, and details to attract tenants.",
+      "List your available properties with photos, maps, and details to attract verified tenants.",
   },
 ];
 
@@ -153,7 +154,7 @@ const NewLanding = () => {
   }, [typedHeroText, phraseIndex, isDeleting]);
 
   // Property listing (Explore section) – search & filters
-  const LIST_LIMIT = 6;
+  const LIST_LIMIT = 3;
   const [listFilters, setListFilters] = useState({
     searchTerm: "",
     minimiumPrice: "",
@@ -162,7 +163,6 @@ const NewLanding = () => {
   const [listProperties, setListProperties] = useState<any[]>([]);
   const [listLoading, setListLoading] = useState(true);
   const [listPage, setListPage] = useState(1);
-  const listSearchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchListings = useCallback(
     async (overrides?: { page?: number; searchTerm?: string; minimiumPrice?: string; maximiumPrice?: string }) => {
@@ -194,57 +194,13 @@ const NewLanding = () => {
     fetchListings();
   }, [listPage]);
 
-  useEffect(() => {
-    return () => {
-      if (listSearchDebounce.current) clearTimeout(listSearchDebounce.current);
-    };
-  }, []);
-
-  const onListFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    const formatMoneyLike = (raw: string) => {
-      const digits = raw.replace(/[^\d]/g, "");
-      if (!digits) return "";
-      return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    };
-
-    const nextValue =
-      name === "minimiumPrice" || name === "maximiumPrice" ? formatMoneyLike(value) : value;
-
-    setListFilters((prev) => ({ ...prev, [name]: nextValue }));
-
-    if (name === "searchTerm") {
-      if (listSearchDebounce.current) clearTimeout(listSearchDebounce.current);
-      listSearchDebounce.current = setTimeout(() => {
-        setListPage(1);
-        fetchListings({ page: 1, searchTerm: nextValue });
-      }, 400);
-    }
-  };
-
-  const QUICK_LOCATIONS = ["Lagos", "Abuja", "Lekki", "Port Harcourt", "Ibadan"];
-  const onQuickLocation = (loc: string) => {
-    setListFilters((prev) => ({ ...prev, searchTerm: loc }));
-    setListPage(1);
-    fetchListings({ page: 1, searchTerm: loc });
-  };
-
-  const applyListFilters = () => {
-    setListPage(1);
-    fetchListings({ page: 1 });
-  };
+  const QUICK_LOCATIONS = ["Lagos", "Abuja", "Ikeja", "Lekki", "Port Harcourt", "Ibadan"];
 
   const clearListFilters = () => {
     setListFilters({ searchTerm: "", minimiumPrice: "", maximiumPrice: "" });
     setListPage(1);
     fetchListings({ page: 1, searchTerm: "", minimiumPrice: "", maximiumPrice: "" });
   };
-
-  const hasListFilters =
-    (listFilters.searchTerm?.trim()?.length ?? 0) > 0 ||
-    (listFilters.minimiumPrice?.toString()?.trim() ?? "") !== "" ||
-    (listFilters.maximiumPrice?.toString()?.trim() ?? "") !== "";
 
   // Heatmap (rent insights)
   const [heatmapState, setHeatmapState] = useState<string>('Lagos');
@@ -314,32 +270,10 @@ const NewLanding = () => {
     fetchHeatmapInsights();
   }, [fetchHeatmapInsights]);
 
-  const [accountType, setAccountType] = useState<string | null>(null);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("nrv-user");
-      if (!raw) {
-        setAccountType(null);
-        return;
-      }
-
-      const parsed = JSON.parse(raw) as any;
-      const type = String(parsed?.user?.accountType || "").toLowerCase();
-      setAccountType(type || null);
-    } catch {
-      setAccountType(null);
-    }
-  }, []);
-
-  const router = useRouter();
+  const [propertyModalId, setPropertyModalId] = useState<string | null>(null);
 
   const goToPropertyDetails = (propertyId: string) => {
-    if (accountType === "tenant") {
-      router.push(`/dashboard/tenant/properties/${propertyId}`);
-    } else {
-      router.push(`/properties/${propertyId}`);
-    }
+    setPropertyModalId(propertyId);
   };
 
   const formatNaira = (amount: number) =>
@@ -527,20 +461,20 @@ const NewLanding = () => {
         </div>
       </section>
 
-      {/* Everything You Need + Features grid – id="features" */}
+      {/* Features grid – id="features" (2×3 cards, pale green-grey background) */}
       <section id="features" className="px-4 sm:px-6 lg:px-12 py-10 sm:py-14 bg-[#EDF1EF] scroll-mt-24">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-2xl border border-[#DCE3DE] bg-white p-5 sm:p-6 shadow-sm"
+                className="rounded-2xl bg-white p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] border border-gray-100/80"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#EEF5F0] flex items-center justify-center mb-4">
-                  <f.icon className="w-5 h-5 text-[#0E6B43]" />
+                <div className="w-10 h-10 rounded-lg bg-[#E8F3EC] flex items-center justify-center mb-4 shrink-0">
+                  <f.icon className="w-5 h-5 text-[#03442C]" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#15231B] mb-3">{f.title}</h3>
-                <p className="text-base text-[#4C5B52] leading-8">{f.description}</p>
+                <h3 className="text-base font-bold text-gray-900 mb-2">{f.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{f.description}</p>
               </div>
             ))}
           </div>
@@ -652,126 +586,64 @@ const NewLanding = () => {
         </div>
       </section>
 
-      {/* Explore Homes – id="explore" */}
-      <section id="explore" className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-gradient-to-b from-[#F3F4F6] to-white scroll-mt-24">
+      {/* Explore Verified Homes – id="explore" */}
+      <section id="explore" className="px-4 sm:px-6 lg:px-12 py-8 sm:py-12 bg-[#F3F4F6] scroll-mt-24">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#031B14] text-center mb-2">
-            Explore Homes
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#031B14] text-left mb-4">
+            Explore Verified Homes
           </h2>
-          <p className="text-gray-600 text-sm sm:text-base max-w-lg mx-auto text-center mb-6">
-            Browse listings across Lagos, Abuja, and more. Search by location and filter by rent range.
-          </p>
 
-          {/* Search & filters */}
-          <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-4 sm:p-5 mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <SlidersHorizontal className="w-5 h-5 text-[#03442C]" />
-              <h3 className="text-sm font-semibold text-[#031B14]">Search & filter</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="lg:col-span-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Location</label>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="search"
-                    name="searchTerm"
-                    placeholder="City, state or address"
-                    value={listFilters.searchTerm}
-                    onChange={onListFilterChange}
-                    onKeyDown={(e) => e.key === "Enter" && applyListFilters()}
-                    className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#03442C]/30 focus:border-[#03442C]"
-                  />
-                </div>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {QUICK_LOCATIONS.map((loc) => (
-                    <button
-                      key={loc}
-                      type="button"
-                      onClick={() => onQuickLocation(loc)}
-                      className="px-2.5 py-1 rounded-full text-xs font-semibold border border-gray-200 bg-white hover:bg-emerald-50 hover:border-emerald-200 text-gray-700 transition-colors"
-                    >
-                      {loc}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Min price (₦)</label>
-                <input
-                  type="text"
-                  name="minimiumPrice"
-                  placeholder="e.g. 500000"
-                  value={listFilters.minimiumPrice}
-                  onChange={onListFilterChange}
-                  onKeyDown={(e) => e.key === "Enter" && applyListFilters()}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#03442C]/30 focus:border-[#03442C]"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Max price (₦)</label>
-                <input
-                  type="text"
-                  name="maximiumPrice"
-                  placeholder="e.g. 5000000"
-                  value={listFilters.maximiumPrice}
-                  onChange={onListFilterChange}
-                  onKeyDown={(e) => e.key === "Enter" && applyListFilters()}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#03442C]/30 focus:border-[#03442C]"
-                />
-              </div>
-              <div className="flex items-end gap-2">
-                <button
-                  type="button"
-                  onClick={applyListFilters}
-                  disabled={listLoading}
-                  className="flex-1 py-2 px-4 rounded-lg bg-[#03442C] text-white text-sm font-semibold hover:bg-[#022419] disabled:opacity-60 transition-colors"
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  onClick={clearListFilters}
-                  disabled={!hasListFilters || listLoading}
-                  className="flex-1 py-2 px-4 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors inline-flex items-center justify-center gap-1"
-                >
-                  <X className="w-4 h-4" />
-                  Clear
-                </button>
-              </div>
-            </div>
+          <div className="relative mb-6 inline-flex w-full max-w-xs">
+            <Home className="pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-500" aria-hidden />
+            <select
+              value={listFilters.searchTerm}
+              onChange={(e) => {
+                const v = e.target.value;
+                setListFilters((prev) => ({ ...prev, searchTerm: v }));
+                setListPage(1);
+                fetchListings({ page: 1, searchTerm: v });
+              }}
+              className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-10 text-sm font-medium text-gray-900 shadow-sm focus:border-[#03442C] focus:outline-none focus:ring-2 focus:ring-[#03442C]/20"
+              aria-label="Filter by city"
+            >
+              <option value="">All Cities</option>
+              {QUICK_LOCATIONS.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" aria-hidden />
           </div>
 
           {listLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="rounded-xl border border-gray-200 bg-white p-3 animate-pulse">
-                  <div className="aspect-[4/3] rounded-lg bg-gray-200 mb-3" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
-                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="overflow-hidden rounded-2xl border border-gray-100 bg-white p-4 animate-pulse">
+                  <div className="h-80 rounded-xl bg-gray-200 mb-4" />
+                  <div className="h-5 w-3/4 rounded bg-gray-200 mb-2" />
+                  <div className="h-4 w-1/2 rounded bg-gray-100 mb-4" />
+                  <div className="h-10 w-1/3 rounded bg-gray-200" />
                 </div>
               ))}
             </div>
           ) : !listProperties.length ? (
-            <div className="rounded-xl border border-gray-200 bg-white p-8 text-center mb-6">
+            <div className="rounded-xl border border-gray-200 bg-white p-8 text-center mb-6 shadow-sm">
               <p className="text-gray-600 font-medium">No listings match your search</p>
-              <p className="text-sm text-gray-500 mt-1">Try a different location or price range, or clear filters.</p>
+              <p className="text-sm text-gray-500 mt-1">Try another city or clear the filter.</p>
               <button
                 type="button"
                 onClick={clearListFilters}
                 className="mt-4 text-sm font-semibold text-[#03442C] hover:underline"
               >
-                Clear filters
+                Show all cities
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
               {listProperties.map((room: any) => {
-                const img = room?.imageUrls?.[0] || room?.file || room?.propertyId?.file || "/images/featured-img.svg";
-                const address = [room?.propertyId?.city, room?.propertyId?.state].filter(Boolean).join(", ") || "Nigeria";
-                const label = room?.propertyId?.noOfRooms ? `${address} · ${room.propertyId.noOfRooms}-bed` : address;
-                const rent = room?.rentAmount != null ? Number(room.rentAmount) : 0;
-                const priceText = rent > 0 ? `₦${rent.toLocaleString()}/yr` : "Price on request";
+                const prop = room?.propertyId || {};
+                const locationLine = [prop.city, prop.state].filter(Boolean).join(", ") || "—";
                 return (
                   <div
                     key={room._id}
@@ -784,32 +656,16 @@ const NewLanding = () => {
                         goToPropertyDetails(room._id);
                       }
                     }}
-                    className="group rounded-xl overflow-hidden bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-[#03442C]/20 transition-all duration-200 cursor-pointer"
+                    className="cursor-pointer h-full"
                   >
-                    <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
-                      {img.startsWith("http") || img.startsWith("/") ? (
-                        img.endsWith(".svg") ? (
-                          <Image src={img} alt={label} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 100vw, 33vw" />
-                        ) : (
-                          <img
-                            src={img}
-                            alt={label}
-                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                          />
-                        )
-                      ) : (
-                        <Image src="/images/featured-img.svg" alt={label} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 640px) 100vw, 33vw" />
-                      )}
-                      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-10">
-                        <div className="rotate-[-30deg] font-extrabold tracking-widest text-white/45 bg-black/20 border border-white/15 text-[22px] sm:text-[28px] px-5 py-2.5 whitespace-nowrap rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
-                          Naijarentverify
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <p className="text-sm font-medium text-[#031B14] line-clamp-2">{label}</p>
-                      <p className="text-xs text-[#03442C] font-semibold mt-0.5">{priceText}</p>
-                    </div>
+                    <PropertyCard
+                      imageUrl={
+                        room?.imageUrls?.[0] || room?.file || prop?.file || "/images/featured-img.svg"
+                      }
+                      address={locationLine}
+                      rentAmount={room?.rentAmount}
+                      property={room}
+                    />
                   </div>
                 );
               })}
@@ -818,7 +674,7 @@ const NewLanding = () => {
 
           <div className="text-center">
             <Link
-              href="#explore"
+              href="/dashboard/tenant/properties"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-[#03442C] text-[#03442C] font-semibold hover:bg-[#03442C] hover:text-white transition-all duration-200"
             >
               Browse All Listings
@@ -1153,7 +1009,7 @@ const NewLanding = () => {
               <h3 className="text-sm font-semibold text-white/90">Resources</h3>
               <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
                 <li>
-                  <Link href="/privacy" className="hover:text-white transition-colors">
+                  <Link href="/legal/safety-tips" className="hover:text-white transition-colors">
                     Safety Tips
                   </Link>
                 </li>
@@ -1187,6 +1043,14 @@ const NewLanding = () => {
           </div>
         </div>
       </footer>
+
+      <PublicPropertyDetailsModal
+        roomId={propertyModalId}
+        open={propertyModalId !== null}
+        onOpenChange={(next) => {
+          if (!next) setPropertyModalId(null);
+        }}
+      />
     </div>
   );
 };

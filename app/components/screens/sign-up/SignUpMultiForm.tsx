@@ -103,7 +103,7 @@ const SignUpMultiForm = () => {
             <div className="max-w-md w-full">
               {/* <div className="md:hidden my-10">
                 <Image
-                  src="/images/light-green-logo.svg"
+                  src="/images/nrv-logo-latest.jpg"
                   alt="Background"
                   width={200}
                   height={50}

@@ -12,6 +12,7 @@ import Users from "../../icons/Users";
 import { LuMapPin } from "react-icons/lu";
 import { API_URL } from "@/config/constant";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 
 function getRoomFromItem(item: any) {
   const room = item?.propertyId;
@@ -65,11 +66,13 @@ const RentedApartments = ({
   loading = false,
   exploreProperties = [],
   exploreLoading = false,
+  onSelectExploreProperty,
 }: {
   apartments?: any[];
   loading?: boolean;
   exploreProperties?: any[];
   exploreLoading?: boolean;
+  onSelectExploreProperty?: (roomId: string) => void;
 }) => {
   const router = useRouter();
 
@@ -108,22 +111,25 @@ const RentedApartments = ({
               const imageUrl = room?.imageUrls?.[0] || room?.file || room?.propertyId?.file || null;
               const title = room?.name || room?.description || "Apartment";
               const property = room?.propertyId;
-              const location = formatAddress(
-                property?.streetAddress ||
-                [property?.city, property?.state].filter(Boolean).join(", ") ||
-                "—"
-              );
+              const location =
+                [property?.city, property?.state].filter(Boolean).join(", ") || "—";
               const rent = room?.rentAmount;
               return (
                 <div
                   key={room._id ?? index}
                   role="button"
                   tabIndex={0}
-                  onClick={() => router.push(`/dashboard/tenant/properties/${room._id}`)}
+                  onClick={() =>
+                    onSelectExploreProperty
+                      ? onSelectExploreProperty(room._id)
+                      : router.push(`/dashboard/tenant/properties/${room._id}`)
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      router.push(`/dashboard/tenant/properties/${room._id}`);
+                      onSelectExploreProperty
+                        ? onSelectExploreProperty(room._id)
+                        : router.push(`/dashboard/tenant/properties/${room._id}`);
                     }
                   }}
                   className="cursor-pointer"
@@ -231,6 +237,7 @@ const TenantDashboardScreen = () => {
   const [rentedLoading, setRentedLoading] = useState(false);
   const [exploreProperties, setExploreProperties] = useState<any[]>([]);
   const [exploreLoading, setExploreLoading] = useState(false);
+  const [propertyModalId, setPropertyModalId] = useState<string | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -287,7 +294,7 @@ const TenantDashboardScreen = () => {
     },
   ];
   return (
-    <div className="p-4 sm:p-6 lg:p-8 mb-16 md:mb-0">
+    <div className="p-4 sm:p-6 lg:p-8 mb-16 md:mb-0 max-w-7xl mx-auto w-full">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
         Hey {user?.firstName} {user?.lastName}👋,
       </p>
@@ -337,8 +344,17 @@ const TenantDashboardScreen = () => {
           loading={rentedLoading}
           exploreProperties={exploreProperties}
           exploreLoading={exploreLoading}
+          onSelectExploreProperty={(id) => setPropertyModalId(id)}
         />
       </div>
+
+      <PublicPropertyDetailsModal
+        roomId={propertyModalId}
+        open={propertyModalId !== null}
+        onOpenChange={(next) => {
+          if (!next) setPropertyModalId(null);
+        }}
+      />
     </div>
   );
 };

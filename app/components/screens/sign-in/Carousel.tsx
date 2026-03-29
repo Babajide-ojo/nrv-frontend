@@ -32,10 +32,11 @@ export default function RentalManagement() {
       {/* Content */}
       <div className="relative z-10 max-w-3xl">
         <Image
-          src="/images/light-green-logo.svg"
-          alt="Background"
+          src="/images/nrv-logo-latest.jpg"
+          alt="NaijaRentVerify"
           width={200}
           height={50}
+          className="h-12 w-auto"
         />
         <h1 className="mt-16 md:text-[50px] text-[30px] font-bold leading-tight">
           Your Trusted Partner in Hassle-Free Rental Property Management

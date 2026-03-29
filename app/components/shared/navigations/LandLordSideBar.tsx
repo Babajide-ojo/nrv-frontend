@@ -83,11 +83,16 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       <div>
         {/* Logo */}
         <div
-          className="text-white text-start mt-10 ml-4 italic flex cursor-pointer"
+          className="text-start mt-10 ml-4 flex cursor-pointer items-center"
           onClick={() => router.push("/")}
         >
-          {/* <Image src={Logo} width={150} height={40} alt="logo" /> */}
-          NaijaRentVerify
+          <Image
+            src="/images/nrv-logo-latest.jpg"
+            width={150}
+            height={40}
+            alt="NaijaRentVerify"
+            className="h-9 w-auto max-w-[160px] object-contain"
+          />
         </div>
 
         {/* Navigation Links */}

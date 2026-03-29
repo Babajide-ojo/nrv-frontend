@@ -6,22 +6,18 @@ const LoginHeader: React.FC = () => {
   return (
     <div className="mb-8">
       {/* Mobile Logo */}
-      <div className="lg:hidden mb-6">
+      <div className="mb-6">
         <Link href="/" className="inline-block">
-          <h1 className="text-2xl font-bold text-green-600">NaijaRentVerify</h1>
+          <Image
+            src="/images/nrv-logo-latest.jpg"
+            alt="NaijaRentVerify"
+            width={200}
+            height={50}
+            className="h-10 sm:h-12 w-auto"
+            priority
+          />
         </Link>
       </div>
-      
-      {/* Desktop Logo (optional) */}
-      {/* <div className="hidden lg:block mb-6">
-        <Image
-          src="/images/light-green-logo.svg"
-          alt="NaijaRentVerify Logo"
-          width={200}
-          height={50}
-          className="h-12 w-auto"
-        />
-      </div> */}
       
       {/* Welcome Text */}
       <div className="text-center lg:text-left">

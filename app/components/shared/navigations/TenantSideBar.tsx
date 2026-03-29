@@ -16,7 +16,6 @@ import {
   FiSettings,
   FiCheckCircle,
 } from "react-icons/fi";
-import Logo from "../../../../public/images/nrv-logo.png";
 import { FaPerson } from "react-icons/fa6";
 import { BsPersonFill } from "react-icons/bs";
 import { PiFileDocDuotone } from "react-icons/pi";
@@ -97,11 +96,16 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
       <div>
         {/* Logo */}
         <div
-          className="text-white text-start mt-10 ml-4 italic flex cursor-pointer"
+          className="text-start mt-10 ml-4 flex cursor-pointer items-center"
           onClick={() => router.push("/")}
         >
-          {/* <Image src={Logo} width={150} height={40} alt="logo" /> */}
-          NaijaRentVerify
+          <Image
+            src="/images/nrv-logo-latest.jpg"
+            width={150}
+            height={40}
+            alt="NaijaRentVerify"
+            className="h-9 w-auto max-w-[160px] object-contain"
+          />
         </div>
 
         {/* Navigation Links */}

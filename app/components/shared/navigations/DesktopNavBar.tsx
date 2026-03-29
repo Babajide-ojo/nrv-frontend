@@ -46,7 +46,7 @@ const DesktopNavBar: React.FC = () => {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0 group">
             <Image
-              src="/images/naija-rent-verify-logo.png"
+              src="/images/nrv-logo-latest.jpg"
               alt="NaijaRentVerify"
               width={150}
               height={52}

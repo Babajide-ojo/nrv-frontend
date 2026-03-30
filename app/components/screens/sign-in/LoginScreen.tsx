@@ -91,15 +91,15 @@ const LoginScreen: React.FC = () => {
   }, [router]);
 
   return (
-    <div className="font-jakarta flex justify-center h-screen bg-gray-100">
+    <div className="font-jakarta flex flex-col lg:flex-row lg:justify-center min-h-screen min-h-[100dvh] bg-gray-100 overflow-x-hidden">
       {/* Left side - Carousel (hidden on mobile) */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block lg:shrink-0 lg:w-1/2 lg:max-w-[50%]">
         <Carousel />
       </div>
-      
+
       {/* Right side - Login Form */}
-      <div className="w-full sm:w-1/2 p-8 flex flex-col justify-center">
-        <div className="max-w-md mx-auto w-full">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <div className="max-w-md mx-auto w-full min-w-0">
           {/* Header */}
           <LoginHeader />
           

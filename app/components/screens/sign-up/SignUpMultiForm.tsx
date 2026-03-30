@@ -95,27 +95,27 @@ const SignUpMultiForm = () => {
   return (
     <div className="font-jakarta">
       {currentStep === 1 && (
-        <div className="flex w-full">
-          <div className="hidden md:block md:w-1/2 justify-center">
+        <div className="flex flex-col md:flex-row w-full min-h-screen min-h-[100dvh] md:min-h-screen overflow-x-hidden">
+          <div className="hidden md:block md:w-1/2 md:shrink-0 md:max-w-[50%]">
             <Carousel />
           </div>
-          <div className="w-full md:w-1/2 flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-            <div className="max-w-md w-full">
-              {/* <div className="md:hidden my-10">
-                <Image
-                  src="/images/nrv-logo-latest.jpg"
-                  alt="Background"
-                  width={200}
-                  height={50}
-                />
-              </div> */}
-              <h1 className="text-2xl font-bold text-green-600 md:hidden my-10">
-                NaijaRentVerify
-              </h1>
-              <h1 className="text-2xl font-bold text-black">
+          <div className="w-full md:w-1/2 flex flex-col items-center justify-center flex-1 min-h-0 bg-gray-50 p-4 sm:p-6 overflow-y-auto">
+            <div className="max-w-md w-full min-w-0">
+              <div className="md:hidden flex justify-center w-full mb-6 min-w-0">
+                <Link href="/" className="inline-block max-w-full">
+                  <Image
+                    src="/images/nrv-logo-latest.jpg"
+                    alt="NaijaRentVerify"
+                    width={200}
+                    height={50}
+                    className="h-9 sm:h-10 w-auto max-w-[min(240px,88vw)] object-contain"
+                  />
+                </Link>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-black">
                 Create an Account!
               </h1>
-              <p className="text-gray-500 mt-2">
+              <p className="text-gray-500 mt-2 text-[15px] sm:text-base leading-relaxed">
                 Welcome to NaijarentVerify! Choose your role to get started.
                 We&apos;ll tailor your experience to meet your needs.
               </p>
@@ -142,15 +142,15 @@ const SignUpMultiForm = () => {
                     onClick={() => setSelectedRole(role)}
                   >
                     <div
-                      className={`flex justify-between p-4 rounded-t-xl ${
+                      className={`flex justify-between gap-2 p-4 rounded-t-xl min-w-0 ${
                         selectedRole === role
                           ? "bg-[#E9F4E7]"
                           : "border-gray-300"
                       }`}
                     >
-                      <div className="flex space-x-2">
+                      <div className="flex gap-2 min-w-0 flex-1 items-start">
                         {icon}
-                        <span className="font-medium text-[#045D23]">
+                        <span className="font-medium text-[#045D23] text-sm sm:text-base break-words">
                           {text}
                         </span>
                       </div>
@@ -158,7 +158,7 @@ const SignUpMultiForm = () => {
                         <CheckCircle className="text-green-600" />
                       )}
                     </div>
-                    <p className="text-[#03442C] border-t border p-4 font-light text-[14px] leading-6">
+                    <p className="text-[#03442C] border-t border p-4 font-light text-[13px] sm:text-[14px] leading-6 break-words">
                       {description}
                     </p>
                   </div>

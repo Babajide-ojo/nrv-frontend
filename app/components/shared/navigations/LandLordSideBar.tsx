@@ -83,7 +83,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       <div>
         {/* Logo */}
         <div
-          className="text-start mt-10 ml-4 flex cursor-pointer items-center"
+          className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
           onClick={() => router.push("/")}
         >
           <Image
@@ -91,7 +91,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
             width={150}
             height={40}
             alt="NaijaRentVerify"
-            className="h-9 w-auto max-w-[160px] object-contain"
+            className="h-8 sm:h-9 w-auto max-w-full object-contain"
           />
         </div>
 

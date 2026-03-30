@@ -49,14 +49,18 @@ const MobileNavBar: React.FC = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between h-[68px] px-4 w-full">
-        <Link href="/" className="flex items-center shrink-0" onClick={close}>
+      <header className="flex items-center justify-between gap-2 h-[68px] px-3 sm:px-4 w-full min-w-0 max-w-full">
+        <Link
+          href="/"
+          className="flex items-center min-w-0 shrink overflow-hidden"
+          onClick={close}
+        >
           <Image
             src="/images/nrv-logo-latest.jpg"
             alt="NaijaRentVerify"
             width={130}
             height={45}
-            className="h-9 w-auto"
+            className="h-8 sm:h-9 w-auto max-h-9 max-w-[min(200px,52vw)] object-contain"
           />
         </Link>
         <button

@@ -27,7 +27,7 @@ const ContactSection: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Operating Hours */}
           <div className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left">
             <Clock className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
@@ -53,20 +53,6 @@ const ContactSection: React.FC = () => {
             </p>
             <p className="text-sm pt-4 font-medium text-[#045D23] landing-body">
               info@naijarentverify.com
-            </p>
-          </div>
-
-          {/* Visit Us */}
-          <div className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left">
-            <MapPin className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
-            <h3 className="mt-3 text-lg font-medium text-[#0D3520] landing-heading-2">
-              Visit us
-            </h3>
-            <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              Office Address
-            </p>
-            <p className="text-sm pt-4 font-medium text-[#045D23] landing-body">
-              123 Rental Avenue, Lagos State, Nigeria
             </p>
           </div>
 

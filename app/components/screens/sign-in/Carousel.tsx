@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
@@ -32,18 +33,20 @@ export default function RentalManagement() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 w-full min-w-0 max-w-3xl">
-        <Image
-          src="/images/nrv-logo-latest.jpg"
-          alt="NaijaRentVerify"
-          width={200}
-          height={50}
-          className="h-9 sm:h-11 lg:h-12 w-auto max-w-[min(240px,85vw)] object-contain"
-        />
+      <div className="relative z-10 w-full min-w-0 max-w-3xl mx-auto text-center flex flex-col items-center">
+        <Link href="/" className="inline-flex">
+          <Image
+            src="/images/nrv-logo-latest.jpg"
+            alt="NaijaRentVerify"
+            width={200}
+            height={50}
+            className="h-9 sm:h-11 lg:h-12 w-auto max-w-[min(240px,85vw)] object-contain"
+          />
+        </Link>
         <h1 className="mt-8 sm:mt-12 lg:mt-16 text-[clamp(1.375rem,4.5vw,3.125rem)] md:text-[50px] font-bold leading-[1.15] sm:leading-tight">
           Your Trusted Partner in Hassle-Free Rental Property Management
         </h1>
-        <p className="mt-8 sm:mt-10 lg:mt-12 text-base sm:text-lg text-gray-200 italic font-light">
+        <p className="mt-8 sm:mt-10 lg:mt-12 text-base sm:text-lg text-gray-200 italic font-light max-w-2xl">
           &#34;At <span className="font-semibold">NaijaRentVerify</span>, we
           simplify rental property management for landlords and tenants alike.
           From genuine listings to seamless transactions, we ensure every step
@@ -56,14 +59,14 @@ export default function RentalManagement() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 mt-8 sm:mt-12 w-full min-w-0 max-w-lg"
+        className="relative z-10 mt-8 sm:mt-12 w-full min-w-0 max-w-lg mx-auto"
       >
         <div className="bg-[#BBFF3733] backdrop-blur-md p-6 rounded-xl shadow-lg">
           <div>
-            <p className="text-[15px] sm:text-[16px] leading-7 sm:leading-8 italic break-words">
+            <p className="text-[15px] sm:text-[16px] leading-7 sm:leading-8 italic break-words text-center">
               {testimonials[currentIndex].text}
             </p>
-            <div className="mt-4 flex items-center gap-4">
+            <div className="mt-4 flex items-center justify-center gap-4">
               <Image
                 src={testimonials[currentIndex].image}
                 alt="Profile"
@@ -71,7 +74,7 @@ export default function RentalManagement() {
                 height={50}
                 className="rounded-full"
               />
-              <div>
+              <div className="text-left">
                 <p className="font-medium">{testimonials[currentIndex].name}</p>
                 <p className="text-[12px] text-gray-300">
                   {testimonials[currentIndex].role}

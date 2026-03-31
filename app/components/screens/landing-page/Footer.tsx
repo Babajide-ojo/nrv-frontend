@@ -116,7 +116,7 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/contact-us?subject=problem" className="hover:text-white transition-colors">
+                <Link href="mailto:safety@naijarentverify.com" className="hover:text-white transition-colors">
                   Report a Problem
                 </Link>
               </li>

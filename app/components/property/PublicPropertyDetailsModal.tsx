@@ -226,10 +226,7 @@ export function PublicPropertyDetailsModal({
 
   const subtitle = useMemo(() => {
     if (!room) return "";
-    const a = room.apartmentType?.trim() || "";
-    const b = room.apartmentStyle?.trim() || "";
-    if (a && b) return `${a} • ${b}`;
-    return a || b || "";
+    return room.apartmentType?.trim() || room.apartmentStyle?.trim() || "";
   }, [room]);
 
   const isAuthenticated =
@@ -313,6 +310,16 @@ export function PublicPropertyDetailsModal({
     if (typeof window === "undefined") return "";
     if (!listingId) return "";
     return `${window.location.origin}/properties/${listingId}`;
+  }, [listingId]);
+
+  const loginHref = useMemo(() => {
+    if (!listingId) return "/sign-in";
+    return `/sign-in?redirect=/properties/${listingId}`;
+  }, [listingId]);
+
+  const signUpHref = useMemo(() => {
+    if (!listingId) return "/sign-up";
+    return `/sign-up?redirect=/properties/${listingId}`;
   }, [listingId]);
 
   const copyListingLink = useCallback(() => {
@@ -517,25 +524,34 @@ export function PublicPropertyDetailsModal({
             <>
               {/* Header — matches tenant dashboard */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-                <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
-                  <div className="flex items-start md:items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => onOpenChange(false)}
-                      className="hidden md:inline-flex p-1 rounded-lg hover:bg-gray-100 text-gray-700"
-                      aria-label="Close"
-                    >
-                      <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div className="border-l h-8 mx-1 hidden md:block border-gray-200" />
-                    <div>
-                      <h1 className="text-xl font-bold text-gray-800 mb-1">
-                        View Property Details
-                      </h1>
-                      {subtitle ? (
-                        <p className="text-gray-600 text-base">{subtitle}</p>
-                      ) : null}
-                    </div>
+                <div className="flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => onOpenChange(false)}
+                    className="hidden md:inline-flex p-1 rounded-lg hover:bg-gray-100 text-gray-700"
+                    aria-label="Close"
+                  >
+                    <ArrowLeft className="w-6 h-6" />
+                  </button>
+
+                  <div className="mx-auto md:mx-0" />
+
+                  <a
+                    href={loginHref}
+                    className="text-xs sm:text-sm text-nrvPrimaryGreen font-medium hover:underline text-right"
+                  >
+                    Already have an account? Click here to login
+                  </a>
+                </div>
+
+                <div className="mt-4 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-800 mb-1">
+                      View Property Details
+                    </h1>
+                    {subtitle ? (
+                      <p className="text-gray-600 text-base">{subtitle}</p>
+                    ) : null}
                   </div>
                   <button
                     type="button"
@@ -630,7 +646,7 @@ export function PublicPropertyDetailsModal({
                                 onClick={() => setSelectedImageIndex(index)}
                                 className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                                   index === selectedImageIndex
-                                    ? "border-green-500 ring-2 ring-green-200"
+                                    ? "border-nrvPrimaryGreen ring-2 ring-[#03442C]/20"
                                     : "border-gray-200 hover:border-gray-300"
                                 }`}
                               >
@@ -652,13 +668,22 @@ export function PublicPropertyDetailsModal({
                     </div>
 
                     <div className="p-6 border-t border-gray-100">
-                      <button
-                        type="button"
-                        onClick={handleApplyClick}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-4 rounded-xl font-semibold transition-colors shadow-lg"
-                      >
-                        {applyLabel}
-                      </button>
+                      {isAuthenticated ? (
+                        <button
+                          type="button"
+                          onClick={handleApplyClick}
+                          className="relative z-10 pointer-events-auto w-full bg-nrvPrimaryGreen hover:bg-[#023624] text-white text-lg py-4 rounded-xl font-semibold transition-colors shadow-lg"
+                        >
+                          {applyLabel}
+                        </button>
+                      ) : (
+                        <a
+                          href={signUpHref}
+                          className="relative z-10 pointer-events-auto w-full inline-flex items-center justify-center bg-nrvPrimaryGreen hover:bg-[#023624] text-white text-lg py-4 rounded-xl font-semibold transition-colors shadow-lg"
+                        >
+                          {applyLabel}
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -671,7 +696,7 @@ export function PublicPropertyDetailsModal({
                         <p className="text-gray-500 text-sm font-medium mb-1">Price (Per Annum)</p>
                         {pricePerAnnum > 0 ? (
                           <>
-                            <h2 className="text-3xl font-bold text-green-700">
+                            <h2 className="text-3xl font-bold text-nrvPrimaryGreen">
                               ₦{pricePerAnnum.toLocaleString()}
                             </h2>
                             {rentParts ? (
@@ -688,42 +713,51 @@ export function PublicPropertyDetailsModal({
                           <h2 className="text-xl font-bold text-gray-800">Price on request</h2>
                         )}
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleContactClick}
-                        className="shrink-0 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors w-full sm:w-auto"
-                      >
-                        {contactOwnerLabel}
-                      </button>
+                      {isAuthenticated ? (
+                        <button
+                          type="button"
+                          onClick={handleContactClick}
+                          className="relative z-10 pointer-events-auto shrink-0 bg-nrvPrimaryGreen hover:bg-[#023624] text-white px-6 py-3 rounded-xl font-semibold transition-colors w-full sm:w-auto"
+                        >
+                          {contactOwnerLabel}
+                        </button>
+                      ) : (
+                        <a
+                          href={signUpHref}
+                          className="relative z-10 pointer-events-auto shrink-0 inline-flex items-center justify-center bg-nrvPrimaryGreen hover:bg-[#023624] text-white px-6 py-3 rounded-xl font-semibold transition-colors w-full sm:w-auto"
+                        >
+                          {contactOwnerLabel}
+                        </a>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center p-4 bg-gray-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                          <Home className="w-6 h-6 text-green-600" />
+                          <Home className="w-6 h-6 text-nrvPrimaryGreen" />
                         </div>
-                        <p className="text-gray-500 text-xs font-medium mb-1">Style</p>
+                        <p className="text-gray-500 text-xs font-medium mb-1">Type</p>
                         <p className="text-gray-800 font-semibold">
-                          {room.apartmentStyle || "—"}
+                          {room.apartmentType || room.apartmentStyle || "—"}
                         </p>
                       </div>
                       <div className="text-center p-4 bg-gray-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                          <Bed className="w-6 h-6 text-green-600" />
+                          <Bed className="w-6 h-6 text-nrvPrimaryGreen" />
                         </div>
                         <p className="text-gray-500 text-xs font-medium mb-1">Bedrooms</p>
                         <p className="text-gray-800 font-semibold">{room.noOfRooms || "—"}</p>
                       </div>
                       <div className="text-center p-4 bg-gray-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                          <Bath className="w-6 h-6 text-green-600" />
+                          <Bath className="w-6 h-6 text-nrvPrimaryGreen" />
                         </div>
                         <p className="text-gray-500 text-xs font-medium mb-1">Bathrooms</p>
                         <p className="text-gray-800 font-semibold">{room.noOfBaths || "—"}</p>
                       </div>
                       <div className="text-center p-4 bg-gray-50 rounded-xl">
                         <div className="flex justify-center mb-2">
-                          <Building className="w-6 h-6 text-green-600" />
+                          <Building className="w-6 h-6 text-nrvPrimaryGreen" />
                         </div>
                         <p className="text-gray-500 text-xs font-medium mb-1">Unit #</p>
                         <p className="text-gray-800 font-semibold">{unitNumberDisplay}</p>
@@ -736,7 +770,7 @@ export function PublicPropertyDetailsModal({
                       <div className="flex flex-col md:flex-row gap-6 md:gap-8">
                         <div className="md:w-1/3">
                           <div className="flex items-center gap-2 mb-2">
-                            <MapPin className="w-4 h-4 text-green-600 shrink-0" />
+                            <MapPin className="w-4 h-4 text-nrvPrimaryGreen shrink-0" />
                             <p className="text-gray-500 text-sm font-medium">Location</p>
                           </div>
                           <p className="text-gray-800 font-medium leading-relaxed">
@@ -750,7 +784,7 @@ export function PublicPropertyDetailsModal({
                         </div>
                         <div className="md:flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <Calendar className="w-4 h-4 text-green-600 shrink-0" />
+                            <Calendar className="w-4 h-4 text-nrvPrimaryGreen shrink-0" />
                             <p className="text-gray-500 text-sm font-medium">Lease terms</p>
                           </div>
                           <p className="text-gray-800 font-medium">
@@ -778,7 +812,7 @@ export function PublicPropertyDetailsModal({
 
                   <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      <span className="w-3 h-3 bg-green-500 rounded-full mr-3 shrink-0" />
+                      <span className="w-3 h-3 bg-nrvPrimaryGreen rounded-full mr-3 shrink-0" />
                       Apartment Facilities &amp; Amenities
                     </h3>
                     {room.otherAmentities && room.otherAmentities.length > 0 ? (
@@ -787,7 +821,7 @@ export function PublicPropertyDetailsModal({
                           <Badge
                             key={`${amenity}-${idx}`}
                             variant="outline"
-                            className="text-green-700 border-green-400 bg-green-50 px-4 py-2 text-sm font-medium"
+                            className="text-nrvPrimaryGreen border-[#03442C]/30 bg-[#E9F4E7] px-4 py-2 text-sm font-medium"
                           >
                             {amenity}
                           </Badge>
@@ -920,7 +954,7 @@ export function PublicPropertyDetailsModal({
       <DialogContent className="fixed left-1/2 top-[50%] z-[100] max-h-[85vh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-gray-200 bg-white p-6 shadow-2xl sm:rounded-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-gray-900">
-            <User className="h-5 w-5 text-green-600" />
+            <User className="h-5 w-5 text-nrvPrimaryGreen" />
             Contact owner
           </DialogTitle>
           <DialogDescription className="text-left text-gray-600">
@@ -931,14 +965,14 @@ export function PublicPropertyDetailsModal({
 
         {contactLoading ? (
           <div className="flex justify-center py-10">
-            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-green-600" />
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
           </div>
         ) : contactError ? (
           <p className="text-sm text-red-600 py-4">{contactError}</p>
         ) : contactOwner ? (
           <div className="space-y-3 py-2">
             <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-              <User className="h-5 w-5 shrink-0 text-green-600 mt-0.5" />
+              <User className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
               <div>
                 <p className="text-xs font-medium text-gray-500">Name</p>
                 <p className="font-semibold text-gray-900">{contactOwner.name}</p>
@@ -946,7 +980,7 @@ export function PublicPropertyDetailsModal({
             </div>
             {contactOwner.email ? (
               <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-                <Mail className="h-5 w-5 shrink-0 text-green-600 mt-0.5" />
+                <Mail className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
                 <div>
                   <p className="text-xs font-medium text-gray-500">Email</p>
                   <a
@@ -960,7 +994,7 @@ export function PublicPropertyDetailsModal({
             ) : null}
             {contactOwner.phone ? (
               <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-                <Phone className="h-5 w-5 shrink-0 text-green-600 mt-0.5" />
+                <Phone className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
                 <div>
                   <p className="text-xs font-medium text-gray-500">Phone</p>
                   <a
@@ -1011,7 +1045,7 @@ export function PublicPropertyDetailsModal({
         <div className="min-h-0 flex-1 overflow-y-auto px-2 py-3 sm:px-4">
           {applyLoading ? (
             <div className="flex justify-center py-16">
-              <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-green-600" />
+              <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
             </div>
           ) : applyError ? (
             <p className="px-2 py-6 text-center text-sm text-red-600">{applyError}</p>

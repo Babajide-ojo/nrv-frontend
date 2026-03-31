@@ -172,7 +172,7 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
                   disabled={otp.length !== 6 || isLoading}
                   isLoading={isLoading}
                 >
-                  {isLoading ? "Loading..." : "Continue"}
+                  Continue
                 </Button>
 
                 <p className="mt-4 text-gray-500 italic text-center font-light">

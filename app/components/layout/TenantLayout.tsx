@@ -29,11 +29,12 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md lg:hidden z-50">
-        <div className="flex gap-4 space-between p-2">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md lg:hidden z-50 pointer-events-auto safe-area-pb">
+        <div className="px-2 py-2">
           {!showMore ? (
-            <>
+            <div className="grid grid-cols-4 gap-1">
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant")}
               >
@@ -41,6 +42,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-xs text-white">Home</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/properties")}
               >
@@ -48,6 +50,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-xs text-white">Properties</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() =>
                   router.push("/dashboard/tenant/rented-properties")
@@ -57,16 +60,18 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-xs text-white">Apartments</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={handleToggle}
               >
                 <IoMdMore size={24} color="white" />
                 <span className="text-xs text-white">More</span>
               </button>
-            </>
+            </div>
           ) : (
             <div className="grid grid-cols-4 gap-2 w-full">
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={handleToggle}
               >
@@ -74,6 +79,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Go Back</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/properties/applications")}
               >
@@ -81,6 +87,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Applications</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/properties/maintenance")}
               >
@@ -88,6 +95,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Maintenance</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/verification/requests")}
               >
@@ -95,6 +103,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Verifications</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/verification")}
               >
@@ -102,6 +111,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Submissions</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/messages")}
               >
@@ -109,6 +119,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <span className="text-[10px] text-white">Messages</span>
               </button>
               <button
+                type="button"
                 className="py-3 w-full flex flex-col items-center"
                 onClick={() => router.push("/dashboard/tenant/settings")}
               >

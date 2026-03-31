@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Spinner from "../loaders/Spinner";
 
 interface VerificationRouteGuardProps {
   children: ReactNode;
@@ -59,7 +60,7 @@ const VerificationRouteGuard: React.FC<VerificationRouteGuardProps> = ({ childre
   if (allowed === null) {
     return (
       <div className="flex items-center justify-center min-h-[200px]">
-        <div className="animate-pulse text-gray-500">Loading...</div>
+        <Spinner size={26} className="text-nrvPrimaryGreen" />
       </div>
     );
   }

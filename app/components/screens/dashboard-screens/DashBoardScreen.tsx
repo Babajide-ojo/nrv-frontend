@@ -413,25 +413,90 @@ const DashboardScreen: React.FC = () => {
         </div>
 
         {currentPlan && (
-          <Link href="/dashboard/landlord/settings/plans" className="hidden md:flex">
-            <div className={`flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md ${
-              currentPlan.slug === 'premium' 
-                ? 'bg-gray-900 text-white border-gray-800' 
-                : 'bg-white text-gray-800 border-gray-200'
-            }`}>
-              <div className={`p-1.5 rounded-full ${
-                currentPlan.slug === 'premium' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600'
-              }`}>
-                <FaCrown size={14} />
+          <div className="hidden md:block">
+            <Link
+              href="/dashboard/landlord/settings/plans"
+              className="flex"
+            >
+              <div
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md ${
+                  currentPlan.slug === "premium"
+                    ? "bg-gray-900 text-white border-gray-800"
+                    : "bg-white text-gray-800 border-gray-200"
+                }`}
+              >
+                <div
+                  className={`p-1.5 rounded-full ${
+                    currentPlan.slug === "premium"
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  <FaCrown size={14} />
+                </div>
+                <div>
+                  <p className="text-xs opacity-80 uppercase tracking-wider font-medium">
+                    Current Plan
+                  </p>
+                  <p className="font-bold text-sm">{currentPlan.name}</p>
+                </div>
+                <div className="h-8 w-[1px] bg-current opacity-20 mx-1"></div>
+                <div className="text-right">
+                  <p className="text-xs opacity-80">Verification credits</p>
+                  <p className="font-bold text-sm">
+                    Standard{" "}
+                    {Math.max(
+                      0,
+                      ((user as any)?.standardVerificationBalance ?? 0) -
+                        ((user as any)?.standardVerificationUsed ?? 0)
+                    )}{" "}
+                    · Premium{" "}
+                    {Math.max(
+                      0,
+                      ((user as any)?.premiumVerificationBalance ?? 0) -
+                        ((user as any)?.premiumVerificationUsed ?? 0)
+                    )}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs opacity-80 uppercase tracking-wider font-medium">Current Plan</p>
-                <p className="font-bold text-sm">{currentPlan.name}</p>
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {currentPlan && (
+        <div className="md:hidden mt-3">
+          <Link href="/dashboard/landlord/settings/plans" className="block">
+            <div
+              className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border transition-all hover:shadow-md ${
+                currentPlan.slug === "premium"
+                  ? "bg-gray-900 text-white border-gray-800"
+                  : "bg-white text-gray-800 border-gray-200"
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div
+                  className={`p-1.5 rounded-full flex-shrink-0 ${
+                    currentPlan.slug === "premium"
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  <FaCrown size={14} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] opacity-80 uppercase tracking-wider font-medium">
+                    Current Plan
+                  </p>
+                  <p className="font-bold text-sm truncate">
+                    {currentPlan.name}
+                  </p>
+                </div>
               </div>
-              <div className="h-8 w-[1px] bg-current opacity-20 mx-1"></div>
+
               <div className="text-right">
-                <p className="text-xs opacity-80">Verification credits</p>
-                <p className="font-bold text-sm">
+                <p className="text-[11px] opacity-80">Credits</p>
+                <p className="font-bold text-sm leading-tight">
                   Standard{" "}
                   {Math.max(
                     0,
@@ -448,8 +513,8 @@ const DashboardScreen: React.FC = () => {
               </div>
             </div>
           </Link>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-2/3">

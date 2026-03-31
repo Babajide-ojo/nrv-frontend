@@ -65,51 +65,89 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   return (
     <div className="relative min-h-screen !overflow-hidden flex flex-col">
       {/* Mobile Bottom Nav – same items as desktop sidebar; spaced so links don’t look cramped */}
-      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-lg lg:hidden z-50 safe-area-pb">
-        <div className="flex items-stretch justify-around px-1 py-3 gap-0 max-w-full">
+      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-lg lg:hidden z-[9999] safe-area-pb pointer-events-auto">
+        <div className="px-2 py-2">
           {!showMore ? (
-            <>
-              {LANDLORD_NAV_ITEMS.slice(0, 4).map((item, index) => (
+            <div className="grid grid-cols-4 gap-1">
+              {LANDLORD_NAV_ITEMS.slice(0, 3).map((item) => (
                 <button
                   key={item.route}
-                  className="flex flex-col items-center justify-center flex-1 min-w-0 py-1 px-2 rounded-lg active:bg-white/10 transition-colors"
-                  style={{ borderRight: index < 4 ? "1px solid rgba(255,255,255,0.25)" : "none" }}
-                  onClick={() => router.push(item.route)}
+                  type="button"
+                  className="py-3 w-full flex flex-col items-center touch-manipulation"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    router.push(item.route);
+                  }}
                 >
                   {getMobileNavIcon(item.name, 24)}
-                  <span className="text-[10px] sm:text-[11px] text-white truncate w-full text-center mt-1 px-0.5">{item.name === "Leads & Applications" ? "Leads" : item.name}</span>
+                  <span className="text-xs text-white">
+                    {item.name === "Leads & Applications" ? "Leads" : item.name}
+                  </span>
                 </button>
               ))}
               <button
-                className="flex flex-col items-center justify-center flex-1 min-w-[56px] py-1 px-2 rounded-lg active:bg-white/10 transition-colors border-l border-white/20"
-                onClick={handleToggle}
+                type="button"
+                className="py-3 w-full flex flex-col items-center touch-manipulation"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleToggle();
+                }}
               >
                 <IoMdMore size={24} color="white" />
-                <span className="text-[10px] sm:text-[11px] text-white mt-1">More</span>
+                <span className="text-xs text-white">More</span>
               </button>
-            </>
+            </div>
           ) : (
-            <div className="flex flex-wrap items-stretch justify-around w-full gap-2 px-2">
+            <div className="grid grid-cols-4 gap-2 w-full">
               <button
-                className="flex flex-col items-center justify-center py-2 px-3 rounded-lg active:bg-white/10 transition-colors min-w-[64px] border border-white/20"
-                onClick={handleToggle}
+                type="button"
+                className="py-3 w-full flex flex-col items-center touch-manipulation"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleToggle();
+                }}
               >
                 <IoBackspace size={22} color="white" />
-                <span className="text-[9px] sm:text-[10px] text-white mt-1">Back</span>
+                <span className="text-[10px] text-white">Go Back</span>
               </button>
-              {LANDLORD_NAV_ITEMS.slice(4).map((item) => (
+              {LANDLORD_NAV_ITEMS.slice(3).map((item) => (
                 <button
                   key={item.route}
-                  className="flex flex-col items-center justify-center py-2 px-3 rounded-lg active:bg-white/10 transition-colors flex-1 min-w-[72px] border border-white/20"
-                  onClick={() => {
+                  type="button"
+                  className="py-3 w-full flex flex-col items-center touch-manipulation"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     handleToggle();
                     router.push(item.route);
                   }}
                 >
                   {getMobileNavIcon(item.name, 22)}
-                  <span className="text-[9px] sm:text-[10px] text-white truncate w-full text-center mt-1">{item.name === "Tenant Verification" ? "Verification" : item.name === "Buy verification credit" ? "Credits" : item.name}</span>
+                  <span className="text-[10px] text-white">
+                    {item.name === "Tenant Verification"
+                      ? "Verification"
+                      : item.name === "Buy verification credit"
+                      ? "Credits"
+                      : item.name}
+                  </span>
                 </button>
               ))}
+              <button
+                type="button"
+                className="py-3 w-full flex flex-col items-center touch-manipulation"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleToggle();
+                  router.push("/dashboard/landlord/settings");
+                }}
+              >
+                <IoSettings size={22} color="white" />
+                <span className="text-[10px] text-white">Settings</span>
+              </button>
             </div>
           )}
         </div>

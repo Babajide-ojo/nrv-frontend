@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
+import Spinner from "@/app/components/loaders/Spinner";
 import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -185,7 +186,7 @@ const RentedPropertiesScreen = () => {
             <>
               {isPageLoading && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="text-white">Loading...</div>
+                <Spinner size={28} className="text-white" />
               </div>
             )}
 

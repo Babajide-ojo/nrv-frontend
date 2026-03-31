@@ -13,6 +13,7 @@ import BackIcon from "../shared/icons/BackIcon";
 import { ArrowBack } from "@/public/icons/iconsExport";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import ImageUploader from "../shared/ImageUploader";
+import Spinner from "@/app/components/loaders/Spinner";
 
 interface User {
   user: {
@@ -139,7 +140,11 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
   };
 
   if (!user || !user.user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[40vh] w-full">
+        <Spinner size={28} className="text-nrvPrimaryGreen" />
+      </div>
+    );
   }
 
   const handleFormReset = (values: any) => {
@@ -219,7 +224,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
                   disabled={isSubmitting}
                   isLoading={isSubmitting}
                 >
-                  {isSubmitting ? "Loading..." : "Add Expense"}
+                  Add Expense
                 </Button>
               </div>
             </Form>

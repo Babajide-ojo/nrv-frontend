@@ -128,11 +128,16 @@ const VerificationRequestsPage = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium capitalize ${
-                        statusColors[req.status] || "bg-gray-100 text-gray-700 border-gray-300"
+                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${
+                        statusColors[(req.status || "").toLowerCase()] ||
+                        "bg-gray-100 text-gray-700 border-gray-300"
                       }`}
                     >
-                      {req.status || "-"}
+                      {(req.status || "").toLowerCase() === "approved"
+                        ? "Verification completed"
+                        : req.status
+                          ? String(req.status).charAt(0).toUpperCase() + String(req.status).slice(1).toLowerCase()
+                          : "-"}
                     </span>
                     <span
                       className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${

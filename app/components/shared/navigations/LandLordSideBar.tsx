@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
 import { BiLogOut } from "react-icons/bi";
 import {
   FiHome,
@@ -47,8 +50,47 @@ const links = LANDLORD_NAV_ITEMS.map(({ name, route }) => ({
 
 const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const userFromRedux = useSelector((s: RootState) => s.user.data);
   const [user, setUser] = useState<User | null>(null);
   const [activeLink, setActiveLink] = useState<string>("");
+  const [creditLine, setCreditLine] = useState<{ standard: number; premium: number } | null>(
+    null,
+  );
+
+  const creditsFromRedux = useMemo(() => {
+    const doc = userFromRedux?.user ?? null;
+    if (!doc || !(doc as { _id?: string })._id) return null;
+    return getVerificationCreditBalances(doc);
+  }, [userFromRedux]);
+
+  const displayCredits = creditsFromRedux ?? creditLine;
+
+  const readCreditsFromStorage = () => {
+    try {
+      const storedUser = localStorage.getItem("nrv-user");
+      if (!storedUser) {
+        setCreditLine(null);
+        return;
+      }
+      const u = JSON.parse(storedUser)?.user;
+      if (!u) {
+        setCreditLine(null);
+        return;
+      }
+      const standard = Math.max(
+        0,
+        (Number(u.standardVerificationBalance) || 0) - (Number(u.standardVerificationUsed) || 0),
+      );
+      const premium = Math.max(
+        0,
+        (Number(u.premiumVerificationBalance) || 0) - (Number(u.premiumVerificationUsed) || 0),
+      );
+      setCreditLine({ standard, premium });
+    } catch {
+      setCreditLine(null);
+    }
+  };
 
   useEffect(() => {
     setActiveLink(window.location.pathname);
@@ -69,6 +111,24 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       // Clear invalid data
       localStorage.removeItem("nrv-user");
     }
+    readCreditsFromStorage();
+  }, []);
+
+  useEffect(() => {
+    readCreditsFromStorage();
+  }, [pathname]);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "nrv-user") readCreditsFromStorage();
+    };
+    const onUserUpdated = () => readCreditsFromStorage();
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("nrv-user-updated", onUserUpdated);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("nrv-user-updated", onUserUpdated);
+    };
   }, []);
 
   return (
@@ -81,19 +141,31 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
       }`}
     > */}
       <div>
-        {/* Logo */}
+        {/* Brand */}
         <div
           className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
           onClick={() => router.push("/")}
         >
-          <Image
-            src="/images/nrv-logo-latest.jpg"
-            width={150}
-            height={40}
-            alt="NaijaRentVerify"
-            className="h-8 sm:h-9 w-auto max-w-full object-contain"
-          />
+          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
+            NaijaRentVerify
+          </span>
         </div>
+
+        {displayCredits && (
+          <Link
+            href="/dashboard/landlord/settings/plans"
+            className="block mx-4 mt-5 px-3 py-2.5 rounded-lg bg-white/10 border border-white/10 hover:bg-white/15 transition-colors"
+          >
+            <p className="text-[10px] uppercase tracking-wide text-white/60 mb-1">
+              Verification credits
+            </p>
+            <p className="text-xs font-medium text-white leading-snug">
+              Standard {displayCredits.standard}
+              <span className="text-white/50 mx-1">·</span>
+              Premium {displayCredits.premium}
+            </p>
+          </Link>
+        )}
 
         {/* Navigation Links */}
         <nav className="mt-6">

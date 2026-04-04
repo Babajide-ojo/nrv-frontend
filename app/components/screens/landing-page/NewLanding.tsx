@@ -22,6 +22,7 @@ import {
 import { API_URL } from "@/config/constant";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { LANDING_SCROLL_STORAGE_KEY } from "@/app/components/shared/navigations/NavLink";
 
 const FEATURES = [
   {
@@ -121,6 +122,7 @@ const HERO_PHRASES = [
 ];
 
 const NewLanding = () => {
+  const SHOW_HEATMAP = false;
   const [typedHeroText, setTypedHeroText] = useState("");
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -152,6 +154,26 @@ const NewLanding = () => {
 
     return () => clearTimeout(timeout);
   }, [typedHeroText, phraseIndex, isDeleting]);
+
+  // Scroll to section when arriving from another page (NavLink stores id in sessionStorage)
+  useEffect(() => {
+    let sectionId: string | null = null;
+    try {
+      sectionId = sessionStorage.getItem(LANDING_SCROLL_STORAGE_KEY);
+      if (sectionId) sessionStorage.removeItem(LANDING_SCROLL_STORAGE_KEY);
+    } catch {
+      return;
+    }
+    if (!sectionId) return;
+
+    const scroll = () => {
+      const el = document.getElementById(sectionId!);
+      if (el) {
+        window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+      }
+    };
+    requestAnimationFrame(() => requestAnimationFrame(scroll));
+  }, []);
 
   // Property listing (Explore section) – search & filters
   const LIST_LIMIT = 3;
@@ -375,10 +397,6 @@ const NewLanding = () => {
         <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-20 pb-10 sm:pt-24 sm:pb-12">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] items-center gap-8">
             <div className="text-left text-white">
-              <div className="hero-animate-1 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-emerald-100 text-xs font-medium mb-4 border border-white/10">
-                <Sparkles className="w-3.5 h-3.5" />
-                Trusted by 1,000+ landlords
-              </div>
               <h1 className="hero-animate-2 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
                 <span className="inline-block align-baseline">
                   {typedHeroText}
@@ -682,6 +700,8 @@ const NewLanding = () => {
             </Link>
           </div>
 
+          {SHOW_HEATMAP && (
+          <>
           {/* Lagos Property Price Heat Map */}
           <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
@@ -858,6 +878,8 @@ const NewLanding = () => {
               </p>
             </div>
           </div>
+          </>
+          )}
 
         </div>
       </section>
@@ -968,7 +990,7 @@ const NewLanding = () => {
                 </li>
                 <li>
                   <Link
-                    href="/dashboard/landlord/properties/verification/request"
+                    href="/sign-up?role=landlord"
                     className="hover:text-white transition-colors"
                   >
                     Verify Tenants
@@ -1019,9 +1041,9 @@ const NewLanding = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact-us?subject=problem" className="hover:text-white transition-colors">
-                    Report a Problem
-                  </Link>
+                <a href="mailto:safety@naijarentverify.com" className="hover:text-white transition-colors">
+                  Report a Problem
+                </a>
                 </li>
               </ul>
             </div>

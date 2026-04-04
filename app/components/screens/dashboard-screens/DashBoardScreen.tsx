@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import { getApplicationCount } from "@/redux/slices/propertySlice";
 import { fetchPlans } from "@/redux/slices/plansSlice";
@@ -27,9 +28,8 @@ import {
 } from "react-icons/fa";
 import DashboardOverview from "./DashboardOverview";
 import { API_URL } from "@/config/constant";
+import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
 import { getRelativeTime } from "@/helpers/utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import Link from "next/link";
 
 // Types
@@ -285,6 +285,7 @@ const FinancialChart: React.FC<{ data: ChartDataPoint[] }> = ({ data }) => {
 const DashboardScreen: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const userFromRedux = useSelector((state: RootState) => state.user.data);
   const [user, setUser] = useState<User | null>(null);
   const [counts, setCounts] = useState<DashboardCounts>({});
   const [chartData, setChartData] = useState<ChartDataPoint[]>(EMPTY_CHART_DATA);
@@ -292,8 +293,6 @@ const DashboardScreen: React.FC = () => {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   
-  const { plans } = useSelector((state: RootState) => state.plans);
-  const [currentPlan, setCurrentPlan] = useState<any>(null);
 
   // Memoized metrics data with real % change from backend
   const metrics = useMemo((): MetricCard[] => {
@@ -325,6 +324,19 @@ const DashboardScreen: React.FC = () => {
       },
     ];
   }, [counts]);
+
+  const displayUser = useMemo(() => {
+    const doc = userFromRedux?.user;
+    if (doc && typeof doc === "object" && (doc as User)._id) {
+      return doc as User;
+    }
+    return user;
+  }, [userFromRedux, user]);
+
+  const creditBalances = useMemo(
+    () => getVerificationCreditBalances(displayUser as unknown),
+    [displayUser],
+  );
 
   // Fetch dashboard data (metrics, activities, financial)
   const fetchDashboardData = useCallback(async () => {
@@ -379,17 +391,6 @@ const DashboardScreen: React.FC = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  // Determine current plan
-  useEffect(() => {
-    if (user?._id && plans.length > 0) {
-      const userPlanId = user.planId;
-      const plan = plans.find((p: any) => p._id === userPlanId) || plans.find((p: any) => p.slug === 'premium');
-      if (plan) {
-        setCurrentPlan(plan);
-      }
-    }
-  }, [user, plans]);
-
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center">
@@ -404,7 +405,7 @@ const DashboardScreen: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold">
-            Welcome Back, {user?.firstName || "Landlord"}
+            Welcome Back, {displayUser?.firstName || "Landlord"}
           </h1>
           <p className="text-gray-500">
             Manage your properties, track applications, and handle maintenance
@@ -412,50 +413,16 @@ const DashboardScreen: React.FC = () => {
           </p>
         </div>
 
-        {currentPlan && (
+        {displayUser && (
           <div className="hidden md:block">
-            <Link
-              href="/dashboard/landlord/settings/plans"
-              className="flex"
-            >
-              <div
-                className={`flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md ${
-                  currentPlan.slug === "premium"
-                    ? "bg-gray-900 text-white border-gray-800"
-                    : "bg-white text-gray-800 border-gray-200"
-                }`}
-              >
-                <div
-                  className={`p-1.5 rounded-full ${
-                    currentPlan.slug === "premium"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  <FaCrown size={14} />
-                </div>
+            <Link href="/dashboard/landlord/settings/plans" className="flex">
+              <div className="flex items-center gap-3 px-4 py-2 rounded-lg border transition-all hover:shadow-md bg-white text-gray-800 border-gray-200">
                 <div>
-                  <p className="text-xs opacity-80 uppercase tracking-wider font-medium">
-                    Current Plan
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">
+                    Verification credits
                   </p>
-                  <p className="font-bold text-sm">{currentPlan.name}</p>
-                </div>
-                <div className="h-8 w-[1px] bg-current opacity-20 mx-1"></div>
-                <div className="text-right">
-                  <p className="text-xs opacity-80">Verification credits</p>
                   <p className="font-bold text-sm">
-                    Standard{" "}
-                    {Math.max(
-                      0,
-                      ((user as any)?.standardVerificationBalance ?? 0) -
-                        ((user as any)?.standardVerificationUsed ?? 0)
-                    )}{" "}
-                    · Premium{" "}
-                    {Math.max(
-                      0,
-                      ((user as any)?.premiumVerificationBalance ?? 0) -
-                        ((user as any)?.premiumVerificationUsed ?? 0)
-                    )}
+                    Standard {creditBalances.standard} · Premium {creditBalances.premium}
                   </p>
                 </div>
               </div>
@@ -464,51 +431,16 @@ const DashboardScreen: React.FC = () => {
         )}
       </div>
 
-      {currentPlan && (
+      {displayUser && (
         <div className="md:hidden mt-3">
           <Link href="/dashboard/landlord/settings/plans" className="block">
-            <div
-              className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border transition-all hover:shadow-md ${
-                currentPlan.slug === "premium"
-                  ? "bg-gray-900 text-white border-gray-800"
-                  : "bg-white text-gray-800 border-gray-200"
-              }`}
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div
-                  className={`p-1.5 rounded-full flex-shrink-0 ${
-                    currentPlan.slug === "premium"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-100 text-gray-600"
-                  }`}
-                >
-                  <FaCrown size={14} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] opacity-80 uppercase tracking-wider font-medium">
-                    Current Plan
-                  </p>
-                  <p className="font-bold text-sm truncate">
-                    {currentPlan.name}
-                  </p>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <p className="text-[11px] opacity-80">Credits</p>
-                <p className="font-bold text-sm leading-tight">
-                  Standard{" "}
-                  {Math.max(
-                    0,
-                    ((user as any)?.standardVerificationBalance ?? 0) -
-                      ((user as any)?.standardVerificationUsed ?? 0)
-                  )}{" "}
-                  · Premium{" "}
-                  {Math.max(
-                    0,
-                    ((user as any)?.premiumVerificationBalance ?? 0) -
-                      ((user as any)?.premiumVerificationUsed ?? 0)
-                  )}
+            <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg border transition-all hover:shadow-md bg-white text-gray-800 border-gray-200">
+              <div className="min-w-0">
+                <p className="text-[11px] text-gray-500 uppercase tracking-wider font-medium">
+                  Verification credits
+                </p>
+                <p className="font-bold text-sm">
+                  Standard {creditBalances.standard} · Premium {creditBalances.premium}
                 </p>
               </div>
             </div>
@@ -535,6 +467,11 @@ const DashboardScreen: React.FC = () => {
                 <ActionCard
                   key={index}
                   {...action}
+                  description={
+                    action.title === "Buy verification credit"
+                      ? `Balance: Standard ${creditBalances.standard} · Premium ${creditBalances.premium}. ${action.description ?? ""}`
+                      : action.description
+                  }
                   onClick={() => handleActionClick(action.link)}
                 />
               ))}
@@ -549,6 +486,8 @@ const DashboardScreen: React.FC = () => {
           <DashboardOverview
             activities={activities}
             isLoading={activitiesLoading}
+            standardCredits={creditBalances.standard}
+            premiumCredits={creditBalances.premium}
           />
         </div>
       </div>

@@ -9,6 +9,7 @@ import { IoBackspace, IoPeopleCircleOutline, IoSettings } from "react-icons/io5"
 import { FiUsers, FiFileText, FiCheck } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
+import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 
 function getMobileNavIcon(name: string, size: number) {
   const s = size;
@@ -203,6 +204,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
 
               {/* User Info */}
               <div className="flex items-center justify-between md:justify-end space-x-4">
+                <NotificationBell />
                 <div className="flex items-center space-x-2">
                   <FaPerson />
                   <span className="text-gray-700 text-sm">{user?.name}</span>

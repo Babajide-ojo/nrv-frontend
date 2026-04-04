@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { API_URL } from "../../config/constant";
+import { setUserFromPayment } from "./userSlice";
 
 // Define state type
 interface VerificationState {
@@ -24,35 +25,40 @@ const extractErrorMessage = (error: any) =>
 
 export const requestVerification = createAsyncThunk<any, {}>(
   "verification/request",
-  async (payload, { rejectWithValue }) => {
+  async (payload, { rejectWithValue, dispatch }) => {
     try {
       const response = await axios.post(`${API_URL}/verification/tenant`, payload);
-      
-      console.log('[requestVerification] Full response.data:', response.data);
-      console.log('[requestVerification] response.data.user:', response.data?.user);
-      console.log('[requestVerification] response.data.data?.user:', response.data?.data?.user);
-      
-      // Update localStorage with the fresh user data (includes updated credit counts)
-      // Check both possible locations for user data
-      const updatedUser = response.data?.user || response.data?.data?.user;
-      if (updatedUser) {
-        console.log('[requestVerification] Found user, standardVerificationUsed:', updatedUser.standardVerificationUsed);
+
+      // API shape: { status, message, data: { message, data: verification, user } }
+      const inner = response.data?.data;
+      const updatedUser =
+        inner?.user ?? response.data?.user ?? response.data?.data?.user;
+
+      if (updatedUser && typeof updatedUser === "object") {
+        const safe = { ...updatedUser };
+        delete safe.password;
+
         const stored = localStorage.getItem("nrv-user");
         if (stored) {
-          const current = JSON.parse(stored);
-          current.user = updatedUser;
-          localStorage.setItem("nrv-user", JSON.stringify(current));
-          console.log('[requestVerification] localStorage updated');
+          try {
+            const current = JSON.parse(stored);
+            current.user = safe;
+            localStorage.setItem("nrv-user", JSON.stringify(current));
+          } catch {
+            // ignore
+          }
         }
-      } else {
-        console.log('[requestVerification] No user data in response');
+        dispatch(setUserFromPayment({ user: safe }));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("nrv-user-updated"));
+        }
       }
-      
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(extractErrorMessage(error));
     }
-  }
+  },
 );
 
 export const updateGuarantor = createAsyncThunk<any, { id: string; data: any }>(

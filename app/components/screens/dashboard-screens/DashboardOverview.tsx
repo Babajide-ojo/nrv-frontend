@@ -1,5 +1,6 @@
 import { Avatar } from "@mui/material";
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { AvatarGenerator } from "random-avatar-generator";
@@ -73,11 +74,14 @@ const PropertySetupBanner: React.FC<{ onDismiss: () => void }> = ({ onDismiss })
   </div>
 );
 
-const QuickLinksSection: React.FC = () => (
+const QuickLinksSection: React.FC<{
+  standardCredits: number;
+  premiumCredits: number;
+}> = ({ standardCredits, premiumCredits }) => (
   <div className="p-4 border rounded-lg shadow-sm">
     <h3 className="font-medium text-[#101828]">Quick Links</h3>
-    <div className="mt-2 flex items-start justify-between rounded-lg">
-      <div className="flex items-center gap-2">
+    <div className="mt-2 flex items-start justify-between rounded-lg gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         <svg
           width="48"
           height="48"
@@ -102,18 +106,26 @@ const QuickLinksSection: React.FC = () => (
           />
         </svg>
 
-        <div>
+        <div className="min-w-0">
           <div className="text-sm font-medium text-[#101928]">
             {QUICK_LINK.title}
           </div>
           <div className="text-sm mt-2 font-light text-[#475367]">
             {QUICK_LINK.description}
           </div>
+          <p className="text-xs text-[#475367] mt-2">
+            Credits: Standard <span className="font-semibold text-[#03442C]">{standardCredits}</span>
+            {" · "}
+            Premium <span className="font-semibold text-[#03442C]">{premiumCredits}</span>
+          </p>
         </div>
       </div>
-      <button className="px-3 py-1 text-sm border border-1 text-[#03442C] rounded-lg hover:bg-[#E9F4E7] transition-colors">
+      <Link
+        href="/dashboard/landlord/properties/verification/request"
+        className="shrink-0 px-3 py-1.5 text-sm border border-[#03442C] text-[#03442C] rounded-lg hover:bg-[#E9F4E7] transition-colors"
+      >
         {QUICK_LINK.buttonText}
-      </button>
+      </Link>
     </div>
   </div>
 );
@@ -155,11 +167,15 @@ const RecentActivitiesSection: React.FC<{
 interface DashboardOverviewProps {
   activities?: Activity[];
   isLoading?: boolean;
+  standardCredits?: number;
+  premiumCredits?: number;
 }
 
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   activities: activitiesProp = [],
   isLoading: isLoadingProp = false,
+  standardCredits = 0,
+  premiumCredits = 0,
 }) => {
   const [showVerification, setShowVerification] = useState<boolean>(false);
   const [localActivities, setLocalActivities] = useState<Activity[]>([]);
@@ -215,7 +231,10 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
       )}
 
       {/* Quick Links */}
-      <QuickLinksSection />
+      <QuickLinksSection
+        standardCredits={standardCredits}
+        premiumCredits={premiumCredits}
+      />
 
       {/* Recent Activities */}
       <RecentActivitiesSection

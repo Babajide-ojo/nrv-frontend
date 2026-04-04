@@ -46,7 +46,7 @@ const DesktopNavBar: React.FC = () => {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center shrink-0 min-w-0 max-w-[min(200px,38vw)] group"
+            className="flex items-center gap-2 shrink-0 min-w-0 max-w-[min(320px,50vw)] group"
           >
             <Image
               src="/images/nrv-logo-latest.jpg"
@@ -56,6 +56,9 @@ const DesktopNavBar: React.FC = () => {
               className="h-9 sm:h-10 w-auto max-w-full object-contain group-hover:opacity-90 transition-opacity"
               priority
             />
+            <span className="text-xs sm:text-sm font-bold tracking-wide text-[#03442C] whitespace-nowrap">
+              NAIJARENTVERIFY
+            </span>
           </Link>
 
           {/* Nav links */}

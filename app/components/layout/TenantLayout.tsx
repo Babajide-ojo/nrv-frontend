@@ -10,6 +10,7 @@ import TenantSideBar from "../shared/navigations/TenantSideBar";
 import { FaBuilding } from "react-icons/fa";
 import { PiFileDocDuotone } from "react-icons/pi";
 import { FiTool, FiCheckCircle } from "react-icons/fi";
+import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 
 interface TenantLayoutProps {
   children: React.ReactNode;
@@ -143,7 +144,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           <div className="p-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               {/* Breadcrumbs */}
-              <nav className="text-gray-500 text-sm flex flex-wrap items-center">
+              <nav className="flex min-w-0 flex-1 flex-wrap items-center text-sm text-gray-500">
                 <svg
                   width="25"
                   height="21"
@@ -179,6 +180,9 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                   </>
                 )}
               </nav>
+              <div className="flex shrink-0 items-center justify-end">
+                <NotificationBell />
+              </div>
             </div>
           </div>
 

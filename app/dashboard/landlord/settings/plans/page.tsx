@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -8,8 +8,22 @@ import { fetchPlans } from "../../../../../redux/slices/plansSlice";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import { RootState } from "../../../../../redux/store";
-import { IoCheckmarkCircle } from "react-icons/io5";
 import { API_URL } from "../../../../../config/constant";
+import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
+
+const MAX_CREDIT_QTY = 999;
+
+function fallbackUnitPrice(plan: { slug?: string; unitPriceNaira?: number }) {
+  if (plan.unitPriceNaira != null && plan.unitPriceNaira > 0) return plan.unitPriceNaira;
+  return plan.slug === "premium" ? 400 : 200;
+}
+
+function friendlyPlanDescription(isPremium: boolean) {
+  if (isPremium) {
+    return "Everything in Standard verification, plus Credit Score (Affordability) to check if the tenant can realistically sustain the rent.";
+  }
+  return "Identity verification and Criminal/Fraud history checks to help you confidently screen a tenant before renting.";
+}
 
 interface PaymentRecord {
   _id: string;
@@ -34,6 +48,19 @@ const PlansPage = () => {
   const userDoc = user?.user ?? user;
   const userId = userDoc?._id ?? (user as any)?._id;
 
+  const creditBalances = useMemo(() => {
+    if (userDoc && (userDoc as { _id?: string })?._id) {
+      return getVerificationCreditBalances(userDoc);
+    }
+    if (typeof window === "undefined") return { standard: 0, premium: 0 };
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      return getVerificationCreditBalances(raw ? JSON.parse(raw)?.user : null);
+    } catch {
+      return { standard: 0, premium: 0 };
+    }
+  }, [user, userDoc]);
+
   useEffect(() => {
     dispatch(fetchPlans() as any);
   }, [dispatch]);
@@ -53,14 +80,22 @@ const PlansPage = () => {
 
   const getQuantity = (planId: string) => quantityByPlanId[planId] ?? 1;
   const setQuantity = (planId: string, value: number) => {
-    const q = Math.max(1, Math.min(99, Math.floor(value)));
+    const q = Math.max(1, Math.min(MAX_CREDIT_QTY, Math.floor(value)));
     setQuantityByPlanId((prev) => ({ ...prev, [planId]: q }));
   };
 
-  const handlePurchase = async (planId: string, packPriceNaira: number) => {
+  const handlePurchase = async (
+    planId: string,
+    unitPriceNaira: number,
+    creditsPerUnit: number,
+  ) => {
     if (!userId) return;
     const quantity = getQuantity(planId);
-    const amountNaira = packPriceNaira * quantity;
+    const amountNaira = quantity * unitPriceNaira;
+    if (quantity * creditsPerUnit < 1) {
+      toast.error("Invalid plan configuration.");
+      return;
+    }
     setPurchasingPlanId(planId);
     try {
       const res = await axios.post(`${API_URL}/payments/initialize-pack`, {
@@ -94,8 +129,19 @@ const PlansPage = () => {
               Verification credits
             </h1>
             <p className="text-gray-600">
-              Buy verification packs below.
+              Choose Standard for a full tenant check, or Premium for the same plus affordability.
+              Price is per credit; totals update when you change quantity.
             </p>
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
+              <span className="font-semibold text-[#03442C]">Your verification credits</span>
+              <span className="text-gray-700">
+                Standard{" "}
+                <strong className="text-gray-900 tabular-nums">{creditBalances.standard}</strong>
+                <span className="text-gray-400 mx-2">·</span>
+                Premium{" "}
+                <strong className="text-gray-900 tabular-nums">{creditBalances.premium}</strong>
+              </span>
+            </div>
           </div>
 
           {loading === "pending" ? (
@@ -108,9 +154,11 @@ const PlansPage = () => {
                 const isPremium = plan.slug === "premium";
                 const stdAdd = plan.standardVerificationAdded ?? 0;
                 const premAdd = plan.premiumVerificationAdded ?? 0;
-                const packPrice = isPremium ? 2000 : 1000; // in Naira
+                const creditsPerUnit = isPremium ? premAdd || 1 : stdAdd || 1;
+                const unitPrice = fallbackUnitPrice(plan);
                 const quantity = getQuantity(plan._id);
-                const totalPrice = packPrice * quantity;
+                const totalCredits = quantity * creditsPerUnit;
+                const totalPrice = quantity * unitPrice;
 
                 return (
                   <div
@@ -126,52 +174,61 @@ const PlansPage = () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      {plan.description}
+                    <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                      {friendlyPlanDescription(isPremium)}
                     </p>
 
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Credits per pack:</p>
-                    <div className="mb-6">
-                      {isPremium ? (
-                        <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-                          <p className="text-xs text-gray-500">Premium verification</p>
-                          <p className="text-lg font-bold text-gray-900">+{premAdd}</p>
-                        </div>
-                      ) : (
-                        <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-                          <p className="text-xs text-gray-500">Standard verification</p>
-                          <p className="text-lg font-bold text-gray-900">+{stdAdd}</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {plan.features?.length > 0 && (
-                      <ul className="space-y-2 mb-6 flex-1">
-                        {plan.features.map((feature: string, index: number) => (
-                          <li key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                            <IoCheckmarkCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
                     <div className="mt-auto space-y-3">
-                      <div className="flex items-center justify-between gap-2">
+                      <div className="rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
+                        <div className="flex justify-between gap-2">
+                          <span className="text-gray-600">Price / credit</span>
+                          <span className="font-semibold">₦{unitPrice.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between gap-2 mt-1">
+                          <span className="text-gray-600">Credits</span>
+                          <span className="font-semibold">
+                            {totalCredits.toLocaleString()}
+                            <span className="font-normal text-gray-600">
+                              {" "}
+                              ({quantity.toLocaleString()} × {creditsPerUnit})
+                            </span>
+                          </span>
+                        </div>
+                        <div className="mt-2 pt-2 border-t border-[#03442C]/15 flex justify-between items-center">
+                          <span className="font-medium text-[#03442C]">Total</span>
+                          <span className="text-lg font-bold text-gray-900">
+                            ₦{totalPrice.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
                         <span className="text-sm text-gray-600">Quantity</span>
                         <div className="flex items-center gap-2 border border-gray-200 rounded-lg overflow-hidden">
                           <button
                             type="button"
-                            disabled={purchasingPlanId === plan._id}
+                            disabled={purchasingPlanId === plan._id || quantity <= 1}
                             onClick={() => setQuantity(plan._id, quantity - 1)}
                             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
                           >
                             −
                           </button>
-                          <span className="min-w-[2rem] text-center font-medium">{quantity}</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={MAX_CREDIT_QTY}
+                            disabled={purchasingPlanId === plan._id}
+                            value={quantity}
+                            onChange={(e) =>
+                              setQuantity(plan._id, Number(e.target.value) || 1)
+                            }
+                            className="w-14 text-center font-medium border-0 focus:ring-0 bg-transparent py-1.5 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
                           <button
                             type="button"
-                            disabled={purchasingPlanId === plan._id}
+                            disabled={
+                              purchasingPlanId === plan._id || quantity >= MAX_CREDIT_QTY
+                            }
                             onClick={() => setQuantity(plan._id, quantity + 1)}
                             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
                           >
@@ -182,12 +239,14 @@ const PlansPage = () => {
                       <button
                         type="button"
                         disabled={purchasingPlanId === plan._id}
-                        onClick={() => handlePurchase(plan._id, packPrice)}
+                        onClick={() =>
+                          handlePurchase(plan._id, unitPrice, creditsPerUnit)
+                        }
                         className="w-full py-2.5 px-4 rounded-lg font-medium bg-gray-900 hover:bg-gray-800 text-white text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {purchasingPlanId === plan._id
                           ? "Processing…"
-                          : `Purchase ${quantity} pack${quantity > 1 ? "s" : ""} · ₦${totalPrice.toLocaleString()}`}
+                          : `Pay ₦${totalPrice.toLocaleString()}`}
                       </button>
                     </div>
                   </div>

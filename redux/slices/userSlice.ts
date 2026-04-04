@@ -406,11 +406,12 @@ const userSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    /** Update stored user (e.g. after payment so credit balances refresh). */
+    /** Merge fresh user profile (credits, etc.) after payment or verification use. */
     setUserFromPayment: (state, action: PayloadAction<{ user: any }>) => {
-      if (state.data && action.payload.user) {
-        state.data = { ...state.data, user: action.payload.user };
-      }
+      if (!state.data || !action.payload.user) return;
+      const next = { ...action.payload.user };
+      delete next.password;
+      state.data = { ...state.data, user: next };
     },
   },
   extraReducers: (builder) => {

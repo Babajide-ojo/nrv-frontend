@@ -10,6 +10,11 @@ interface Plan {
   verificationTier: "standard" | "premium";
   propertyLimit: number;
   verificationLimit?: number;
+  /** Credits added per purchased unit (1 = per-credit billing). */
+  standardVerificationAdded?: number;
+  premiumVerificationAdded?: number;
+  /** Naira per credit (quantity × this = amount sent to Paystack). */
+  unitPriceNaira?: number;
   features: string[];
   isActive: boolean;
 }

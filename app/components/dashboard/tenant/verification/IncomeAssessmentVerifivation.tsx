@@ -357,6 +357,13 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
       }
       setIsPrefilled(true);
       toast.success("Documents submitted successfully.");
+      apiService
+        .post(`/verification/run-all-checks/${verificationResponseId}`, {}, { timeout: 120000 })
+        .catch(() => {
+          toast.info(
+            "Your documents were saved. Automated checks could not finish in the background; the landlord or support may re-run verification.",
+          );
+        });
       const requestId = verificationId || verificationIdFromQuery;
       if (requestId) {
         setTimeout(() => {

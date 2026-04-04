@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  href="/sign-in?redirect=/dashboard/landlord/properties/verification/request"
+                  href="/sign-up?role=landlord"
                   className="hover:text-white transition-colors"
                 >
                   Verify Tenants
@@ -80,22 +80,22 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-semibold text-white/90">Legal</h3>
             <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
               <li>
-                <Link href="/legal" className="hover:text-white transition-colors">
+                <Link href="/legal/terms" className="hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
+                <Link href="/legal/privacy" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/privacy?tab=data-processing" className="hover:text-white transition-colors">
+                <Link href="/legal/data-processing" className="hover:text-white transition-colors">
                   Data Processing Policy
                 </Link>
               </li>
               <li>
-                <Link href="/legal?tab=disclaimer" className="hover:text-white transition-colors">
+                <Link href="/legal/disclaimer" className="hover:text-white transition-colors">
                   Legal Disclaimer
                 </Link>
               </li>
@@ -116,9 +116,9 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="mailto:safety@naijarentverify.com" className="hover:text-white transition-colors">
+                <a href="mailto:safety@naijarentverify.com" className="hover:text-white transition-colors">
                   Report a Problem
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

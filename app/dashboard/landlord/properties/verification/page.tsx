@@ -1,17 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { RootState } from "@/redux/store";
+import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
+
+function VerificationListEmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-10 text-center px-4">
+      <div className="text-gray-400 text-5xl mb-3" aria-hidden>
+        📄
+      </div>
+      <p className="text-gray-800 text-lg font-medium">Verification still pending</p>
+      <p className="text-gray-500 text-sm mt-2 max-w-md">
+        Your screening requests will show here. If you just sent one, your tenant may still be completing verification.
+      </p>
+    </div>
+  );
+}
 
 export default function TenantVerification() {
   const router = useRouter();
-  const dispatch = useDispatch();
+  const reduxUser = useSelector((state: RootState) => state.user.data);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [statusOptions, setStatusOptions] = useState<Array<{ value: string; label: string }>>([]);
@@ -23,6 +39,20 @@ export default function TenantVerification() {
       setUserId(user?.user?._id || null);
     }
   }, []);
+
+  const creditBalances = useMemo(() => {
+    const doc = reduxUser?.user ?? reduxUser;
+    if (doc && (doc as { _id?: string })?._id) {
+      return getVerificationCreditBalances(doc);
+    }
+    if (typeof window === "undefined") return { standard: 0, premium: 0 };
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      return getVerificationCreditBalances(raw ? JSON.parse(raw)?.user : null);
+    } catch {
+      return { standard: 0, premium: 0 };
+    }
+  }, [reduxUser]);
 
   // Fetch status options from backend
   useEffect(() => {
@@ -41,7 +71,7 @@ export default function TenantVerification() {
         setStatusOptions([
           { value: '', label: 'All Status' },
           { value: 'pending', label: 'Pending' },
-          { value: 'approved', label: 'Approved' },
+          { value: 'approved', label: 'Verification completed' },
           { value: 'rejected', label: 'Rejected' },
         ]);
       }
@@ -89,6 +119,24 @@ export default function TenantVerification() {
             </button>
           </div>
 
+          <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
+            <span className="font-semibold text-[#03442C]">Verification credits</span>
+            <span className="text-gray-700">
+              Standard{" "}
+              <strong className="text-gray-900 tabular-nums">{creditBalances.standard}</strong>
+              <span className="text-gray-400 mx-2">·</span>
+              Premium{" "}
+              <strong className="text-gray-900 tabular-nums">{creditBalances.premium}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard/landlord/settings/plans")}
+              className="text-sm font-medium text-[#03442C] hover:underline ml-auto"
+            >
+              Buy credits
+            </button>
+          </div>
+
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex justify-between items-center">
               <h4 className="text-base sm:text-lg font-semibold text-gray-900">Tenant Screening Report</h4>
@@ -99,6 +147,7 @@ export default function TenantVerification() {
               <DataTable
                 rowActions={handleRowAction}
                 endpoint={`${API_URL}/verification/user/${userId}`}
+                emptyStateComponent={VerificationListEmptyState}
                 filters={[
                   {
                     name: 'status',
@@ -159,7 +208,7 @@ export default function TenantVerification() {
                         label = "Pending";
                       } else if (val === "approved") {
                         colorClass = "bg-green-100 text-green-700";
-                        label = "Approved";
+                        label = "Verification completed";
                       } else if (val === "rejected") {
                         colorClass = "bg-red-100 text-red-700";
                         label = "Rejected";

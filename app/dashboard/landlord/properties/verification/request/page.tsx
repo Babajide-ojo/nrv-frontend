@@ -165,7 +165,7 @@ export default function OnboardTenant() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-bold ${verificationTier === "standard" ? "text-green-700" : "text-gray-900"}`}>
-                          Standard
+                          Standard Verification
                         </span>
                         {verificationTier === "standard" && (
                           <div className="h-4 w-4 rounded-full bg-green-600 flex items-center justify-center">
@@ -174,7 +174,7 @@ export default function OnboardTenant() {
                         )}
                       </div>
                       <p className="text-xs text-gray-500 leading-relaxed">
-                        NIN Advanced, selfie + NIN, liveness check, AML screening, PEP & sanctions list.
+                        Identity verification and Criminal/Fraud history checks to help you confidently screen a tenant before renting.
                       </p>
                     </div>
 
@@ -188,7 +188,7 @@ export default function OnboardTenant() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-sm font-bold ${verificationTier === "premium" ? "text-green-700" : "text-gray-900"}`}>
-                          Premium
+                          Premium Tenant Screening
                         </span>
                         {verificationTier === "premium" && (
                           <div className="h-4 w-4 rounded-full bg-green-600 flex items-center justify-center">
@@ -197,7 +197,7 @@ export default function OnboardTenant() {
                         )}
                       </div>
                       <p className="text-xs text-gray-500 leading-relaxed">
-                        Includes all Standard checks plus comprehensive credit score (BVN) analysis.
+                        Everything in Standard verification, plus Credit Score (Affordability) to check if the tenant can realistically sustain the rent.
                       </p>
                     </div>
                   </div>

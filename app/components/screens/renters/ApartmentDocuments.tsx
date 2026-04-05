@@ -76,7 +76,7 @@ export default function DocumentUpload({ propertyId }: { propertyId: any }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 p-6 bg-white rounded-xl shadow">
+    <div className="flex flex-col gap-4 rounded-xl bg-white p-3 shadow sm:gap-6 sm:p-5 lg:flex-row lg:gap-8 lg:p-6">
       <input
         type="file"
         ref={fileInputRef}

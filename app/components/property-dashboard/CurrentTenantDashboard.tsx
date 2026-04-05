@@ -516,7 +516,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenAddTenantModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Extend Tenant Tenure
           </h2>
@@ -581,7 +581,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenAssignDateModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Assign Rent Start and End Date
           </h2>
@@ -730,7 +730,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenUploadAgreementDocsModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Upload Agreement Document
           </h2>
@@ -817,7 +817,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenTenancyModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
           <h2 className="text-red-500 font-semibold text-2xl">
             End Tenancy Tenure
           </h2>
@@ -871,7 +871,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenOnboardTenantModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Onboard A New Tenant
           </h2>

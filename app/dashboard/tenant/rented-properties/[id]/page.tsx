@@ -131,7 +131,7 @@ const RentedPropertiesScreen = () => {
       <ProtectedRoute>
         <TenantLayout>
           {isLoading ? (
-            <div className="p-6 md:p-8 mb-40 space-y-8 animate-pulse">
+            <div className="mb-40 space-y-6 p-3 animate-pulse sm:space-y-8 sm:p-6 md:p-8">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
                 <div>
@@ -191,7 +191,7 @@ const RentedPropertiesScreen = () => {
             )}
 
             {property && (
-              <div className="p-6 md:p-8 mb-40">
+              <div className="mb-40 p-3 sm:p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-4 text-nrvGreyBlack mb-8">
                   <BackIcon />
                   <div>

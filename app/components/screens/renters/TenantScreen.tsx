@@ -477,7 +477,7 @@ const TenantScreen = () => {
         isOpen={openAssignDateModal}
         onClose={() => setOpenAssignDateModal(false)}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
             Assign Rent Start and End Date
           </h2>
@@ -635,7 +635,7 @@ const TenantScreen = () => {
           setOpenAddTenantModal(false);
         }}
       >
-        <div className="mx-auto md:p-16 p-8 w-full h-full">
+        <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
           <h2 className="text-red-500 font-semibold text-2xl">
             End Tenancy Tenure
           </h2>

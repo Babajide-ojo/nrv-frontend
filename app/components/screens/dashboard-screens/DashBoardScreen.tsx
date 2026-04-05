@@ -400,7 +400,7 @@ const DashboardScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-w-0 max-w-full space-y-6 px-3 py-4 font-jakarta sm:p-6">
+    <div className="min-w-0 max-w-full space-y-6 px-2 py-3 font-jakarta sm:px-4 sm:py-5 md:p-6">
       {/* Greeting */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">

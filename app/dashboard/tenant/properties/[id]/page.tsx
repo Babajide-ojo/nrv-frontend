@@ -268,7 +268,7 @@ const TenantPropertiesScreen = () => {
       <ProtectedRoute>
         <TenantLayout mainPath="/dashboard/tenant/properties">
           {isLoading ? (
-            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+            <div className="mx-auto max-w-7xl space-y-6 p-3 animate-pulse sm:space-y-8 sm:p-4 md:p-8">
               {/* Header Skeleton */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-center">
@@ -324,7 +324,7 @@ const TenantPropertiesScreen = () => {
               </div>
             </div>
           ) : currentStep === 1 && (
-              <div className="p-4 md:p-8 max-w-7xl mx-auto">
+              <div className="mx-auto max-w-7xl p-3 sm:p-4 md:p-8">
                 {/* Enhanced Header Section */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
                   <div className="flex justify-between items-start md:items-center flex-col md:flex-row">
@@ -737,7 +737,7 @@ const TenantPropertiesScreen = () => {
               setIsOpen(false);
             }}
           >
-            <div className="bg-white rounded-2xl p-8 max-w-md mx-auto">
+            <div className="mx-auto max-w-md rounded-2xl bg-white p-4 sm:p-8">
               <div className="flex justify-end mb-4">
                 <button
                   onClick={() => {

@@ -110,7 +110,7 @@ export function TenantPropertyApplicationPanel({
             : "py-8 px-4 text-center"
         }
       >
-        <div className="max-w-md rounded-2xl border border-green-100 bg-white p-8 shadow-sm">
+        <div className="max-w-md rounded-2xl border border-green-100 bg-white p-4 shadow-sm sm:p-6 md:p-8">
           <p className="text-lg font-semibold text-green-800">
             You have already applied to this unit
           </p>

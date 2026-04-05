@@ -308,7 +308,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
       <CenterModal isOpen={showModal} onClose={() => !showModal}>
         <div>
           <div className="flex justify-center items-center">
-            <div className="rounded-2xl p-8 w-full">
+            <div className="w-full rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full">
                   <svg

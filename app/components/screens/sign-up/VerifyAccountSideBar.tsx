@@ -4,7 +4,7 @@ const VerifyAccountSideBar = () => {
   return (
     <div>
       {/* Sidebar Navigation */}
-      <div className="w-full p-8 flex flex-col justify-between h-screen">
+      <div className="flex h-screen w-full flex-col justify-between p-4 sm:p-8">
         <div>
           <div className="flex justify-between items-center px-6 py-4">
             <h1 className="text-2xl font-bold text-black">NaijaRentVerify</h1>

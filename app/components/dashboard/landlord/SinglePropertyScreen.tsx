@@ -299,7 +299,7 @@ const SinglePropertyScreen = () => {
             </div>
           ) : (
             <div>
-              <div className="p-8">
+              <div className="p-3 sm:p-6 md:p-8">
                 <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
                   {/* Left Section */}
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
@@ -553,7 +553,7 @@ const SinglePropertyScreen = () => {
                   id="overlay"
                   className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
                 >
-                  <div className="bg-white p-8 rounded shadow-md text-center">
+                  <div className="rounded bg-white p-4 text-center shadow-md sm:p-8">
                     <p>Are you sure you want to delete this property?</p>
                     <div className="mt-4 flex justify-center space-x-4">
                       <button

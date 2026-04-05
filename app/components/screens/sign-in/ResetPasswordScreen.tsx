@@ -82,7 +82,7 @@ const ResetPasswordScreen: React.FC = () => {
       }}
     >
       <div
-        className="w-full sm:w-1/2 p-8 justify-center h-screen"
+        className="h-screen w-full justify-center p-4 sm:w-1/2 sm:p-8"
         style={{
           minHeight: "85vh",
           display: "flex",

@@ -629,7 +629,7 @@ const VerificationResponsePage = () => {
 
   return (
     <LandLordLayout path="Verification" mainPath="/ Verification Response">
-      <div className="px-4 sm:px-6 py-4 sm:py-6 bg-[#F4F6F4] min-h-screen print:bg-white">
+      <div className="min-h-screen bg-[#F4F6F4] px-2 py-3 sm:px-6 sm:py-6 print:bg-white">
         <div className="max-w-[960px] mx-auto">
           <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-between gap-3 mb-4 sm:mb-6 print:hidden">
             <button
@@ -652,7 +652,7 @@ const VerificationResponsePage = () => {
           </div>
 
           <div ref={reportRef} className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden print:shadow-none print:border-gray-300">
-            <div className="border-b border-gray-100 bg-gradient-to-b from-white to-[#FAFAFA] px-5 sm:px-8 pt-8 pb-6">
+            <div className="border-b border-gray-100 bg-gradient-to-b from-white to-[#FAFAFA] px-3 pb-4 pt-5 sm:px-8 sm:pb-6 sm:pt-8">
               <p className="text-center text-xs font-semibold tracking-[0.2em] text-nrvPrimaryGreen uppercase mb-1">
                 NaijaRentVerify
               </p>
@@ -679,8 +679,8 @@ const VerificationResponsePage = () => {
               </div>
             </div>
 
-            <div className="px-5 sm:px-8 py-6 sm:py-8 space-y-8">
-              <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
+            <div className="space-y-5 px-3 py-4 sm:space-y-8 sm:px-8 sm:py-8">
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start sm:gap-8">
                 <div className="relative w-[7.5rem] h-[7.5rem] shrink-0">
                   <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90" aria-hidden>
                     <circle
@@ -766,7 +766,7 @@ const VerificationResponsePage = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8">
                 <div>
                   <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">
                     Verification checks

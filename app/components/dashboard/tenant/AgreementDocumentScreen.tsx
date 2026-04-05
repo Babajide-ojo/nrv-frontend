@@ -180,7 +180,7 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
 
   return (
     <div className="pb-4 md:pb-0">
-      <div className="mx-auto md:p-16 p-8 w-full h-full">
+      <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
         <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
           Upload Signed Agreement
         </h2>

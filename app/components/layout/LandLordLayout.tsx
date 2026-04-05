@@ -238,7 +238,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           </div>
 
           {/* Main Content Body – consistent padding, extra bottom on mobile for nav */}
-          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-3 py-4 pb-6 sm:px-6">
+          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-2 py-3 pb-6 sm:px-4 sm:py-4 md:px-6">
             {children}
           </main>
         </div>

@@ -145,7 +145,7 @@ const RentedPropertiesScreen = () => {
       ) : (
         <div>
           {properties?.length < 1 ? (
-            <div className="p-8 w-full">
+            <div className="w-full px-1 py-2 sm:p-6 md:p-8">
               <div className="w-full h-[60vh] flex justify-center items-center">
                 <div className="text-center">
                   <EmptyState />

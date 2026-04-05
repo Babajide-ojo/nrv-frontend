@@ -140,7 +140,7 @@ const TenantPropertiesScreen = () => {
     <div>
       <ProtectedRoute>
         <TenantLayout>
-          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+          <div className="mx-auto max-w-7xl px-2 py-3 sm:px-4 sm:py-5 md:px-6 lg:p-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <div>
                 <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">

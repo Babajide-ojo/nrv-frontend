@@ -231,7 +231,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           </div>
 
           {/* Main Content Body */}
-          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-3 py-4 pb-4 sm:px-4">
+          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-2 py-3 pb-4 sm:px-4 sm:py-4 md:px-5">
             {children}
           </main>
         </div>

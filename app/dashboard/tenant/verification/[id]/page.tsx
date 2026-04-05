@@ -148,11 +148,11 @@ const TenantVerificationIdPage = () => {
   };
 
   if (loading) {
-    return <div className="p-8 text-center">Loading...</div>;
+    return <div className="p-4 text-center sm:p-8">Loading...</div>;
   }
 
   if (error) {
-    return <div className="p-8 text-center text-red-500">{error}</div>;
+    return <div className="p-4 text-center text-red-500 sm:p-8">{error}</div>;
   }
 
   return (

@@ -335,7 +335,7 @@ const MultiStepForm = () => {
   };
 
   return (
-    <div className="mx-auto mt-10 p-8 bg-white w-full">
+    <div className="mx-auto mt-6 w-full bg-white p-3 sm:mt-10 sm:p-6 md:p-8">
       <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
         {step === 1 && (
           <div className="space-y-8">
@@ -412,7 +412,7 @@ const MultiStepForm = () => {
             </div>
 
             {/* <div className="mx-auto border rounded-md py-4 mt-16"> */}
-            <div className="max-w-4xl mx-auto flex gap-8 w-full">
+            <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 sm:flex-row sm:gap-6 md:gap-8">
               <div className="w-full">
                 <ImageUploader label="" onChange={handleImageChange} />
               </div>
@@ -742,7 +742,7 @@ const MultiStepForm = () => {
       <CenterModal isOpen={showModal} onClose={() => !showModal}>
         <div>
           <div className="flex justify-center items-center">
-            <div className="rounded-2xl p-8 w-full">
+            <div className="w-full rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full">
                   <svg

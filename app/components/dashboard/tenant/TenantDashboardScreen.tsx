@@ -172,7 +172,7 @@ const RentedApartments = ({
           ))}
         </div>
       ) : !apartments?.length ? (
-        <div className="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center text-gray-500">
+        <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 text-center text-gray-500 sm:p-8">
           <p className="font-medium">No rented apartments yet</p>
           <p className="text-sm mt-1">Your active leases will appear here.</p>
         </div>
@@ -294,7 +294,7 @@ const TenantDashboardScreen = () => {
     },
   ];
   return (
-    <div className="p-4 sm:p-6 lg:p-8 mb-16 md:mb-0 max-w-7xl mx-auto w-full">
+    <div className="mx-auto mb-16 w-full max-w-7xl px-2 py-3 sm:px-4 sm:py-5 md:mb-0 md:px-6 lg:p-8">
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
         Hey {user?.firstName} {user?.lastName}👋,
       </p>

@@ -89,9 +89,9 @@ const Maintainance = () => {
               </div>
             ) : maintenance.length < 1 ? (
                 <div>
-                  <div className="p-8 w-full">
+                  <div className="w-full px-1 py-2 sm:p-6 md:p-8">
                     <div className="w-full flex justify-center items-center">
-                      <div className="w-full max-w-md text-center rounded-2xl border border-gray-200 bg-white p-8">
+                      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-4 text-center sm:p-8">
                         <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
                           <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

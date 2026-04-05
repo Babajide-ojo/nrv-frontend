@@ -171,7 +171,7 @@ const UpdatePropertyScreen = () => {
                 onSubmit={handleNextAndVerify}
                 encType="multipart/form-data"
               >
-                <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">
+                <div className="mx-auto max-w-6xl rounded-md bg-white p-3 shadow-sm font-jakarta sm:p-6 md:p-8">
                   <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <InputField
                       label="Location"

@@ -50,8 +50,8 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
   };
 
   return (
-    <div className="w-full font-jakarta bg-white shadow-lg border border-gray-100 rounded-2xl mt-6 p-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="mt-6 w-full rounded-2xl border border-gray-100 bg-white p-3 font-jakarta shadow-lg sm:p-5 md:p-8">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Left Info Section */}
         <div className="lg:col-span-2 space-y-6">
           <div className="border-b border-gray-100 pb-4">

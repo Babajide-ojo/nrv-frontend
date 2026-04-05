@@ -101,11 +101,11 @@ export default function OnboardTenant() {
   return (
     <>
       <LandLordLayout path="Tenant Verification">
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="mx-auto max-w-4xl px-2 py-3 sm:px-4 sm:py-5 md:p-6">
           <h2 className="text-2xl font-semibold mb-6">New Verification Request</h2>
 
           <Card className="border-none shadow-sm bg-white">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="text-sm font-medium text-gray-700 block mb-1.5">First Name</label>

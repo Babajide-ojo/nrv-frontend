@@ -138,7 +138,7 @@ const RentersListScreen = () => {
           {properties?.length < 1 ? (
             <div className="">
               <div className="flex justify-center items-center">
-                <div className="w-full max-w-md text-center rounded-2xl border border-gray-200 bg-white p-8 mt-6">
+                <div className="mt-6 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-4 text-center sm:p-8">
                   <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
                     <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" />

@@ -178,7 +178,7 @@ const UpdatePropertyScreen = () => {
           >
             {currentAmountStep === 0 && (
               <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
-                <div className="max-w-6xl mx-auto bg-white p-8 rounded-md shadow-sm font-jakarta">
+                <div className="mx-auto max-w-6xl rounded-md bg-white p-3 shadow-sm font-jakarta sm:p-6 md:p-8">
                   <div className="md:flex md:justify-between block">
                     <div>
                       <h2 className="text-xl font-semibold mb-2">
@@ -209,7 +209,7 @@ const UpdatePropertyScreen = () => {
                   </div>
 
                   <div className="mx-auto border rounded-md py-4 mt-16">
-                    <div className="max-w-4xl mx-auto flex gap-8 w-full flex-col md:flex-row">
+                    <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 sm:gap-6 md:flex-row md:gap-8">
                       <div className="w-full md:w-1/2">
                         <p className="text-[#344054] font-medium">
                           Your Property Photo

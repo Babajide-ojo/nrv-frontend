@@ -89,7 +89,7 @@ const RentedPropertiesScreen = () => {
       <ProtectedRoute>
         <TenantLayout>
           {isLoading ? (
-            <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <div className="mx-auto max-w-7xl px-2 py-3 sm:px-4 sm:py-5 md:px-6 lg:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
                   <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">
@@ -117,11 +117,11 @@ const RentedPropertiesScreen = () => {
               </div>
             )}
             {properties?.length < 1 ? (
-              <div className="p-8 w-full">
+              <div className="w-full px-1 py-2 sm:p-6 md:p-8">
                 <div className="text-2xl">View Rented Apartments</div>
 
                 <div className="w-full h-[60vh] flex justify-center items-center">
-                  <div className="w-full max-w-md text-center rounded-2xl border border-gray-200 bg-white p-8">
+                  <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-4 text-center sm:p-8">
                     <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
                       <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z" />

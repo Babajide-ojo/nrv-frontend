@@ -107,7 +107,7 @@ const RequestMaintainance = () => {
                 <div className="h-6 bg-gray-200 rounded w-48"></div>
               </div>
               <div className="h-4 bg-gray-200 rounded w-64 mb-8"></div>
-              <div className="md:w-3/5 w-full bg-white p-8 rounded-lg space-y-6">
+              <div className="w-full space-y-4 rounded-lg bg-white p-3 sm:space-y-6 sm:p-6 md:w-3/5 md:p-8">
                 <div className="space-y-2">
                   <div className="h-4 bg-gray-200 rounded w-24"></div>
                   <div className="h-12 bg-gray-100 rounded-lg w-full"></div>

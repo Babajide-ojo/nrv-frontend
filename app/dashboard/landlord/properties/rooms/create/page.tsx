@@ -223,7 +223,7 @@ const CreateRoom = () => {
             subMainPath="Add New Apartment"
           >
             <form onSubmit={handleSubmit}>
-              <div className="max-w-6xl w-full mx-auto p-8">
+              <div className="mx-auto w-full max-w-6xl p-3 sm:p-6 md:p-8">
                 <div className="text-2xl flex gap-3 mb-4">
                   <span
                     onClick={() =>
@@ -268,7 +268,7 @@ const CreateRoom = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="p-4 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 p-2 sm:gap-6 md:grid-cols-2 md:gap-8 md:p-4">
                     <SelectField
                       placeholder="Select Apartment Type"
                       label="Apartment Type"

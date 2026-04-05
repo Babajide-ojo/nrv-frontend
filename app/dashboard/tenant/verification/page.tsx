@@ -166,7 +166,7 @@ const TenantVerificationSummaryPage = () => {
       const startUrl = `/dashboard/tenant/verification/personal-info?verificationId=${verificationIdFromUrl}`;
       return (
         <TenantLayout path="Verification" mainPath=" / My Submissions" subMainPath="Details">
-          <div className="max-w-2xl mx-auto w-full p-8 bg-white rounded-xl border border-gray-100 text-center shadow-sm mt-8">
+          <div className="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-gray-100 bg-white p-4 text-center shadow-sm sm:mt-8 sm:p-8">
             <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <FaFileAlt className="text-gray-400 text-2xl" />
             </div>
@@ -357,7 +357,7 @@ const TenantVerificationSummaryPage = () => {
   if (!submittedRequests.length) {
     return (
       <TenantLayout path="Verification" mainPath=" / My Submissions">
-        <div className="max-w-2xl mx-auto w-full p-8 bg-white rounded-xl border border-gray-100 text-center shadow-sm mt-8">
+        <div className="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-gray-100 bg-white p-4 text-center shadow-sm sm:mt-8 sm:p-8">
           <div className="h-16 w-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaFileAlt className="text-gray-300 text-2xl" />
           </div>

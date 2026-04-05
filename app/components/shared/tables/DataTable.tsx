@@ -367,7 +367,7 @@ export default function DataTable<T extends BaseRow = BaseRow>({
 
   return (
     <div
-      className={`w-full min-w-0 max-w-full bg-white p-3 font-jakarta shadow-md sm:p-6 rounded-xl ${className}`}
+      className={`w-full min-w-0 max-w-full rounded-xl bg-white p-2 font-jakarta shadow-md sm:p-4 md:p-6 ${className}`}
     >
       {/* Search and Filters */}
       <div className="mb-4 flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center md:justify-between">

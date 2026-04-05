@@ -125,7 +125,7 @@ const OnboardingFormScreen: React.FC = () => {
         <div className="">
           {currentStep === 1 && (
             <div className="flex justify-center h-screen">
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",
@@ -189,7 +189,7 @@ const OnboardingFormScreen: React.FC = () => {
           {currentStep === 2 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",
@@ -259,7 +259,7 @@ const OnboardingFormScreen: React.FC = () => {
           {currentStep === 3 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",

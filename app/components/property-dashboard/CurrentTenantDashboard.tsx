@@ -81,18 +81,15 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
     try {
       const tenant = await dispatch(
         getCurrentTenantForProperty(id) as any
       ).unwrap();
       setTenantDetails(tenant);
-    } catch (error) {}
-
-    return () => clearTimeout(timer);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatDateToWords = (dateString: any) => {

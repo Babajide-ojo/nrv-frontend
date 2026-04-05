@@ -33,11 +33,7 @@ const Page = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 4000);
     fetchData();
-    return () => clearTimeout(timer);
   }, []);
 
   return (

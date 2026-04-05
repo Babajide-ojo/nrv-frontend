@@ -29,7 +29,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 // Memoized classes object to prevent recreation on every render
 const classes = {
-  base: "focus:outline-none transition ease-in-out duration-300",
+  base: "focus:outline-none transition ease-out duration-150",
   disabled: "cursor-not-allowed opacity-60",
   pill: "rounded",
   size: {

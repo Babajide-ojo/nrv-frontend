@@ -36,9 +36,6 @@ const ApplicantScreenForDashboard = () => {
     };
 
     try {
-      // Simulating a delay of 5 seconds for the preloader
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       const response = await dispatch(
         getApplicationsByLandlordId(formData) as any
       );

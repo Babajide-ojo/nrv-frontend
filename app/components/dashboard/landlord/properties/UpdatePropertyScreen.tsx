@@ -45,10 +45,12 @@ const UpdatePropertyScreen = () => {
   });
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
     const fetchPropertyData = async () => {
       if (propertyId) {
         try {
-          // Fetch the property details to update
           const response = await dispatch(getPropertyById(propertyId) as any).unwrap();
           const data = response?.data;
           if (data) {
@@ -67,15 +69,9 @@ const UpdatePropertyScreen = () => {
           toast.error("Error fetching property data");
         }
       }
+      setIsLoading(false);
     };
-
-    if (typeof window !== "undefined") {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      fetchPropertyData();
-      const timer = setTimeout(() => setIsLoading(false), 2000);
-      return () => clearTimeout(timer);
-    }
+    fetchPropertyData();
   }, [dispatch, propertyId]);
 
   const validateForm = () => {

@@ -1,6 +1,5 @@
 "use client";
 
-import LoadingPage from "../../../../../components/loaders/LoadingPage";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../../../components/layout/LandLordLayout";
@@ -20,7 +19,6 @@ import { IoMdInformationCircleOutline } from "react-icons/io";
 import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
 
 const CreateRoom = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [showDescription, setShowDescription] = useState(false);
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -195,13 +193,9 @@ const CreateRoom = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      // dispatch(getPropertyByUserId(user?.user?._id));
-      const timer = setTimeout(() => setIsLoading(false), 1500);
-      return () => clearTimeout(timer);
-    }
+    if (typeof window === "undefined") return;
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
   }, []);
 
   const amenityOptions = [
@@ -222,9 +216,6 @@ const CreateRoom = () => {
 
   return (
     <div>
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
         <ProtectedRoute>
           <LandLordLayout
             path="Apartment"
@@ -574,7 +565,6 @@ const CreateRoom = () => {
             </form>
           </LandLordLayout>
         </ProtectedRoute>
-      )}
     </div>
   );
 };

@@ -366,9 +366,9 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
         });
       const requestId = verificationId || verificationIdFromQuery;
       if (requestId) {
-        setTimeout(() => {
-          router.push(`/dashboard/tenant/verification?verificationId=${requestId}&completed=1`);
-        }, 1500);
+        router.push(
+          `/dashboard/tenant/verification?verificationId=${requestId}&completed=1`
+        );
       }
     } catch (error: any) {
       toast.error(error?.message || 'Failed to upload documents.');

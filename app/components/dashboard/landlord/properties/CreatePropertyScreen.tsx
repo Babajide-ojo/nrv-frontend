@@ -297,21 +297,23 @@ const CreatePropertyScreen = () => {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      const fetchProperties = async () => {
+    if (typeof window === "undefined") return;
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const fetchProperties = async () => {
+      try {
         const propertiesResponse = await dispatch(
           getPropertyByUserId({ id: user?.user?._id }) as any
         ).unwrap();
         const propertiesData = propertiesResponse?.data || [];
         setProperties(propertiesData);
-        
-      };
-      fetchProperties();
-      const timer = setTimeout(() => setIsLoading(false), 2000);
-      return () => clearTimeout(timer);
-    }
+      } catch {
+        // non-blocking: form still usable
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProperties();
   }, [dispatch]);
 
   return (

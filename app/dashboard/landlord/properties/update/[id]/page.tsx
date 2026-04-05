@@ -43,6 +43,9 @@ const UpdatePropertyScreen = () => {
   });
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
     const fetchPropertyData = async () => {
       if (id) {
         try {
@@ -66,7 +69,6 @@ const UpdatePropertyScreen = () => {
               value: data.propertyType?.value || data.propertyType || "Residential",
             });
 
-            // Show current saved property image (if any)
             const current =
               (typeof data.file === "string" && data.file.trim() ? data.file.trim() : null) ||
               (Array.isArray(data.imageUrls) && data.imageUrls.length > 0 ? data.imageUrls[0] : null) ||
@@ -77,15 +79,9 @@ const UpdatePropertyScreen = () => {
           toast.error("Error fetching property data");
         }
       }
+      setIsLoading(false);
     };
-
-    if (typeof window !== "undefined") {
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      fetchPropertyData();
-      const timer = setTimeout(() => setIsLoading(false), 2000);
-      return () => clearTimeout(timer);
-    }
+    fetchPropertyData();
   }, [dispatch, id]);
 
   const validateForm = () => {

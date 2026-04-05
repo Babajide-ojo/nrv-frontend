@@ -216,16 +216,14 @@ const SinglePropertyScreen = () => {
   };
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-
+      if (!cancelled) setUser(user?.user);
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const properties = await dispatch(getPropertyById(id) as any).unwrap();
+        if (cancelled) return;
         setPropertyData(properties?.data);
         setSingleProperty(properties?.data);
         const selectedPropertyType = [
@@ -234,14 +232,17 @@ const SinglePropertyScreen = () => {
           { value: "flat", label: "Flat" },
         ].filter((item) => item.value == properties?.data?.propertyType);
         setSelectedOption(selectedPropertyType);
-        setIsLoading(false);
       } catch (error) {
-        setIsLoading(false);
+        // keep prior state
+      } finally {
+        if (!cancelled) setIsLoading(false);
       }
-      return () => clearTimeout(timer);
     };
 
     fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, [id, dispatch]);
 
   const totalRooms = singleProperty?.rooms?.length;

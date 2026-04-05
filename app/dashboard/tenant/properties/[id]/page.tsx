@@ -725,9 +725,7 @@ const TenantPropertiesScreen = () => {
                 user={user}
                 onBack={() => setCurrentStep(1)}
                 onSuccess={() => {
-                  setTimeout(() => {
-                    router.push("/dashboard/tenant/properties");
-                  }, 2000);
+                  router.push("/dashboard/tenant/properties");
                 }}
               />
             )}

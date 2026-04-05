@@ -44,16 +44,13 @@ const SingleRoom = () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
 
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
     try {
       const properties = await dispatch(getRoomById(id) as any).unwrap();
       setRoomDetails(properties?.data);
-    } catch (error) {}
-
-    return () => clearTimeout(timer);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

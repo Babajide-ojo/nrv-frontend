@@ -172,11 +172,10 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
         <div className="flex-1 h-full overflow-y-auto w-full relative">
           {/* Header – responsive padding */}
           <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
-              <div className="flex min-w-0 items-start gap-2">
+            <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
                 <button
                   type="button"
-                  className="mt-0.5 shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
+                  className="shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
                   aria-label="Open menu"
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen(true)}
@@ -184,10 +183,14 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                   <FiMenu size={22} />
                 </button>
                 {/* Breadcrumbs */}
-                <nav className="text-gray-500 text-sm flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-1">
+                <nav
+                  aria-label="Breadcrumb"
+                  className="text-gray-500 flex min-w-0 flex-1 items-center gap-x-1 overflow-hidden text-xs sm:text-sm"
+                >
                 <svg
-                  width="25"
-                  height="21"
+                  className="shrink-0"
+                  width="22"
+                  height="18"
                   viewBox="0 0 25 21"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -200,33 +203,36 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                   />
                 </svg>
 
-                <span className="mx-1 text-gray-400">&gt;</span>
-                {path && <span className="text-sm text-[#333333]">{path}</span>}
-                {subMainPath && <span className="mx-1 text-gray-400">/</span>}
-                <a
-                  href="#"
-                  className="text-sm hover:text-gray-900 text-[#333333]"
-                >
-                  {mainPath}
-                </a>
-                {subMainPath && (
-                  <>
-                    <span className="mx-1 text-gray-400">/</span>
-                    <span className="text-sm text-[#333333]">
-                      {subMainPath}
-                    </span>
-                  </>
-                )}
+                <span className="min-w-0 truncate text-[#333333]">
+                  <span className="text-gray-400">&gt; </span>
+                  {path && <span>{path}</span>}
+                  {subMainPath && <span className="text-gray-400"> / </span>}
+                  {mainPath && (
+                    <a
+                      href="#"
+                      className="hover:text-gray-900"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {mainPath}
+                    </a>
+                  )}
+                  {subMainPath && (
+                    <>
+                      <span className="text-gray-400"> / </span>
+                      <span>{subMainPath}</span>
+                    </>
+                  )}
+                </span>
                 </nav>
-              </div>
 
-              {/* User Info */}
-              <div className="flex items-center justify-between md:justify-end space-x-4">
-                <NotificationBell />
-                <div className="flex items-center space-x-2">
-                  <FaPerson />
-                  <span className="text-gray-700 text-sm">{user?.name}</span>
+              <div className="flex shrink-0 items-center gap-2 sm:gap-3 pl-1">
+                <div className="flex min-w-0 max-w-[38vw] sm:max-w-[11rem] items-center gap-1.5">
+                  <FaPerson className="shrink-0 text-gray-600" />
+                  <span className="truncate text-sm text-gray-700">
+                    {user?.name}
+                  </span>
                 </div>
+                <NotificationBell />
               </div>
             </div>
           </div>

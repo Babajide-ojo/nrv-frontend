@@ -1,6 +1,6 @@
 /**
  * Single source of truth for landlord dashboard navigation.
- * Used by desktop sidebar and mobile bottom nav. Only includes routes that have pages (no 404s).
+ * Used by desktop sidebar and mobile hamburger menu. Only includes routes that have pages (no 404s).
  */
 export const LANDLORD_NAV_ITEMS = [
   { name: "Dashboard", route: "/dashboard/landlord" },

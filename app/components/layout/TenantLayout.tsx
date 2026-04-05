@@ -1,16 +1,70 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import { FaMessage } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
-import { IoMdHome, IoMdMore } from "react-icons/io";
-import { IoBackspace, IoPeopleOutline, IoSettings } from "react-icons/io5";
-import { useRouter } from "next/navigation";
+import { IoMdHome } from "react-icons/io";
+import { IoSettings } from "react-icons/io5";
+import { useRouter, usePathname } from "next/navigation";
 import TenantSideBar from "../shared/navigations/TenantSideBar";
 import { FaBuilding } from "react-icons/fa";
 import { PiFileDocDuotone } from "react-icons/pi";
-import { FiTool, FiCheckCircle } from "react-icons/fi";
+import {
+  FiTool,
+  FiCheckCircle,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
+
+const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
+  [
+    {
+      name: "Home",
+      route: "/dashboard/tenant",
+      icon: <RxDashboard size={20} color="white" />,
+    },
+    {
+      name: "Properties",
+      route: "/dashboard/tenant/properties",
+      icon: <FaBuilding size={20} color="white" />,
+    },
+    {
+      name: "Applications",
+      route: "/dashboard/tenant/properties/applications",
+      icon: <PiFileDocDuotone size={20} color="white" />,
+    },
+    {
+      name: "Rented Apartments",
+      route: "/dashboard/tenant/rented-properties",
+      icon: <IoMdHome size={20} color="white" />,
+    },
+    {
+      name: "Maintenance",
+      route: "/dashboard/tenant/properties/maintenance",
+      icon: <FiTool size={20} color="white" />,
+    },
+    {
+      name: "My Verifications",
+      route: "/dashboard/tenant/verification/requests",
+      icon: <FiCheckCircle size={20} color="white" />,
+    },
+    {
+      name: "My Submissions",
+      route: "/dashboard/tenant/verification",
+      icon: <FiCheckCircle size={20} color="white" />,
+    },
+    {
+      name: "Messages",
+      route: "/dashboard/tenant/messages",
+      icon: <FaMessage size={20} color="white" />,
+    },
+    {
+      name: "Settings",
+      route: "/dashboard/tenant/settings",
+      icon: <IoSettings size={20} color="white" />,
+    },
+  ];
 
 interface TenantLayoutProps {
   children: React.ReactNode;
@@ -20,117 +74,92 @@ interface TenantLayoutProps {
 }
 
 const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, subMainPath }) => {
-  const [showMore, setShowMore] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Function to toggle more options (similar to Landlord layout)
-  const handleToggle = () => {
-    setShowMore((prev) => !prev);
-  };
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileMenuOpen]);
+
+  const mobileNavActiveRoute = useMemo(() => {
+    const matches = TENANT_MOBILE_LINKS.filter(
+      (item) =>
+        pathname === item.route || pathname.startsWith(`${item.route}/`)
+    );
+    if (matches.length === 0) return null;
+    return matches.reduce((a, b) =>
+      a.route.length >= b.route.length ? a : b
+    ).route;
+  }, [pathname]);
 
   return (
     <div className="relative min-h-screen flex flex-col">
-      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-md lg:hidden z-50 pointer-events-auto safe-area-pb">
-        <div className="px-2 py-2">
-          {!showMore ? (
-            <div className="grid grid-cols-4 gap-1">
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-[100] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[min(100%,300px)] max-w-full flex-col bg-nrvPrimaryGreen shadow-xl">
+            <div className="flex items-center justify-between border-b border-white/15 px-4 py-3">
+              <span className="text-sm font-semibold text-white">Menu</span>
               <button
                 type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant")}
+                className="rounded-lg p-2 text-white hover:bg-white/10"
+                aria-label="Close menu"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <RxDashboard size={24} color="white" />
-                <span className="text-xs text-white">Home</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/properties")}
-              >
-                <FaBuilding size={24} color="white" />
-                <span className="text-xs text-white">Properties</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() =>
-                  router.push("/dashboard/tenant/rented-properties")
-                }
-              >
-                <IoMdHome size={24} color="white" />
-                <span className="text-xs text-white">Apartments</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={handleToggle}
-              >
-                <IoMdMore size={24} color="white" />
-                <span className="text-xs text-white">More</span>
+                <FiX size={22} />
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-4 gap-2 w-full">
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={handleToggle}
-              >
-                <IoBackspace size={24} color="white" />
-                <span className="text-[10px] text-white">Go Back</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/properties/applications")}
-              >
-                <PiFileDocDuotone size={24} color="white" />
-                <span className="text-[10px] text-white">Applications</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/properties/maintenance")}
-              >
-                <FiTool size={24} color="white" />
-                <span className="text-[10px] text-white">Maintenance</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/verification/requests")}
-              >
-                <FiCheckCircle size={24} color="white" />
-                <span className="text-[10px] text-white">Verifications</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/verification")}
-              >
-                <FiCheckCircle size={24} color="white" />
-                <span className="text-[10px] text-white">Submissions</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/messages")}
-              >
-                <FaMessage size={24} color="white" />
-                <span className="text-[10px] text-white">Messages</span>
-              </button>
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center"
-                onClick={() => router.push("/dashboard/tenant/settings")}
-              >
-                <IoSettings size={24} color="white" />
-                <span className="text-[10px] text-white">Settings</span>
-              </button>
-            </div>
-          )}
+            <nav className="flex-1 overflow-y-auto py-2">
+              <ul className="space-y-0.5 px-2">
+                {TENANT_MOBILE_LINKS.map((item) => {
+                  const active = item.route === mobileNavActiveRoute;
+                  return (
+                    <li key={item.route}>
+                      <button
+                        type="button"
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation ${
+                          active
+                            ? "bg-white/15 text-[#BBFF37]"
+                            : "text-white/90 hover:bg-white/10"
+                        }`}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          router.push(item.route);
+                        }}
+                      >
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                          {item.icon}
+                        </span>
+                        <span>{item.name}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex w-full h-screen overflow-hidden">
         {/* Sidebar - Desktop */}
@@ -143,8 +172,18 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           {/* Header */}
           <div className="p-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              {/* Breadcrumbs */}
-              <nav className="flex min-w-0 flex-1 flex-wrap items-center text-sm text-gray-500">
+              <div className="flex min-w-0 flex-1 items-start gap-2">
+                <button
+                  type="button"
+                  className="mt-0.5 shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
+                  aria-label="Open menu"
+                  aria-expanded={mobileMenuOpen}
+                  onClick={() => setMobileMenuOpen(true)}
+                >
+                  <FiMenu size={22} />
+                </button>
+                {/* Breadcrumbs */}
+                <nav className="flex min-w-0 flex-1 flex-wrap items-center text-sm text-gray-500">
                 <svg
                   width="25"
                   height="21"
@@ -179,7 +218,8 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                     </span>
                   </>
                 )}
-              </nav>
+                </nav>
+              </div>
               <div className="flex shrink-0 items-center justify-end">
                 <NotificationBell />
               </div>
@@ -187,7 +227,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           </div>
 
           {/* Main Content Body */}
-          <main className="bg-white w-full p-4 pb-24 lg:pb-4 min-h-[calc(100vh-80px)]">
+          <main className="bg-white w-full p-4 pb-4 min-h-[calc(100vh-80px)]">
             {children}
           </main>
         </div>

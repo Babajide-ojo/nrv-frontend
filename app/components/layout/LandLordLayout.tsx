@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import LandLordSideBar from "../shared/navigations/LandLordSideBar";
 import { FaMessage, FaPerson } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
-import { IoMdHome, IoMdMore } from "react-icons/io";
-import { IoBackspace, IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
-import { FiUsers, FiFileText, FiCheck } from "react-icons/fi";
-import { useRouter } from "next/navigation";
+import { IoMdHome } from "react-icons/io";
+import { IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
+import { FiUsers, FiFileText, FiCheck, FiMenu, FiX } from "react-icons/fi";
+import { useRouter, usePathname } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 
@@ -42,12 +42,11 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   comingSoon = false,
 }) => {
   const [user, setUser] = useState<any>(null);
-  const [activeLink, setActiveLink] = useState<string>("");
   const router = useRouter();
-  const [showMore, setShowMore] = useState(false);
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    setActiveLink(window.location.pathname);
     const storedUser = localStorage.getItem("nrv-user");
     if (storedUser) {
       const userInfo = JSON.parse(storedUser);
@@ -59,100 +58,108 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
     }
   }, []);
 
-  const handleToggle = () => {
-    setShowMore((prev) => !prev);
-  };
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileMenuOpen]);
+
+  const mobileNavActiveRoute = useMemo(() => {
+    const matches = LANDLORD_NAV_ITEMS.filter(
+      (item) =>
+        pathname === item.route || pathname.startsWith(`${item.route}/`)
+    );
+    if (matches.length === 0) return null;
+    return matches.reduce((a, b) =>
+      a.route.length >= b.route.length ? a : b
+    ).route;
+  }, [pathname]);
 
   return (
     <div className="relative min-h-screen !overflow-hidden flex flex-col">
-      {/* Mobile Bottom Nav – same items as desktop sidebar; spaced so links don’t look cramped */}
-      <div className="fixed bottom-0 left-0 w-full bg-nrvPrimaryGreen shadow-lg lg:hidden z-[9999] safe-area-pb pointer-events-auto">
-        <div className="px-2 py-2">
-          {!showMore ? (
-            <div className="grid grid-cols-4 gap-1">
-              {LANDLORD_NAV_ITEMS.slice(0, 3).map((item) => (
-                <button
-                  key={item.route}
-                  type="button"
-                  className="py-3 w-full flex flex-col items-center touch-manipulation"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    router.push(item.route);
-                  }}
-                >
-                  {getMobileNavIcon(item.name, 24)}
-                  <span className="text-xs text-white">
-                    {item.name === "Leads & Applications" ? "Leads" : item.name}
-                  </span>
-                </button>
-              ))}
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-[100] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation menu"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            aria-label="Close menu"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[min(100%,300px)] max-w-full flex-col bg-nrvPrimaryGreen shadow-xl">
+            <div className="flex items-center justify-between border-b border-white/15 px-4 py-3">
+              <span className="text-sm font-semibold text-white">Menu</span>
               <button
                 type="button"
-                className="py-3 w-full flex flex-col items-center touch-manipulation"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleToggle();
-                }}
+                className="rounded-lg p-2 text-white hover:bg-white/10"
+                aria-label="Close menu"
+                onClick={() => setMobileMenuOpen(false)}
               >
-                <IoMdMore size={24} color="white" />
-                <span className="text-xs text-white">More</span>
+                <FiX size={22} />
               </button>
             </div>
-          ) : (
-            <div className="grid grid-cols-4 gap-2 w-full">
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center touch-manipulation"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleToggle();
-                }}
-              >
-                <IoBackspace size={22} color="white" />
-                <span className="text-[10px] text-white">Go Back</span>
-              </button>
-              {LANDLORD_NAV_ITEMS.slice(3).map((item) => (
-                <button
-                  key={item.route}
-                  type="button"
-                  className="py-3 w-full flex flex-col items-center touch-manipulation"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleToggle();
-                    router.push(item.route);
-                  }}
-                >
-                  {getMobileNavIcon(item.name, 22)}
-                  <span className="text-[10px] text-white">
-                    {item.name === "Tenant Verification"
-                      ? "Verification"
-                      : item.name === "Buy verification credit"
-                      ? "Credits"
-                      : item.name}
-                  </span>
-                </button>
-              ))}
-              <button
-                type="button"
-                className="py-3 w-full flex flex-col items-center touch-manipulation"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleToggle();
-                  router.push("/dashboard/landlord/settings");
-                }}
-              >
-                <IoSettings size={22} color="white" />
-                <span className="text-[10px] text-white">Settings</span>
-              </button>
-            </div>
-          )}
+            <nav className="flex-1 overflow-y-auto py-2">
+              <ul className="space-y-0.5 px-2">
+                {LANDLORD_NAV_ITEMS.map((item) => {
+                  const active = item.route === mobileNavActiveRoute;
+                  return (
+                    <li key={item.route}>
+                      <button
+                        type="button"
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation ${
+                          active
+                            ? "bg-white/15 text-[#BBFF37]"
+                            : "text-white/90 hover:bg-white/10"
+                        }`}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          router.push(item.route);
+                        }}
+                      >
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                          {getMobileNavIcon(item.name, 20)}
+                        </span>
+                        <span>{item.name}</span>
+                      </button>
+                    </li>
+                  );
+                })}
+                <li>
+                  <button
+                    type="button"
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation ${
+                      pathname.startsWith("/dashboard/landlord/settings")
+                        ? "bg-white/15 text-[#BBFF37]"
+                        : "text-white/90 hover:bg-white/10"
+                    }`}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      router.push("/dashboard/landlord/settings");
+                    }}
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                      <IoSettings size={20} color="white" />
+                    </span>
+                    <span>Settings</span>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Layout Content */}
       <div className="flex w-full h-screen bg-white overflow-hidden">
@@ -166,8 +173,18 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           {/* Header – responsive padding */}
           <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
-              {/* Breadcrumbs */}
-              <nav className="text-gray-500 text-sm flex flex-wrap items-center gap-x-1 gap-y-1">
+              <div className="flex min-w-0 items-start gap-2">
+                <button
+                  type="button"
+                  className="mt-0.5 shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
+                  aria-label="Open menu"
+                  aria-expanded={mobileMenuOpen}
+                  onClick={() => setMobileMenuOpen(true)}
+                >
+                  <FiMenu size={22} />
+                </button>
+                {/* Breadcrumbs */}
+                <nav className="text-gray-500 text-sm flex min-w-0 flex-1 flex-wrap items-center gap-x-1 gap-y-1">
                 <svg
                   width="25"
                   height="21"
@@ -200,7 +217,8 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                     </span>
                   </>
                 )}
-              </nav>
+                </nav>
+              </div>
 
               {/* User Info */}
               <div className="flex items-center justify-between md:justify-end space-x-4">
@@ -214,7 +232,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           </div>
 
           {/* Main Content Body – consistent padding, extra bottom on mobile for nav */}
-          <main className="bg-white w-full px-4 sm:px-6 py-4 pb-24 lg:pb-6 min-h-[calc(100vh-80px)]">
+          <main className="bg-white w-full px-4 sm:px-6 py-4 pb-6 min-h-[calc(100vh-80px)]">
             {children}
           </main>
         </div>

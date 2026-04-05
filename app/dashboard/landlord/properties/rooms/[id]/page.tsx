@@ -34,6 +34,7 @@ const SingleRoom = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRequestApprovalModalOpen, setIsRequestApprovalModalOpen] = useState(false);
   const [requestingApproval, setRequestingApproval] = useState(false);
+  const [listingRoom, setListingRoom] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>({});
@@ -66,22 +67,34 @@ const SingleRoom = () => {
     }
   }, []);
 
+  const canListForTenants = singleRoom?.approved === true;
+
   const updateRoom = async () => {
+    const nextListed = singleRoom.listRoom !== true;
+    if (nextListed && !canListForTenants) {
+      toast.error(
+        "This unit must be approved by an admin before it can be listed."
+      );
+      setIsModalOpen(false);
+      return;
+    }
     const payload = {
       id: id,
-      status: true,
+      status: nextListed,
     };
     try {
-      setIsLoading(true);
-      const properties = await dispatch(
-        updateRoomStatus(payload) as any
-      ).unwrap();
-      fetchData();
-
+      setListingRoom(true);
+      await dispatch(updateRoomStatus(payload) as any).unwrap();
+      await fetchData();
+      toast.success(
+        nextListed
+          ? "Apartment listed successfully"
+          : "Apartment unlisted successfully"
+      );
     } catch (error) {
       toast.error("An error occurred while performing update");
     } finally {
-      setIsLoading(false);
+      setListingRoom(false);
       setIsModalOpen(false);
     }
   };
@@ -174,8 +187,26 @@ const SingleRoom = () => {
                             : "Currently Vacant"}
                         </button>
                         <button
-                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto"
+                          type="button"
+                          disabled={
+                            singleRoom.listRoom === false && !canListForTenants
+                          }
+                          title={
+                            singleRoom.listRoom === false && !canListForTenants
+                              ? "Request admin approval first, then list after approval."
+                              : undefined
+                          }
+                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => {
+                            if (
+                              singleRoom.listRoom === false &&
+                              !canListForTenants
+                            ) {
+                              toast.info(
+                                'Use "Request approval for listing" first. After an admin approves, you can list this unit.'
+                              );
+                              return;
+                            }
                             setIsModalOpen(true);
                           }}
                         >
@@ -324,25 +355,25 @@ const SingleRoom = () => {
             <div className="mt-8 flex gap-3 justify-center text-center items-center">
               <Button
                 size="large"
-                className="text-red-500  border border-red-500 mt-2 rounded-md"
+                className="text-red-500 border border-red-500 mt-2 rounded-md"
                 variant="ordinary"
                 showIcon={false}
                 onClick={() => {
                   setIsModalOpen(false);
                 }}
               >
-                <div className="flex gap-3">Close</div>
+                Close
               </Button>
               <Button
                 size="large"
-                className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
-                variant="primary"
+                className="mt-2 rounded-md"
+                variant="darkPrimary"
                 showIcon={false}
-                isLoading={isLoading}
+                isLoading={listingRoom}
+                loadingText="Listing…"
+                onClick={updateRoom}
               >
-                <div className="flex gap-3" onClick={updateRoom}>
-                  Continue
-                </div>
+                Continue
               </Button>
             </div>
           </div>
@@ -367,21 +398,18 @@ const SingleRoom = () => {
                 showIcon={false}
                 onClick={() => setIsRequestApprovalModalOpen(false)}
               >
-                <div className="flex gap-3">Cancel</div>
+                Cancel
               </Button>
               <Button
                 size="large"
-                className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
-                variant="primary"
+                className="mt-2 rounded-md"
+                variant="darkPrimary"
                 showIcon={false}
                 isLoading={requestingApproval}
+                loadingText="Sending…"
+                onClick={handleRequestApproval}
               >
-                <div
-                  className="flex gap-3"
-                  onClick={handleRequestApproval}
-                >
-                  Confirm
-                </div>
+                Confirm
               </Button>
             </div>
           </div>

@@ -22,28 +22,42 @@ interface Data {
 }
 
 const PropertyOptions: React.FC<Data> = ({ data }) => {
+  const canListForTenants = data?.approved === true;
+  const listBlocked =
+    data?.listRoom === false && !canListForTenants;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenInvite, setIsOpenInvite] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [listingRoom, setListingRoom] = useState(false);
   const router = useRouter();
   const { id } = useParams();
   const dispatch = useDispatch();
 
   const updateRoom = async () => {
+    const nextListed = data?.listRoom !== true;
+    if (nextListed && !canListForTenants) {
+      toast.error(
+        "This unit must be approved by an admin before it can be listed."
+      );
+      setIsOpen(false);
+      return;
+    }
     const payload = {
       id: id,
-      status: true,
+      status: nextListed,
     };
     try {
-      setIsLoading(true);
-      const properties = await dispatch(
-        updateRoomStatus(payload) as any
-      ).unwrap();
-    //  router.push(`/dashboard/landlord/properties/rooms/${id}`)
+      setListingRoom(true);
+      await dispatch(updateRoomStatus(payload) as any).unwrap();
+      toast.success(
+        nextListed
+          ? "Apartment listed successfully"
+          : "Apartment unlisted successfully"
+      );
     } catch (error) {
       toast.error("An error occured while performing update");
     } finally {
-      setIsLoading(false);
+      setListingRoom(false);
       setIsOpen(false);
     }
   };
@@ -84,7 +98,19 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
             className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
             variant="mediumGrey"
             showIcon={false}
+            disabled={listBlocked}
+            title={
+              listBlocked
+                ? "Request admin approval first, then list after approval."
+                : undefined
+            }
             onClick={() => {
+              if (listBlocked) {
+                toast.info(
+                  'Use "Request approval for listing" on the unit page first. After an admin approves, you can list this unit.'
+                );
+                return;
+              }
               setIsOpen(true);
             }}
           >
@@ -169,24 +195,25 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
           <div className="mt-8 flex gap-3 justify-center text-center items-center">
             <Button
               size="large"
-              className="text-red-500  border border-red-500 mt-2 rounded-md"
+              className="text-red-500 border border-red-500 mt-2 rounded-md"
               variant="ordinary"
               showIcon={false}
               onClick={() => {
                 setIsOpen(false);
               }}
             >
-              <div className="flex gap-3">Close</div>
+              Close
             </Button>
             <Button
               size="large"
-              className="text-white border border-nrvPrimaryGreen mt-2 rounded-md"
-              variant="bluebg"
+              className="mt-2 rounded-md"
+              variant="darkPrimary"
               showIcon={false}
+              isLoading={listingRoom}
+              loadingText="Listing…"
+              onClick={updateRoom}
             >
-              <div className="flex gap-3" onClick={updateRoom}>
-                Continue
-              </div>
+              Continue
             </Button>
           </div>
         </div>

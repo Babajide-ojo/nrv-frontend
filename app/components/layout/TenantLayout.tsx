@@ -103,7 +103,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
   }, [pathname]);
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="relative flex min-h-screen min-w-0 max-w-full flex-col overflow-x-hidden">
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-[100] lg:hidden"
@@ -161,14 +161,14 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
         </div>
       )}
 
-      <div className="flex w-full h-screen overflow-hidden">
+      <div className="flex h-screen min-w-0 w-full max-w-full flex-1 overflow-hidden">
         {/* Sidebar - Desktop */}
-        <div className="hidden lg:block w-64 flex-shrink-0 h-full bg-nrvPrimaryGreen">
+        <div className="hidden h-full w-64 flex-shrink-0 bg-nrvPrimaryGreen lg:block">
           <TenantSideBar isOpen={true} />
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 h-full overflow-y-auto w-full relative">
+        <div className="relative h-full min-w-0 w-full max-w-full flex-1 overflow-y-auto">
           {/* Header */}
           <div className="p-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
@@ -231,7 +231,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           </div>
 
           {/* Main Content Body */}
-          <main className="bg-white w-full p-4 pb-4 min-h-[calc(100vh-80px)]">
+          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-3 py-4 pb-4 sm:px-4">
             {children}
           </main>
         </div>

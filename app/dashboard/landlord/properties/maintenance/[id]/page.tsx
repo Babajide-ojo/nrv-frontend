@@ -384,7 +384,7 @@ const SingleMaintainance = () => {
             </div>
           </div>
         ) : (
-          <div className="p-6 max-w-[1200px] mx-auto font-jakarta">
+          <div className="mx-auto w-full min-w-0 max-w-[1200px] px-3 py-4 font-jakarta sm:p-6">
           {/* Header */}
           <div className="flex items-center gap-2 text-nrvGreyBlack">
             <button onClick={() => router.back()}>
@@ -397,9 +397,9 @@ const SingleMaintainance = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left: Tenant Info */}
             <div className="border rounded-sm shadow-sm p-4 flex flex-col gap-4">
-              <div className="flex gap-4 items-center">
-                <div className="w-1/3">
-                  <div className="relative w-full h-[120px]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                <div className="w-full sm:w-1/3">
+                  <div className="relative h-[120px] w-full">
                     <Image
                       src={maintenance?.roomId?.propertyId?.file}
                       alt="Property Image"
@@ -408,7 +408,7 @@ const SingleMaintainance = () => {
                     />
                   </div>
                 </div>
-                <div className="w-2/3 ">
+                <div className="min-w-0 w-full sm:w-2/3">
                   <p className="font-medium text-[15px] text-[#263245]">
                     Apartment ID : {maintenance?.roomId?.roomId}
                   </p>

@@ -366,24 +366,26 @@ export default function DataTable<T extends BaseRow = BaseRow>({
   };
 
   return (
-    <div className={`p-4 sm:p-6 bg-white rounded-xl shadow-md font-jakarta ${className}`}>
+    <div
+      className={`w-full min-w-0 max-w-full bg-white p-3 font-jakarta shadow-md sm:p-6 rounded-xl ${className}`}
+    >
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between mb-4 gap-3 sm:gap-4">
+      <div className="mb-4 flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center md:justify-between">
         {searchTerm && (
           <Input
             placeholder="Search..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full md:w-1/3"
+            className="w-full min-w-0 md:max-w-md md:flex-1"
             aria-label="Search table data"
           />
         )}
         {filters.map((filter) => (
-          <div key={filter.name} className="relative">
+          <div key={filter.name} className="relative w-full min-w-0 sm:w-auto">
             <button
               type="button"
               onClick={() => handleDropdownToggle(filter.name)}
-              className="flex items-center justify-between w-[180px] px-3 py-2 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none"
+              className="flex w-full min-w-0 items-center justify-between px-3 py-2 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none sm:w-[180px]"
             >
               <span className={filterState[filter.name] ? 'text-gray-900' : 'text-gray-500'}>
                 {filterState[filter.name] 
@@ -410,8 +412,8 @@ export default function DataTable<T extends BaseRow = BaseRow>({
       </div>
 
       {/* Table – horizontal scroll on small screens */}
-      <div className="overflow-x-auto overflow-y-visible rounded-lg -mx-1 sm:mx-0">
-        <table className="min-w-full text-left min-w-[600px] sm:min-w-0">
+      <div className="-mx-1 w-full min-w-0 overflow-x-auto overflow-y-visible rounded-lg sm:mx-0">
+        <table className="min-w-[640px] w-full text-left sm:min-w-0">
           {renderTableHeader()}
           <tbody>
             {renderTableBody()}

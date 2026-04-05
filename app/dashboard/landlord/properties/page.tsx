@@ -123,7 +123,7 @@ const PropertiesScreen = () => {
   return (
     <ProtectedRoute>
       <LandLordLayout mainPath="Properties" subMainPath="Manage Properties">
-        <div className="p-6 w-full font-jakarta">
+        <div className="w-full min-w-0 max-w-full px-3 py-4 font-jakarta sm:p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 md:gap-0">
             <div className="w-full md:w-auto">
               <h2 className="text-xl font-semibold text-[#101828]">

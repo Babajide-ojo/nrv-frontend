@@ -83,7 +83,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   }, [pathname]);
 
   return (
-    <div className="relative min-h-screen !overflow-hidden flex flex-col">
+    <div className="relative flex min-h-screen min-w-0 max-w-full flex-col overflow-hidden">
       {/* Mobile menu overlay */}
       {mobileMenuOpen && (
         <div
@@ -162,14 +162,14 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       )}
 
       {/* Layout Content */}
-      <div className="flex w-full h-screen bg-white overflow-hidden">
+      <div className="flex h-screen min-w-0 w-full max-w-full flex-1 bg-white overflow-hidden">
         {/* Sidebar - Desktop */}
-        <div className="hidden lg:block w-64 flex-shrink-0 h-full bg-nrvPrimaryGreen">
+        <div className="hidden h-full w-64 flex-shrink-0 bg-nrvPrimaryGreen lg:block">
           <LandLordSideBar isOpen={true} />
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 h-full overflow-y-auto w-full relative">
+        <div className="relative h-full min-w-0 w-full max-w-full flex-1 overflow-y-auto">
           {/* Header – responsive padding */}
           <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
@@ -238,7 +238,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           </div>
 
           {/* Main Content Body – consistent padding, extra bottom on mobile for nav */}
-          <main className="bg-white w-full px-4 sm:px-6 py-4 pb-6 min-h-[calc(100vh-80px)]">
+          <main className="min-h-[calc(100vh-80px)] min-w-0 w-full max-w-full bg-white px-3 py-4 pb-6 sm:px-6">
             {children}
           </main>
         </div>

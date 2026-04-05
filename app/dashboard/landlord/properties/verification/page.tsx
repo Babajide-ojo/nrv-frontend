@@ -103,23 +103,24 @@ export default function TenantVerification() {
   return (
     <>
       <LandLordLayout path="Tenant Verification">
-        <div className="w-full max-w-7xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+        <div className="mx-auto w-full min-w-0 max-w-7xl">
+          <div className="mb-4 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Tenant Verification</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-gray-500">
                 Send tenant verification requests and review their profiles before a lease agreement.
               </p>
             </div>
             <button
-              className="bg-green-900 text-white px-4 py-2.5 text-sm rounded-lg hover:bg-green-800 transition shrink-0 min-h-[44px] touch-manipulation"
+              type="button"
+              className="min-h-[44px] w-full shrink-0 touch-manipulation rounded-lg bg-green-900 px-4 py-2.5 text-sm text-white transition hover:bg-green-800 sm:w-auto"
               onClick={() => router.push(`/dashboard/landlord/properties/verification/request`)}
             >
               + New Verification Request
             </button>
           </div>
 
-          <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
+          <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-3 py-3 text-sm text-gray-800 sm:gap-x-4 sm:px-4">
             <span className="font-semibold text-[#03442C]">Verification credits</span>
             <span className="text-gray-700">
               Standard{" "}

@@ -127,10 +127,10 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
   return (
     <div>
       {currentStep === 1 && (
-        <div>
-          <div className="space-y-12 p-4 font-jakarta">
+        <div className="min-w-0 max-w-full">
+          <div className="space-y-8 p-3 font-jakarta sm:space-y-12 sm:p-4">
             {/* Header */}
-            <div className="flex items-center justify-between w-full gap-5 flex-wrap">
+            <div className="flex w-full min-w-0 flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-semibold">
                   View & Manage Your Leads & Applications
@@ -142,7 +142,7 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
               
             </div>
             {
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-4 border">
+              <div className="grid min-w-0 grid-cols-1 gap-4 border bg-white p-3 sm:p-4 md:grid-cols-2">
                 {[
                   {
                     title: "Active Applications",
@@ -182,10 +182,10 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
               </div>
             }
 
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
               <Button
                 variant="default"
-                className={`${
+                className={`min-h-[44px] w-full touch-manipulation sm:w-auto ${
                   activeTab === "New"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
@@ -195,7 +195,7 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
                 Pending Applications{" "}
               </Button>
               <Button
-                className={`${
+                className={`min-h-[44px] w-full touch-manipulation sm:w-auto ${
                   activeTab === "Accepted"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"

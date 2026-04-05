@@ -400,14 +400,14 @@ const DashboardScreen: React.FC = () => {
   }
 
   return (
-    <div className="p-6 space-y-6 font-jakarta">
+    <div className="min-w-0 max-w-full space-y-6 px-3 py-4 font-jakarta sm:p-6">
       {/* Greeting */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-semibold">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold sm:text-2xl">
             Welcome Back, {displayUser?.firstName || "Landlord"}
           </h1>
-          <p className="text-gray-500">
+          <p className="text-sm text-gray-500 sm:text-base">
             Manage your properties, track applications, and handle maintenance
             requests—all in one place.
           </p>
@@ -448,8 +448,8 @@ const DashboardScreen: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-2/3">
+      <div className="flex min-w-0 flex-col gap-8 md:flex-row">
+        <div className="w-full min-w-0 md:w-2/3">
           {/* Metrics Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {metrics.map((metric, index) => (
@@ -462,7 +462,7 @@ const DashboardScreen: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">
               Where would you like to start?
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {DASHBOARD_ACTIONS.map((action, index) => (
                 <ActionCard
                   key={index}
@@ -482,7 +482,7 @@ const DashboardScreen: React.FC = () => {
           <FinancialChart data={chartData} />
         </div>
 
-        <div className="w-full md:w-1/3">
+        <div className="w-full min-w-0 md:w-1/3">
           <DashboardOverview
             activities={activities}
             isLoading={activitiesLoading}

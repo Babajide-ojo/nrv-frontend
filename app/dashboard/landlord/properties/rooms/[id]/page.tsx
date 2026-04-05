@@ -143,7 +143,7 @@ const SingleRoom = () => {
         >
           <div className="font-jakarta">
             <div>
-              <div className="px-4 py-12 md:px-12 md:py-6">
+              <div className="px-3 py-6 sm:px-4 md:px-12 md:py-6">
                 {currentState === 3 && <PropertyMarketing data={singleRoom} />}
                 {currentState === 1 && (
                   <div>

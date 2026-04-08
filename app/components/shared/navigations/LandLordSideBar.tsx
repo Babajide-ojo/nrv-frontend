@@ -133,7 +133,7 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
   return (
     <div
-      className={`h-full w-full bg-nrvPrimaryGreen text-white flex flex-col justify-between`}
+      className="flex h-full min-h-0 w-full flex-1 flex-col justify-between bg-nrvPrimaryGreen text-white"
     >
       {/* <div
       className={`fixed inset-y-0 left-0 z-50 w-80 bg-[#0D3520] text-white flex flex-col justify-between transition-transform ${

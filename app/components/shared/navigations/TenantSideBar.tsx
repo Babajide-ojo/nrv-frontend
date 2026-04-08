@@ -90,9 +90,7 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   }, []);
 
   return (
-    <div
-      className={`h-full w-full bg-nrvPrimaryGreen text-white flex flex-col justify-between`}
-    >
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col justify-between bg-nrvPrimaryGreen text-white">
       <div>
         {/* Logo */}
         <div

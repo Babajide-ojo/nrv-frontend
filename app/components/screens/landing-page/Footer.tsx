@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
               Create Free Account <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/#explore"
+              href="/listings"
               className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-white/25 text-white/90 hover:text-white hover:border-white/35 transition-colors"
             >
               View Properties
@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
             <h3 className="text-sm font-semibold text-white/90">Platform</h3>
             <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
               <li>
-                <Link href="/#explore" className="hover:text-white transition-colors">
+                <Link href="/listings" className="hover:text-white transition-colors">
                   Browse Listings
                 </Link>
               </li>

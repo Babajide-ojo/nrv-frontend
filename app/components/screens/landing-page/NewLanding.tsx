@@ -18,6 +18,7 @@ import {
   Search,
   Home,
   ChevronDown,
+  Phone,
 } from "lucide-react";
 import { API_URL } from "@/config/constant";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
@@ -115,45 +116,9 @@ const TESTIMONIALS = [
   },
 ];
 
-const HERO_PHRASES = [
-  "Find Trustworthy Tenants",
-  "Protect Your Rental Income",
-  "Fill Vacancies with Confidence",
-];
-
 const NewLanding = () => {
   const SHOW_HEATMAP = false;
-  const [typedHeroText, setTypedHeroText] = useState("");
-  const [phraseIndex, setPhraseIndex] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const currentPhrase = HERO_PHRASES[phraseIndex];
-    const typingSpeed = isDeleting ? 50 : 80;
-    const pauseAtEnd = 1400;
-
-    const timeout = setTimeout(() => {
-      setTypedHeroText((prev) => {
-        if (!isDeleting) {
-          const next = currentPhrase.slice(0, prev.length + 1);
-          if (next === currentPhrase) {
-            // pause then start deleting
-            setTimeout(() => setIsDeleting(true), pauseAtEnd);
-          }
-          return next;
-        } else {
-          const next = currentPhrase.slice(0, prev.length - 1);
-          if (next.length === 0) {
-            setIsDeleting(false);
-            setPhraseIndex((prevIndex) => (prevIndex + 1) % HERO_PHRASES.length);
-          }
-          return next;
-        }
-      });
-    }, typingSpeed);
-
-    return () => clearTimeout(timeout);
-  }, [typedHeroText, phraseIndex, isDeleting]);
+  const [heroPhone, setHeroPhone] = useState("");
 
   // Scroll to section when arriving from another page (NavLink stores id in sessionStorage)
   useEffect(() => {
@@ -368,10 +333,6 @@ const NewLanding = () => {
           from { opacity: 0; transform: translateY(24px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes heroFloat {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-12px); }
-        }
         @keyframes heroScaleIn {
           from { opacity: 0; transform: scale(0.96); }
           to { opacity: 1; transform: scale(1); }
@@ -383,7 +344,6 @@ const NewLanding = () => {
         .hero-animate-5 { animation: heroFadeInUp 0.6s ease-out 0.4s forwards; opacity: 0; }
         .hero-animate-6 { animation: heroFadeInUp 0.5s ease-out 0.5s forwards; opacity: 0; }
         .hero-img-wrap { animation: heroScaleIn 0.7s ease-out 0.2s forwards; opacity: 0; }
-        .hero-img-float { animation: heroFloat 5s ease-in-out infinite; }
       `}} />
       {/* Hero – id="home" for nav */}
       <section
@@ -395,48 +355,70 @@ const NewLanding = () => {
         <div className="absolute top-24 right-10 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "3s" }} />
         <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "4s", animationDelay: "0.5s" }} />
         <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-20 pb-10 sm:pt-24 sm:pb-12">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] items-center gap-8">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] items-center gap-8 lg:gap-10">
             <div className="text-left text-white">
-              <h1 className="hero-animate-2 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1]">
-                <span className="inline-block align-baseline">
-                  {typedHeroText}
-                  <span className="ml-0.5 inline-block w-[2px] sm:w-[3px] h-[1.1em] bg-emerald-200 align-middle animate-pulse" />
-                </span>
-              </h1>
-              <p className="hero-animate-3 mt-3 text-base sm:text-lg text-emerald-100/90 max-w-lg">
-                Verify identity, rental history, and references before you sign. One report, one decision.
-              </p>
-              <div className="hero-animate-4 mt-5 flex flex-col sm:flex-row gap-3">
+              <div className="hero-animate-1 flex flex-wrap gap-2">
                 <Link
                   href="/sign-up?role=landlord"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white text-[#03442C] font-semibold hover:bg-emerald-50 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  className="inline-flex items-center rounded-full bg-[#BBFF37] px-4 py-2 text-xs font-semibold text-[#031B14] shadow-sm transition hover:bg-[#d4ff6a]"
                 >
                   Verify Tenants
                 </Link>
                 <Link
                   href="/sign-up?role=landlord"
-                  className="inline-flex items-center justify-center px-6 py-3.5 rounded-xl border-2 border-white/50 text-white font-semibold hover:bg-white/10 hover:border-white/70 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/45 bg-white/5 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
                 >
+                  <Home className="h-3.5 w-3.5 shrink-0" aria-hidden />
                   List a Home
                 </Link>
               </div>
+              <h1 className="hero-animate-2 mt-5 text-4xl sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.12]">
+                Find Trustworthy Tenants
+              </h1>
+              <div className="hero-animate-4 mt-6 flex max-w-xl flex-col gap-2 sm:flex-row sm:items-stretch">
+                <label className="relative flex flex-1 items-center rounded-xl bg-white px-3 py-2.5 shadow-md ring-1 ring-black/5">
+                  <span className="sr-only">Phone number</span>
+                  <Phone className="pointer-events-none absolute left-3.5 h-4 w-4 text-gray-400" aria-hidden />
+                  <input
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+234 901 234 5678"
+                    value={heroPhone}
+                    onChange={(e) => setHeroPhone(e.target.value)}
+                    className="w-full rounded-lg border-0 bg-transparent py-1 pl-9 pr-2 text-sm text-[#031B14] outline-none placeholder:text-gray-400"
+                  />
+                </label>
+                <Link
+                  href={
+                    heroPhone.trim()
+                      ? `/sign-up?role=landlord&phone=${encodeURIComponent(heroPhone.trim())}`
+                      : "/sign-up?role=landlord"
+                  }
+                  className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#022818] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#031f14] sm:min-w-[140px]"
+                >
+                  Verify Tenant
+                </Link>
+              </div>
+              <p className="hero-animate-5 mt-4 flex gap-2 text-sm leading-relaxed text-emerald-50/95 max-w-xl">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#BBFF37]" aria-hidden />
+                <span>
+                  Before signing any lease, protect your property by thoroughly verifying your
+                  prospective tenant&apos;s identity, rental history, and references — ensuring a
+                  safe, trustworthy tenancy from day one.
+                </span>
+              </p>
             </div>
             <div className="relative mt-6 lg:mt-0 hero-img-wrap">
-              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] max-h-[320px] lg:max-h-[360px] shadow-2xl ring-2 ring-white/10 hero-img-float">
+              <div className="relative aspect-[4/3] max-h-[300px] overflow-hidden rounded-2xl shadow-2xl ring-2 ring-white/10 sm:max-h-[340px] lg:aspect-[5/4] lg:max-h-[420px]">
                 <Image
-                  src="/images/nigeria-home.jpeg"
-                  alt="Modern Nigerian home – list and verify with confidence"
+                  src="/images/hero-couple.jpg"
+                  alt="Happy couple — verified tenants and confident landlords"
                   fill
-                  className="object-cover"
+                  className="object-cover object-[center_20%]"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
-                <div className="absolute inset-0 bg-[#03442C]/50 pointer-events-none" aria-hidden />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-4 py-3 flex justify-between text-white text-sm">
-                  <span><strong>1,000+</strong> Processed</span>
-                  <span><strong>1,500+</strong> Homes</span>
-                  <span><strong>98%</strong> Success</span>
-                </div>
               </div>
             </div>
           </div>
@@ -505,8 +487,8 @@ const NewLanding = () => {
           <div className="rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-lg flex flex-col lg:flex-row">
             <div className="lg:w-1/2 relative min-h-[220px] sm:min-h-[260px]">
               <Image
-                src="/images/nigeria-home.jpeg"
-                alt="Nigerian property"
+                src="/images/hero-building-1.jpg"
+                alt="Nigerian rental property"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -529,35 +511,6 @@ const NewLanding = () => {
                   </li>
                 ))}
               </ul>
-              <div className="mt-5 grid grid-cols-3 gap-2">
-                <div className="relative h-16 sm:h-20 rounded-lg overflow-hidden">
-                  <Image
-                    src="/images/nrv-hero-section-img.jpeg"
-                    alt="Landlord reviewing tenant report"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 33vw, 15vw"
-                  />
-                </div>
-                <div className="relative h-16 sm:h-20 rounded-lg overflow-hidden">
-                  <Image
-                    src="/images/featured-img.svg"
-                    alt="Lagos apartment"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 33vw, 15vw"
-                  />
-                </div>
-                <div className="relative h-16 sm:h-20 rounded-lg overflow-hidden">
-                  <Image
-                    src="/images/nigeria-home.jpeg"
-                    alt="Nigerian rental home exterior"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 33vw, 15vw"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </div>

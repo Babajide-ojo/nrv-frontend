@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useCallback, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 
 // Components
 import Button from "@/app/components/shared/buttons/Button";
-import InputField from "@/app/components/shared/input-fields/InputFields";
 
 const Carousel = dynamic(() => import("./Carousel"), {
   ssr: false,
@@ -18,7 +17,6 @@ const Carousel = dynamic(() => import("./Carousel"), {
 import LoginForm from "./components/LoginForm";
 import LoginHeader from "./components/LoginHeader";
 import RememberMeCheckbox from "./components/RememberMeCheckbox";
-import SocialLoginButton from "./components/SocialLoginButton";
 
 // Hooks
 import { useLoginForm } from "./hooks/useLoginForm";
@@ -39,12 +37,27 @@ const LoginScreen: React.FC = () => {
   //const { loading, error, data } = useSelector((state: any) => state.user);
   
   // Custom hooks
-  const { formData, errors, handleInputChange, validateForm, resetForm } = useLoginForm();
+  const { formData, errors, handleInputChange, validateForm, setFormDataDirectly } = useLoginForm();
   const { redirectUser } = useAuthRedirect();
   
   // Local state
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+
+  useEffect(() => {
+    const shouldRemember = localStorage.getItem("rememberMe") === "true";
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
+
+    if (shouldRemember) {
+      setRememberMe(true);
+      if (rememberedEmail) {
+        setFormDataDirectly({ email: rememberedEmail });
+      }
+      return;
+    }
+
+    localStorage.removeItem("rememberedEmail");
+  }, [setFormDataDirectly]);
 
   // Handle form submission
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -90,6 +103,15 @@ const LoginScreen: React.FC = () => {
     router.push(ROUTES.HOME);
   }, [router]);
 
+  const handleRememberMeChange = useCallback((checked: boolean) => {
+    setRememberMe(checked);
+
+    if (!checked) {
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("rememberedEmail");
+    }
+  }, []);
+
   return (
     <div className="font-jakarta flex flex-col lg:flex-row lg:justify-center min-h-screen min-h-[100dvh] bg-gray-100 overflow-x-hidden">
       {/* Left side - Carousel (hidden on mobile) */}
@@ -115,7 +137,7 @@ const LoginScreen: React.FC = () => {
           {/* Remember Me Checkbox */}
           <RememberMeCheckbox
             checked={rememberMe}
-            onChange={setRememberMe}
+            onChange={handleRememberMeChange}
           />
           
           {/* Login Button */}

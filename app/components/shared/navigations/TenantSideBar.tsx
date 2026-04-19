@@ -1,22 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
 import {
   FiHome,
-  FiUsers,
   FiClipboard,
-  FiDollarSign,
-  FiFileText,
   FiTool,
   FiMessageSquare,
   FiHeadphones,
   FiSettings,
   FiCheckCircle,
 } from "react-icons/fi";
-import { FaPerson } from "react-icons/fa6";
 import { BsPersonFill } from "react-icons/bs";
 import { PiFileDocDuotone } from "react-icons/pi";
 import { clearAllStoredData } from "@/helpers/utils";
@@ -97,13 +92,9 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
           className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
           onClick={() => router.push("/")}
         >
-          <Image
-            src="/images/nrv-logo-latest.jpg"
-            width={150}
-            height={40}
-            alt="NaijaRentVerify"
-            className="h-8 sm:h-9 w-auto max-w-full object-contain"
-          />
+          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
+            NaijaRentVerify
+          </span>
         </div>
 
         {/* Navigation Links */}
@@ -126,16 +117,10 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
           <div className="mt-8 mb-2 px-6 text-xs text-[#BBFF37] font-semibold uppercase tracking-wider">Verification</div>
           <ul className="font-lighter text-[12px] text-[#98A2B3]">
             <li
-              onClick={() => router.push("/dashboard/tenant/verification/requests")}
-              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/verification/requests" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
+              onClick={() => router.push("/dashboard/tenant/verification")}
+              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink.startsWith("/dashboard/tenant/verification") ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
             >
               <FiCheckCircle /> My Verifications
-            </li>
-            <li
-              onClick={() => router.push("/dashboard/tenant/verification")}
-              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink === "/dashboard/tenant/verification" ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
-            >
-              <FiCheckCircle /> My Submissions
             </li>
           </ul>
         </nav>

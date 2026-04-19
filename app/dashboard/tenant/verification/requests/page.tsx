@@ -77,6 +77,14 @@ const VerificationRequestsPage = () => {
     }
   };
 
+  const shouldOpenVerificationDetails = (req: any) => {
+    const status = String(req?.status || "").toLowerCase();
+    if (status === "approved" || status === "verification completed") {
+      return true;
+    }
+    return !!submissionByRequestId[req?._id];
+  };
+
   return (
     <TenantLayout path="Verification" mainPath=" / My Verifications">
       <div className="max-w-3xl mx-auto w-full p-3 bg-white rounded-lg mt-8">
@@ -101,8 +109,8 @@ const VerificationRequestsPage = () => {
                 key={req._id}
                 className="border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-gray-50 p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-nrvPrimaryGreen"
                 onClick={() => {
-                  const hasSubmission = !!submissionByRequestId[req._id];
-                  if (hasSubmission) {
+                  const openDetails = shouldOpenVerificationDetails(req);
+                  if (openDetails) {
                     router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
                     return;
                   }
@@ -112,8 +120,8 @@ const VerificationRequestsPage = () => {
                 aria-label={`Open verification request ${req._id}`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    const hasSubmission = !!submissionByRequestId[req._id];
-                    if (hasSubmission) {
+                    const openDetails = shouldOpenVerificationDetails(req);
+                    if (openDetails) {
                       router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
                       return;
                     }
@@ -126,30 +134,18 @@ const VerificationRequestsPage = () => {
                     <FiUser className="text-nrvPrimaryGreen" />
                     {req.firstName} {req.lastName} <span className="text-xs text-gray-400">(You)</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${
-                        statusColors[(req.status || "").toLowerCase()] ||
-                        "bg-gray-100 text-gray-700 border-gray-300"
-                      }`}
-                    >
-                      {(req.status || "").toLowerCase() === "approved"
-                        ? "Verification completed"
-                        : req.status
-                          ? String(req.status).charAt(0).toUpperCase() + String(req.status).slice(1).toLowerCase()
-                          : "-"}
-                    </span>
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${
-                        submissionByRequestId[req._id]
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-gray-50 text-gray-600 border-gray-200"
-                      }`}
-                      title={submissionByRequestId[req._id] ? "Submission found" : "No submission yet"}
-                    >
-                      {submissionByRequestId[req._id] ? "Submitted" : "Not submitted"}
-                    </span>
-                  </div>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full border text-xs font-medium ${
+                      statusColors[(req.status || "").toLowerCase()] ||
+                      "bg-gray-100 text-gray-700 border-gray-300"
+                    }`}
+                  >
+                    {(req.status || "").toLowerCase() === "approved"
+                      ? "Verification completed"
+                      : req.status
+                        ? String(req.status).charAt(0).toUpperCase() + String(req.status).slice(1).toLowerCase()
+                        : "-"}
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-2">
                   <div className="flex items-center gap-1">

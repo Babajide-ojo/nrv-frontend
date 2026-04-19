@@ -13,7 +13,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { CheckCircle, Smile, User } from "lucide-react";
 import { toast } from "react-toastify";
 import AccountSideBar from "./AccountSideBar";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -55,8 +55,10 @@ const validationSchema = yup.object({
 
 const SignUpMultiForm = () => {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(3);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [prefillPhone, setPrefillPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Checkbox state
   const router = useRouter();
@@ -78,6 +80,16 @@ const SignUpMultiForm = () => {
   };
 
   useEffect(() => {
+    const roleParam = searchParams.get("role");
+    const phoneParam = searchParams.get("phone");
+
+    if (roleParam === "landlord" || roleParam === "tenant") {
+      setSelectedRole(roleParam);
+      if (phoneParam) setPrefillPhone(phoneParam);
+      setCurrentStep(2);
+      return;
+    }
+
     const stepFromStorage = localStorage.getItem("stepToLoad");
     if (stepFromStorage) {
       try {
@@ -90,7 +102,7 @@ const SignUpMultiForm = () => {
     } else {
       setCurrentStep(1);
     }
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="font-jakarta">
@@ -198,11 +210,12 @@ const SignUpMultiForm = () => {
               </h1>
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
               <Formik
+                enableReinitialize
                 initialValues={{
                   firstName: "",
                   lastName: "",
                   email: "",
-                  phoneNumber: "",
+                  phoneNumber: prefillPhone,
                   nin: "",
                   password: "",
                   confirmPassword: "",

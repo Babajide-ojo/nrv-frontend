@@ -19,7 +19,22 @@ import {
   Home,
   ChevronDown,
   Phone,
+  XCircle,
+  AlertTriangle,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  detectNgNetwork,
+  formatNigerianInternational,
+  normalizeNigerianMobile,
+} from "@/lib/nigerianPhone";
 import { API_URL } from "@/config/constant";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
@@ -119,6 +134,7 @@ const TESTIMONIALS = [
 const NewLanding = () => {
   const SHOW_HEATMAP = false;
   const [heroPhone, setHeroPhone] = useState("");
+  const [verifyPreviewOpen, setVerifyPreviewOpen] = useState(false);
 
   // Scroll to section when arriving from another page (NavLink stores id in sessionStorage)
   useEffect(() => {
@@ -263,6 +279,13 @@ const NewLanding = () => {
     setPropertyModalId(propertyId);
   };
 
+  const normalizedHeroPhone = normalizeNigerianMobile(heroPhone);
+  const heroNetwork = normalizedHeroPhone ? detectNgNetwork(normalizedHeroPhone) : null;
+  const tenantVerifySignUpHref =
+    normalizedHeroPhone != null
+      ? `/sign-up?role=landlord&phone=${encodeURIComponent(`0${normalizedHeroPhone}`)}`
+      : "/sign-up?role=landlord";
+
   const formatNaira = (amount: number) =>
     Number.isFinite(amount)
       ? `₦${Math.round(amount).toLocaleString()}`
@@ -389,16 +412,13 @@ const NewLanding = () => {
                     className="w-full rounded-lg border-0 bg-transparent py-1 pl-9 pr-2 text-sm text-[#031B14] outline-none placeholder:text-gray-400"
                   />
                 </label>
-                <Link
-                  href={
-                    heroPhone.trim()
-                      ? `/sign-up?role=landlord&phone=${encodeURIComponent(heroPhone.trim())}`
-                      : "/sign-up?role=landlord"
-                  }
+                <button
+                  type="button"
+                  onClick={() => setVerifyPreviewOpen(true)}
                   className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#022818] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#031f14] sm:min-w-[140px]"
                 >
                   Verify Tenant
-                </Link>
+                </button>
               </div>
               <p className="hero-animate-5 mt-4 flex gap-2 text-sm leading-relaxed text-emerald-50/95 max-w-xl">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#BBFF37]" aria-hidden />
@@ -425,6 +445,108 @@ const NewLanding = () => {
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FAFAF9] to-transparent pointer-events-none" />
       </section>
+
+      <Dialog open={verifyPreviewOpen} onOpenChange={setVerifyPreviewOpen}>
+        <DialogContent className="max-w-md border-gray-200 bg-white text-[#031B14] sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-left text-xl font-semibold">
+              Verification preview
+            </DialogTitle>
+            <DialogDescription className="text-left text-gray-600">
+              {normalizedHeroPhone
+                ? `We parsed ${formatNigerianInternational(normalizedHeroPhone)}. Create an account to run a full check.`
+                : heroPhone.trim()
+                  ? "That number doesn’t look like a valid Nigerian mobile line. Fix it below or continue signup to enter it on the next step."
+                  : "Enter a Nigerian mobile number in the field above, then open this preview again — or continue to signup and add it there."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ul className="space-y-3 text-sm">
+            <li className="flex gap-3">
+              {normalizedHeroPhone ? (
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
+              ) : (
+                <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
+              )}
+              <span>
+                <span className="font-medium text-[#031B14]">Number format:</span>{" "}
+                {normalizedHeroPhone ? (
+                  <span className="text-emerald-700">Valid Nigerian number</span>
+                ) : (
+                  <span className="text-amber-800">Not a valid Nigerian mobile number</span>
+                )}
+              </span>
+            </li>
+            <li className="flex gap-3">
+              {normalizedHeroPhone ? (
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
+              ) : (
+                <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-gray-400" aria-hidden />
+              )}
+              <span>
+                <span className="font-medium text-[#031B14]">Network:</span>{" "}
+                <span
+                  className={
+                    normalizedHeroPhone ? "text-emerald-800" : "text-gray-500"
+                  }
+                >
+                  {normalizedHeroPhone
+                    ? heroNetwork && heroNetwork !== "Unknown"
+                      ? heroNetwork
+                      : "Unknown network (prefix not matched)"
+                    : "—"}
+                </span>
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
+              <span>
+                <span className="font-medium text-[#031B14]">Verification:</span>{" "}
+                <span className="text-gray-700">Not yet confirmed</span>
+              </span>
+            </li>
+            <li className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50/90 p-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
+              <span className="text-amber-950">
+                Full identity &amp; rental history requires tenant consent.
+              </span>
+            </li>
+          </ul>
+
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            {normalizedHeroPhone ? (
+              <>
+                <Link
+                  href={tenantVerifySignUpHref}
+                  onClick={() => setVerifyPreviewOpen(false)}
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-[#03442C] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#022818]"
+                >
+                  Continue verification
+                </Link>
+                <Link
+                  href={tenantVerifySignUpHref}
+                  onClick={() => setVerifyPreviewOpen(false)}
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#03442C] px-4 py-3 text-sm font-semibold text-[#03442C] transition hover:bg-emerald-50"
+                >
+                  View full report
+                </Link>
+              </>
+            ) : (
+              <>
+                <span className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-500">
+                  Continue verification
+                </span>
+                <span className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-400">
+                  View full report
+                </span>
+                <p className="text-center text-xs text-gray-500">
+                  Enter a valid Nigerian mobile number above to continue to signup with this preview.
+                </p>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Trust strip – what you get in every report */}
       <section className="relative z-20 px-4 sm:px-6 lg:px-12 -mt-6 pb-0">
@@ -1007,14 +1129,6 @@ const NewLanding = () => {
             <p className="text-xs sm:text-sm text-white/60">
               2026 NaijaRentVerify. All rights reserved.
             </p>
-            <div className="mt-2 flex items-center justify-center gap-6 text-[11px] text-white/45">
-              <Link href="/about-us" className="hover:text-white transition-colors">
-                About Portal
-              </Link>
-              <Link href="/sign-in" className="hover:text-white transition-colors">
-                Admin Portal
-              </Link>
-            </div>
           </div>
         </div>
       </footer>

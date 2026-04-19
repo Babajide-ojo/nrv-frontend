@@ -46,11 +46,6 @@ const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
     },
     {
       name: "My Verifications",
-      route: "/dashboard/tenant/verification/requests",
-      icon: <FiCheckCircle size={20} color="white" />,
-    },
-    {
-      name: "My Submissions",
       route: "/dashboard/tenant/verification",
       icon: <FiCheckCircle size={20} color="white" />,
     },

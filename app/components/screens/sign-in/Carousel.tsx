@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
@@ -34,15 +33,6 @@ export default function RentalManagement() {
 
       {/* Content */}
       <div className="relative z-10 w-full min-w-0 max-w-3xl mx-auto text-center flex flex-col items-center">
-        <Link href="/" className="inline-flex">
-          <Image
-            src="/images/nrv-logo-latest.jpg"
-            alt="NaijaRentVerify"
-            width={200}
-            height={50}
-            className="h-9 sm:h-11 lg:h-12 w-auto max-w-[min(240px,85vw)] object-contain"
-          />
-        </Link>
         <h1 className="mt-8 sm:mt-12 lg:mt-16 text-[clamp(1.375rem,4.5vw,3.125rem)] md:text-[50px] font-bold leading-[1.15] sm:leading-tight">
           Your Trusted Partner in Hassle-Free Rental Property Management
         </h1>

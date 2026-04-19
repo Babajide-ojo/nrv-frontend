@@ -127,14 +127,6 @@ const Footer: React.FC = () => {
         {/* Footer bottom */}
         <div className="mt-10 border-t border-white/10 pt-6 text-center">
           <p className="text-xs sm:text-sm text-white/60">2026 NaijaRentVerify. All rights reserved.</p>
-          <div className="mt-2 flex items-center justify-center gap-6 text-[11px] text-white/45">
-            <Link href="/about-us" className="hover:text-white transition-colors">
-              About Portal
-            </Link>
-            <Link href="/sign-in" className="hover:text-white transition-colors">
-              Admin Portal
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

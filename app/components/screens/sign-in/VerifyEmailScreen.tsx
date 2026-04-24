@@ -72,7 +72,7 @@ const VerifyEmailScreen: React.FC = () => {
       toast.success("Password reset code sent");
       setFormData({
         email: ""
-      })
+      });
       router.push('/reset-password')
     } catch (error: any) {
       toast.error(error);

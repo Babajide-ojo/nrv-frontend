@@ -152,7 +152,7 @@ const LoginScreen: React.FC = () => {
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-          
+
           {/* Forgot Password Link */}
           <div className="text-center mt-4">
             <button

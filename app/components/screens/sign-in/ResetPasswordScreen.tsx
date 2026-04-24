@@ -17,7 +17,7 @@ import { MdOutlineMail } from "react-icons/md";
 import { MdOutlineKey } from "react-icons/md";
 
 interface FormData {
- token: string,
+  token: string,
   newPassword: string;
 }
 

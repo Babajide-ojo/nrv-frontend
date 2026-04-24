@@ -450,14 +450,14 @@ const NewLanding = () => {
         <DialogContent className="max-w-md border-gray-200 bg-white text-[#031B14] sm:rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-left text-xl font-semibold">
-              Verification preview
+              Verification Preview
             </DialogTitle>
             <DialogDescription className="text-left text-gray-600">
               {normalizedHeroPhone
-                ? `We parsed ${formatNigerianInternational(normalizedHeroPhone)}. Create an account to run a full check.`
+                ? `We analyzed ${formatNigerianInternational(normalizedHeroPhone)}`
                 : heroPhone.trim()
-                  ? "That number doesn’t look like a valid Nigerian mobile line. Fix it below or continue signup to enter it on the next step."
-                  : "Enter a Nigerian mobile number in the field above, then open this preview again — or continue to signup and add it there."}
+                  ? "We could not validate this as a Nigerian mobile line yet. Update the number to continue."
+                  : "Enter a Nigerian mobile number in the field above to generate a verification preview."}
             </DialogDescription>
           </DialogHeader>
 
@@ -469,7 +469,7 @@ const NewLanding = () => {
                 <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
               )}
               <span>
-                <span className="font-medium text-[#031B14]">Number format:</span>{" "}
+                <span className="font-medium text-[#031B14]">Phone Number:</span>{" "}
                 {normalizedHeroPhone ? (
                   <span className="text-emerald-700">Valid Nigerian number</span>
                 ) : (
@@ -484,7 +484,7 @@ const NewLanding = () => {
                 <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-gray-400" aria-hidden />
               )}
               <span>
-                <span className="font-medium text-[#031B14]">Network:</span>{" "}
+                <span className="font-medium text-[#031B14]">Carrier:</span>{" "}
                 <span
                   className={
                     normalizedHeroPhone ? "text-emerald-800" : "text-gray-500"
@@ -501,17 +501,29 @@ const NewLanding = () => {
             <li className="flex gap-3">
               <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" aria-hidden />
               <span>
-                <span className="font-medium text-[#031B14]">Verification:</span>{" "}
-                <span className="text-gray-700">Not yet confirmed</span>
+                <span className="font-medium text-[#031B14]">Preliminary Risk Signals:</span>{" "}
+                <span className="text-gray-700">{normalizedHeroPhone ? "Detected" : "Unavailable"}</span>
               </span>
+            </li>
+            <li className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+              <p className="text-sm font-semibold text-[#031B14]">Full Report Includes:</p>
+              <ul className="mt-2 space-y-1 text-xs text-gray-700">
+                <li>Identity Verification Score</li>
+                <li>Rental History Insights</li>
+                <li>Payment Behavior</li>
+                <li>Background Risk Indicators</li>
+              </ul>
             </li>
             <li className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50/90 p-3">
               <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" aria-hidden />
               <span className="text-amber-950">
-                Full identity &amp; rental history requires tenant consent.
+                Full identity &amp; rental history is securely unlocked with tenant authorization.
               </span>
             </li>
           </ul>
+          <p className="text-center text-sm font-medium text-[#03442C]">
+            Avoid costly rental mistakes. Verify before you rent.
+          </p>
 
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             {normalizedHeroPhone ? (
@@ -519,28 +531,28 @@ const NewLanding = () => {
                 <Link
                   href={tenantVerifySignUpHref}
                   onClick={() => setVerifyPreviewOpen(false)}
-                  className="inline-flex w-full items-center justify-center rounded-xl bg-[#03442C] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#022818]"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#03442C] px-4 py-3 text-sm font-semibold text-[#03442C] transition hover:bg-emerald-50"
                 >
-                  Continue verification
+                  Unlock full report
                 </Link>
                 <Link
                   href={tenantVerifySignUpHref}
                   onClick={() => setVerifyPreviewOpen(false)}
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#03442C] px-4 py-3 text-sm font-semibold text-[#03442C] transition hover:bg-emerald-50"
+                  className="inline-flex w-full items-center justify-center rounded-xl bg-[#03442C] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#022818]"
                 >
-                  View full report
+                  Continue Verification
                 </Link>
               </>
             ) : (
               <>
                 <span className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-500">
-                  Continue verification
+                  Unlock full report
                 </span>
                 <span className="inline-flex w-full cursor-not-allowed items-center justify-center rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-400">
-                  View full report
+                  Continue Verification
                 </span>
                 <p className="text-center text-xs text-gray-500">
-                  Enter a valid Nigerian mobile number above to continue to signup with this preview.
+                  Enter a valid Nigerian mobile number above to continue.
                 </p>
               </>
             )}

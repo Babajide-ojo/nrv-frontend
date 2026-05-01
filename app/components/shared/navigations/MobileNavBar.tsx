@@ -56,7 +56,7 @@ const MobileNavBar: React.FC = () => {
           onClick={close}
         >
           <Image
-            src="/images/nrv-logo-latest.jpg"
+            src="/images/logo.png"
             alt="NaijaRentVerify"
             width={130}
             height={45}

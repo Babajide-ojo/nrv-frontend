@@ -49,7 +49,7 @@ const DesktopNavBar: React.FC = () => {
             className="flex items-center gap-2 shrink-0 min-w-0 max-w-[min(320px,50vw)] group"
           >
             <Image
-              src="/images/nrv-logo-latest.jpg"
+              src="/images/logo.png"
               alt="NaijaRentVerify"
               width={150}
               height={52}

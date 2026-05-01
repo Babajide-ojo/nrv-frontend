@@ -1,5 +1,5 @@
-export const API_URL = `https://nrv-backend.onrender.com`;
-//1export const API_URL = `http://localhost:9000`;
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:9000";
 export const YOUVERIFY_API_URL="https://api.youverify.co/v2/api/identity/ng/bvn"
 
 /** Public marketing / legal pages (matches production content on Vercel). */

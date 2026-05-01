@@ -1,9 +1,10 @@
-"use client"
-import type { Metadata } from "next";
-import { Provider } from "react-redux";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import { store } from "@/redux/store";
+import "react-toastify/dist/ReactToastify.css";
+import { Providers } from "./providers";
+import { ToastContainer } from "react-toastify";
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +14,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Provider store={store}>
-      <html lang="en">
-        <body className={inter.className}>{children}</body>
-      </html>
-    </Provider>
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+      </head>
+      <body className={inter.className} suppressHydrationWarning>
+        <Providers>
+          <div className="min-h-screen">{children}</div>
+          <ToastContainer position="top-right" autoClose={4000} />
+        </Providers>
+      </body>
+    </html>
   );
 }

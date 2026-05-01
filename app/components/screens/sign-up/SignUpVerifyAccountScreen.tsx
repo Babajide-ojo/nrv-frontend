@@ -1,145 +1,215 @@
-import { useEffect, useRef, useState } from "react";
-import Button from "../../shared/buttons/Button";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
-import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
+import OtpInput from "react-otp-input";
+import { IoReload } from "react-icons/io5";
+import Button from "../../shared/buttons/Button";
+import PreferencesForm from "./PreferencesForm";
+import VerifyAccountSideBar from "./VerifyAccountSideBar";
+import CompleteProfileSideBar from "./CompleteProfileSideBar";
+import AddPropertySideBar from "./AddPropertySideBar";
+import MultiStepForm from "./MultiStepForm";
 
-const SignUpVerifyAccount: React.FC = () => {
+type VerifyMode = "signup" | "login";
+
+interface SignUpVerifyAccountProps {
+  mode?: VerifyMode;
+}
+
+const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signup" }) => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [inputNum, setInputNum] = useState<number>(1);
+  const [otp, setOtp] = useState("");
   const { error } = useSelector((state: any) => state.user);
-  const [verifyCode, setVerifyCode] = useState<any[]>([
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-  ]);
-  const [showWarning, setShowWarning] = useState<boolean>(false);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+  const [isLoading, setIsLoading] = useState(false);
+  const [timer, setTimer] = useState(120);
+  const [canResend, setCanResend] = useState(false);
+  const [step, setStep] = useState(1);
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    inputRefs.current[inputNum - 1]?.focus();
-  }, [inputNum]);
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev === 1) {
+          clearInterval(countdown);
+          setCanResend(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdown);
+  }, []);
 
   const handleSubmit = async () => {
-    const formattedCode = verifyCode.join("");
+    if (otp.length !== 6) return;
     const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
 
     const payload = {
-      email: user?.data?.email,
-      confirmationCode: formattedCode,
+      email: user?.data?.email || user.user.email,
+      confirmationCode: otp,
     };
-    setIsLoading(true);
-    await dispatch(verifyAccount(payload) as any)
-      .unwrap()
-      .then(() => {
-        const _formattedUser = JSON.parse(
-          localStorage.getItem("nrv-user") || "{}"
-        );
-        const userAccountType =
-          _formattedUser?.user?.data?.user?.accountType || "";
 
-        if (userAccountType === "landlord") {
-          router.push("/dashboard/landlord");
-        } else if (userAccountType === "tenant") {
+    setIsLoading(true);
+    try {
+      const response = await dispatch(verifyAccount(payload) as any).unwrap();
+      localStorage.removeItem("stepToLoad");
+      if (mode === "login") {
+        toast.success("Account confirmed. Redirecting...");
+        const accountType = response?.user?.accountType;
+        if (accountType === "tenant") {
           router.push("/dashboard/tenant");
+        } else if (accountType === "landlord") {
+          router.push("/dashboard/landlord");
+        } else {
+          router.push("/");
         }
-        setIsLoading(false); 
-      })
-      .catch((error: any) => {
-        toast.error(error);
-      });
-      setIsLoading(false); 
+        return;
+      }
+
+      setData(response);
+      setStep(2);
+    } catch (error: any) {
+      setIsLoading(false);
+      toast.error(error);
+    }
   };
 
-
-  // Check if all inputs are filled
-  const isVerifyCodeFilled = verifyCode.every((num) => num !== null);
+  const handleResend = () => {
+    setTimer(120);
+    setCanResend(false);
+  };
 
   return (
-    <main className="flex justify-center items-center bg-swSecondary50 mx-auto h-screen">
-      <div className="w-full sm:w-3/5 p-2">
-        <p className="text-2xl font-semibold text-swGray800 flex gap-2">
-        <span>
-              {" "}
-              <IoIosArrowBack
-              className="mt-1 hover:cursor-pointer"
-                onClick={() => {
-                  router.push("/");
-                }}
-              />{" "}
-            </span>{" "}
-          Check your mail!
-        </p>
-        <p className="text-center mt-2 mb-8 text-[0.86rem] flex items-center justify-center font-light mx-auto">
-          <span className="">
-            We just sent your a mail (samsunday@gmail.com). Enter the 6-digit
-            code to verify your account.
-          </span>
-        </p>
-
-        <p className="text-center text-nrvLightBlue mt-5 mb-8 text-[0.86rem] flex items-center justify-center font-light nrvLightBlue">
-          Open an email app <br></br>
-          Change email or Resend code in 00:59
-        </p>
-        <div className="flex gap-3 justify-center">
-          {Array.from({ length: 6 }, (_, index) => (
-            <div
-              key={index}
-              className="border border-swGray300 text-swGray300 rounded-lg h-13 w-16 p-2"
-            >
-              <input
-                type="text"
-                className="w-full h-full text-2xl text-center focus:outline-none"
-                placeholder="0"
-                maxLength={1}
-                ref={(ref) => {
-                  inputRefs.current[index] = ref;
-                }}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  if (!isNaN(value)) {
-                    const newVerifyCode = [...verifyCode];
-                    newVerifyCode[index] = value;
-                    setVerifyCode(newVerifyCode);
-                    setInputNum(index === 5 ? 6 : index + 2);
-                  } else {
-                    setVerifyCode((prevArray) =>
-                      prevArray.map((item, i) => (i === index ? 0 : item))
-                    );
-                    setInputNum(index);
-                    const prevInputRef = inputRefs.current[index - 1];
-                    prevInputRef?.focus();
-                  }
-                }}
-              />
+    <main className=" bg-white">
+      <div className="w-full bg-white">
+        {step === 1 ? (
+          <div className="w-full flex">
+            <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+              <VerifyAccountSideBar />
             </div>
-          ))}
-        </div>
-        {showWarning && (
-          <p className="text-center text-red-500 mb-8 mt-6">
-            Please enter the complete verification code.
-          </p>
+            <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
+              <div className="max-w-md mx-auto">
+                <h1 className="text-2xl font-bold text-green-600 my-10">
+                  NaijaRentVerify
+                </h1>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Verify Your Email Address
+                </h2>
+                <p className="mt-2 text-gray-600">
+                  We&#34;ve sent a verification link to your email.
+                </p>
+                <p className="mt-1 text-gray-600">
+                  Enter the 6-digit OTP to verify your account.
+                </p>
+
+                <div className="mt-4 text-left text-gray-700">
+                  <p className="font-semibold">Instructions:</p>
+                  <ul className="list-disc list-inside text-sm">
+                    <li className="mt-4">Open your email inbox.</li>
+                    <li className="mt-4">
+                      Look for an email from NaijaRentVerify.
+                    </li>
+                    <li className="mt-4">
+                      Copy the One-time PIN (OTP) and paste it here.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-8 flex justify-center">
+                  <OtpInput
+                    value={otp}
+                    onChange={setOtp}
+                    numInputs={6}
+                    renderSeparator={<span> </span>}
+                    renderInput={(props) => (
+                      <input
+                        {...props}
+                        className="otp-input outline-none border-1 border-gray-300"
+                        style={{
+                          fontSize: "16px",
+                          height: "50px",
+                          textAlign: "center",
+                          width: "54px",
+                          border: "1px rgba(208, 213, 221, 1) solid",
+                          marginRight: "8px",
+                          marginLeft: "8px",
+                          borderRadius: "9px",
+                        }}
+                      />
+                    )}
+                  />
+                </div>
+
+                <p className="mt-4 text-sm text-gray-500 text-center">
+                  Did not receive verification code?
+                </p>
+                <div className="mt-2 flex items-center justify-center space-x-2 text-green-600 text-center">
+                  {canResend ? (
+                    <button
+                      onClick={handleResend}
+                      className="flex items-center gap-1"
+                    >
+                      <IoReload className="text-lg" /> Resend OTP
+                    </button>
+                  ) : (
+                    <p className="text-gray-500">
+                      {Math.floor(timer / 60)}:
+                      {(timer % 60).toString().padStart(2, "0")}s
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  size="large"
+                  className="block w-full mt-6 font-medium text-[16px]"
+                  variant="darkPrimary"
+                  showIcon={false}
+                  onClick={handleSubmit}
+                  disabled={otp.length !== 6 || isLoading}
+                  isLoading={isLoading}
+                >
+                  Continue
+                </Button>
+
+                <p className="mt-4 text-gray-500 italic text-center font-light">
+                  Contact Support
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {data.user.accountType === "tenant" && (
+              <div className="flex w-full">
+                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+                  <CompleteProfileSideBar />
+                </div>
+                <div className="w-full lg:w-1/2 p-5 flex-col justify-center">
+                  <div className="max-w-md mx-auto">
+                    <PreferencesForm />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {data.user.accountType === "landlord" && (
+              <div className="h-screen flex w-full overflow-hidden">
+                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+                  <AddPropertySideBar />
+                </div>
+                <div className="w-full lg:w-1/2 p-5 flex-col justify-center overflow-y-auto">
+                  <div className="max-w-xl mx-auto">
+                    <MultiStepForm />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         )}
-        <div className="mt-24">
-          <Button
-            onClick={handleSubmit}
-            size="large"
-            className="block w-full"
-            variant="lightGrey"
-            showIcon={false}
-            disabled={!isVerifyCodeFilled || isLoading} 
-          >
-            {isLoading ? "Loading..." : "Confirm"}
-          </Button>
-        </div>
       </div>
     </main>
   );

@@ -19,13 +19,11 @@ const HoverableCard: React.FC<HoverableCardProps> = ({
     <div
       className="w-full relative bg-white shadow-md rounded-md transition-width duration-300"
       style={{
-        width: isHovered ? "320px" : "250px",
+        // width: isHovered ? "320px" : "250px",
         height: "500px",
         backgroundImage: `url(${imageLink})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        marginRight: isHovered ? "-10px" : "5px",
-        marginLeft: isHovered ? "-20px" : "0px",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

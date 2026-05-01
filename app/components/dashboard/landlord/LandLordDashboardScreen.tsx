@@ -1,7 +1,9 @@
+import OnboardingScreen from "../../screens/onboarding/OnboardingFormScreen";
+
 const LandLordDashboardScreen = () => {
     return (
         <div>
-            LANDLORD DASHBOARD
+            <OnboardingScreen />
         </div>
     )
 }

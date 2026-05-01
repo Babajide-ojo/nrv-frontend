@@ -1,11 +1,20 @@
-import LandLordDashboardScreen from "../../components/dashboard/landlord/LandLordDashboardScreen";
+"use client";
 
-const Page = () => {
-return (
+import React from "react";
+import LandLordLayout from "../../components/layout/LandLordLayout";
+import ProtectedRoute from "../../components/guard/LandlordProtectedRoute";
+import DashboardScreen from "../../components/screens/dashboard-screens/DashBoardScreen";
+
+const SignIn = () => {
+  return (
     <div>
-        <LandLordDashboardScreen />
+      <ProtectedRoute>
+        <LandLordLayout mainPath="Dashboard">
+          <DashboardScreen />
+        </LandLordLayout>
+      </ProtectedRoute>
     </div>
-)
-}
+  );
+};
 
-export default Page;
+export default SignIn;

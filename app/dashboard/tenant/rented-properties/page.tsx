@@ -1,0 +1,248 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import LoadingPage from "../../../components/loaders/LoadingPage";
+import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
+import LandLordLayout from "../../../components/layout/LandLordLayout";
+import Button from "../../../components/shared/buttons/Button";
+import { Button as UiButton } from "@/components/ui/button";
+import { IoAddCircle } from "react-icons/io5";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getPropertyByUserId,
+  getRentedApartmentsForTenant,
+} from "../../../../redux/slices/propertySlice";
+import { toast } from "react-toastify";
+import CenterModal from "@/app/components/shared/modals/CenterModal";
+import TenantLayout from "@/app/components/layout/TenantLayout";
+import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { RefreshCcw } from "lucide-react";
+
+const formatAddress = (addr: string) => {
+  if (!addr) return "—";
+  let formatted = addr;
+  let prev = "";
+  while (formatted !== prev) {
+    prev = formatted;
+    formatted = formatted.replace(/^(?:no\.?\s+|plot\s+|block\s+)?\d+[a-zA-Z]?\s*,?\s*/i, '');
+  }
+  return formatted.trim() || addr;
+};
+
+const RentedPropertiesScreen = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<any>({});
+  const [properties, setProperties] = useState<any[]>([]);
+  const [page, setPage] = useState(1); // Current page
+  const [totalPages, setTotalPages] = useState(0); // Total pages
+  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
+
+  console.log("Properties:", properties);
+
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+    setUser(user?.user);
+    const formData = {
+      id: user?.user?._id,
+      page: page,
+    };
+
+    try {
+      const response = await dispatch(
+        getRentedApartmentsForTenant(formData) as any
+      ); // Pass page parameter
+      setProperties(response?.payload?.data);
+      setTotalPages(response?.totalPages);
+      toast.success("Properties fetched successfully");
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    } finally {
+      setIsLoading(false);
+      setIsPageLoading(false); // Stop page loading after fetch
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [page]); // Reload properties when page changes
+
+  const handleNextPage = () => {
+    if (page) {
+      setIsPageLoading(true);
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setIsPageLoading(true);
+      setPage(page - 1);
+    }
+  };
+
+  return (
+    <div>
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="mx-auto max-w-7xl px-2 py-3 sm:px-4 sm:py-5 md:px-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h1 className="text-xl sm:text-2xl text-nrvGreyBlack font-semibold">
+                    View Rented Apartments
+                  </h1>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="rounded-xl overflow-hidden shadow border animate-pulse">
+                    <div className="h-48 bg-gray-200" />
+                    <div className="p-4 space-y-3">
+                      <div className="h-5 bg-gray-200 rounded w-1/3" />
+                      <div className="h-4 bg-gray-100 rounded w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {isPageLoading && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="text-white"></div>
+              </div>
+            )}
+            {properties?.length < 1 ? (
+              <div className="w-full px-1 py-2 sm:p-6 md:p-8">
+                <div className="text-2xl">View Rented Apartments</div>
+
+                <div className="w-full h-[60vh] flex justify-center items-center">
+                  <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-4 text-center sm:p-8">
+                    <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4">
+                      <svg className="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-700 font-medium">No rented apartment yet</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Once you rent a unit, it will appear here.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="max-w-5xl md:mx-auto mt-8 mx-4">
+                <div className="flex justify-between">
+                  <div>
+                    <div className="text-2xl">View Rented Apartment</div>
+                  </div>
+                  <UiButton
+                    onClick={fetchData}
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <RefreshCcw className="w-4 h-4" />
+                    Refresh
+                  </UiButton>
+                </div>
+                {/* {properties?.map((property: any) => (
+                  <div
+                    key={property.id}
+                    className="bg-white p-3 rounded rounded-lg w-full mt-8 flex justify-between"
+                  >
+                    <div className="w-3/5">
+                      <div className="flex gap-2 ">
+                        <div className="md:w-1/5 w-2/5">
+                          <img
+                            src={property.propertyId.file}
+                            className="h-20 w-20 rounded-sm"
+                            alt="Property"
+                          />
+                        </div>
+
+                        <p className="md:w-4/5 w-3/5 text-md  text-nrvDarkGrey font-light">
+                          {property.propertyId.propertyId?.streetAddress}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="w-2/5 text-end flec flex-col justify-between h-full">
+                      <Button
+                        size="normal"
+                        className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
+                        variant="lightGrey"
+                        showIcon={false}
+                      >
+                        <div
+                          className="flex gap-3"
+                          onClick={() => {
+                            router.push(
+                              `/dashboard/tenant/rented-properties/${property.propertyId._id}`
+                            );
+                          }}
+                        >
+                        
+                            View details
+               
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
+                ))} */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
+                  {properties?.map((property: any) => (
+                    <div
+                      key={property?.propertyId?._id}
+                      className=" mt-8"
+                      onClick={() => {
+                        router.push(
+                          `/dashboard/tenant/rented-properties/${property?._id}`
+                        );
+                      }}
+                    >
+                      <PropertyCard
+                        imageUrl={property?.propertyId?.file}
+                        address={formatAddress(property?.propertyId?.propertyId?.streetAddress || property?.propertyId?.propertyId?.street)}
+                        rentAmount={property?.propertyId?.rentAmount}
+                        property={property?.propertyId}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* <div className="flex justify-between mt-4">
+                  <Button
+                    size="normal"
+                    className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={handlePrevPage}
+                    // disabled={page === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    size="normal"
+                    className="text-nrvPrimaryGreen border border-nrvPrimaryGreen rounded-md"
+                    variant="lightGrey"
+                    showIcon={false}
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div> */}
+              </div>
+              )}
+            </>
+          )}
+        </TenantLayout>
+      </ProtectedRoute>
+    </div>
+  );
+};
+
+export default RentedPropertiesScreen;

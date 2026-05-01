@@ -1,411 +1,333 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { Formik, Form } from "formik";
+import * as yup from "yup";
+import dynamic from "next/dynamic";
+import { createUser } from "../../../../redux/slices/userSlice";
+import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import Button from "@/app/components/shared/buttons/Button";
 import CheckBox from "@/app/components/shared/input-fields/CheckBox";
 import InputField from "@/app/components/shared/input-fields/InputFields";
+import { CheckCircle, Smile, User } from "lucide-react";
+import { toast } from "react-toastify";
+import AccountSideBar from "./AccountSideBar";
+import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-import { FaApple, FaArrowLeft } from "react-icons/fa6";
-import { FcGoogle } from "react-icons/fc";
-import { IoPersonCircleSharp } from "react-icons/io5";
-import { IoCheckmarkCircleSharp } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
-import { createUser } from "../../../../redux/slices/userSlice";
-import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
-import { useRouter } from "next/navigation";
-import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  nin: string;
-  password: string;
-  phoneNumber: string;
-  homeAddress: string;
-  accountType: string;
-}
+const Carousel = dynamic(() => import("../sign-in/Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 
-const SignUpMultiForm: React.FC = () => {
+const validationSchema = yup.object({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  email: yup
+    .string()
+    .email("Invalid email address")
+    .required("Email is required"),
+    nin: yup.string().when("accountType", {
+      is: "tenant", // condition
+      then: (schema) => schema.required("NIN is required for tenant accounts"),
+      otherwise: (schema) => schema.optional(),
+    }),
+  phoneNumber: yup.string().required("Phone Number is required"),
+  accountType: yup.string().required("Account Type is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(
+      /[^a-zA-Z0-9]/,
+      "Password must contain at least one special character"
+    )
+    .matches(/\d/, "Password must contain at least one number"),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+});
+
+const SignUpMultiForm = () => {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const [currentStep, setCurrentStep] = useState(3);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [prefillPhone, setPrefillPhone] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState(false); // Checkbox state
   const router = useRouter();
-  const { loading, error, data } = useSelector((state: any) => state.user);
-  const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    nin: "",
-    password: "",
-    phoneNumber: "",
-    homeAddress: "",
-    accountType: "",
-  });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
-
-  const validateForm = () => {
-    let errors: { [key: string]: string } = {};
-
-    if (!formData.firstName.trim()) {
-      errors.firstName = "First Name is required";
-    }
-    if (!formData.lastName.trim()) {
-      errors.lastName = "Last Name is required";
-    }
-    if (!formData.nin.trim()) {
-      errors.nin = "Nin is required";
-    }
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    }
-    if (!formData.phoneNumber.trim()) {
-      errors.phoneNumber = "Phone Number is required";
-    }
-    if (!formData.homeAddress.trim()) {
-      errors.homeAddress = "Home Address is required";
-    }
-    if (!formData.accountType.trim()) {
-      errors.accountType = "Account Type is required";
-    }
-
-    setErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  };
-
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [currentStep, setCurrentStep] = useState(1);
-
-  const handleNext = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
-  };
-
-  const handleItemClick = (index: number) => {
-    setActiveIndex(index === activeIndex ? null : index);
-  };
-
-  const handleAccountType = (text: string) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      accountType: text,
-    }));
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
-    }));
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
+  const handleSubmit = async (values: any) => {
+    if (!isChecked) {
+      toast.error("You must agree to the Terms of Use and Privacy Policy");
       return;
     }
-    setIsLoading(true); // Set loading state to true when starting the request
+    const { confirmPassword, ...payload } = values;
+    setIsLoading(true);
     try {
-      await dispatch(createUser(formData) as any).unwrap();
+      await dispatch(createUser(payload) as any).unwrap();
       setCurrentStep(3);
+      setIsLoading(false);
     } catch (error: any) {
       toast.error(error);
-    } finally {
-      setIsLoading(false); // Set loading state back to false after request completes
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    const roleParam = searchParams.get("role");
+    const phoneParam = searchParams.get("phone");
+
+    if (roleParam === "landlord" || roleParam === "tenant") {
+      setSelectedRole(roleParam);
+      if (phoneParam) setPrefillPhone(phoneParam);
+      setCurrentStep(2);
+      return;
+    }
+
+    const stepFromStorage = localStorage.getItem("stepToLoad");
+    if (stepFromStorage) {
+      try {
+        const parsedStep = JSON.parse(stepFromStorage);
+        setCurrentStep(parsedStep);
+      } catch (error) {
+        console.error("Error parsing stepToLoad from localStorage:", error);
+        setCurrentStep(1);
+      }
+    } else {
+      setCurrentStep(1);
+    }
+  }, [searchParams]);
+
   return (
-    <div className="container">
-      <ToastContainer />
+    <div className="font-jakarta">
       {currentStep === 1 && (
-        <div>
-          <div className="max-w-md h-screen">
-            <div className="text-3xl text-nrvGreyBlack font-semibold">
-              Welcome user 🚀,
-            </div>
-            <div className="pt-2 text-nrvLightGrey text-md">
-              What will you be joining naijarentverify as?
-            </div>
-            <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
-                activeIndex === 0 ? "bg-gray-100" : ""
-              }`}
-              onClick={() => {
-                handleItemClick(0);
-                handleAccountType("landlord");
-              }}
-            >
-              <div className="w-1/5 mx-auto flex items-center justify-center">
-                <IoPersonCircleSharp color="#153969" size={40} />
+        <div className="flex flex-col md:flex-row w-full min-h-screen min-h-[100dvh] md:min-h-screen overflow-x-hidden">
+          <div className="hidden md:block md:w-1/2 md:shrink-0 md:max-w-[50%]">
+            <Carousel />
+          </div>
+          <div className="w-full md:w-1/2 flex flex-col items-center justify-center flex-1 min-h-0 bg-gray-50 p-4 sm:p-6 overflow-y-auto">
+            <div className="max-w-md w-full min-w-0">
+              <div className="md:hidden flex justify-center w-full mb-6 min-w-0">
+                <Link href="/" className="inline-block max-w-full">
+                  <Image
+                    src="/images/logo.png"
+                    alt="NaijaRentVerify"
+                    width={200}
+                    height={50}
+                    className="h-9 sm:h-10 w-auto max-w-[min(240px,88vw)] object-contain"
+                  />
+                </Link>
               </div>
-
-              <div className="4/5 p-2">
-                <div className="text-nrvGreyBlack text-lg font-semibold">
-                  Sign up as a landlord
-                </div>
-                <div className="text-nrvLightGrey text-sm">
-                  Explore our powerful tools for thorough tenant screening.
-                </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-black">
+                Create an Account!
+              </h1>
+              <p className="text-gray-500 mt-2 text-[15px] sm:text-base leading-relaxed">
+                Welcome to NaijarentVerify! Choose your role to get started.
+                We&apos;ll tailor your experience to meet your needs.
+              </p>
+              <div className="mt-6 space-y-4">
+                {[
+                  {
+                    role: "landlord",
+                    icon: <Smile className="text-green-600" />,
+                    text: "Sign Up as a Property Owner/Landlord",
+                    description:
+                      "Sign up as a Property owner and get to explore our powerful tools for thorough tenant screening, List, manage, and grow your rental properties with ease.",
+                  },
+                  {
+                    role: "tenant",
+                    icon: <User className="text-gray-500" />,
+                    text: "Sign Up as a Tenant",
+                    description:
+                      "Sign up as a Tenant to Find and secure your dream home with genuine listings, Complete your rental agreement and payments securely without stress and extra cost or fee.",
+                  },
+                ].map(({ role, icon, text, description }) => (
+                  <div
+                    key={role}
+                    className="border rounded-xl cursor-pointer"
+                    onClick={() => setSelectedRole(role)}
+                  >
+                    <div
+                      className={`flex justify-between gap-2 p-4 rounded-t-xl min-w-0 ${
+                        selectedRole === role
+                          ? "bg-[#E9F4E7]"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <div className="flex gap-2 min-w-0 flex-1 items-start">
+                        {icon}
+                        <span className="font-medium text-[#045D23] text-sm sm:text-base break-words">
+                          {text}
+                        </span>
+                      </div>
+                      {selectedRole === role && (
+                        <CheckCircle className="text-green-600" />
+                      )}
+                    </div>
+                    <p className="text-[#03442C] border-t border p-4 font-light text-[13px] sm:text-[14px] leading-6 break-words">
+                      {description}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              {activeIndex === 0 && (
-                <div className="top-0 right-0">
-                  <IoCheckmarkCircleSharp color="#153969" size={25} />
-                </div>
-              )}
-            </div>
-            <div
-              className={`mt-4 text-sm flex bg-white border border-nrvLightGrey rounded rounded-2xl ${
-                activeIndex === 1 ? "bg-gray-100" : ""
-              }`}
-              onClick={() => {
-                handleItemClick(1);
-                handleAccountType("tenant");
-              }}
-            >
-              <div className="w-1/5 mx-auto flex items-center justify-center">
-                <IoPersonCircleSharp color="#153969" size={40} />
-              </div>
-              <div className="4/5 p-2">
-                <div className="text-nrvGreyBlack text-lg font-semibold">
-                  Sign up as a tenant
-                </div>
-                <div className="text-nrvLightGrey text-sm">
-                  Explore our powerful tools for thorough tenant screening.
-                </div>
-              </div>
-              {activeIndex === 1 && (
-                <div className="top-0 right-0">
-                  <IoCheckmarkCircleSharp color="#153969" size={25} />
-                </div>
-              )}
-            </div>
-            <div className="w-full justify-center flex gap-3 mt-4">
-              <div className="text-sm text-nrvLightGrey">
-                Already have an account?
-              </div>
-              <Link
-                href="/sign-in"
-                className="text-sm underline font-light text-[#153969]"
-              >
-                Log in
-              </Link>
-            </div>
-            <div className="mt-80">
               <Button
                 size="large"
-                className="block w-full"
-                variant="bluebg"
-                showIcon={false}
-                onClick={handleNext}
+                className="block w-full mt-6 font-medium text-[16px]"
+                variant={selectedRole === null ? "light" : "darkPrimary"}
+                onClick={() => setCurrentStep(2)}
+                disabled={!selectedRole}
               >
-                Next
+                Continue
+              </Button>
+
+              <Button
+                size="large"
+                className="w-full mt-4"
+                variant="light"
+                onClick={() => router.push("/")}
+              >
+                Return to Home Page
               </Button>
             </div>
           </div>
         </div>
       )}
       {currentStep === 2 && (
-        <div className="max-w-md">
-          <div className="text-2xl text-nrvGreyBlack font-semibold flex gap-2">
-            <span>
-              {" "}
-              <IoIosArrowBack
-              className="mt-1 hover:cursor-pointer"
-                onClick={() => {
-                  router.push("/");
+        <div className="flex w-full h-screen overflow-hidden">
+          <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+            <AccountSideBar />
+          </div>
+          <div className="w-full lg:w-1/2 bg-white p-12 pb-20 overflow-y-auto">
+            <div className="max-w-md mx-auto ">
+              <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
+                NaijaRentVerify
+              </h1>
+              <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
+              <Formik
+                enableReinitialize
+                initialValues={{
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  phoneNumber: prefillPhone,
+                  nin: "",
+                  password: "",
+                  confirmPassword: "",
+                  accountType: selectedRole,
                 }}
-              />{" "}
-            </span>{" "}
-            Sign up as a landlord 🚀,
-          </div>
-          <div className="pt-2 text-nrvLightGrey text-md">
-            Kindly fill the provided form.
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              <div className="flex gap-1">
-                <FaApple color="black" size={22} /> Sign in with Apple
-              </div>
-            </Button>
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              {" "}
-              <div className="flex gap-1">
-                <FcGoogle size={22} /> Sign in with Google
-              </div>
-            </Button>
-          </div>
-          <div className="flex items-center w-full mt-6">
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            <div className="w-2/12 text-center text-nrvLightGrey text-sm">
-              OR
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+              >
+                {({ handleChange, handleBlur, values, errors }) => (
+                  <Form className="space-y-4">
+                    {[
+                      "firstName",
+                      "lastName",
+                      "email",
+                      "phoneNumber",
+                      "nin",
+                      "password",
+                      "confirmPassword",
+                    ].map((name) => (
+                      <InputField
+                        key={name}
+                        placeholder="Start Typing..."
+                        name={name}
+                        label={name
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())}
+                        inputType={
+                          name.includes("password")
+                            ? "password"
+                            : name.includes("phoneNumber")
+                            ? "phone"
+                            : name.includes("nin")
+                            ? "nin"
+                            : name.includes("email")
+                            ? "email"
+                            : "text"
+                        }
+                        value={(values as any)[name]}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={(errors as any)[name]}
+                        password={
+                          name.includes("password") ||
+                          name.includes("confirmPassword")
+                        }
+                      />
+                    ))}
+                    {/* Terms and Conditions Checkbox */}
+                    <CheckBox
+                      label={
+                        <>
+                          I agree to the{" "}
+                          <Link
+                            href="/legal"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-green-800 underline hover:text-green-900"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Terms of Use
+                          </Link>{" "}
+                          and{" "}
+                          <Link
+                            href="/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium text-green-800 underline hover:text-green-900"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Privacy Policy
+                          </Link>
+                        </>
+                      }
+                      checked={isChecked}
+                      onChange={() => setIsChecked(!isChecked)}
+                    />
+                    <p className="text-gray-600 text-sm lg:hidden">
+                      Already have an account?{" "}
+                      <a
+                        href="/sign-in"
+                        className="font-semibold text-green-900"
+                      >
+                        Log in here.
+                      </a>
+                    </p>
+                    {/* Submit Button */}
+                    <Button
+                      variant="darkPrimary"
+                      type="submit"
+                      size="large"
+                      className="block w-full mt-6 font-medium text-[16px]"
+                      isLoading={isLoading}
+                      disabled={!isChecked} // Disable if not checked
+                    >
+                      Continue
+                    </Button>
+                    <Button
+                      size="large"
+                      className="w-full mt-4"
+                      variant="light"
+                      onClick={() => router.push("/")}
+                    >
+                      Return to Home Page
+                    </Button>
+                  </Form>
+                )}
+              </Formik>
             </div>
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-          </div>
-          <div className="w-full  mt-6 flex gap-3">
-            <div className="w-1/2">
-              <InputField
-                label="First Name"
-                placeholder="Enter First Name"
-                inputType="text"
-                name="firstName"
-                onChange={handleInputChange}
-                error={errors.firstName}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputField
-                label="Last Name"
-                placeholder="Enter Last Name"
-                inputType="text"
-                name="lastName"
-                onChange={handleInputChange}
-                error={errors.lastName}
-              />
-            </div>
-          </div>
-          <div className="w-full mt-4 flex gap-3">
-            <div className="w-1/2">
-              <InputField
-                label="Email Address"
-                placeholder="Enter Email Address"
-                inputType="text"
-                name="email"
-                onChange={handleInputChange}
-                error={errors.email}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputField
-                label="NIN"
-                placeholder="Enter NIN"
-                inputType="text"
-                name="nin"
-                onChange={handleInputChange}
-                error={errors.nin}
-              />
-            </div>
-          </div>
-          <div className="w-full mt-4">
-            <InputField
-              label="Home Address"
-              placeholder="Enter Home Address"
-              inputType="text"
-              name="homeAddress"
-              onChange={handleInputChange}
-              error={errors.homeAddress}
-            />
-          </div>
-          <div className="w-full mt-4 flex gap-3">
-            <div className="w-1/2">
-              <InputField
-                label="Phone Number"
-                placeholder="Enter Phone Number"
-                inputType="text"
-                name="phoneNumber"
-                onChange={handleInputChange}
-                error={errors.phoneNumber}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputField
-                label="Password"
-                placeholder="Enter Password"
-                inputType="password"
-                name="password"
-                onChange={handleInputChange}
-                error={errors.password}
-              />
-            </div>
-          </div>
-          <div className="text-xs text-nrvGreyBlack mt-3">AT LEAST : </div>
-          <div className="grid:col-3 gap-2 mt-1">
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              8 characters
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              An uppercase letter
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A lowercase letter
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A special character
-            </Button>
-            <Button
-              size="small"
-              className="rounded-3xl mt-2 mr-2"
-              variant="whitebg"
-              showIcon={false}
-            >
-              A number
-            </Button>
-          </div>
-          <div className="w-full mt-8">
-            <CheckBox label="I agree to the terms of use and privacy policy" />
-          </div>
-          <div className="mt-4">
-            <Button
-              onClick={handleSubmit}
-              size="large"
-              className="block w-full"
-              variant="bluebg"
-              showIcon={false}
-              disabled={isLoading} // Disable button while loading
-            >
-              {isLoading ? "Loading..." : "Continue"}{" "}
-              {/* Show loading text if loading */}
-            </Button>
           </div>
         </div>
       )}
-      {currentStep === 3 && (
-        <div>
-          <SignUppVerifyAccountScreen />
-        </div>
-      )}
+      {currentStep === 3 && <SignUppVerifyAccountScreen />}
     </div>
   );
 };

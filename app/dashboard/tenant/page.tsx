@@ -1,12 +1,20 @@
+"use client";
+
+import React from "react";
+import ProtectedRoute from "../../components/guard/LandlordProtectedRoute";
+import TenantLayout from "../../components/layout/TenantLayout";
 import TenantDashboardScreen from "../../components/dashboard/tenant/TenantDashboardScreen";
 
-
-const Page = () => {
-return (
+const SignIn = () => {
+  return (
     <div>
-      <TenantDashboardScreen />
+      <ProtectedRoute>
+        <TenantLayout>
+          <TenantDashboardScreen />
+        </TenantLayout>
+      </ProtectedRoute>
     </div>
-)
-}
+  );
+};
 
-export default Page;
+export default SignIn;

@@ -1,175 +1,202 @@
-"use client"
+"use client";
 
-import { useState } from "react";
-import Button from "@/app/components/shared/buttons/Button";
-import InputField from "@/app/components/shared/input-fields/InputFields";
-import Link from "next/link";
-import Carousel from "./Carousel";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "@/redux/slices/userSlice";
+import { useState, useCallback, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa6";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import { toast } from "react-toastify";
 
-interface FormData {
-  email: string;
-  password: string;
-}
+// Components
+import Button from "@/app/components/shared/buttons/Button";
+
+const Carousel = dynamic(() => import("./Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
+import LoginForm from "./components/LoginForm";
+import LoginHeader from "./components/LoginHeader";
+import RememberMeCheckbox from "./components/RememberMeCheckbox";
+
+// Hooks
+import { useLoginForm } from "./hooks/useLoginForm";
+import { useAuthRedirect } from "./hooks/useAuthRedirect";
+
+// Types
+import { LoginFormData } from "./types";
+
+// Constants
+import { ROUTES } from "./constants";
+
+// Redux
+import { loginUser } from "@/redux/slices/userSlice";
 
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const { loading, error, data } = useSelector((state: any) => state.user);
-  const [formData, setFormData] = useState<FormData>({
-    email: "",
-    password: "",
-  });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New loading state
+  //const { loading, error, data } = useSelector((state: any) => state.user);
+  
+  // Custom hooks
+  const { formData, errors, handleInputChange, validateForm, setFormDataDirectly } = useLoginForm();
+  const { redirectUser } = useAuthRedirect();
+  
+  // Local state
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
-  const validateForm = () => {
-    let errors: { [key: string]: string } = {};
+  useEffect(() => {
+    const shouldRemember = localStorage.getItem("rememberMe") === "true";
+    const rememberedEmail = localStorage.getItem("rememberedEmail");
 
-    if (!formData.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!formData.password.trim()) {
-      errors.password = "Password is required";
-    }
-
-    setErrors(errors);
-
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: "",
-    }));
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
+    if (shouldRemember) {
+      setRememberMe(true);
+      if (rememberedEmail) {
+        setFormDataDirectly({ email: rememberedEmail });
+      }
       return;
     }
-    setIsLoading(true); // Set loading state to true when starting the request
+
+    localStorage.removeItem("rememberedEmail");
+  }, [setFormDataDirectly]);
+
+  // Handle form submission
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
+    setIsLoading(true);
+    
     try {
       const userData = await dispatch(loginUser(formData) as any).unwrap();
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
-      const userAccountType = userData?.user?.accountType || "";
-
-      if (userAccountType === "landlord") {
-        router.push("/dashboard/landlord");
-      } else if (userAccountType === "tenant") {
-        router.push("/dashboard/tenant");
+      console.log({p: userData})
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem("rememberMe", "true");
+        localStorage.setItem("rememberedEmail", formData.email);
+      } else {
+        localStorage.removeItem("rememberMe");
+        localStorage.removeItem("rememberedEmail");
       }
-    } catch (error) {
-      alert(error);
+      
+      // Redirect user based on account type and status
+      redirectUser(userData);
+      
+    } catch (error: any) {
+      const errorMessage = error?.message || error || "Login failed. Please try again.";
+      toast.error(errorMessage);
     } finally {
-      setIsLoading(false); // Set loading state back to false after request completes
+      setIsLoading(false);
     }
-  };
+  }, [dispatch, formData, validateForm, rememberMe, redirectUser]);
+
+  // Handle forgot password
+  const handleForgotPassword = useCallback(() => {
+    router.push(ROUTES.FORGOT_PASSWORD);
+  }, [router]);
+
+  // Handle return to home
+  const handleReturnHome = useCallback(() => {
+    router.push(ROUTES.HOME);
+  }, [router]);
+
+  const handleRememberMeChange = useCallback((checked: boolean) => {
+    setRememberMe(checked);
+
+    if (!checked) {
+      localStorage.removeItem("rememberMe");
+      localStorage.removeItem("rememberedEmail");
+    }
+  }, []);
 
   return (
-    <div className="flex justify-center  h-screen">
-      <Carousel />
-      <div className="w-full sm:w-1/2 p-8 justify-center h-screen">
-        <div className="max-w-md">
-          <div className="text-3xl text-nrvGreyBlack font-semibold">
-            Welcome Back, Samuel 🤗,
-          </div>
-          <div className="pt-2 text-nrvLightGrey text-md">
-            Please enter your login to access your account.
-          </div>
-          <div className="pt-1 text-nrvLightGrey text-md flex gap-2">
-            Not a landlord?{" "}
-            <Link className="underline text-nrvDarkBlue" href="/">
-              sign in as tenant
-            </Link>
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              <div className="flex gap-1">
-                <FaApple color="black" size={22} /> Sign in with Apple
-              </div>
-            </Button>
-          </div>
-          <div className="pt-4">
-            <Button
-              className="w-full block"
-              size="large"
-              variant="whitebg"
-              showIcon={false}
-            >
-              {" "}
-              <div className="flex gap-1">
-                <FcGoogle size={22} /> Sign in with Google
-              </div>
-            </Button>
-          </div>
-          <div className="flex items-center w-full mt-6">
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-            <div className="w-2/12 text-center text-nrvLightGrey text-sm">
-              OR
-            </div>
-            <div className="w-5/12 border-b border-nrvLightGrey"></div>
-          </div>
-          <div className="mt-2">
-            <InputField
-              label="Email Address"
-              placeholder="Enter your email address"
-              inputType="email"
-              name="email"
-              onChange={handleInputChange}
-              error={errors.email}
-            />
-          </div>
-          <div className="mt-4">
-            <InputField
-              label="Password"
-              placeholder="Enter your password"
-              inputType="password"
-              name="password"
-              onChange={handleInputChange}
-              error={errors.password}
-            />
-          </div>
+    <div className="font-jakarta flex flex-col lg:flex-row lg:justify-center min-h-screen min-h-[100dvh] bg-gray-100 overflow-x-hidden">
+      {/* Left side - Carousel (hidden on mobile) */}
+      <div className="hidden lg:block lg:shrink-0 lg:w-1/2 lg:max-w-[50%]">
+        <Carousel />
+      </div>
 
-          <div className="mt-48">
-            <Button
-              size="large"
-              className="block w-full"
-              variant="bluebg"
-              showIcon={!isLoading} // Show icon only if not loading
-              onClick={handleSubmit}
-              disabled={isLoading} // Disable button while loading
+      {/* Right side - Login Form */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <div className="max-w-md mx-auto w-full min-w-0">
+          {/* Header */}
+          <LoginHeader />
+          
+          {/* Login Form */}
+          <LoginForm
+            formData={formData}
+            errors={errors}
+            isLoading={isLoading}
+            onInputChange={handleInputChange}
+            onSubmit={handleSubmit}
+          />
+          
+          {/* Remember Me Checkbox */}
+          <RememberMeCheckbox
+            checked={rememberMe}
+            onChange={handleRememberMeChange}
+          />
+          
+          {/* Login Button */}
+          <Button
+            size="large"
+            className="block w-full mt-6 font-medium text-[16px]"
+            variant="darkPrimary"
+            showIcon={false}
+            onClick={handleSubmit}
+            disabled={isLoading}
+            isLoading={isLoading}
+          >
+            {isLoading ? "Signing in..." : "Sign In"}
+          </Button>
+
+          {/* Forgot Password Link */}
+          <div className="text-center mt-4">
+            <button
+              onClick={handleForgotPassword}
+              className="text-sm text-[#645D5D] font-light hover:text-nrvPrimaryGreen transition-colors"
             >
-              {isLoading ? "Loading..." : "Continue"} {/* Show loading text if loading */}
-            </Button>
+              Forgot Password?{" "}
+              <span className="font-medium text-nrvPrimaryGreen">Recover</span>
+            </button>
           </div>
-          <div className="w-full justify-center flex gap-3 mt-4">
-            <div className="text-sm text-nrvLightGrey">
-              Do not have an account?
+          
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
             </div>
-            <Link
-              href="/sign-up"
-              className="text-sm underline font-light text-[#153969]"
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-100 text-gray-500">Or continue with</span>
+            </div>
+          </div>
+          
+          {/* Social Login Buttons */}
+
+          
+          {/* Return to Home Button */}
+          <Button
+            size="large"
+            className="w-full mt-4"
+            variant="light"
+            onClick={handleReturnHome}
+          >
+            Return to Home Page
+          </Button>
+          
+          {/* Sign Up Link */}
+          <div className="text-center mt-4">
+            <Link 
+              href={ROUTES.SIGN_UP} 
+              className="text-sm text-[#645D5D] font-light hover:text-nrvPrimaryGreen transition-colors"
             >
-              Sign Up
+              Are you new here?{" "}
+              <span className="font-medium text-nrvPrimaryGreen">
+                Create Account
+              </span>
             </Link>
           </div>
         </div>

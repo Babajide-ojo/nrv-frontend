@@ -1,0 +1,222 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import TenantLayout from "@/app/components/layout/TenantLayout";
+import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
+import LoadingPage from "@/app/components/loaders/LoadingPage";
+import { useParams, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { getMaintenanceById, markIssueAsResolved } from '@/redux/slices/maintenanceSlice';
+import Image from "next/image";
+import BackIcon from "@/app/components/shared/icons/BackIcon";
+import Button from "@/app/components/shared/buttons/Button";
+import CenterModal from "@/app/components/shared/modals/CenterModal";
+
+const SingleMaintainance = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [maintenance, setMaintenance] = useState<any>([]);
+
+  const fetchData = async () => {
+    const formData = {
+      id: id,
+    };
+
+    try {
+      const response = await dispatch(getMaintenanceById(formData) as any); // Pass page parameter
+      setMaintenance(response?.payload?.data);
+    } catch (error) {
+    } finally {
+    }
+  };
+
+  const handleSubmit = async () => {
+    const payload = {
+      id: id,
+    };
+    
+    try {
+      setIsLoading(true);
+      const data = await dispatch(markIssueAsResolved(payload) as any).unwrap();
+      if (data.response.statusCode === 400){
+        toast.error(data.response.message);
+      }
+      setMaintenance(data?.payload?.data);
+      router.push(`/dashboard/tenant/rented-properties/maintenance/single/${id}`)
+      setIsLoading(false);
+    } catch (error: any) {
+      toast.error(error);
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
+  return (
+    <main>
+      <ProtectedRoute>
+        <TenantLayout>
+          {isLoading ? (
+            <div className="md:py-10 md:px-20 p-5 space-y-8 animate-pulse">
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div className="h-6 bg-gray-200 rounded w-48"></div>
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-24"></div>
+                    <div className="h-5 bg-gray-100 rounded w-48"></div>
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  <div className="h-20 bg-gray-100 rounded w-full"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-24"></div>
+                  <div className="flex gap-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="w-32 h-32 bg-gray-200 rounded-lg"></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+            <div className="md:py-10 md:px-20 p-5">
+              <div className=" mb-8">
+                <div className="text-nrvGreyBlack mb-4 flex gap-3">
+                  <BackIcon />
+                  <div className="text-xl font-medium text-nrvDarkGrey">
+                    Maintenance
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="">
+                        <span className="font-medium mb-2 text-md text-nrvDarkGrey">
+                          Issue Type
+                        </span>{" "}
+                        <br></br>{" "}
+                        <span className="font-light mb-2 text-md text-nrvDarkGrey">
+                          {maintenance.title}
+                        </span>
+                      </h3>
+                    </div>
+                    <div>
+                      <Button
+                        className={`w-full text-white text-md ${
+                          maintenance.status === "Resolved"
+                            ? "bg-[#107E4B]"
+                            : "bg-nrvPrimaryGreen"
+                        }`}
+                        variant="ordinary"
+                        size="small"
+                        showIcon={false}
+                      >
+                        {maintenance.status}
+                      </Button>
+                      {maintenance.status != "Resolved" ? (
+                        <p className="underline pt-2 text-nrvDarkGrey text-sm cursor-pointer" onClick={() => {
+                          setIsOpen(!isOpen)
+                        }}>Mark Issue as Resolved</p>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-8">
+                    <h3 className="font-medium mb-2 text-lg text-nrvDarkGrey">
+                      Description
+                    </h3>
+                    <div className="text-md text-nrvDarkGrey font-light">
+                      {maintenance.description}
+                    </div>
+                  </div>
+                  <div className="mt-8">
+                    <h3 className="font-medium mb-2 text-lg text-nrvDarkGrey">
+                      Attached Image (Proof of Issue)
+                    </h3>
+                    <Image
+                      src={maintenance.file}
+                      alt="issue-image"
+                      width={500}
+                      height={350}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <CenterModal
+        isOpen={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+        }}
+      >
+        <div className="mx-auto text-center p-4 w-full md:w-4/5">
+          <h2 className="text-nrvPrimaryGreen font-semibold text-xl">
+           Has this issue been resolved?
+          </h2>
+          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
+            Performing this action will mark this issue as resolved and close the issue
+          </p>
+
+          <div className="mt-8 flex flex-col gap-1 justify-center text-center items-center">
+            <Button
+              size="small"
+              className="text-white w-72 max-w-full border border-nrvPrimaryGreen mt-2 rounded-md"
+              variant="bluebg"
+              showIcon={false}
+               disabled={isLoading === false ? false : true}
+            >
+              <div
+                className="flex gap-3"
+                onClick={() => {
+                  handleSubmit()
+                }}
+              >
+                Submit
+              </div>
+            </Button>
+          </div>
+          <div className="mt-4 flex flex-col gap-1 justify-center text-center items-center">
+            <Button
+              size="small"
+              className="w-72 bg-nrvGreyMediumBg border border-nrvGreyMediumBg rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
+              variant="mediumGrey"
+              showIcon={false}
+              onClick={() => {
+                setIsOpen(false);
+              }}
+            >
+              <div className="flex gap-2">Close</div>
+            </Button>
+          </div>
+        </div>
+      </CenterModal>
+            </>
+          )}
+          </TenantLayout>
+        </ProtectedRoute>
+    </main>
+  );
+};
+
+export default SingleMaintainance;

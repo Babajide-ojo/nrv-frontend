@@ -188,7 +188,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                   className="text-gray-500 flex min-w-0 flex-1 items-center gap-x-1 overflow-hidden text-xs sm:text-sm"
                 >
                 <svg
-                  className="shrink-0"
+                  className="shrink-0 block"
                   width="22"
                   height="18"
                   viewBox="0 0 25 21"

@@ -181,7 +181,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                   className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-xs sm:text-sm text-gray-500"
                 >
                 <svg
-                  className="shrink-0"
+                  className="shrink-0 block"
                   width="22"
                   height="18"
                   viewBox="0 0 25 21"

@@ -116,7 +116,7 @@ const SignUpMultiForm = () => {
               <div className="md:hidden flex justify-center w-full mb-6 min-w-0">
                 <Link href="/" className="inline-block max-w-full">
                   <Image
-                    src="/images/logo.png"
+                    src="/images/nrvlogo.jpg"
                     alt="NaijaRentVerify"
                     width={200}
                     height={50}

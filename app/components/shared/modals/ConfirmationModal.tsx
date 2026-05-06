@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { FC } from 'react';
+import { FC } from "react";
 
 interface ConfirmationModalProps {
   heading: string;
@@ -19,33 +19,58 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
   onConfirm,
   isOpen,
 }) => {
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-      <div className="bg-white rounded-2xl  w-full max-w-md shadow-xl">
- <div className='p-6'>
- <div className="flex items-center space-x-3">
-          <div className="bg-green-100 p-2 rounded-full">
-    <img src='/icons/SuccessIcon.svg' alt='success'/>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirmation-modal-title"
+    >
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
+        <div className="p-6 pb-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E7F6EC]">
+              <img
+                src="/icons/SuccessIcon.svg"
+                alt=""
+                className="h-5 w-5"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2
+                id="confirmation-modal-title"
+                className="text-lg font-semibold text-[#101828]"
+              >
+                {heading}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                {message}
+              </p>
+              {subMessage ? (
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                  {subMessage}
+                </p>
+              ) : null}
+            </div>
           </div>
-          <h2 className="text-lg font-semibold">{heading}</h2>
         </div>
-        <p className="text-gray-600 mb-2">{message}</p>
-        {subMessage && <p className="text-sm text-gray-400">{subMessage}</p>}
 
- </div>
-        <div className="flex justify-end gap-4 mt-6 bg-gray-100 p-6 rounded-bl-2xl rounded-br-2xl">
+        <div className="flex flex-col-reverse gap-3 border-t border-gray-100 bg-gray-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
           <button
+            type="button"
             onClick={onCancel}
-            className="text-gray-600 font-medium hover:text-gray-800"
+            className="order-2 rounded-full px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-200/60 hover:text-gray-900 sm:order-1"
           >
             Cancel
           </button>
           <button
-            type='submit'
+            type="button"
             onClick={onConfirm}
-            className="bg-green-600 text-white px-5 py-2 rounded-full font-medium hover:bg-green-700 transition"
+            className="order-1 min-h-[44px] rounded-full border-0 bg-[#03442C] px-6 py-2.5 text-sm font-semibold text-white shadow-sm outline-none transition hover:bg-[#022f21] focus-visible:ring-2 focus-visible:ring-[#03442C] focus-visible:ring-offset-2 sm:order-2"
           >
             Save Changes
           </button>

@@ -88,79 +88,74 @@ const CreatePropertyScreen = () => {
   });
 
   const validateForm = () => {
-    let errors: { [key: string]: string } = {};
+    const nextErrors: { [key: string]: string } = {};
 
     if (!propertyData.location.trim()) {
-      errors.location = "Address/Location is required";
+      nextErrors.location = "Address/Location is required";
     }
     if (!propertyData.city.trim()) {
-      errors.city = "City is required";
+      nextErrors.city = "City is required";
     }
     if (!propertyData.state.trim()) {
-      errors.state = "State is required";
+      nextErrors.state = "State is required";
     }
     if (!selectedFiles || selectedFiles.length === 0) {
-      errors.file = "A file is required";
+      nextErrors.file = "A file is required";
     }
 
     if (!propertyData.units || propertyData.units.length === 0) {
-      errors.units = "At least one room/unit must be added";
+      nextErrors.units = "At least one room/unit must be added";
     } else {
       propertyData.units.forEach((unit, index) => {
         if (!unit.description?.trim() || !unit.rentAmount?.trim()) {
-          errors[`unit-${index}`] = `Room ${
+          nextErrors[`unit-${index}`] = `Room ${
             index + 1
           }: Name and rent are required`;
         }
       });
     }
 
-    // ✅ Show a single toast if any errors exist
-    if (Object.keys(errors).length > 0) {
-      toast.error("All fields are required");
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      toast.error("Please fill in all required fields.");
       return false;
     }
 
+    setErrors({});
     return true;
   };
 
-  const handleNextAndVerify = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const submitProperty = async () => {
+    if (!validateForm()) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("location", propertyData.location);
     formData.append("buildingType", buildingType.value);
-    // formData.append("name", buildingType.name);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
     formData.append("file", selectedFiles);
-    
+
     formData.append("createdBy", user?._id);
-    
-    // Create units data without images for JSON
-    const unitsWithoutImages = propertyData.units.map(unit => ({
+
+    const unitsWithoutImages = propertyData.units.map((unit) => ({
       ...unit,
-      images: [] // Remove images from JSON data
+      images: [],
     }));
     formData.append("units", JSON.stringify(unitsWithoutImages));
 
-    // Append unit images as a separate field that backend can process
-    let totalImages = 0;
-    propertyData.units.forEach((unit, unitIndex) => {
+    propertyData.units.forEach((unit) => {
       if (unit.images && unit.images.length > 0) {
-        unit.images.forEach((image, imageIndex) => {
+        unit.images.forEach((image) => {
           formData.append(`unitImages`, image);
-          totalImages++;
         });
       }
     });
-    
-    console.log(`Total unit images being sent: ${totalImages}`);
-    console.log('Units data:', JSON.parse(formData.get('units') as string));
 
     try {
       setLoading(true);
+      setShowModal(false);
       await dispatch(createProperty(formData) as any).unwrap();
       setPropertyData({
         location: "",
@@ -176,19 +171,30 @@ const CreatePropertyScreen = () => {
             apartmentStyle: "",
             leaseTerms: "",
             rentAmountMetrics: "",
-            // availableUnits: "1",
             paymentOption: "",
             otherAmentities: [],
           },
         ],
       });
       setSelectedFiles([]);
-      setLoading(false);
       setCurrentAmountStep(1);
     } catch (error: any) {
-      setLoading(false);
       toast.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleFormAttemptSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    setShowModal(true);
+  };
+
+  const handleConfirmModalSubmit = () => {
+    void submitProperty();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -329,7 +335,7 @@ const CreatePropertyScreen = () => {
           >
             {currentAmountStep === 0 && (
               <form
-                onSubmit={handleNextAndVerify}
+                onSubmit={handleFormAttemptSubmit}
                 encType="multipart/form-data"
               >
                 <div className="mx-auto max-w-6xl rounded-md bg-white p-3 shadow-sm font-jakarta sm:p-6 md:p-8">
@@ -356,8 +362,7 @@ const CreatePropertyScreen = () => {
                         className="px-6 py-1.5 rounded-md w-full md:w-auto"
                         isLoading={loading}
                         disabled={loading}
-                        onClick={() => setShowModal(true)}
-                        // type="submit"
+                        type="submit"
                       >
                         {loading ? "Submitting" : "Submit"}
                       </Button>
@@ -420,12 +425,13 @@ const CreatePropertyScreen = () => {
                           label: propertyData.state,
                           value: propertyData.state,
                         }}
-                        onChange={(val: any) =>
+                        onChange={(val: any) => {
                           setPropertyData({
                             ...propertyData,
-                            state: val?.value,
-                          })
-                        }
+                            state: val?.value ?? "",
+                          });
+                          setErrors((prev) => ({ ...prev, state: "" }));
+                        }}
                         options={nigerianStates}
                         placeholder="Select State"
                         error={errors.state}
@@ -936,7 +942,7 @@ const CreatePropertyScreen = () => {
                   message={`Do you want to add a new property Listings?`}
                   subMessage="If you leave this page, any changes you made will be lost if you do not save them."
                   onCancel={() => setShowModal(false)}
-                  onConfirm={() => handleNextAndVerify}
+                  onConfirm={handleConfirmModalSubmit}
                 />
               </form>
             )}

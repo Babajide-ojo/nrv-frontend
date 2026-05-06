@@ -170,8 +170,8 @@ const MetricCard: React.FC<MetricCard> = ({ title, count, change, icon }) => {
     : "text-[#8D8B99]";
 
   return (
-    <div className="p-3 border bg-white flex items-start">
-      <div>
+    <div className="flex w-full items-start justify-between gap-3 border bg-white p-3">
+      <div className="min-w-0">
         <p className="text-[#767484] text-sm">{title}</p>
         <p className="text-3xl font-semibold my-6">{count || 0}</p>
         <div className={`flex items-center gap-2 mt-2 text-xs ${changeColor}`}>
@@ -184,7 +184,9 @@ const MetricCard: React.FC<MetricCard> = ({ title, count, change, icon }) => {
           <span>{change} compared to last month</span>
         </div>
       </div>
-      <img src={icon} alt={title} />
+      <div className="ml-auto shrink-0">
+        <img src={icon} alt={title} className="block h-10 w-10 sm:h-12 sm:w-12" />
+      </div>
     </div>
   );
 };
@@ -370,8 +372,14 @@ const DashboardScreen: React.FC = () => {
             }))
           );
         }
-        if (financialData?.length) {
-          setChartData(financialData);
+        if (Array.isArray(financialData) && financialData.length > 0) {
+          setChartData(
+            financialData.map((x: any) => ({
+              month: String(x?.month ?? ""),
+              income: Number(x?.income ?? 0) || 0,
+              expenses: Number(x?.expenses ?? 0) || 0,
+            }))
+          );
         }
       }
     } catch (error) {

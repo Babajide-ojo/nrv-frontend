@@ -65,6 +65,8 @@ interface VerificationResponse {
     aml: string;
     phone: string;
     creditSummary: string;
+    financialAffordability?: string;
+    creditDebtToIncomeRatio?: number | null;
     idDocument: string;
     utilityBill: string;
     personalSection: string;
@@ -75,6 +77,10 @@ interface VerificationResponse {
     riskCategory?: string;
     recommendation?: string;
   };
+  creditFinancialSnapshot?: {
+    affordabilityBand?: string;
+    debtToIncomeRatio?: number | null;
+  } | null;
 }
 
 /** Output shape from manualReviewEmploymentGuarantorCopy (employment / guarantor rows). */
@@ -176,6 +182,42 @@ function phoneCheck(v: VerificationResponse): { label: string; tone: CheckTone }
     return { label: "Invalid", tone: "bad" };
   }
   return { label: "Pending", tone: "warn" };
+}
+
+function creditAffordabilityCheck(
+  v: VerificationResponse,
+  tier?: "standard" | "premium",
+): { label: string; tone: CheckTone } {
+  if (tier !== "premium") {
+    return { label: "Not included (standard)", tone: "neutral" };
+  }
+  const outcome = v.landlordReport?.creditSummary;
+  const band = v.landlordReport?.financialAffordability;
+  if (outcome === "not_provided" || outcome === "not_available" || outcome === "not_run") {
+    return { label: "Pending / unavailable", tone: "warn" };
+  }
+  if (outcome === "error") {
+    return { label: "Bureau check failed", tone: "bad" };
+  }
+  if (outcome === "no_hit") {
+    return { label: "No bureau record", tone: "warn" };
+  }
+  if (band === "strong" || outcome === "strong") {
+    return { label: "Strong affordability", tone: "good" };
+  }
+  if (band === "adequate" || outcome === "adequate") {
+    return { label: "Adequate", tone: "good" };
+  }
+  if (band === "stretched" || outcome === "stretched") {
+    return { label: "Stretched", tone: "warn" };
+  }
+  if (band === "high_risk" || outcome === "high_risk") {
+    return { label: "High debt burden", tone: "bad" };
+  }
+  if (outcome === "available") {
+    return { label: "On file", tone: "good" };
+  }
+  return { label: "Review credit", tone: "warn" };
 }
 
 function addressCheck(v: VerificationResponse): { label: string; tone: CheckTone } {
@@ -290,8 +332,24 @@ function landlordSummaryParagraphs(v: VerificationResponse, band: RiskBand): str
     );
   }
   if (v.monthlyIncome && v.monthlyIncome > 0) {
+    const fin = v.landlordReport?.financialAffordability;
+    const dti = v.landlordReport?.creditDebtToIncomeRatio;
+    let creditNote = "";
+    if (fin === "strong") {
+      creditNote = " Credit bureau supports affordability relative to stated income.";
+    } else if (fin === "stretched") {
+      creditNote = " Credit bureau suggests finances are stretched — confirm rent is affordable.";
+    } else if (fin === "high_risk") {
+      creditNote = " Credit bureau indicates elevated debt vs stated income — extra due diligence advised.";
+    } else if (fin === "unknown" && v.landlordReport?.creditSummary === "no_hit") {
+      creditNote = " No credit bureau hit — rely on payslips and employment proof for affordability.";
+    }
+    const dtiNote =
+      dti != null && dti > 0
+        ? ` Estimated debt-to-income (bureau): ${Math.round(dti * 100)}% of stated monthly income.`
+        : "";
     out.push(
-      `Financial context: Stated monthly income is on file. ${band === "low" ? "Capacity appears supportive for typical rent levels, subject to your asking price." : "Cross-check against rent and obtain documentation where checks are open."}`,
+      `Financial context: Stated monthly income is on file.${creditNote}${dtiNote} ${band === "low" ? "Capacity appears supportive for typical rent levels, subject to your asking price." : "Cross-check against rent and obtain documentation where checks are open."}`,
     );
   }
   out.push(
@@ -304,7 +362,11 @@ function landlordSummaryParagraphs(v: VerificationResponse, band: RiskBand): str
   return out;
 }
 
-function recommendedNextSteps(band: RiskBand, v: VerificationResponse): string[] {
+function recommendedNextSteps(
+  band: RiskBand,
+  v: VerificationResponse,
+  tier?: "standard" | "premium",
+): string[] {
   const company = v.companyName?.trim() || "the employer on file";
   const lr = v.landlordReport;
   const employmentReviewerVerified =
@@ -332,6 +394,16 @@ function recommendedNextSteps(band: RiskBand, v: VerificationResponse): string[]
     "Verify the phone number directly. Call or WhatsApp — if it is unreachable or belongs to someone else, treat that as a red flag.",
   ];
 
+  if (tier === "premium" && lr?.financialAffordability === "high_risk") {
+    steps.push(
+      "Credit bureau shows elevated debt vs stated income — consider a larger deposit, guarantor, or declining until debt is explained.",
+    );
+  } else if (tier === "premium" && lr?.financialAffordability === "stretched") {
+    steps.push(
+      "Confirm monthly rent is comfortable after existing loan obligations shown on the bureau report.",
+    );
+  }
+
   if (!employmentReviewerVerified) {
     steps.push(
       `Request proof of employment — offer letter, payslip, or HR contact from Indigene Systems (or directly from ${company}) to confirm the income claim.`,
@@ -354,19 +426,46 @@ function recommendedNextSteps(band: RiskBand, v: VerificationResponse): string[]
   return steps;
 }
 
-function affordabilityHeadline(v: VerificationResponse, band: RiskBand): string {
+function affordabilityHeadline(
+  v: VerificationResponse,
+  band: RiskBand,
+  tier?: "standard" | "premium",
+): string {
   const inc = v.monthlyIncome;
+  const fin = v.landlordReport?.financialAffordability;
   if (!inc) return "Unconfirmed affordability estimate";
+  if (tier === "premium" && fin === "high_risk") {
+    return "Bureau: high debt vs stated income — verify rent is affordable";
+  }
+  if (tier === "premium" && fin === "stretched") {
+    return "Bureau: finances stretched — confirm against rent and debt";
+  }
+  if (tier === "premium" && fin === "strong" && inc >= 500_000) {
+    return "Bureau and income support typical rent bands";
+  }
+  if (tier === "premium" && v.landlordReport?.creditSummary === "no_hit") {
+    return "No bureau record — validate income with documents";
+  }
   if (band === "low" && inc >= 500_000) return "High capacity for typical rent bands";
   if (band === "moderate" || band === "elevated") return "Mid-range — confirm against your asking rent";
   if (band === "high") return "Unconfirmed until open checks close";
   return "Income on file — validate against rent";
 }
 
-function capacityBarPercent(v: VerificationResponse): number {
+function capacityBarPercent(v: VerificationResponse, tier?: "standard" | "premium"): number {
   const inc = v.monthlyIncome;
   if (!inc) return 15;
-  const pct = Math.min(100, Math.round((inc / 2_000_000) * 100));
+  let pct = Math.min(100, Math.round((inc / 2_000_000) * 100));
+  const fin = v.landlordReport?.financialAffordability;
+  if (tier === "premium" && fin === "strong") {
+    pct = Math.min(100, pct + 12);
+  }
+  if (tier === "premium" && fin === "stretched") {
+    pct = Math.max(15, pct - 18);
+  }
+  if (tier === "premium" && fin === "high_risk") {
+    pct = Math.max(12, pct - 30);
+  }
   return Math.max(20, pct);
 }
 
@@ -612,10 +711,12 @@ const VerificationResponsePage = () => {
   const adCh = addressCheck(verificationData);
   const empCh = employmentCheckShort(empReview);
   const guCh = guarantorCheckShort(verificationData, guReview);
+  const tier = verificationRequest?.verificationTier;
+  const crCh = creditAffordabilityCheck(verificationData, tier);
   const summaryParas = landlordSummaryParagraphs(verificationData, band);
-  const nextSteps = recommendedNextSteps(band, verificationData);
-  const aff = affordabilityHeadline(verificationData, band);
-  const capPct = capacityBarPercent(verificationData);
+  const nextSteps = recommendedNextSteps(band, verificationData, tier);
+  const aff = affordabilityHeadline(verificationData, band, tier);
+  const capPct = capacityBarPercent(verificationData, tier);
   const strokeCol = gaugeColor(band);
   const gaugeR = 44;
   const circum = 2 * Math.PI * gaugeR;
@@ -787,6 +888,10 @@ const VerificationResponsePage = () => {
                     <li className="flex justify-between gap-4 text-sm border-b border-gray-100 pb-2">
                       <span className="text-gray-700">Employment</span>
                       <span className={toneClass(empCh.tone)}>{empCh.label}</span>
+                    </li>
+                    <li className="flex justify-between gap-4 text-sm border-b border-gray-100 pb-2">
+                      <span className="text-gray-700">Credit / affordability</span>
+                      <span className={toneClass(crCh.tone)}>{crCh.label}</span>
                     </li>
                     <li className="flex justify-between gap-4 text-sm pb-1">
                       <span className="text-gray-700">Guarantor</span>

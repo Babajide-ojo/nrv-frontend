@@ -8,11 +8,24 @@ import { useState, useEffect, useMemo } from "react";
 import { FiInfo } from "react-icons/fi";
 import { apiService } from "@/lib/api";
 
+const BVN_PATTERN = /^\d{11}$/;
+
+const maskBvn = (bvn: string) => {
+  const digits = bvn.replace(/\D/g, "");
+  if (digits.length < 4) return "—";
+  return `*******${digits.slice(-4)}`;
+};
+
 interface PersonalInfoVerificationProps {
   verificationId: string | string[];
   initialData?: any;
-  /** Verification request (firstName, lastName, email) from parent - avoids duplicate API calls */
-  requestData?: { firstName?: string; lastName?: string; email?: string } | null;
+  /** Verification request from parent - avoids duplicate API calls */
+  requestData?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    verificationTier?: "standard" | "premium";
+  } | null;
 }
 
 const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialData, requestData: requestDataProp }: PersonalInfoVerificationProps) => {
@@ -25,10 +38,12 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     email: "",
     phone: "",
     nin: "",
+    bvn: "",
     dateOfBirth: "",
     gender: "",
     address: "",
   });
+  const [verificationTier, setVerificationTier] = useState<"standard" | "premium">("standard");
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isPrefilled, setIsPrefilled] = useState(false);
   const [verificationResponseId, setVerificationResponseId] = useState<string | null>(null);
@@ -44,9 +59,11 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    const normalized =
+      name === "bvn" || name === "nin" ? value.replace(/\D/g, "").slice(0, 11) : value;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: normalized,
     }));
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -76,6 +93,9 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       // 1) Populate form first from GET /verification/:id (verification request – landlord invite)
       if (requestDataProp) {
         prefillFromRequest(requestDataProp);
+        if (requestDataProp.verificationTier === "premium" || requestDataProp.verificationTier === "standard") {
+          setVerificationTier(requestDataProp.verificationTier);
+        }
       }
       // 2) Overlay GET /verification/response/by-request/:id data if present (saved submission)
       if (initialData) {
@@ -93,6 +113,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           email: initialData.email || prev.email,
           phone: initialData.phone || prev.phone,
           nin: initialData.nin || prev.nin,
+          bvn: initialData.bvn || prev.bvn,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
           address: initialData.address || prev.address,
@@ -104,6 +125,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           email: initialData.email || prev.email,
           phone: initialData.phone || prev.phone,
           nin: initialData.nin || prev.nin,
+          bvn: initialData.bvn || prev.bvn,
           dateOfBirth: initialData.dateOfBirth ? format(new Date(initialData.dateOfBirth), "yyyy-MM-dd") : prev.dateOfBirth,
           gender: initialData.gender || prev.gender,
           address: initialData.address || prev.address,
@@ -136,10 +158,18 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       if (!verificationIdParam) return;
 
       // Fetch verification request once to get firstName, lastName, email for prefill (and tenantEmail if missing)
-      let requestData: { firstName?: string; lastName?: string; email?: string } | null = null;
+      let requestData: {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        verificationTier?: "standard" | "premium";
+      } | null = null;
       try {
         const reqRes = await apiService.get(`/verification/${verificationIdParam}`);
         requestData = reqRes?.data?.data ?? reqRes?.data ?? null;
+        if (requestData?.verificationTier === "premium" || requestData?.verificationTier === "standard") {
+          setVerificationTier(requestData.verificationTier);
+        }
         if (requestData?.email) {
           if (!tenantEmail) tenantEmail = requestData.email;
           if (typeof window !== "undefined") {
@@ -167,6 +197,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             email: data.email || "",
             phone: data.phone || "",
             nin: data.nin || "",
+            bvn: data.bvn || "",
             dateOfBirth: data.dateOfBirth ? format(new Date(data.dateOfBirth), "yyyy-MM-dd") : "",
             gender: data.gender || "",
             address: data.address || "",
@@ -194,26 +225,82 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     "email",
     "phone",
     "nin",
+    "bvn",
     "dateOfBirth",
     "gender",
     "address",
   ] as const;
 
+  const isPremium = verificationTier === "premium";
+  const bvnMissing = !formData.bvn?.trim();
+  const canEditBvn = !isPrefilled || bvnMissing;
+
   const isDirty = useMemo(() => {
-    return formKeys.some(key => formData[key] !== prefilledData[key]);
+    return formKeys.some((key) => formData[key] !== prefilledData[key]);
   }, [formData, prefilledData]);
 
+  const validateForm = (): boolean => {
+    const nextErrors: { [key: string]: string } = {};
+    if (!formData.firstName.trim()) nextErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) nextErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) nextErrors.email = "Email is required";
+    if (!formData.phone.trim()) nextErrors.phone = "Phone number is required";
+    if (!formData.nin.trim() || !BVN_PATTERN.test(formData.nin.trim())) {
+      nextErrors.nin = "Enter a valid 11-digit NIN";
+    }
+    if (isPremium && (!formData.bvn.trim() || !BVN_PATTERN.test(formData.bvn.trim()))) {
+      nextErrors.bvn = "BVN is required for premium verification (11 digits)";
+    } else if (formData.bvn.trim() && !BVN_PATTERN.test(formData.bvn.trim())) {
+      nextErrors.bvn = "Enter a valid 11-digit BVN";
+    }
+    if (!formData.dateOfBirth) nextErrors.dateOfBirth = "Date of birth is required";
+    if (!formData.gender) nextErrors.gender = "Gender is required";
+    if (!formData.address.trim()) nextErrors.address = "Address is required";
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const allFieldsFilled = useMemo(() => {
-    return Object.values(formData).every((val) => val && val !== "");
-  }, [formData]);
+    const baseFilled = formKeys.every((key) => {
+      if (key === "bvn" && !isPremium) {
+        return true;
+      }
+      const val = formData[key];
+      return val && val !== "";
+    });
+    if (!isPremium) {
+      return baseFilled;
+    }
+    return baseFilled && BVN_PATTERN.test(formData.bvn.trim());
+  }, [formData, isPremium]);
 
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+    if (isPrefilled && verificationResponseId && formData.bvn !== prefilledData.bvn && formData.bvn.trim()) {
+      try {
+        await apiService.patch(`/verification/${verificationResponseId}/personal`, {
+          bvn: formData.bvn.trim(),
+        });
+        setPrefilledData((prev) => ({ ...prev, bvn: formData.bvn.trim() }));
+      } catch (error: any) {
+        const msg =
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to save BVN.";
+        alert(Array.isArray(msg) ? msg.join(", ") : msg);
+        return;
+      }
+    }
     if (allFieldsFilled && isPrefilled) {
       if (!verificationId) {
         alert('Verification ID missing.');
         return;
       }
-      // Keep REQUEST id in URL so next step can fetch by-request/requestId?email=
+      if (isPremium && bvnMissing) {
+        return;
+      }
       router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
       return;
     }
@@ -240,6 +327,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       email: formData.email,
       phone: formData.phone || undefined,
       nin: formData.nin,
+      ...(formData.bvn.trim() ? { bvn: formData.bvn.trim() } : {}),
       gender: formData.gender,
       address: formData.address,
       verificationId: verificationId,
@@ -316,6 +404,26 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               error={errors.nin}
               disabled={isPrefilled}
             />
+            <div>
+              <InputField
+                label="BVN (Bank Verification Number)"
+                name="bvn"
+                placeholder="11-digit BVN"
+                value={formData.bvn}
+                onChange={handleInputChange}
+                error={errors.bvn}
+                disabled={!canEditBvn}
+              />
+              <p className="text-xs text-gray-500 mt-1.5 flex items-start gap-1">
+                <FiInfo className="shrink-0 mt-0.5" />
+                {isPremium
+                  ? "Required for premium checks. Credit bureau uses your BVN only — not your NIN."
+                  : "Optional for standard verification. Provide your BVN if you want credit checks later."}
+              </p>
+              {isPrefilled && formData.bvn && !canEditBvn && (
+                <p className="text-xs text-gray-500 mt-1">Saved as {maskBvn(formData.bvn)}</p>
+              )}
+            </div>
             <InputField
               label="Date of Birth"
               name="dateOfBirth"

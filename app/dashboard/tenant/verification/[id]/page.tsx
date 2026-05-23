@@ -176,21 +176,23 @@ const TenantVerificationIdPage = () => {
       </div>
       <div className="max-w-[1100px] mx-auto w-full py-10 px-5 rounded-lg bg-white">
         <div className="max-w-[900px] mx-auto w-full">
-          <div className="flex items-center mb-8 flex-wrap gap-2">
+          <div className="flex flex-nowrap items-center justify-between mb-8 gap-1 md:gap-2 md:justify-start">
             {stages.map((stage, index) => (
-              <div key={index} className="flex items-center">
+              <div key={index} className="flex shrink-0 items-center">
                 <button
                   type="button"
                   onClick={() => handleStepClick(stage.value)}
                   disabled={!verificationId}
-                  className={`flex items-center gap-1 border py-1.5 px-3 rounded-full text-left transition-colors ${
+                  aria-label={`Step ${index + 1}: ${stage.label}`}
+                  aria-current={index === currentStageIndex ? "step" : undefined}
+                  className={`flex items-center rounded-full border text-left transition-colors md:gap-1 md:py-1.5 md:px-3 p-1.5 ${
                     index <= currentStageIndex
                       ? "border-[#2B892B] hover:bg-green-50"
                       : "border-gray-200 hover:border-gray-300"
                   } ${!verificationId ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
                 >
                   <div
-                    className={`w-[18px] h-[18px] rounded-full flex items-center border justify-center text-[10px] font-medium shrink-0 ${
+                    className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full border text-[10px] font-medium md:h-[18px] md:w-[18px] ${
                       index < currentStageIndex
                         ? "border-[#2B892B] bg-[#2B892B] text-white"
                         : index === currentStageIndex
@@ -205,7 +207,7 @@ const TenantVerificationIdPage = () => {
                     )}
                   </div>
                   <span
-                    className={`text-[10px] mt-1 text-center ${
+                    className={`hidden text-[10px] md:inline md:mt-1 md:text-center ${
                       index === currentStageIndex
                         ? "text-[#2B892B] font-medium"
                         : "text-gray-500"
@@ -216,7 +218,7 @@ const TenantVerificationIdPage = () => {
                 </button>
                 {index < stages.length - 1 && (
                   <div
-                    className={`w-8 h-0.5 ml-2 shrink-0 ${
+                    className={`mx-1 h-0.5 w-4 shrink-0 md:mx-2 md:ml-2 md:w-8 ${
                       index < currentStageIndex ? "bg-[#2B892B]" : "bg-gray-200"
                     }`}
                   />

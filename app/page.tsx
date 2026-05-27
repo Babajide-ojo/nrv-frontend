@@ -9,15 +9,15 @@ import HomePageLayout from "./components/layout/HomePageLayout";
 // Previous marketing page kept for reference:
 // import LandingPage from "./components/screens/landing-page/LandingPage";
 import NewLanding from "./components/screens/landing-page/NewLanding";
+import { isValidLandingAccessCode } from "@/lib/landing-access-codes";
 
 export default function Index() {
   const [code, setCode] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
-  const correctCode = "phlip2025"; // Change this to your desired code
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.trim().toLowerCase() === correctCode) {
+    if (isValidLandingAccessCode(code)) {
       setAccessGranted(true);
     } else {
       alert("Incorrect code. Please try again.");

@@ -15,7 +15,7 @@ const MAX_CREDIT_QTY = 999;
 
 function fallbackUnitPrice(plan: { slug?: string; unitPriceNaira?: number }) {
   if (plan.unitPriceNaira != null && plan.unitPriceNaira > 0) return plan.unitPriceNaira;
-  return plan.slug === "premium" ? 400 : 200;
+  return plan.slug === "premium" ? 25_000 : 15_000;
 }
 
 function friendlyPlanDescription(isPremium: boolean) {

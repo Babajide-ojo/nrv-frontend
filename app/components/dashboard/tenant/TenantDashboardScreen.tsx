@@ -13,6 +13,7 @@ import { LuMapPin } from "react-icons/lu";
 import { API_URL } from "@/config/constant";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
+import PendingVerificationRequests from "@/app/components/dashboard/tenant/PendingVerificationRequests";
 
 function getRoomFromItem(item: any) {
   const room = item?.propertyId;
@@ -298,9 +299,12 @@ const TenantDashboardScreen = () => {
       <p className="text-2xl font-semibold text-swGray800 flex gap-2">
         Hey {user?.firstName} {user?.lastName}👋,
       </p>
-      <p className="mt-2 mb-8 text-sm text-gray-600">
+      <p className="mt-2 mb-6 text-sm text-gray-600">
         Welcome back. Track your rented units and discover available homes from here.
       </p>
+
+      <PendingVerificationRequests />
+
       <div className="w-full">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {tenantDashboardMetrics.map(

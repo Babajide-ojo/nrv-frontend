@@ -6,6 +6,8 @@ interface Option {
   label: string;
 }
 
+type SelectFieldVariant = "flat" | "nested";
+
 interface Props {
   label: string;
   name: string;
@@ -18,50 +20,77 @@ interface Props {
   value: any;
   disabled?: boolean;
   onBlur?: any;
-  error?: any
+  error?: any;
+  variant?: SelectFieldVariant;
 }
 
-const customStyles = {
-  control: (provided: any, state: any) => ({
+const buildCustomStyles = (variant: SelectFieldVariant) => ({
+  control: (provided: any) => ({
     ...provided,
-    borderColor: "#E0E0E6", // Grey border always
+    borderColor: "transparent",
     borderWidth: "0px",
-    boxShadow: "none", // Remove blue border on focus
+    boxShadow: "none",
     backgroundColor: "transparent",
-    borderRadius: "5px",
+    borderRadius: variant === "nested" ? "6px" : "5px",
     fontSize: "14px",
     fontWeight: 400,
-    color: "#807F94",
-    padding: "2px",
-    height: "40px",
+    color: "#1E293B",
+    padding: "0px",
+    minHeight: variant === "nested" ? "44px" : "40px",
+    cursor: "pointer",
+  }),
+
+  valueContainer: (provided: any) => ({
+    ...provided,
+    padding: "2px 8px",
+  }),
+
+  indicatorsContainer: (provided: any) => ({
+    ...provided,
+    paddingRight: "4px",
+  }),
+
+  indicatorSeparator: (provided: any) => ({
+    ...provided,
+    backgroundColor: "#E2E8F0",
+    marginTop: 10,
+    marginBottom: 10,
   }),
 
   option: (provided: any, state: any) => ({
     ...provided,
-    backgroundColor: state.isFocused ? "#f5f5f5" : "white",
-    color: "#807F94",
-    borderRadius: "5px",
+    backgroundColor: state.isFocused ? "#F8FAFC" : "white",
+    color: "#1E293B",
     cursor: "pointer",
-    fontSize: "13px",
+    fontSize: "14px",
   }),
 
   placeholder: (provided: any) => ({
     ...provided,
-    color: "#807F94",
-    fontWeight: 300,
+    color: "#94A3B8",
+    fontWeight: 400,
   }),
 
   singleValue: (provided: any) => ({
     ...provided,
-    color: "#333333",
+    color: "#1E293B",
   }),
 
   input: (provided: any) => ({
     ...provided,
-    color: "#333333",
-    fontWeight: 300,
+    color: "#1E293B",
+    fontWeight: 400,
   }),
-};
+
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 20,
+    borderRadius: "8px",
+    overflow: "hidden",
+    border: "1px solid #E2E8F0",
+    boxShadow: "0 4px 12px rgba(15, 23, 42, 0.08)",
+  }),
+});
 
 const SelectField: React.FC<Props> = ({
   label,
@@ -75,7 +104,8 @@ const SelectField: React.FC<Props> = ({
   onBlur,
   value,
   disabled,
-  error
+  error,
+  variant = "flat",
 }) => {
   const handleSelectChange = (selectedOption: any) => {
     if (onChange) {
@@ -83,29 +113,52 @@ const SelectField: React.FC<Props> = ({
     }
   };
 
-  return (
-    <div>
-    <label htmlFor={name} className="flex gap-1 items-center w-full">
-        <span className="text-[#807F94] text-[12px] font-medium">{label}</span>
-        {required && <span className="text-red-600">*</span>}
-      </label>
-      <div className="border border-gray-300 rounded-lg pl-1.5 mt-1 bg-white">
-        <Select
-          name={name}
-          isDisabled={disabled}
-          styles={customStyles}
-          isSearchable={isSearchable}
-          isClearable={true}
-          options={options}
-          placeholder={placeholder}
-          value={value}
-          noOptionsMessage={noOptionsMessage}
-          onChange={handleSelectChange}
-          onBlur={onBlur}
-        />
+  const selectControl = (
+    <div
+      className={
+        variant === "nested"
+          ? "rounded-md border border-[#E2E8F0] bg-white px-1"
+          : "mt-1 rounded-lg border border-[#E2E8F0] bg-white pl-1.5"
+      }
+    >
+      <Select
+        name={name}
+        isDisabled={disabled}
+        styles={buildCustomStyles(variant)}
+        isSearchable={isSearchable}
+        isClearable={true}
+        options={options}
+        placeholder={placeholder}
+        value={value}
+        noOptionsMessage={noOptionsMessage}
+        onChange={handleSelectChange}
+        onBlur={onBlur}
+      />
+    </div>
+  );
+
+  const labelNode = (
+    <label htmlFor={name} className="mb-2 flex items-center gap-1">
+      <span className="text-sm font-medium text-[#4A5568]">{label}</span>
+      {required && <span className="text-red-500">*</span>}
+    </label>
+  );
+
+  if (variant === "nested") {
+    return (
+      <div className="w-full">
+        {labelNode}
+        {selectControl}
+        {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
       </div>
-            {/* Error Message */}
-            {error && <div className="text-xs text-red-700 mt-1">{error}</div>}
+    );
+  }
+
+  return (
+    <div className="w-full">
+      {labelNode}
+      {selectControl}
+      {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
     </div>
   );
 };

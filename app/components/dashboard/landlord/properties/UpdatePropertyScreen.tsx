@@ -176,6 +176,7 @@ const UpdatePropertyScreen = () => {
                     <InputField
                       label="Location"
                       name="location"
+                      placeholder="e.g. 27 Olarenwaju Street, Lekki"
                       value={propertyData.location}
                       onChange={handleInputChange}
                       error={errors.location}
@@ -184,6 +185,7 @@ const UpdatePropertyScreen = () => {
                     <InputField
                       label="City"
                       name="city"
+                      placeholder="e.g. Lagos"
                       value={propertyData.city}
                       onChange={handleInputChange}
                       error={errors.city}
@@ -192,6 +194,7 @@ const UpdatePropertyScreen = () => {
                     <SelectField
                       label="State"
                       name="state"
+                      placeholder="Select state"
                       value={propertyData.state}
                       onChange={handleInputChange}
                       options={nigerianStates}
@@ -201,6 +204,7 @@ const UpdatePropertyScreen = () => {
                     <SelectField
                       label="Building Type"
                       name="buildingType"
+                      placeholder="Select building type"
                       value={buildingType.value}
                       onChange={(e) =>
                         setBuildingType({ label: e.target.value, value: e.target.value })

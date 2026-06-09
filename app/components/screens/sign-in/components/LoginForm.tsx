@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import { LoginFormData, LoginFormErrors } from "../types";
 
@@ -17,15 +17,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onInputChange,
   onSubmit,
 }) => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(e);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {/* Email Field */}
       <div>
         <InputField
@@ -44,13 +42,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <div>
         <InputField
           label="Password"
-          inputType={showPassword ? "text" : "password"}
           name="password"
           value={formData.password}
           onChange={onInputChange}
           error={errors.password}
           password={true}
-          startIcon="/images/password-icon.svg"
           placeholder="Enter your password"
           required
         />

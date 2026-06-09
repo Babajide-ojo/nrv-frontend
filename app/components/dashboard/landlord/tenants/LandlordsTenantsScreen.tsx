@@ -6,12 +6,50 @@ import { useDispatch } from "react-redux";
 // import { updateApplicationStatus } from "../../../../redux/slices/propertySlice";
 import { toast } from "react-toastify";
 import { formatDateToWords } from "@/helpers/utils";
-import { RefreshCcw } from "lucide-react";
 // import DataTable from "../../shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { updateApplicationStatus } from "@/redux/slices/propertySlice";
+import { apiService } from "@/lib/api";
+
+type TenantManagementMetrics = {
+  retentionRate: number;
+  retentionRateChange: number;
+  rentCollectionRate: number;
+  rentCollectionRateChange: number;
+};
+
+const formatTrend = (change: number | null) => {
+  if (change === null) {
+    return null;
+  }
+  return {
+    trend: change >= 0 ? "up" : "down",
+    label: `${Math.abs(change)}%`,
+  };
+};
+
+const buildMetricCards = (metrics: TenantManagementMetrics | null) => {
+  if (!metrics) {
+    return [];
+  }
+
+  return [
+    {
+      title: "Retention Rate",
+      value: `${metrics.retentionRate}%`,
+      change: formatTrend(metrics.retentionRateChange),
+      comparison: "active tenants vs ended leases",
+    },
+    {
+      title: "Overall Rent Collection Status",
+      value: `${metrics.rentCollectionRate}%`,
+      change: formatTrend(metrics.rentCollectionRateChange),
+      comparison: "leases currently within rent period",
+    },
+  ];
+};
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -54,6 +92,9 @@ const LandlordsTenantsScreen = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [tenantMetrics, setTenantMetrics] =
+    useState<TenantManagementMetrics | null>(null);
 
   const [user, setUser] = useState<any>({});
   const [application, setApplication] = useState<any>([]);
@@ -99,9 +140,33 @@ const LandlordsTenantsScreen = () => {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
+    const stored = JSON.parse(localStorage.getItem("nrv-user") as any);
+    const currentUser = stored?.user;
+    setUser(currentUser);
+
+    const loadMetrics = async () => {
+      if (!currentUser?._id) {
+        setMetricsLoading(false);
+        return;
+      }
+
+      setMetricsLoading(true);
+      try {
+        const res: any = await apiService.get(
+          `/properties/landlord-tenant-metrics?id=${encodeURIComponent(currentUser._id)}`,
+        );
+        setTenantMetrics(res?.data?.data ?? res?.data ?? null);
+      } catch {
+        setTenantMetrics(null);
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+
+    loadMetrics();
   }, []);
+
+  const metricCards = buildMetricCards(tenantMetrics);
 
   return (
     <div>
@@ -115,65 +180,55 @@ const LandlordsTenantsScreen = () => {
                   Tenant Management
                 </h2>
                 <p className="text-gray-500 text-sm mt-2 font-lighter">
-                  View and manage your tentant directory.
+                  View and manage your tenant directory.
                 </p>
               </div>
               
             </div>
-            {
-              <div className="grid md:grid-cols-4 grid-cols-1 gap-4  mb-6 border border-gray-300 py-4">
-                {[
-                  {
-                    title: "Retention Rate",
-                    value: `${85}%`,
-                    change: "85%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Overall Rent Collection Status",
-                    value: `${90}%`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Complaint Resolution Rate",
-                    value: `${90}%`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                  {
-                    title: "Overall Tenant Satisfaction Score",
-                    value: `${4.5}/5`,
-                    change: "10%",
-                    trend: "up",
-                    comparison: "compared to the last 6 months",
-                  },
-                ].map((card, i) => (
-                  <div
-                    key={i}
-                    className={`${
-                      i === 0 && "max-md:pb-4"
-                    } md:border-r max-md:border-b last:border-none px-4`}
-                  >
-                    <p className="text-gray-500 text-sm">{card.title}</p>
-                    <h3 className="text-xl font-semibold text-green-900">
-                      {card.value}
-                    </h3>
-                    <p
-                      className={`text-xs mt-1 ${
-                        card.trend === "up" ? "text-green-600" : "text-red-500"
-                      }`}
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6 border border-gray-300 py-4">
+              {metricsLoading
+                ? [1, 2].map((item) => (
+                    <div
+                      key={item}
+                      className={`${
+                        item === 1 && "max-md:pb-4"
+                      } md:border-r max-md:border-b last:border-none px-4 animate-pulse`}
                     >
-                      {card.trend === "up" ? "↑" : "↓"} {card.change}{" "}
-                      {card.comparison}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            }
+                      <div className="h-4 w-28 rounded bg-gray-200 mb-3" />
+                      <div className="h-7 w-16 rounded bg-gray-200 mb-2" />
+                      <div className="h-3 w-full rounded bg-gray-100" />
+                    </div>
+                  ))
+                : metricCards.map((card, i) => (
+                    <div
+                      key={card.title}
+                      className={`${
+                        i === 0 && "max-md:pb-4"
+                      } md:border-r max-md:border-b last:border-none px-4`}
+                    >
+                      <p className="text-gray-500 text-sm">{card.title}</p>
+                      <h3 className="text-xl font-semibold text-green-900">
+                        {card.value}
+                      </h3>
+                      {card.change ? (
+                        <p
+                          className={`text-xs mt-1 ${
+                            card.change.trend === "up"
+                              ? "text-green-600"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {card.change.trend === "up" ? "↑" : "↓"}{" "}
+                          {card.change.label} {card.comparison}
+                        </p>
+                      ) : (
+                        <p className="text-xs mt-1 text-gray-500">
+                          {card.comparison}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+            </div>
 
             <div className="flex gap-3 flex-wrap">
               <Button

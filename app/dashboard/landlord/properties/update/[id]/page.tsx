@@ -241,6 +241,7 @@ const UpdatePropertyScreen = () => {
                         label="Property Address/Location"
                         name="streetAddress"
                         required
+                        placeholder="e.g. 27 Olarenwaju Street, Lekki"
                         value={propertyData.streetAddress}
                         onChange={handleInputChange}
                         error={errors.streetAddress}
@@ -262,6 +263,7 @@ const UpdatePropertyScreen = () => {
                         label="City"
                         name="city"
                         required
+                        placeholder="e.g. Lagos"
                         value={propertyData.city}
                         onChange={handleInputChange}
                         error={errors.city}
@@ -271,6 +273,7 @@ const UpdatePropertyScreen = () => {
                         label="State"
                         required
                         name="state"
+                        placeholder="Select state"
                         value={propertyData.state}
                         onChange={(val: any) => handleSelectChange("state", val)}
                         options={nigerianStates}

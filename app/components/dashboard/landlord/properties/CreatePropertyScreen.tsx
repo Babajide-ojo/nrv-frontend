@@ -392,13 +392,15 @@ const CreatePropertyScreen = () => {
                         label="Property Address/Location"
                         name="location"
                         required
+                        variant="nested"
+                        placeholder="e.g. 27 Olarenwaju Street, Lekki"
                         value={propertyData.location}
                         onChange={handleInputChange}
                         error={errors.location}
-                        css="bg-nrvLightGreyBg"
                       />
                       <SelectField
                         label="Building Type"
+                        variant="nested"
                         value={buildingType}
                         required
                         onChange={(val: any) => setBuildingType(val)}
@@ -413,13 +415,15 @@ const CreatePropertyScreen = () => {
                         label="City"
                         name="city"
                         required
+                        variant="nested"
+                        placeholder="e.g. Lagos"
                         value={propertyData.city}
                         onChange={handleInputChange}
                         error={errors.city}
-                        css="bg-nrvLightGreyBg"
                       />
                       <SelectField
                         label="State"
+                        variant="nested"
                         required
                         value={{
                           label: propertyData.state,
@@ -472,6 +476,8 @@ const CreatePropertyScreen = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                               <InputField
                                 label="Description"
+                                variant="nested"
+                                placeholder="Spacious 2-bedroom apartment with sea view"
                                 value={unit?.description}
                                 required
                                 icon={
@@ -505,6 +511,8 @@ const CreatePropertyScreen = () => {
 
                               <InputField
                                 label="Rent Amount"
+                                variant="nested"
+                                placeholder="250,000"
                                 value={formatDisplayValue(unit.rentAmount)}
                                 required
                                 // onKeyPress={preventNonNumeric}
@@ -520,6 +528,8 @@ const CreatePropertyScreen = () => {
 
                               <InputField
                                 label="Bedrooms"
+                                variant="nested"
+                                placeholder="2"
                                 value={unit.noOfRooms}
                                 required
                                 onChange={(e) =>
@@ -534,6 +544,8 @@ const CreatePropertyScreen = () => {
 
                               <InputField
                                 label="Bathrooms"
+                                variant="nested"
+                                placeholder="2"
                                 value={unit.noOfBaths}
                                 required
                                 onChange={(e) =>
@@ -547,6 +559,8 @@ const CreatePropertyScreen = () => {
                               />
                               <SelectField
                                 label="Apartment Style"
+                                variant="nested"
+                                placeholder="Select apartment style"
                                 value={{
                                   label: unit.apartmentStyle,
                                   value: unit.apartmentStyle,
@@ -572,6 +586,8 @@ const CreatePropertyScreen = () => {
 
                               <SelectField
                                 label="Lease Terms"
+                                variant="nested"
+                                placeholder="Select lease terms"
                                 value={{
                                   label: unit.leaseTerms,
                                   value: unit.leaseTerms,
@@ -599,6 +615,8 @@ const CreatePropertyScreen = () => {
 
                               <SelectField
                                 label="Rent Collection Preference"
+                                variant="nested"
+                                placeholder="Select rent collection preference"
                                 value={{
                                   label: unit.rentAmountMetrics,
                                   value: unit.rentAmountMetrics,
@@ -621,6 +639,8 @@ const CreatePropertyScreen = () => {
 
                               <SelectField
                                 label="Payment Option"
+                                variant="nested"
+                                placeholder="Select payment option"
                                 value={{
                                   label: unit.paymentOption,
                                   value: unit.paymentOption,

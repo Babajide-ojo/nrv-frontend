@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { toast } from "react-toastify";
 
@@ -122,6 +123,18 @@ const LoginScreen: React.FC = () => {
       {/* Right side - Login Form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
         <div className="max-w-md mx-auto w-full min-w-0">
+          <div className="lg:hidden flex justify-center mb-6">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/images/nrvlogo.jpg"
+                alt="NaijaRentVerify"
+                width={200}
+                height={50}
+                className="h-9 sm:h-10 w-auto max-w-[min(240px,88vw)] object-contain"
+              />
+            </Link>
+          </div>
+
           {/* Header */}
           <LoginHeader />
           
@@ -188,17 +201,15 @@ const LoginScreen: React.FC = () => {
           </Button>
           
           {/* Sign Up Link */}
-          <div className="text-center mt-4">
-            <Link 
-              href={ROUTES.SIGN_UP} 
-              className="text-sm text-[#645D5D] font-light hover:text-nrvPrimaryGreen transition-colors"
+          <p className="text-center mt-4 text-sm text-gray-500">
+            Are you new here?{" "}
+            <Link
+              href={ROUTES.SIGN_UP}
+              className="font-medium text-nrvPrimaryGreen hover:underline"
             >
-              Are you new here?{" "}
-              <span className="font-medium text-nrvPrimaryGreen">
-                Create Account
-              </span>
+              Create account
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </div>

@@ -32,7 +32,7 @@ const buildCustomStyles = (variant: SelectFieldVariant) => ({
     boxShadow: "none",
     backgroundColor: "transparent",
     borderRadius: variant === "nested" ? "6px" : "5px",
-    fontSize: "14px",
+    fontSize: "16px",
     fontWeight: 400,
     color: "#1E293B",
     padding: "0px",
@@ -62,7 +62,7 @@ const buildCustomStyles = (variant: SelectFieldVariant) => ({
     backgroundColor: state.isFocused ? "#F8FAFC" : "white",
     color: "#1E293B",
     cursor: "pointer",
-    fontSize: "14px",
+    fontSize: "16px",
   }),
 
   placeholder: (provided: any) => ({

@@ -34,7 +34,7 @@ interface InputFieldProps {
 const countryOptions: any = [{ code: "+234", country: "NG" }];
 
 const inputTextClass =
-  "w-full text-sm font-normal text-[#1E293B] bg-transparent border-none focus:outline-none placeholder:text-[#94A3B8] disabled:cursor-not-allowed disabled:opacity-60";
+  "w-full text-base font-normal text-[#1E293B] bg-transparent border-none focus:outline-none placeholder:text-[#94A3B8] disabled:cursor-not-allowed disabled:opacity-60";
 
 const getFieldShellClass = ({
   hasError,

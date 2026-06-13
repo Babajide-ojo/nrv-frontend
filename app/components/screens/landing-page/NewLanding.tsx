@@ -371,35 +371,38 @@ const NewLanding = () => {
       {/* Hero – id="home" for nav */}
       <section
         id="home"
-        className="relative min-h-[55vh] sm:min-h-[60vh] flex flex-col justify-center overflow-hidden"
+        className="relative flex flex-col justify-center overflow-hidden bg-white lg:min-h-[60vh] lg:bg-transparent"
       >
-        <div className="absolute inset-0 bg-[#03442C]" />
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
-        <div className="absolute top-24 right-10 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "3s" }} />
-        <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "4s", animationDelay: "0.5s" }} />
-        <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-20 pb-10 sm:pt-24 sm:pb-12">
+        <div className="absolute inset-0 hidden lg:block bg-[#03442C]" />
+        <div className="absolute inset-0 hidden lg:block opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+        <div className="absolute top-24 right-10 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-pulse hidden lg:block" style={{ animationDuration: "3s" }} />
+        <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none animate-pulse hidden lg:block" style={{ animationDuration: "4s", animationDelay: "0.5s" }} />
+        <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-6 pb-8 sm:pt-24 sm:pb-12">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] items-center gap-8 lg:gap-10">
-            <div className="text-left text-white">
-              <div className="hero-animate-1 flex flex-wrap gap-2">
+            <div className="text-left text-[#031B14] lg:text-white">
+              <div className="hero-animate-1 hidden lg:flex lg:flex-row lg:flex-wrap gap-2">
                 <Link
                   href="/sign-up?role=landlord"
-                  className="inline-flex items-center rounded-full bg-[#BBFF37] px-4 py-2 text-xs font-semibold text-[#031B14] shadow-sm transition hover:bg-[#d4ff6a]"
+                  className="inline-flex items-center justify-center rounded-full bg-[#BBFF37] px-4 py-2.5 text-sm font-semibold text-[#031B14] shadow-sm transition hover:bg-[#d4ff6a]"
                 >
                   Verify Tenants
                 </Link>
                 <Link
                   href="/sign-up?role=landlord"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/45 bg-white/5 px-4 py-2 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[#03442C]/20 bg-white px-4 py-2.5 text-sm font-semibold text-[#03442C] transition hover:bg-gray-50 lg:border-white/45 lg:bg-white/5 lg:text-white lg:backdrop-blur-sm lg:hover:bg-white/10"
                 >
-                  <Home className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <Home className="h-4 w-4 shrink-0" aria-hidden />
                   List a Home
                 </Link>
               </div>
-              <h1 className="hero-animate-2 mt-5 text-4xl sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.12]">
+              <h1 className="hero-animate-2 mt-0 sm:mt-5 text-[1.875rem] sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] sm:leading-[1.12] text-[#03442C] lg:text-white">
                 Find Trustworthy Tenants
               </h1>
-              <div className="hero-animate-4 mt-6 flex max-w-xl flex-col gap-2 sm:flex-row sm:items-stretch">
-                <label className="relative flex flex-1 items-center rounded-xl bg-white px-3 py-2.5 shadow-md ring-1 ring-black/5">
+              <p className="hero-animate-3 mt-3 text-[15px] leading-relaxed text-gray-600 lg:hidden">
+                Verify identity, rental history, and references before you sign any lease.
+              </p>
+              <div className="hero-animate-4 mt-5 sm:mt-6 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-stretch">
+                <label className="relative flex flex-1 items-center rounded-xl bg-white px-3 py-3 shadow-sm ring-1 ring-gray-200 lg:shadow-md lg:ring-black/5">
                   <span className="sr-only">Phone number</span>
                   <Phone className="pointer-events-none absolute left-3.5 h-4 w-4 text-gray-400" aria-hidden />
                   <input
@@ -409,18 +412,25 @@ const NewLanding = () => {
                     placeholder="+234 901 234 5678"
                     value={heroPhone}
                     onChange={(e) => setHeroPhone(e.target.value)}
-                    className="w-full rounded-lg border-0 bg-transparent py-1 pl-9 pr-2 text-sm text-[#031B14] outline-none placeholder:text-gray-400"
+                    className="w-full rounded-lg border-0 bg-transparent py-0.5 pl-9 pr-2 text-base text-[#031B14] outline-none placeholder:text-gray-400"
                   />
                 </label>
                 <button
                   type="button"
                   onClick={() => setVerifyPreviewOpen(true)}
-                  className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[#022818] px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-[#031f14] sm:min-w-[140px]"
+                  className="inline-flex w-full shrink-0 items-center justify-center rounded-xl bg-[#03442C] px-6 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-[#022818] sm:w-auto sm:min-w-[140px] lg:bg-[#BBFF37] lg:text-[#031B14] lg:hover:bg-[#d4ff6a]"
                 >
                   Verify Tenant
                 </button>
               </div>
-              <p className="hero-animate-5 mt-4 flex gap-2 text-sm leading-relaxed text-emerald-50/95 max-w-xl">
+              <Link
+                href="/sign-up?role=landlord"
+                className="hero-animate-5 mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#03442C] underline-offset-2 hover:underline lg:hidden"
+              >
+                <Home className="h-4 w-4 shrink-0" aria-hidden />
+                List a property instead
+              </Link>
+              <p className="hero-animate-5 mt-4 hidden gap-2 text-sm leading-relaxed text-emerald-50/95 max-w-xl lg:flex">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#BBFF37]" aria-hidden />
                 <span>
                   Before signing any lease, protect your property by thoroughly verifying your
@@ -429,21 +439,21 @@ const NewLanding = () => {
                 </span>
               </p>
             </div>
-            <div className="relative mt-6 lg:mt-0 hero-img-wrap">
-              <div className="relative aspect-[4/3] max-h-[300px] overflow-hidden rounded-2xl shadow-2xl ring-2 ring-white/10 sm:max-h-[340px] lg:aspect-[5/4] lg:max-h-[420px]">
+            <div className="relative hidden lg:block hero-img-wrap">
+              <div className="relative aspect-[5/4] max-h-[420px] overflow-hidden rounded-2xl shadow-2xl ring-2 ring-white/10">
                 <Image
                   src="/images/hero-couple.jpg"
                   alt="Happy couple — verified tenants and confident landlords"
                   fill
                   className="object-cover object-[center_20%]"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  sizes="50vw"
                   priority
                 />
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#FAFAF9] to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 hidden h-12 bg-gradient-to-t from-[#FAFAF9] to-transparent pointer-events-none lg:block" />
       </section>
 
       <Dialog open={verifyPreviewOpen} onOpenChange={setVerifyPreviewOpen}>

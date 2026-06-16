@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { updateApplicationStatus } from "@/redux/slices/propertySlice";
 import { apiService } from "@/lib/api";
+import { Users, Wallet, TrendingUp, TrendingDown } from "lucide-react";
 
 type TenantManagementMetrics = {
   retentionRate: number;
@@ -52,38 +53,50 @@ const buildMetricCards = (metrics: TenantManagementMetrics | null) => {
 };
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
-  <div className="bg-white p-4 rounded-md">
-    <div className="font-semibold text-md text-nrvGreyBlack mb-2">{title}</div>
-    {data.map(([label, value]: any, idx: number) => (
-      <div key={idx} className="text-sm mb-2">
-        <span className="font-medium text-nrvGreyBlack">{label}:</span> {value}
-      </div>
-    ))}
-    {files.map(([label, url]: any, idx: number) => (
-      <div key={idx} className="text-sm mb-2">
-        <span className="font-medium text-nrvGreyBlack">{label}:</span>{" "}
-        <a
-          href={url}
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View
-        </a>
-      </div>
-    ))}
-    {fileUrl && (
-      <div className="text-sm">
-        <a
-          href={fileUrl}
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Download Proof
-        </a>
-      </div>
-    )}
+  <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+      <div className="w-1.5 h-4 bg-green-600 rounded-full"></div>
+      <div className="font-semibold text-base text-gray-900">{title}</div>
+    </div>
+    <div className="space-y-3">
+      {data.map(([label, value]: any, idx: number) => (
+        <div key={idx} className="flex flex-col sm:flex-row sm:justify-between gap-1 text-sm">
+          <span className="font-medium text-gray-500">{label}:</span>
+          <span className="text-gray-900 text-right font-medium">{value}</span>
+        </div>
+      ))}
+      {files.map(([label, url]: any, idx: number) => (
+        <div key={idx} className="flex justify-between items-center text-sm pt-1">
+          <span className="font-medium text-gray-500">{label}:</span>
+          <a
+            href={url}
+            className="inline-flex items-center gap-1 text-green-600 font-medium hover:text-green-700 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
+      ))}
+      {fileUrl && (
+        <div className="pt-3 mt-2 border-t border-gray-50">
+          <a
+            href={fileUrl}
+            className="inline-flex w-full items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 py-2 px-4 rounded-lg text-sm font-medium transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download Proof
+          </a>
+        </div>
+      )}
+    </div>
   </div>
 );
 
@@ -185,47 +198,66 @@ const LandlordsTenantsScreen = () => {
               </div>
               
             </div>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-4 mb-6 border border-gray-300 py-4">
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-6 mb-8">
               {metricsLoading
                 ? [1, 2].map((item) => (
                     <div
                       key={item}
-                      className={`${
-                        item === 1 && "max-md:pb-4"
-                      } md:border-r max-md:border-b last:border-none px-4 animate-pulse`}
+                      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-pulse flex flex-col justify-between"
                     >
-                      <div className="h-4 w-28 rounded bg-gray-200 mb-3" />
-                      <div className="h-7 w-16 rounded bg-gray-200 mb-2" />
-                      <div className="h-3 w-full rounded bg-gray-100" />
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="h-4 w-28 rounded bg-gray-200" />
+                        <div className="h-10 w-10 rounded-full bg-gray-100" />
+                      </div>
+                      <div className="h-8 w-20 rounded bg-gray-200 mb-4" />
+                      <div className="h-3 w-full max-w-[180px] rounded bg-gray-100 mt-auto" />
                     </div>
                   ))
                 : metricCards.map((card, i) => (
                     <div
                       key={card.title}
-                      className={`${
-                        i === 0 && "max-md:pb-4"
-                      } md:border-r max-md:border-b last:border-none px-4`}
+                      className="bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-gray-100 p-6 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all duration-300 flex flex-col group relative overflow-hidden"
                     >
-                      <p className="text-gray-500 text-sm">{card.title}</p>
-                      <h3 className="text-xl font-semibold text-green-900">
+                      {/* Decorative background gradient */}
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50/50 to-transparent rounded-bl-full -mr-8 -mt-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                      
+                      <div className="flex justify-between items-start mb-4 relative z-10">
+                        <p className="text-gray-500 text-sm font-medium">{card.title}</p>
+                        <div className="p-2.5 bg-green-50 text-green-700 rounded-xl group-hover:bg-green-100 transition-colors duration-300">
+                          {i === 0 ? <Users className="w-5 h-5" /> : <Wallet className="w-5 h-5" />}
+                        </div>
+                      </div>
+                      <h3 className="text-3xl font-bold text-gray-900 mb-2 relative z-10 tracking-tight">
                         {card.value}
                       </h3>
-                      {card.change ? (
-                        <p
-                          className={`text-xs mt-1 ${
-                            card.change.trend === "up"
-                              ? "text-green-600"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {card.change.trend === "up" ? "↑" : "↓"}{" "}
-                          {card.change.label} {card.comparison}
-                        </p>
-                      ) : (
-                        <p className="text-xs mt-1 text-gray-500">
-                          {card.comparison}
-                        </p>
-                      )}
+                      <div className="mt-auto relative z-10 pt-4 border-t border-gray-50">
+                        {card.change ? (
+                          <div className="flex items-center flex-wrap gap-2">
+                            <span
+                              className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold ${
+                                card.change.trend === "up"
+                                  ? "bg-green-50 text-green-700 border border-green-100"
+                                  : "bg-red-50 text-red-700 border border-red-100"
+                              }`}
+                            >
+                              {card.change.trend === "up" ? (
+                                <TrendingUp className="w-3.5 h-3.5 mr-1" />
+                              ) : (
+                                <TrendingDown className="w-3.5 h-3.5 mr-1" />
+                              )}
+                              {card.change.label}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {card.comparison}
+                            </span>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-500 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                            {card.comparison}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   ))}
             </div>

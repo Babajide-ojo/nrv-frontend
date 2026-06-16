@@ -158,15 +158,8 @@ const RentersListForLandlordScreen = () => {
                   }}
                 >
                   <div className="w-full">
-                    <div className="flex gap-2 ">
-                      <div className="w-1/7">
-                        <RandomColorCircle
-                          firstName={property.applicant?.firstName}
-                          lastName={property.applicant?.lastName}
-                        />
-                      </div>
-
-                      <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
+                    <div className="flex gap-2 items-center">
+                      <p className="w-full text-sm text-nrvDarkGrey font-medium mt-1">
                         {property.applicant?.firstName}{" "}
                         {property.applicant?.lastName}
                       </p>

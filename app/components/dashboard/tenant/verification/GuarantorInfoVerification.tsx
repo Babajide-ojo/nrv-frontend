@@ -173,19 +173,21 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
   };
 
   return (
-    <div className="">
+    <div className="min-w-0 max-w-full">
       <div className="pb-6 border-b border-gray-100 mb-8">
         <h3 className="text-xl font-semibold text-gray-900">Guarantor Information</h3>
         <p className="text-sm text-gray-500 mt-1">
           Tell us who your guarantor is and how to reach out to them.
         </p>
       </div>
-      <div className="">
-        <div className="bg-white rounded-xl p-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="min-w-0 max-w-full">
+        <div className="rounded-xl bg-white p-1">
+          <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
             <InputField
               label="First Name"
               name="firstName"
+              variant="nested"
+              placeholder="Guarantor's first name"
               value={formData.firstName}
               onChange={handleInputChange}
               error={errors.firstName}
@@ -193,6 +195,8 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Last Name"
               name="lastName"
+              variant="nested"
+              placeholder="Guarantor's last name"
               value={formData.lastName}
               onChange={handleInputChange}
               error={errors.lastName}
@@ -200,6 +204,9 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Email Address"
               name="email"
+              variant="nested"
+              placeholder="e.g. guarantor@email.com"
+              inputType="email"
               value={formData.email}
               onChange={handleInputChange}
               error={errors.email}
@@ -207,6 +214,8 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Phone Number"
               name="phoneNumber"
+              variant="nested"
+              placeholder="e.g. 08012345678"
               inputType="phone"
               value={formData.phoneNumber}
               onChange={handleInputChange}
@@ -215,6 +224,8 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <SelectField
               label="Employment Status"
               name="employmentStatus"
+              variant="nested"
+              placeholder="Select employment status"
               value={employmentStatusOptions.find(
                 (option) => option.value === formData.employmentStatus
               )}
@@ -229,20 +240,24 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
                 }));
               }}
               options={employmentStatusOptions}
-              error={errors.state}
+              error={errors.employmentStatus}
             />
             <InputField
               label="Company"
               name="company"
+              variant="nested"
+              placeholder="Guarantor's employer or business"
               value={formData.company}
               onChange={handleInputChange}
               error={errors.company}
             />
           </div>
-          <div className="pt-6 border-t border-gray-100 mt-8">
+          <div className="mt-8 border-t border-gray-100 pt-6">
             <InputField
               label="Guarantor's Home Address"
               name="guarantorHomeAddress"
+              variant="nested"
+              placeholder="Full residential address"
               value={formData.guarantorHomeAddress}
               onChange={handleInputChange}
               error={errors.guarantorHomeAddress}
@@ -250,7 +265,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
+        <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -260,13 +275,13 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
               }
               router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
             }}
-            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
+            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
           >
             Skip for now
           </Button>
           <Button
             onClick={handleSubmit}
-            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
             disabled={isPrefilled && allFieldsFilled && !isDirty}
           >
             Save and Continue

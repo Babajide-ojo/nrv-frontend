@@ -333,8 +333,15 @@ export const isValidEmail = (email: string): boolean => {
  * Validates phone number format (Nigerian format)
  */
 export const isValidPhoneNumber = (phone: string): boolean => {
-  const phoneRegex = /^(\+234|0)?[789][01]\d{8}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
+  const digits = phone.replace(/\D/g, "");
+  let local = digits;
+  if (digits.startsWith("234") && digits.length >= 13) {
+    local = digits.slice(3);
+  }
+  if (local.startsWith("0")) {
+    return local.length === 11;
+  }
+  return local.length === 10;
 };
 
 // ============================================================================

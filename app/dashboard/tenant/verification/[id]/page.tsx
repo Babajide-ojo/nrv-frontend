@@ -158,25 +158,26 @@ const TenantVerificationIdPage = () => {
   return (
 
   <TenantLayout path="Verification" mainPath=" / Verification Details">
-      <div>
-      <div className="p-5 -m-5 bg-white mb-5">
-        <div className="max-w-[1300px] mx-auto w-full md:px-5">
-          <div className="flex items-center gap-3">
-            <div className="w-fit flex gap-1 items-center text-[#667185] pr-3 border-r border-gray-100">
+      <div className="min-w-0 max-w-full overflow-x-hidden">
+      <div className="mb-5 border-b border-gray-100 bg-white py-4 sm:py-5">
+        <div className="mx-auto w-full min-w-0 max-w-[1300px] md:px-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex w-fit shrink-0 items-center gap-1 border-r border-gray-100 pr-3 text-[#667185]">
               <MdArrowBackIos />
               <button type="button" onClick={handleBack} className="hover:underline">
                 Back
               </button>
             </div>
-            <p className="text-[18px] font-semibold">
+            <p className="min-w-0 truncate text-base font-semibold sm:text-[18px]">
               {getTitle()}
             </p>
           </div>
         </div>
       </div>
-      <div className="max-w-[1100px] mx-auto w-full py-10 px-5 rounded-lg bg-white">
-        <div className="max-w-[900px] mx-auto w-full">
-          <div className="flex flex-nowrap items-center justify-between mb-8 gap-1 md:gap-2 md:justify-start">
+      <div className="mx-auto w-full min-w-0 max-w-[1100px] rounded-lg bg-white py-6 sm:py-10 sm:px-5">
+        <div className="mx-auto w-full min-w-0 max-w-[900px]">
+          <div className="mb-8 w-full min-w-0 overflow-x-auto overflow-y-hidden pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-max min-w-full flex-nowrap items-center justify-center gap-1 sm:justify-start md:gap-2">
             {stages.map((stage, index) => (
               <div key={index} className="flex shrink-0 items-center">
                 <button
@@ -226,6 +227,7 @@ const TenantVerificationIdPage = () => {
               </div>
             ))}
           </div>
+          </div>
           {stepId && !["employment-info", "guarantor-info", "income-assessment"].includes(stepId) && (
             <PersonalInfoVerification
               verificationId={verificationId}
@@ -235,7 +237,12 @@ const TenantVerificationIdPage = () => {
           )}
           {stepId === "employment-info" && <EmploymentInfoVerification initialData={verificationData} />}
           {stepId === "guarantor-info" && <GuarantorInfoVerification initialData={verificationData} />}
-          {stepId === "income-assessment" && <IncomeAssessmentVerification initialData={verificationData} />}
+          {stepId === "income-assessment" && (
+            <IncomeAssessmentVerification
+              initialData={verificationData}
+              requestData={verificationRequest}
+            />
+          )}
         </div>
       </div>
     </div>

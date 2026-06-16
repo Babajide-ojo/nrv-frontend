@@ -226,10 +226,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                       <div className="w-full scrollbar-hide">
                         <div className="flex gap-2">
                           <div className="w-1/7">
-                            <RandomColorCircle
-                              firstName={conversation[0]?.recipient?.firstName}
-                              lastName={conversation[0]?.recipient?.lastName}
-                            />
+                {/* Avatar removed */}
                           </div>
 
                           <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">
@@ -344,10 +341,7 @@ const MessagingDetailsScreen = ({source}: any) => {
                       <div className="w-full scrollbar-hide">
                         <div className="flex gap-2">
                           <div className="w-1/7">
-                            <RandomColorCircle
-                              firstName={conversation[0]?.recipient?.firstName}
-                              lastName={conversation[0]?.recipient?.lastName}
-                            />
+                {/* Avatar removed */}
                           </div>
 
                           <p className="w-6/7 text-sm text-nrvDarkGrey font-light mt-3">

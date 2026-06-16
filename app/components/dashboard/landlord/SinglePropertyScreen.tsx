@@ -349,19 +349,19 @@ const SinglePropertyScreen = () => {
                 </div>
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6 border border-gray-300 rounded-lg overflow-hidden">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6">
                   {summaryStats.map((stat: any, index: any) => (
                     <div
                       key={index}
-                      className="text-start p-4 bg-white space-y-2.5 border-b sm:border-b-0 sm:border-r last:border-0"
+                      className="text-start p-5 bg-white space-y-2.5 border border-gray-100 shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
                     >
                       <p className="text-[#67667A] font-medium text-sm">
                         {stat?.label}
                       </p>
-                      <p className={`text-xl text-[#03442C] font-medium`}>
+                      <p className={`text-2xl text-[#03442C] font-semibold tracking-tight`}>
                         {stat?.value}
                       </p>
-                      <p className="text-[#8D9196] text-xs font-lighter">
+                      <p className="text-[#8D9196] text-xs font-medium bg-gray-50 inline-block px-2 py-1 rounded-md">
                         {stat?.detail}
                       </p>
                     </div>

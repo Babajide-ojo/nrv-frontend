@@ -164,28 +164,27 @@ const MetricCard: React.FC<MetricCard> = ({ title, count, change, icon }) => {
   const isPositive = change.startsWith("+") && change !== "+0%";
   const isNegative = change.startsWith("-");
   const changeColor = isPositive
-    ? "text-green-600"
+    ? "text-green-700 bg-green-50 border-green-100"
     : isNegative
-    ? "text-red-600"
-    : "text-[#8D8B99]";
+    ? "text-red-700 bg-red-50 border-red-100"
+    : "text-gray-600 bg-gray-50 border-gray-100";
 
   return (
-    <div className="flex w-full items-start justify-between gap-3 border bg-white p-3">
-      <div className="min-w-0">
-        <p className="text-[#767484] text-sm">{title}</p>
-        <p className="text-3xl font-semibold my-6">{count || 0}</p>
-        <div className={`flex items-center gap-2 mt-2 text-xs ${changeColor}`}>
-          <FaChartLine
-            className={`p-1 rounded ${
-              isPositive ? "bg-green-100 text-green-600" : isNegative ? "bg-red-100 text-red-600" : "bg-gray-100 text-gray-600"
-            }`}
-            size={18}
-          />
-          <span>{change} compared to last month</span>
+    <div className="flex w-full flex-col justify-between gap-3 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-200 relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-green-50/50 to-transparent rounded-bl-full -mr-4 -mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+      <div className="flex items-start justify-between w-full relative z-10">
+        <p className="text-gray-500 font-medium text-sm">{title}</p>
+        <div className="ml-auto shrink-0 p-2 bg-gray-50 rounded-xl">
+          <img src={icon} alt={title} className="block h-6 w-6 opacity-80" />
         </div>
       </div>
-      <div className="ml-auto shrink-0">
-        <img src={icon} alt={title} className="block h-10 w-10 sm:h-12 sm:w-12" />
+      <p className="text-4xl font-bold text-gray-900 my-2 relative z-10 tracking-tight">{count || 0}</p>
+      <div className="flex items-center gap-2 mt-auto relative z-10 pt-4 border-t border-gray-50">
+        <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold border ${changeColor}`}>
+          <FaChartLine className="mr-1.5" size={12} />
+          {change}
+        </span>
+        <span className="text-xs text-gray-500 font-medium">vs last month</span>
       </div>
     </div>
   );
@@ -199,15 +198,15 @@ const ActionCard: React.FC<ActionCard & { onClick: () => void }> = ({
   onClick 
 }) => (
   <div 
-    className={`p-6 rounded-lg cursor-pointer transition-transform hover:scale-105 ${bgColor}`} 
+    className={`p-6 rounded-2xl cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${bgColor} border border-transparent hover:border-black/5 flex flex-col h-full group`} 
     onClick={onClick}
   >
-    <div className="mb-8">{icon}</div>
-    <p className="font-semibold text-[#1D2739] text-sm">
+    <div className="mb-6 bg-white/50 w-12 h-12 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300">{icon}</div>
+    <p className="font-bold text-gray-900 text-base mb-2">
       {title}
     </p>
     {description && (
-      <p className="mt-4 text-xs text-[#6A6A6A] leading-6003">
+      <p className="text-xs font-medium text-gray-600 leading-relaxed mt-auto">
         {description}
       </p>
     )}

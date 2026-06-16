@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import Button from "@/app/components/shared/buttons/Button";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
@@ -25,11 +25,15 @@ interface FileUploadProps {
   error?: string;
   showDocumentType?: boolean;
   documentType?: string;
+  documentTypeError?: string;
   onDocumentTypeChange?: (type: string) => void;
 }
 
 interface IncomeAssessmentVerificationProps {
   initialData?: any;
+  requestData?: {
+    verificationTier?: "standard" | "premium";
+  } | null;
 }
 
 const FileUpload = ({
@@ -40,6 +44,7 @@ const FileUpload = ({
   error,
   showDocumentType,
   documentType,
+  documentTypeError,
   onDocumentTypeChange,
 }: FileUploadProps) => {
   const documentTypeOptions = [
@@ -94,10 +99,12 @@ const FileUpload = ({
           <SelectField
             label="Document Type"
             name="documentType"
+            variant="nested"
             value={documentTypeOptions.find(opt => opt.value === documentType)}
             onChange={(opt: any) => onDocumentTypeChange?.(opt?.value || "")}
             options={documentTypeOptions}
-            placeholder="Select Document Type"
+            placeholder="Select document type"
+            error={documentTypeError}
           />
         </div>
       )}
@@ -210,10 +217,11 @@ const UploadedDocumentDisplay = ({
   );
 };
 
-const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificationProps) => {
+const IncomeAssessmentVerification = ({ initialData, requestData }: IncomeAssessmentVerificationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const verificationIdFromQuery = searchParams.get("verificationId");
+  const isPremium = requestData?.verificationTier === "premium";
   const [formData, setFormData] = useState<FormData>({
     bankStatement: null,
     utilityBill: null,
@@ -230,6 +238,20 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
   const [verificationResponseId, setVerificationResponseId] = useState<string | null>(null);
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [uploadedDocuments, setUploadedDocuments] = useState<any>(null);
+
+  const maskBvn = (bvn: string) => {
+    const digits = (bvn ?? "").replace(/\D/g, "");
+    if (digits.length < 4) return "—";
+    return `*******${digits.slice(-4)}`;
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   useEffect(() => {
     const idFromQuery = searchParams.get("verificationId");
@@ -302,8 +324,8 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
 
-    if (!formData.bankStatement) {
-      newErrors.bankStatement = "Bank statement is required";
+    if (isPremium && !formData.bankStatement) {
+      newErrors.bankStatement = "Salary proof is required";
     }
 
     if (!formData.utilityBill) {
@@ -322,10 +344,20 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
   };
 
   const allFieldsFilled = useMemo(() => {
-    return formData.bankStatement && 
-           formData.utilityBill && 
-           formData.identificationDocument &&
-           formData.identificationDocumentType;
+    if (isPremium) {
+      return (
+        formData.bankStatement &&
+        formData.utilityBill &&
+        formData.identificationDocument &&
+        formData.identificationDocumentType
+      );
+    }
+
+    return (
+      formData.utilityBill &&
+      formData.identificationDocument &&
+      formData.identificationDocumentType
+    );
   }, [formData]);
 
   const handleSubmit = async () => {
@@ -378,23 +410,51 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
   };
 
   return (
-    <div className="">
+    <div className="min-w-0 max-w-full">
       <div className="pb-6 border-b border-gray-100 mb-8">
-        <h3 className="text-xl font-semibold text-gray-900">Affordability Check</h3>
+        <h3 className="text-xl font-semibold text-gray-900">
+          {isPremium ? "Financial Capacity (Premium)" : "Verification Documents (Standard)"}
+        </h3>
         <p className="text-sm text-gray-500 mt-1">
-          Please upload your bank statement, utility bill, and ID to help us verify your income and identity.
+          {isPremium
+            ? "Upload your salary proof (bank statement or payslip), utility bill, and ID to support your monthly income claim."
+            : "Upload your utility bill and ID to verify address and identity."}
         </p>
       </div>
 
-      <div className="max-w-3xl">
-        <div className="bg-white rounded-xl p-1 flex flex-col gap-8">
+      <div className="min-w-0 max-w-full">
+        <div className="flex flex-col gap-8 rounded-xl bg-white p-1">
+          {isPremium && (
+            <div className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-5">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+                Premium financial summary
+              </p>
+              <p className="text-2xl font-bold text-gray-900 mt-2">
+                {typeof initialData?.monthlyIncome === "number" && initialData.monthlyIncome > 0
+                  ? formatCurrency(initialData.monthlyIncome)
+                  : "—"}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Monthly salary (as stated)</p>
+              <p className="text-sm font-medium text-gray-700 mt-4">
+                BVN:{" "}
+                <span className="font-semibold">
+                  {typeof initialData?.bvn === "string" && initialData.bvn.trim()
+                    ? maskBvn(initialData.bvn)
+                    : "—"}
+                </span>
+              </p>
+            </div>
+          )}
+
           {isPrefilled ? (
             // Show uploaded documents
             <div className="grid gap-4">
-              <UploadedDocumentDisplay 
-                title="Bank Statement" 
-                url={uploadedDocuments?.bankStatementUrl} 
-              />
+              {isPremium && (
+                <UploadedDocumentDisplay
+                  title="Salary Proof"
+                  url={uploadedDocuments?.bankStatementUrl}
+                />
+              )}
               <UploadedDocumentDisplay 
                 title="Utility Bill" 
                 url={uploadedDocuments?.utilityBillUrl} 
@@ -408,14 +468,16 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
           ) : (
             // Show upload fields
             <div className="space-y-8">
-              <FileUpload
-                id="bankStatement"
-                label="Upload Bank Statement"
-                file={formData.bankStatement}
-                onFileChange={handleFileChange}
-                error={errors.bankStatement}
-                showDocumentType={false}
-              />
+              {isPremium && (
+                <FileUpload
+                  id="bankStatement"
+                  label="Upload Salary Proof (Bank statement or payslip)"
+                  file={formData.bankStatement}
+                  onFileChange={handleFileChange}
+                  error={errors.bankStatement}
+                  showDocumentType={false}
+                />
+              )}
 
               <FileUpload
                 id="utilityBill"
@@ -435,21 +497,31 @@ const IncomeAssessmentVerification = ({ initialData }: IncomeAssessmentVerificat
                   error={errors.identificationDocument}
                   showDocumentType={true}
                   documentType={formData.identificationDocumentType}
-                  onDocumentTypeChange={(type) => setFormData((prev) => ({ ...prev, identificationDocumentType: type }))}
+                  documentTypeError={errors.identificationDocumentType}
+                  onDocumentTypeChange={(type) => {
+                    setFormData((prev) => ({ ...prev, identificationDocumentType: type }));
+                    if (type) {
+                      setErrors((prev) => ({ ...prev, identificationDocumentType: "" }));
+                    }
+                  }}
                 />
               </div>
             </div>
           )}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
+        <div className="mt-10 flex justify-end border-t border-gray-100 pt-6">
           {!isPrefilled && (
             <Button
+              variant="darkPrimary"
+              size="minLarge"
+              className="w-full rounded-xl sm:w-auto"
               onClick={handleSubmit}
-              className="text-white bg-green-700 hover:bg-green-800 px-8 py-6 h-auto text-base font-medium rounded-xl shadow-sm hover:shadow transition-all w-full sm:w-auto"
-              disabled={!allFieldsFilled || isSubmitting}
+              disabled={!allFieldsFilled}
+              isLoading={isSubmitting}
+              loadingText="Uploading Documents..."
             >
-              {isSubmitting ? "Uploading Documents..." : "Submit Documents"}
+              Submit Documents
             </Button>
           )}
         </div>

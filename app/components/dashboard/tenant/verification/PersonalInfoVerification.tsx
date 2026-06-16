@@ -250,8 +250,6 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     }
     if (isPremium && (!formData.bvn.trim() || !BVN_PATTERN.test(formData.bvn.trim()))) {
       nextErrors.bvn = "BVN is required for premium verification (11 digits)";
-    } else if (formData.bvn.trim() && !BVN_PATTERN.test(formData.bvn.trim())) {
-      nextErrors.bvn = "Enter a valid 11-digit BVN";
     }
     if (!formData.dateOfBirth) nextErrors.dateOfBirth = "Date of birth is required";
     if (!formData.gender) nextErrors.gender = "Gender is required";
@@ -278,7 +276,13 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
     if (!validateForm()) {
       return;
     }
-    if (isPrefilled && verificationResponseId && formData.bvn !== prefilledData.bvn && formData.bvn.trim()) {
+    if (
+      isPremium &&
+      isPrefilled &&
+      verificationResponseId &&
+      formData.bvn !== prefilledData.bvn &&
+      formData.bvn.trim()
+    ) {
       try {
         await apiService.patch(`/verification/${verificationResponseId}/personal`, {
           bvn: formData.bvn.trim(),
@@ -327,7 +331,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       email: formData.email,
       phone: formData.phone || undefined,
       nin: formData.nin,
-      ...(formData.bvn.trim() ? { bvn: formData.bvn.trim() } : {}),
+      ...(isPremium && formData.bvn.trim() ? { bvn: formData.bvn.trim() } : {}),
       gender: formData.gender,
       address: formData.address,
       verificationId: verificationId,
@@ -347,7 +351,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
   };
 
   return (
-    <div className="">
+    <div className="min-w-0 max-w-full">
       <div className="pb-6 border-b border-gray-100 mb-8">
         <h3 className="text-xl font-semibold text-gray-900">
           Personal Information
@@ -356,12 +360,14 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           Please provide your personal details to get started.
         </p>
       </div>
-      <div className="">
-        <div className="bg-white rounded-xl p-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="min-w-0 max-w-full">
+        <div className="rounded-xl bg-white p-1">
+          <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
             <InputField
               label="First Name"
               name="firstName"
+              variant="nested"
+              placeholder="First name"
               value={formData.firstName}
               onChange={handleInputChange}
               error={errors.firstName}
@@ -370,6 +376,8 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             <InputField
               label="Last Name"
               name="lastName"
+              variant="nested"
+              placeholder="Last name"
               value={formData.lastName}
               onChange={handleInputChange}
               error={errors.lastName}
@@ -378,6 +386,9 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             <InputField
               label="Email Address"
               name="email"
+              variant="nested"
+              placeholder="e.g. you@email.com"
+              inputType="email"
               value={formData.email}
               onChange={handleInputChange}
               error={errors.email}
@@ -387,47 +398,52 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               <InputField
                 label="Phone Number"
                 name="phone"
+                variant="nested"
                 placeholder="e.g. 08012345678"
+                inputType="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
                 error={errors.phone}
                 disabled={isPrefilled}
               />
-        
             </div>
             <InputField
               label="NIN (National Identification Number)"
               name="nin"
+              variant="nested"
               placeholder="11-digit NIN"
+              inputType="nin"
               value={formData.nin}
               onChange={handleInputChange}
               error={errors.nin}
               disabled={isPrefilled}
             />
-            <div>
-              <InputField
-                label="BVN (Bank Verification Number)"
-                name="bvn"
-                placeholder="11-digit BVN"
-                value={formData.bvn}
-                onChange={handleInputChange}
-                error={errors.bvn}
-                disabled={!canEditBvn}
-              />
-              <p className="text-xs text-gray-500 mt-1.5 flex items-start gap-1">
-                <FiInfo className="shrink-0 mt-0.5" />
-                {isPremium
-                  ? "Required for premium checks. Credit bureau uses your BVN only — not your NIN."
-                  : "Optional for standard verification. Provide your BVN if you want credit checks later."}
-              </p>
-              {isPrefilled && formData.bvn && !canEditBvn && (
-                <p className="text-xs text-gray-500 mt-1">Saved as {maskBvn(formData.bvn)}</p>
-              )}
-            </div>
+            {isPremium && (
+              <div>
+                <InputField
+                  label="BVN (Bank Verification Number)"
+                  name="bvn"
+                  variant="nested"
+                  placeholder="11-digit BVN"
+                  value={formData.bvn}
+                  onChange={handleInputChange}
+                  error={errors.bvn}
+                  disabled={!canEditBvn}
+                />
+                <p className="text-xs text-gray-500 mt-1.5 flex items-start gap-1">
+                  <FiInfo className="shrink-0 mt-0.5" />
+                  Required for premium checks. Credit bureau uses your BVN only — not your NIN.
+                </p>
+                {isPrefilled && formData.bvn && !canEditBvn && (
+                  <p className="text-xs text-gray-500 mt-1">Saved as {maskBvn(formData.bvn)}</p>
+                )}
+              </div>
+            )}
             <InputField
               label="Date of Birth"
               name="dateOfBirth"
-              placeholder="Select Date of Birth"
+              variant="nested"
+              placeholder="Select date of birth"
               value={formData.dateOfBirth}
               onClick={() => setOpenDate(true)}
               onChange={() => {}}
@@ -438,6 +454,8 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
             <SelectField
               label="Gender"
               name="gender"
+              variant="nested"
+              placeholder="Select gender"
               value={genderOptions.find(
                 (option) => option.value === formData.gender
               )}
@@ -456,10 +474,12 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               disabled={isPrefilled}
             />
           </div>
-          <div className="pt-6 border-t border-gray-100 mt-8">
+          <div className="mt-8 border-t border-gray-100 pt-6">
             <InputField
               label="Current Address"
               name="address"
+              variant="nested"
+              placeholder="Your current residential address"
               value={formData.address}
               onChange={handleInputChange}
               error={errors.address}
@@ -471,7 +491,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
+        <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -485,13 +505,13 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               }
               router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
             }}
-            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
+            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
           >
             Skip for now
           </Button>
           <Button
             onClick={handleSubmit}
-            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
             disabled={isPrefilled && allFieldsFilled && !isDirty}
           >
             Save and Continue

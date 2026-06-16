@@ -172,17 +172,15 @@ export default function TenantVerification() {
                     label: "Tenant Full Name",
                     render: (val, row) => (
                       <div className="flex items-center gap-2">
-                        <div className="bg-green-100 text-green-700 text-xs w-8 h-8 flex items-center justify-center rounded-full font-bold">
-                          {row.firstName?.[0] || ""}
-                          {row.lastName?.[0] || ""}
-                        </div>
                         <div>
                           <div className="font-medium text-sm text-[#101828]">
                             {row.firstName} {row.lastName}
                           </div>
-                          <div className="text-xs text-[#667085]">
-                            {row.streetAddress || "N/A"}
-                          </div>
+                          {row.streetAddress && (
+                            <div className="text-xs text-[#667085]">
+                              {row.streetAddress}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ),

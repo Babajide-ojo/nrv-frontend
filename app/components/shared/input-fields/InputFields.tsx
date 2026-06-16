@@ -135,9 +135,14 @@ export default function InputField({
 
     if (inputType === "phone") {
       const phoneNumber = inputValue.replace(/\D/g, "");
+      let localDigits = phoneNumber;
 
-      if (phoneNumber.startsWith("0")) {
-        if (phoneNumber.length === 11) {
+      if (phoneNumber.startsWith("234") && phoneNumber.length >= 13) {
+        localDigits = phoneNumber.slice(3);
+      }
+
+      if (localDigits.startsWith("0")) {
+        if (localDigits.length === 11) {
           setIsValid(true);
           setInputError(null);
         } else {
@@ -146,13 +151,13 @@ export default function InputField({
             "Phone number must be exactly 11 digits if it starts with 0.",
           );
         }
-      } else if (phoneNumber.length === 10) {
+      } else if (localDigits.length === 10) {
         setIsValid(true);
         setInputError(null);
       } else {
         setIsValid(false);
         setInputError(
-          "Phone number must be exactly 10 digits if it does not start with 0.",
+          "Enter a valid Nigerian phone number (10 digits, or 11 starting with 0).",
         );
       }
     }

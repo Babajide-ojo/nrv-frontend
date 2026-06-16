@@ -302,7 +302,7 @@ export default function DataTable<T extends BaseRow = BaseRow>({
 
   // Render functions
   const renderTableHeader = () => (
-    <thead className="bg-gray-50 border-b border-gray-200">
+    <thead className="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
       <tr>
         {columns.map((col) => (
           <th 
@@ -320,49 +320,125 @@ export default function DataTable<T extends BaseRow = BaseRow>({
 
   const renderTableBody = () => {
     if (loading) {
-      return <LoadingSkeleton columns={columns.length + (rowActions ? 1 : 0)} rows={loadingRows} />;
+      return (
+        <tbody className="hidden md:table-row-group">
+          <LoadingSkeleton columns={columns.length + (rowActions ? 1 : 0)} rows={loadingRows} />
+        </tbody>
+      );
     }
 
     if (error) {
       return (
-        <tr>
-          <td colSpan={columns.length + (rowActions ? 1 : 0)}>
-            <ErrorComponent error={error} retry={fetchData} />
-          </td>
-        </tr>
+        <tbody className="hidden md:table-row-group">
+          <tr>
+            <td colSpan={columns.length + (rowActions ? 1 : 0)}>
+              <ErrorComponent error={error} retry={fetchData} />
+            </td>
+          </tr>
+        </tbody>
       );
     }
 
     if (!data.length) {
       return (
-        <tr>
-          <td colSpan={columns.length + (rowActions ? 1 : 0)}>
-            <EmptyStateComponent />
-          </td>
-        </tr>
+        <tbody className="hidden md:table-row-group">
+          <tr>
+            <td colSpan={columns.length + (rowActions ? 1 : 0)}>
+              <EmptyStateComponent />
+            </td>
+          </tr>
+        </tbody>
       );
     }
 
-    return data.map((row, index) => (
-      <tr 
-        key={row._id || index} 
-        className={`border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150 ${
-          onRowClick ? 'cursor-pointer' : ''
-        }`}
-        onClick={() => handleRowClick(row)}
-      >
-        {columns.map((col) => (
-          <td key={String(col.key)} className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-900">
-            {col.render ? col.render(row[col.key], row) : String(row[col.key] || '')}
-          </td>
+    return (
+      <tbody className="hidden md:table-row-group">
+        {data.map((row, index) => (
+          <tr 
+            key={row._id || index} 
+            className={`border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150 ${
+              onRowClick ? 'cursor-pointer' : ''
+            }`}
+            onClick={() => handleRowClick(row)}
+          >
+            {columns.map((col) => (
+              <td key={String(col.key)} className="px-3 sm:px-6 py-3 sm:py-4 text-sm text-gray-900">
+                {col.render ? col.render(row[col.key], row) : String(row[col.key] || '')}
+              </td>
+            ))}
+            {rowActions && (
+              <td className="px-3 sm:px-6 py-3 sm:py-4" onClick={(e) => e.stopPropagation()}>
+                {rowActions(row)}
+              </td>
+            )}
+          </tr>
         ))}
-        {rowActions && (
-          <td className="px-3 sm:px-6 py-3 sm:py-4" onClick={(e) => e.stopPropagation()}>
-            {rowActions(row)}
-          </td>
-        )}
-      </tr>
-    ));
+      </tbody>
+    );
+  };
+
+  const renderMobileCards = () => {
+    if (loading) {
+      return (
+        <div className="flex flex-col gap-4 md:hidden">
+          {Array.from({ length: loadingRows }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+              <Skeleton className="h-6 w-3/4 mb-3" />
+              <Skeleton className="h-4 w-1/2 mb-2" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="md:hidden">
+          <ErrorComponent error={error} retry={fetchData} />
+        </div>
+      );
+    }
+
+    if (!data.length) {
+      return (
+        <div className="md:hidden">
+          <EmptyStateComponent />
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex flex-col gap-4 md:hidden">
+        {data.map((row, index) => (
+          <div
+            key={row._id || index}
+            className={`rounded-xl border border-gray-100 bg-white p-4 shadow-sm ${
+              onRowClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+            }`}
+            onClick={() => handleRowClick(row)}
+          >
+            <div className="flex flex-col gap-3">
+              {columns.map((col) => (
+                <div key={String(col.key)} className="flex justify-between items-start gap-4">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider shrink-0 mt-0.5">
+                    {col.label}
+                  </span>
+                  <div className="text-sm text-gray-900 break-words text-right">
+                    {col.render ? col.render(row[col.key], row) : String(row[col.key] || '')}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {rowActions && (
+              <div className="mt-4 pt-3 border-t border-gray-100 flex justify-end" onClick={(e) => e.stopPropagation()}>
+                {rowActions(row)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -411,15 +487,16 @@ export default function DataTable<T extends BaseRow = BaseRow>({
         ))}
       </div>
 
-      {/* Table – horizontal scroll on small screens */}
-      <div className="-mx-1 w-full min-w-0 overflow-x-auto overflow-y-visible rounded-lg sm:mx-0">
-        <table className="min-w-[640px] w-full text-left sm:min-w-0">
+      {/* Desktop Table View */}
+      <div className="-mx-1 w-full min-w-0 overflow-x-auto overflow-y-visible rounded-lg sm:mx-0 hidden md:block">
+        <table className="min-w-full text-left">
           {renderTableHeader()}
-          <tbody>
-            {renderTableBody()}
-          </tbody>
+          {renderTableBody()}
         </table>
       </div>
+
+      {/* Mobile Card View */}
+      {renderMobileCards()}
 
       {/* Pagination */}
       {!loading && !error && totalPages > 0 && (

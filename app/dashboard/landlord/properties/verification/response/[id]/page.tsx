@@ -45,6 +45,7 @@ interface VerificationResponse {
   employmentReport?: { status: string; comment?: string };
   guarantorReport?: { status: string; comment?: string };
   documentsReport?: { status: string; comment?: string };
+  financialReport?: { status: string; comment?: string };
   phoneVerificationStatus?: string;
   nin?: string;
   ninVerificationStatus?: string;
@@ -72,6 +73,7 @@ interface VerificationResponse {
     personalSection: string;
     employmentSection: string;
     guarantorSection: string;
+    financialSection: string;
     documentsSection: string;
     riskScore?: number;
     riskCategory?: string;
@@ -277,7 +279,11 @@ function criticalAlertCopy(
   return null;
 }
 
-function landlordSummaryParagraphs(v: VerificationResponse, band: RiskBand): string[] {
+function landlordSummaryParagraphs(
+  v: VerificationResponse,
+  band: RiskBand,
+  tier?: "standard" | "premium",
+): string[] {
   const lr = v.landlordReport;
   const score = lr?.riskScore;
   const category = lr?.riskCategory ?? "";
@@ -331,7 +337,7 @@ function landlordSummaryParagraphs(v: VerificationResponse, band: RiskBand): str
           : "Guarantor: Reviewer assessment is still pending or was not recorded.",
     );
   }
-  if (v.monthlyIncome && v.monthlyIncome > 0) {
+  if (tier === "premium" && v.monthlyIncome && v.monthlyIncome > 0) {
     const fin = v.landlordReport?.financialAffordability;
     const dti = v.landlordReport?.creditDebtToIncomeRatio;
     let creditNote = "";
@@ -496,6 +502,46 @@ function statusHeadline(band: RiskBand): { icon: string; text: string; className
     text: "High risk — do not proceed",
     className: "text-red-700",
   };
+}
+
+function manualReviewFinancialCopy(
+  state: ReturnType<typeof normalizedManualReviewState>,
+): SectionReviewLine {
+  if (state === "completed") {
+    return {
+      result: "Verification completed",
+      notes: "Salary proof reviewed and supports stated income.",
+    };
+  }
+  if (state === "rejected") {
+    return {
+      result: "Could not verify",
+      notes: "Salary proof could not be verified against stated income.",
+    };
+  }
+  if (state === "pending") {
+    return {
+      result: "Pending",
+      notes: "Salary proof is under manual review.",
+    };
+  }
+  return {
+    result: "Not reviewed",
+    notes: "Salary proof has not been manually reviewed yet.",
+  };
+}
+
+function salaryProofCheckShort(finReview: SectionReviewLine): { label: string; tone: CheckTone } {
+  if (finReview.result === "Verification completed") {
+    return { label: "Verified", tone: "good" };
+  }
+  if (finReview.result === "Could not verify") {
+    return { label: "Unconfirmed", tone: "bad" };
+  }
+  if (finReview.result === "Pending") {
+    return { label: "Pending", tone: "warn" };
+  }
+  return { label: "Not reviewed", tone: "warn" };
 }
 
 function manualReviewEmploymentGuarantorCopy(
@@ -701,6 +747,12 @@ const VerificationResponsePage = () => {
       verificationData.landlordReport?.guarantorSection,
     ),
   );
+  const finReview = manualReviewFinancialCopy(
+    normalizedManualReviewState(
+      verificationData.financialReport,
+      verificationData.landlordReport?.financialSection,
+    ),
+  );
 
   const riskScore = verificationData.landlordReport?.riskScore;
   const band = riskBandFromScore(riskScore);
@@ -711,9 +763,11 @@ const VerificationResponsePage = () => {
   const adCh = addressCheck(verificationData);
   const empCh = employmentCheckShort(empReview);
   const guCh = guarantorCheckShort(verificationData, guReview);
-  const tier = verificationRequest?.verificationTier;
+  const tier: "standard" | "premium" =
+    verificationRequest?.verificationTier === "premium" ? "premium" : "standard";
   const crCh = creditAffordabilityCheck(verificationData, tier);
-  const summaryParas = landlordSummaryParagraphs(verificationData, band);
+  const salCh = salaryProofCheckShort(finReview);
+  const summaryParas = landlordSummaryParagraphs(verificationData, band, tier);
   const nextSteps = recommendedNextSteps(band, verificationData, tier);
   const aff = affordabilityHeadline(verificationData, band, tier);
   const capPct = capacityBarPercent(verificationData, tier);
@@ -816,7 +870,8 @@ const VerificationResponsePage = () => {
                   </p>
                   <p className="text-sm text-gray-600 mt-1">
                     {verificationData.companyName || "—"}
-                    {verificationData.monthlyIncome
+                    {tier === "premium" &&
+                      verificationData.monthlyIncome
                       ? ` · ${formatCurrency(verificationData.monthlyIncome)} / month`
                       : ""}
                   </p>
@@ -889,10 +944,20 @@ const VerificationResponsePage = () => {
                       <span className="text-gray-700">Employment</span>
                       <span className={toneClass(empCh.tone)}>{empCh.label}</span>
                     </li>
-                    <li className="flex justify-between gap-4 text-sm border-b border-gray-100 pb-2">
-                      <span className="text-gray-700">Credit / affordability</span>
-                      <span className={toneClass(crCh.tone)}>{crCh.label}</span>
-                    </li>
+                    {tier === "premium" && (
+                      <>
+                        <li className="flex justify-between gap-4 text-sm border-b border-gray-100 pb-2">
+                          <span className="text-gray-700">Credit / affordability</span>
+                          <span className={toneClass(crCh.tone)}>{crCh.label}</span>
+                        </li>
+                        {verificationData.bankStatementUrl && (
+                          <li className="flex justify-between gap-4 text-sm border-b border-gray-100 pb-2">
+                            <span className="text-gray-700">Salary proof (manual)</span>
+                            <span className={toneClass(salCh.tone)}>{salCh.label}</span>
+                          </li>
+                        )}
+                      </>
+                    )}
                     <li className="flex justify-between gap-4 text-sm pb-1">
                       <span className="text-gray-700">Guarantor</span>
                       <span className={toneClass(guCh.tone)}>{guCh.label}</span>
@@ -905,48 +970,61 @@ const VerificationResponsePage = () => {
                     <p>
                       <span className="font-semibold text-gray-800">Guarantor (review):</span> {guReview.notes}
                     </p>
+                    {tier === "premium" && verificationData.bankStatementUrl && (
+                      <p>
+                        <span className="font-semibold text-gray-800">Salary proof (review):</span> {finReview.notes}
+                      </p>
+                    )}
                   </div>
                 </div>
-                <div>
-                  <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">
-                    Financial capacity
-                  </h2>
-                  <div className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-5">
-                    <p className="text-2xl font-bold text-gray-900">
-                      {verificationData.monthlyIncome
-                        ? formatCurrency(verificationData.monthlyIncome)
-                        : "—"}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Monthly income (as stated)</p>
-                    <p className="text-sm font-medium text-gray-800 mt-4">{aff}</p>
-                    <div className="mt-4">
-                      <div className="flex justify-between text-[10px] uppercase tracking-wide text-gray-400 mb-1">
-                        <span>Low</span>
-                        <span>High</span>
-                      </div>
-                      <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all bg-nrvPrimaryGreen/80"
-                          style={{ width: `${capPct}%` }}
-                        />
+                {tier === "premium" && (
+                  <div>
+                    <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-4">
+                      Financial capacity
+                    </h2>
+                    <div className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-5">
+                      <p className="text-2xl font-bold text-gray-900">
+                        {verificationData.monthlyIncome
+                          ? formatCurrency(verificationData.monthlyIncome)
+                          : "—"}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">Monthly income (as stated)</p>
+                      <p className="text-sm font-medium text-gray-800 mt-4">{aff}</p>
+                      <div className="mt-4">
+                        <div className="flex justify-between text-[10px] uppercase tracking-wide text-gray-400 mb-1">
+                          <span>Low</span>
+                          <span>High</span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all bg-nrvPrimaryGreen/80"
+                            style={{ width: `${capPct}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
+                    <dl className="mt-4 space-y-2 text-sm">
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-gray-500">Employment status</dt>
+                        <dd className="text-gray-900 font-medium text-right">
+                          {verificationData.employmentStatus || "—"}
+                        </dd>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-gray-500">Company</dt>
+                        <dd className="text-gray-900 font-medium text-right break-words max-w-[60%]">
+                          {verificationData.companyName || "—"}
+                        </dd>
+                      </div>
+                      {verificationData.bankStatementUrl && (
+                        <div className="flex justify-between gap-4">
+                          <dt className="text-gray-500">Salary proof review</dt>
+                          <dd className={`font-medium text-right ${toneClass(salCh.tone)}`}>{salCh.label}</dd>
+                        </div>
+                      )}
+                    </dl>
                   </div>
-                  <dl className="mt-4 space-y-2 text-sm">
-                    <div className="flex justify-between gap-4">
-                      <dt className="text-gray-500">Employment status</dt>
-                      <dd className="text-gray-900 font-medium text-right">
-                        {verificationData.employmentStatus || "—"}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-4">
-                      <dt className="text-gray-500">Company</dt>
-                      <dd className="text-gray-900 font-medium text-right break-words max-w-[60%]">
-                        {verificationData.companyName || "—"}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
+                )}
               </div>
 
               <div className="border-t border-gray-100 pt-8">

@@ -138,18 +138,20 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
   };
 
   return (
-    <div className="">
+    <div className="min-w-0 max-w-full">
       <div className="pb-6 border-b border-gray-100 mb-8">
         <h3 className="text-xl font-semibold text-gray-900">Employment Information</h3>
         <p className="text-sm text-gray-500 mt-1">
           Tell us where you work and what your role is.
         </p>
       </div>
-      <div className="">
-        <div className="bg-white rounded-xl p-1 flex flex-col gap-6">
+      <div className="min-w-0 max-w-full">
+        <div className="flex flex-col gap-6 rounded-xl bg-white p-1">
           <SelectField
             label="Employment Status"
             name="employmentStatus"
+            variant="nested"
+            placeholder="Select employment status"
             value={employmentStatusOptions.find(
               (option) => option.value === formData.employmentStatus
             )}
@@ -164,12 +166,14 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               }));
             }}
             options={employmentStatusOptions}
-            error={errors.state}
+            error={errors.employmentStatus}
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
             <InputField
               label="Company Name"
               name="nameOfCompany"
+              variant="nested"
+              placeholder="e.g. Indigene Systems Ltd"
               value={formData.nameOfCompany}
               onChange={handleInputChange}
               error={errors.nameOfCompany}
@@ -177,6 +181,8 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Role / Job Title"
               name="role"
+              variant="nested"
+              placeholder="e.g. Software Engineer"
               value={formData.role}
               onChange={handleInputChange}
               error={errors.role}
@@ -184,6 +190,8 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Company Address"
               name="companyAddress"
+              variant="nested"
+              placeholder="Office or business address"
               value={formData.companyAddress}
               onChange={handleInputChange}
               error={errors.companyAddress}
@@ -191,6 +199,8 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Monthly Income"
               name="monthlyIncome"
+              variant="nested"
+              placeholder="e.g. 350000"
               value={formData.monthlyIncome}
               onChange={handleInputChange}
               error={errors.monthlyIncome}
@@ -199,16 +209,17 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Date Joined"
               name="dateJoined"
+              variant="nested"
               value={formData.dateJoined}
               onClick={() => setOpenDate(true)}
               onChange={() => {}}
               error={errors.dateJoined}
               readOnly
-              placeholder="Select date"
+              placeholder="Select date joined"
             />
           </div>
         </div>
-        <div className="mt-10 pt-6 border-t border-gray-100 flex justify-end gap-4">
+        <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
             variant="outline"
             onClick={() => {
@@ -218,13 +229,13 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               }
               router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
             }}
-            className="border-gray-200 text-gray-700 hover:bg-gray-50 px-6 h-auto py-2.5 rounded-lg"
+            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
           >
             Skip for now
           </Button>
           <Button
             onClick={handleSubmit}
-            className="text-white bg-green-700 hover:bg-green-800 px-8 py-2.5 h-auto rounded-lg shadow-sm hover:shadow transition-all"
+            className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
             disabled={isPrefilled && allFieldsFilled && !isDirty}
           >
             Save and Continue

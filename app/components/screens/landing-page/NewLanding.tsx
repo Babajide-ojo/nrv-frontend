@@ -377,9 +377,9 @@ const NewLanding = () => {
         <div className="absolute inset-0 hidden lg:block opacity-[0.04]" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 80%, white 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
         <div className="absolute top-24 right-10 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-pulse hidden lg:block" style={{ animationDuration: "3s" }} />
         <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none animate-pulse hidden lg:block" style={{ animationDuration: "4s", animationDelay: "0.5s" }} />
-        <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-6 pb-8 sm:pt-24 sm:pb-12">
+        <div className="relative z-10 px-4 sm:px-6 lg:px-12 pt-8 pb-10 sm:pt-24 sm:pb-12">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1fr] items-center gap-8 lg:gap-10">
-            <div className="text-left text-[#031B14] lg:text-white">
+            <div className="text-center lg:text-left text-[#031B14] lg:text-white">
               <div className="hero-animate-1 hidden lg:flex lg:flex-row lg:flex-wrap gap-2">
                 <Link
                   href="/sign-up?role=landlord"
@@ -395,13 +395,13 @@ const NewLanding = () => {
                   List a Home
                 </Link>
               </div>
-              <h1 className="hero-animate-2 mt-0 sm:mt-5 text-[1.875rem] sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] sm:leading-[1.12] text-[#03442C] lg:text-white">
-                Find Trustworthy Tenants
+              <h1 className="hero-animate-2 mt-0 sm:mt-5 text-[2.25rem] sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] sm:leading-[1.12] text-[#03442C] lg:text-white">
+                Find <span className="text-emerald-600 lg:text-white">Trustworthy</span> Tenants
               </h1>
-              <p className="hero-animate-3 mt-3 text-[15px] leading-relaxed text-gray-600 lg:hidden">
-                Verify identity, rental history, and references before you sign any lease.
+              <p className="hero-animate-3 mt-4 text-[16px] leading-relaxed text-gray-600 lg:hidden px-2">
+                Verify identity, rental history, and references before you sign any lease. Ensure a safe tenancy from day one.
               </p>
-              <div className="hero-animate-4 mt-5 sm:mt-6 flex max-w-xl flex-col gap-3 sm:flex-row sm:items-stretch">
+              <div className="hero-animate-4 mt-6 sm:mt-8 flex max-w-xl mx-auto lg:mx-0 flex-col gap-3 sm:flex-row sm:items-stretch">
                 <label className="relative flex flex-1 items-center rounded-xl bg-white px-3 py-3 shadow-sm ring-1 ring-gray-200 lg:shadow-md lg:ring-black/5">
                   <span className="sr-only">Phone number</span>
                   <Phone className="pointer-events-none absolute left-3.5 h-4 w-4 text-gray-400" aria-hidden />
@@ -425,7 +425,7 @@ const NewLanding = () => {
               </div>
               <Link
                 href="/sign-up?role=landlord"
-                className="hero-animate-5 mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#03442C] underline-offset-2 hover:underline lg:hidden"
+                className="hero-animate-5 mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-[#03442C] underline-offset-2 hover:underline lg:hidden"
               >
                 <Home className="h-4 w-4 shrink-0" aria-hidden />
                 List a property instead
@@ -439,14 +439,14 @@ const NewLanding = () => {
                 </span>
               </p>
             </div>
-            <div className="relative hidden lg:block hero-img-wrap">
-              <div className="relative aspect-[5/4] max-h-[420px] overflow-hidden rounded-2xl shadow-2xl ring-2 ring-white/10">
+            <div className="relative mt-8 lg:mt-0 hero-img-wrap block">
+              <div className="relative aspect-[4/3] w-full max-h-[300px] overflow-hidden rounded-2xl shadow-xl ring-1 ring-gray-900/5 lg:aspect-[5/4] lg:max-h-[420px] lg:shadow-2xl lg:ring-2 lg:ring-white/10">
                 <Image
                   src="/images/hero-couple.jpg"
                   alt="Happy couple — verified tenants and confident landlords"
                   fill
                   className="object-cover object-[center_20%]"
-                  sizes="50vw"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
               </div>

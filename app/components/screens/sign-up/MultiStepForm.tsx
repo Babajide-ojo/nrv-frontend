@@ -335,90 +335,88 @@ const MultiStepForm = () => {
   };
 
   return (
-    <div className="mx-auto mt-6 w-full bg-white p-3 sm:mt-10 sm:p-6 md:p-8">
+    <div className="mx-auto w-full max-w-xl bg-white p-4 sm:p-6 md:p-8">
       <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
         {step === 1 && (
-          <div className="space-y-8">
-            <h1 className="text-2xl font-bold text-green-600 lg:hidden mb-10">
+          <div className="space-y-5">
+            <h1 className="mb-6 text-2xl font-bold text-green-600 lg:hidden">
               NaijaRentVerify
             </h1>
-            <div className="flex justify-end items-center">
+            <div className="flex justify-end">
               <button
                 type="button"
-                className="text-center text-gray-500 mt-2 cursor-pointer hover:text-gray-700"
-                onClick={() => router.push("/dashboard/landlord")}
+                className="text-sm text-gray-500 hover:text-gray-700"
+                onClick={() => router.push("/sign-in")}
               >
                 Skip for Now →
               </button>
             </div>
-            <h2 className="text-2xl font-bold">Add Your Property</h2>
-            <p className="text-gray-500">
-              Help us personalize your experience by providing more details.
-            </p>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Add Your Property</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Help us personalize your experience by providing more details.
+              </p>
+            </div>
 
             <InputField
               label="Property Address/Location"
               name="location"
               required
+              variant="nested"
+              placeholder="Street address or area"
               value={propertyData.location}
               onChange={handleInputChange}
               error={errors.location}
-              css="bg-nrvLightGreyBg"
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <SelectField
-                label="Building Type"
-                required
-                value={buildingType}
-                onChange={(val: any) => setBuildingType(val)}
-                options={[
-                  { label: "Residential", value: "Residential" },
-                  { label: "Commercial", value: "Commercial" },
-                ]}
-                placeholder="Select Building Type"
-                name={"buildingType"}
-              />
-            </div>
+            <SelectField
+              label="Building Type"
+              required
+              variant="nested"
+              value={buildingType}
+              onChange={(val: { label: string; value: string }) => setBuildingType(val)}
+              options={[
+                { label: "Residential", value: "Residential" },
+                { label: "Commercial", value: "Commercial" },
+              ]}
+              placeholder="Select Building Type"
+              name="buildingType"
+            />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <InputField
                 label="City"
                 name="city"
                 required
+                variant="nested"
+                placeholder="City"
                 value={propertyData.city}
                 onChange={handleInputChange}
                 error={errors.city}
-                css="bg-nrvLightGreyBg"
               />
               <SelectField
                 label="State"
-                value={{
-                  label: propertyData.state,
-                  value: propertyData.state,
-                }}
+                variant="nested"
+                value={
+                  propertyData.state
+                    ? { label: propertyData.state, value: propertyData.state }
+                    : null
+                }
                 required
-                onChange={(val: any) =>
+                onChange={(val: { label: string; value: string } | null) =>
                   setPropertyData({
                     ...propertyData,
-                    state: val?.value,
+                    state: val?.value ?? "",
                   })
                 }
                 options={nigerianStates}
                 placeholder="Select State"
                 error={errors.state}
-                name={"state"}
+                name="state"
               />
             </div>
 
-            {/* <div className="mx-auto border rounded-md py-4 mt-16"> */}
-            <div className="mx-auto flex w-full max-w-4xl flex-col gap-4 sm:flex-row sm:gap-6 md:gap-8">
-              <div className="w-full">
-                <ImageUploader label="" onChange={handleImageChange} />
-              </div>
-            </div>
-
-
+            <ImageUploader label="" onChange={handleImageChange} />
 
             <Button
               type="button"

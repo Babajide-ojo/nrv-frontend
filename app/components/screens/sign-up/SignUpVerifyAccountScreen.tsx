@@ -197,12 +197,12 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
             )}
 
             {data.user.accountType === "landlord" && (
-              <div className="h-screen flex w-full overflow-hidden">
-                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+              <div className="flex min-h-screen w-full lg:h-screen lg:overflow-hidden">
+                <div className="hidden w-full max-w-md shrink-0 bg-[#E9F4E7] lg:block lg:w-1/2">
                   <AddPropertySideBar />
                 </div>
-                <div className="w-full lg:w-1/2 p-5 flex-col justify-center overflow-y-auto">
-                  <div className="max-w-xl mx-auto">
+                <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto p-5 sm:p-8 lg:w-1/2">
+                  <div className="mx-auto w-full max-w-xl">
                     <MultiStepForm />
                   </div>
                 </div>

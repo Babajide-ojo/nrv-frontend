@@ -52,7 +52,20 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
     async (formData: any, { rejectWithValue }) => {
    
         try {
-            const response: any = await axios.patch(`${API_URL}/properties/update?propertyId=${formData.id}`, formData?.body);
+            const body = formData?.body;
+            const isFormData =
+              typeof FormData !== "undefined" && body instanceof FormData;
+            const response: any = await axios.patch(
+              `${API_URL}/properties/update?propertyId=${formData.id}`,
+              body,
+              isFormData
+                ? {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
+                  }
+                : undefined,
+            );
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {

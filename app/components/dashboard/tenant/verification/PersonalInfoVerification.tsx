@@ -1,6 +1,6 @@
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
-import SelectDate from "@/app/components/shared/SelectDate";
+import DateInputField from "@/app/components/shared/input-fields/DateInputField";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,7 +31,6 @@ interface PersonalInfoVerificationProps {
 const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialData, requestData: requestDataProp }: PersonalInfoVerificationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [openDate, setOpenDate] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -352,8 +351,8 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
 
   return (
     <div className="min-w-0 max-w-full">
-      <div className="pb-6 border-b border-gray-100 mb-8">
-        <h3 className="text-xl font-semibold text-gray-900">
+      <div className="pb-4 border-b border-gray-100 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900">
           Personal Information
         </h3>
         <p className="text-sm text-gray-500 mt-1">
@@ -362,7 +361,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
       </div>
       <div className="min-w-0 max-w-full">
         <div className="rounded-xl bg-white p-1">
-          <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
             <InputField
               label="First Name"
               name="firstName"
@@ -439,17 +438,25 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
                 )}
               </div>
             )}
-            <InputField
+            <DateInputField
               label="Date of Birth"
               name="dateOfBirth"
               variant="nested"
               placeholder="Select date of birth"
               value={formData.dateOfBirth}
-              onClick={() => setOpenDate(true)}
-              onChange={() => {}}
-              error={errors.dateOfBirth}
-              readOnly
               disabled={isPrefilled}
+              required
+              disableFuture
+              openTo="year"
+              displayFormat="yyyy-MM-dd"
+              error={errors.dateOfBirth}
+              onChange={(selectedDate) => {
+                setFormData((prevData) => ({
+                  ...prevData,
+                  dateOfBirth: format(selectedDate, "yyyy-MM-dd"),
+                }));
+                setErrors((prev) => ({ ...prev, dateOfBirth: "" }));
+              }}
             />
             <SelectField
               label="Gender"
@@ -518,17 +525,6 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           </Button>
         </div>
       </div>
-      <SelectDate
-        isOpen={openDate}
-        onClose={() => setOpenDate(false)}
-        value={formData.dateOfBirth}
-        onChange={(selectedDate: any) => {
-          setFormData((prevData) => ({
-            ...prevData,
-            dateOfBirth: format(new Date(selectedDate), "yyyy-MM-dd"),
-          }));
-        }}
-      />
     </div>
   );
 };

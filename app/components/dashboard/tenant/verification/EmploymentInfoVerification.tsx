@@ -1,7 +1,7 @@
 "use client";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
-import SelectDate from "@/app/components/shared/SelectDate";
+import DateInputField from "@/app/components/shared/input-fields/DateInputField";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,7 +15,6 @@ interface EmploymentInfoVerificationProps {
 const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [openDate, setOpenDate] = useState(false);
   const [formData, setFormData] = useState({
     employmentStatus: "",
     nameOfCompany: "",
@@ -139,14 +138,14 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
 
   return (
     <div className="min-w-0 max-w-full">
-      <div className="pb-6 border-b border-gray-100 mb-8">
-        <h3 className="text-xl font-semibold text-gray-900">Employment Information</h3>
+      <div className="pb-4 border-b border-gray-100 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900">Employment Information</h3>
         <p className="text-sm text-gray-500 mt-1">
           Tell us where you work and what your role is.
         </p>
       </div>
       <div className="min-w-0 max-w-full">
-        <div className="flex flex-col gap-6 rounded-xl bg-white p-1">
+        <div className="flex flex-col gap-4 rounded-xl bg-white p-1">
           <SelectField
             label="Employment Status"
             name="employmentStatus"
@@ -168,7 +167,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             options={employmentStatusOptions}
             error={errors.employmentStatus}
           />
-          <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
+          <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
             <InputField
               label="Company Name"
               name="nameOfCompany"
@@ -206,16 +205,23 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
               error={errors.monthlyIncome}
               inputType="number"
             />
-            <InputField
+            <DateInputField
               label="Date Joined"
               name="dateJoined"
               variant="nested"
-              value={formData.dateJoined}
-              onClick={() => setOpenDate(true)}
-              onChange={() => {}}
-              error={errors.dateJoined}
-              readOnly
               placeholder="Select date joined"
+              value={formData.dateJoined}
+              disableFuture
+              openTo="year"
+              displayFormat="yyyy-MM-dd"
+              error={errors.dateJoined}
+              onChange={(selectedDate) => {
+                setFormData((prevData) => ({
+                  ...prevData,
+                  dateJoined: format(selectedDate, "yyyy-MM-dd"),
+                }));
+                setErrors((prev) => ({ ...prev, dateJoined: "" }));
+              }}
             />
           </div>
         </div>
@@ -242,17 +248,6 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
           </Button>
         </div>
       </div>
-      <SelectDate
-        isOpen={openDate}
-        onClose={() => setOpenDate(false)}
-        value={formData.dateJoined}
-        onChange={(selectedDate: any) => {
-          setFormData((prevData) => ({
-            ...prevData,
-            dateJoined: format(new Date(selectedDate), "yyyy-MM-dd"),
-          }));
-        }}
-      />
     </div>
   );
 };

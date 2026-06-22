@@ -160,7 +160,7 @@ const TenantVerificationIdPage = () => {
   <TenantLayout path="Verification" mainPath=" / Verification Details">
       <div className="min-w-0 max-w-full overflow-x-hidden">
       <div className="mb-5 border-b border-gray-100 bg-white py-4 sm:py-5">
-        <div className="mx-auto w-full min-w-0 max-w-[1300px] md:px-5">
+        <div className="mx-auto w-full min-w-0 max-w-4xl md:px-4">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex w-fit shrink-0 items-center gap-1 border-r border-gray-100 pr-3 text-[#667185]">
               <MdArrowBackIos />
@@ -174,8 +174,8 @@ const TenantVerificationIdPage = () => {
           </div>
         </div>
       </div>
-      <div className="mx-auto w-full min-w-0 max-w-[1100px] rounded-lg bg-white py-6 sm:py-10 sm:px-5">
-        <div className="mx-auto w-full min-w-0 max-w-[900px]">
+      <div className="mx-auto w-full min-w-0 max-w-3xl rounded-lg bg-white py-4 sm:py-6 sm:px-4">
+        <div className="mx-auto w-full min-w-0 max-w-2xl">
           <div className="mb-8 w-full min-w-0 overflow-x-auto overflow-y-hidden pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex w-max min-w-full flex-nowrap items-center justify-center gap-1 sm:justify-start md:gap-2">
             {stages.map((stage, index) => (

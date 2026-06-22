@@ -1032,7 +1032,7 @@ export function PublicPropertyDetailsModal({
         }
       }}
     >
-      <DialogContent className="fixed left-1/2 top-[50%] z-[101] flex max-h-[min(90vh,900px)] w-[calc(100vw-1rem)] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden border border-gray-200 bg-gray-50 p-0 shadow-2xl sm:rounded-2xl">
+      <DialogContent className="fixed left-1/2 top-[50%] z-[101] flex max-h-[min(90vh,900px)] w-[calc(100vw-1rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden border border-gray-200 bg-[#F8FAF9] p-0 shadow-2xl sm:rounded-2xl">
         <div className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="text-lg text-gray-900">Apply for this listing</DialogTitle>

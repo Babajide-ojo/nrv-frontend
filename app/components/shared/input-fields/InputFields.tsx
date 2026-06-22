@@ -208,7 +208,10 @@ export default function InputField({
   const shellClass = getFieldShellClass({ hasError, isFocused, variant });
 
   const renderStandardField = () => (
-    <div className={shellClass} onClick={onClick}>
+    <div
+      className={`${shellClass}${onClick && !disabled ? " cursor-pointer" : ""}`}
+      onClick={onClick}
+    >
       {renderLeftAdornment()}
 
       <input
@@ -224,8 +227,9 @@ export default function InputField({
           setIsFocused(false);
           onBlur?.(e);
         }}
+        onClick={readOnly ? onClick : undefined}
         placeholder={placeholder}
-        className={inputTextClass}
+        className={`${inputTextClass}${readOnly && onClick ? " cursor-pointer" : ""}`}
         disabled={disabled}
         readOnly={readOnly}
         aria-label={ariaLabel}

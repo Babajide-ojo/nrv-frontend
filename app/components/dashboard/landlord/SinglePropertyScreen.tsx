@@ -195,12 +195,12 @@ const SinglePropertyScreen = () => {
   const deleteProperty = async () => {
     try {
       setLoading(true);
-      await dispatch(deletePropertyById(id) as any);
+      await dispatch(deletePropertyById(id) as any).unwrap();
       toast.success("Property deleted successfully");
-      setLoading(false);
       router.push("/dashboard/landlord/properties");
-    } catch (error) {
-      toast.error("An error occured while uploding document");
+    } catch (error: any) {
+      toast.error(error || "Could not delete property. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -334,10 +334,16 @@ const SinglePropertyScreen = () => {
                       Update Property Info
                     </Button>
                     <Button
+                      variant="light"
+                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto border border-red-200 text-red-700 hover:bg-red-50"
+                      onClick={openDeleteConfirmation}
+                    >
+                      Delete Property
+                    </Button>
+                    <Button
                       variant="darkPrimary"
                       className="px-6 py-2 rounded-md justify-center w-full md:w-auto"
                       onClick={() => {
-                        //localStorage.setItem("property", JSON.stringify(id))
                         router.push(
                           "/dashboard/landlord/properties/rooms/create"
                         );

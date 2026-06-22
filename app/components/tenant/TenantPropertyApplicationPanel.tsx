@@ -2,16 +2,14 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { ErrorMessage, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import * as yup from "yup";
 import { ValidationError } from "yup";
 import { toast } from "react-toastify";
 import Button from "@/app/components/shared/buttons/Button";
-import FormikInputField from "@/app/components/shared/input-fields/FormikInputField";
-import { Label } from "@/components/ui/label";
+import FormikDateInputField from "@/app/components/shared/input-fields/FormikDateInputField";
+import InputField from "@/app/components/shared/input-fields/InputFields";
 import { ArrowLeft, Building } from "lucide-react";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { startOfToday } from "date-fns";
 import { applyForProperty } from "@/redux/slices/propertySlice";
 import type { TenantPropertyApplicationView } from "@/app/lib/mapTenantRoomForApplication";
@@ -24,6 +22,7 @@ const applicationValidationSchema = yup.object({
   reasonForLeaving: yup.string().trim().required("Reason for moving is required"),
   desiredMoveInDate: yup
     .date()
+    .nullable()
     .typeError("Please select a valid move-in date")
     .required("Desired move-in date is required")
     .min(startOfToday(), "Move-in date must be today or later"),
@@ -54,7 +53,7 @@ export function TenantPropertyApplicationPanel({
 
   const outer =
     variant === "page"
-      ? "min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-6 px-4"
+      ? "min-h-screen bg-gradient-to-br from-[#F4FAF3] via-white to-[#E9F4E7] py-6 px-4"
       : "py-1";
 
   const handleSubmit = async (value: any) => {
@@ -106,12 +105,12 @@ export function TenantPropertyApplicationPanel({
       <div
         className={
           variant === "page"
-            ? "min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 py-10 px-4 flex items-center justify-center"
+            ? "min-h-screen bg-gradient-to-br from-[#F4FAF3] via-white to-[#E9F4E7] py-10 px-4 flex items-center justify-center"
             : "py-8 px-4 text-center"
         }
       >
-        <div className="max-w-md rounded-2xl border border-green-100 bg-white p-4 shadow-sm sm:p-6 md:p-8">
-          <p className="text-lg font-semibold text-green-800">
+        <div className="max-w-md rounded-xl border border-[#2B892B]/20 bg-white p-4 shadow-sm sm:p-6">
+          <p className="text-lg font-semibold text-nrvPrimaryGreen">
             You have already applied to this unit
           </p>
           <p className="mt-2 text-sm text-gray-600">
@@ -134,16 +133,16 @@ export function TenantPropertyApplicationPanel({
 
   return (
     <div className={outer}>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         {subStep === "form" ? (
           <>
             <div className="mb-6 overflow-x-auto pb-4 hide-scrollbar">
               <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className="flex items-center shrink-0">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#E9F4E7] rounded-full flex items-center justify-center">
                       <svg
-                        className="w-3 h-3 sm:w-4 sm:h-4 text-green-600"
+                        className="w-3 h-3 sm:w-4 sm:h-4 text-nrvPrimaryGreen"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -157,14 +156,14 @@ export function TenantPropertyApplicationPanel({
                       </svg>
                     </div>
                     <div className="ml-1.5 sm:ml-2">
-                      <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">
+                      <p className="text-[10px] sm:text-xs font-medium text-nrvPrimaryGreen whitespace-nowrap">
                         Property Selected
                       </p>
                     </div>
                   </div>
-                  <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0" />
+                  <div className="w-6 sm:w-12 h-0.5 bg-[#D4EBCF] shrink-0" />
                   <div className="flex items-center shrink-0">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#2B892B] rounded-full flex items-center justify-center">
                       <svg
                         className="w-3 h-3 sm:w-4 sm:h-4 text-white"
                         fill="none"
@@ -180,7 +179,7 @@ export function TenantPropertyApplicationPanel({
                       </svg>
                     </div>
                     <div className="ml-1.5 sm:ml-2">
-                      <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">
+                      <p className="text-[10px] sm:text-xs font-medium text-nrvPrimaryGreen whitespace-nowrap">
                         Application Form
                       </p>
                     </div>
@@ -212,8 +211,8 @@ export function TenantPropertyApplicationPanel({
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+              <div className="bg-nrvPrimaryGreen px-4 py-3 text-white">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     type="button"
@@ -226,19 +225,19 @@ export function TenantPropertyApplicationPanel({
                     <h2 className="text-lg sm:text-xl font-bold truncate">
                       Tenant Application Form 🏘️
                     </h2>
-                    <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
+                    <p className="text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
                       Complete your application for {apt} • {property.apartmentStyle}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-5">
                 <Formik
                   initialValues={{
                     currentResidence: "",
                     monthlyIncome: "",
-                    desiredMoveInDate: new Date(),
+                    desiredMoveInDate: null as Date | null,
                     currentEmployer: "",
                     reasonForLeaving: "",
                     jobTitle: "",
@@ -251,18 +250,18 @@ export function TenantPropertyApplicationPanel({
                 >
                   {({ resetForm, values, setFieldValue, setFieldTouched, validateForm, setTouched }) => (
                     <Form className="w-full">
-                      <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
-                              <Building className="w-6 h-6 text-green-600" />
+                      <div className="mb-4 p-3 bg-[#E9F4E7] rounded-lg border border-[#2B892B]/20">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-10 h-10 bg-[#D4EBCF] rounded-lg flex items-center justify-center shrink-0">
+                              <Building className="w-5 h-5 text-nrvPrimaryGreen" />
                             </div>
                             <div>
-                              <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
+                              <h3 className="text-base font-semibold text-gray-800 line-clamp-1">
                                 {apt} • {property.apartmentStyle}
                               </h3>
-                              <p className="text-gray-600 text-sm line-clamp-1">{property.address}</p>
-                              <p className="text-xl font-bold text-green-600 mt-1">
+                              <p className="text-gray-600 text-xs line-clamp-1">{property.address}</p>
+                              <p className="text-lg font-bold text-nrvPrimaryGreen mt-0.5">
                                 ₦{property.price?.toLocaleString()}/year
                               </p>
                             </div>
@@ -274,153 +273,83 @@ export function TenantPropertyApplicationPanel({
                         </div>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
+                      <div className="space-y-3">
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <h4 className="text-sm font-semibold text-gray-800 mb-2.5 flex items-center">
+                            <div className="w-2 h-2 bg-[#2B892B] rounded-full mr-2" />
                             Personal Information
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-start">
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Current Residence Address
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <FormikInputField
-                                wrapperClassName="mt-0"
-                                name="currentResidence"
-                                placeholder="Enter your current address"
-                                value={values.currentResidence}
-                                css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Job Title / Business Type
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <FormikInputField
-                                wrapperClassName="mt-0"
-                                name="jobTitle"
-                                placeholder="e.g., Software Engineer, Business Owner"
-                                value={values.jobTitle}
-                                css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                              />
-                            </div>
+                            <InputField
+                              label="Current Residence Address"
+                              name="currentResidence"
+                              variant="nested"
+                              required
+                              placeholder="Enter your current address"
+                              value={values.currentResidence}
+                              onChange={(e) => setFieldValue("currentResidence", e.target.value)}
+                            />
+                            <InputField
+                              label="Job Title / Business Type"
+                              name="jobTitle"
+                              variant="nested"
+                              required
+                              placeholder="e.g., Software Engineer, Business Owner"
+                              value={values.jobTitle}
+                              onChange={(e) => setFieldValue("jobTitle", e.target.value)}
+                            />
                           </div>
                         </div>
 
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2" />
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <h4 className="text-sm font-semibold text-gray-800 mb-2.5 flex items-center">
+                            <div className="w-2 h-2 bg-[#2B892B] rounded-full mr-2" />
                             Employment & Income
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-start">
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Current Employer
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <FormikInputField
-                                wrapperClassName="mt-0"
-                                name="currentEmployer"
-                                placeholder="Company or organization name"
-                                value={values.currentEmployer}
-                                css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Monthly Income
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <FormikInputField
-                                wrapperClassName="mt-0"
-                                name="monthlyIncome"
-                                placeholder="₦0.00"
-                                value={values.monthlyIncome}
-                                css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                              />
-                            </div>
+                            <InputField
+                              label="Current Employer"
+                              name="currentEmployer"
+                              variant="nested"
+                              required
+                              placeholder="Company or organization name"
+                              value={values.currentEmployer}
+                              onChange={(e) => setFieldValue("currentEmployer", e.target.value)}
+                            />
+                            <InputField
+                              label="Monthly Income"
+                              name="monthlyIncome"
+                              variant="nested"
+                              required
+                              placeholder="₦0.00"
+                              value={values.monthlyIncome}
+                              onChange={(e) => setFieldValue("monthlyIncome", e.target.value)}
+                            />
                           </div>
                         </div>
 
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                            <div className="w-2 h-2 bg-purple-500 rounded-full mr-2" />
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <h4 className="text-sm font-semibold text-gray-800 mb-2.5 flex items-center">
+                            <div className="w-2 h-2 bg-[#2B892B] rounded-full mr-2" />
                             Move-in Details
                           </h4>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:items-start">
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Desired Move-in Date
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <div className="h-10 rounded-lg border border-gray-200 px-3 bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/20 transition-all duration-200 flex items-center">
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                  <DatePicker
-                                    value={values.desiredMoveInDate}
-                                    onChange={(d) => {
-                                      setFieldValue("desiredMoveInDate", d ?? new Date());
-                                      setFieldTouched("desiredMoveInDate", true);
-                                    }}
-                                    minDate={startOfToday()}
-                                    slotProps={{
-                                      textField: {
-                                        fullWidth: true,
-                                        size: "small",
-                                        variant: "standard",
-                                        InputProps: { disableUnderline: true },
-                                        sx: {
-                                          fontSize: "13px",
-                                          boxShadow: "none",
-                                          paddingTop: "4px",
-                                          "&:hover": { boxShadow: "none", borderColor: "#10B981" },
-                                          "& .Mui-focused": { boxShadow: "none" },
-                                          "& input": { color: "#374151", padding: "8px 4px" },
-                                        },
-                                      },
-                                      day: {
-                                        sx: {
-                                          backgroundColor: "#F9FAFB",
-                                          "&.Mui-selected": {
-                                            backgroundColor: "#10B981",
-                                            color: "#ffffff",
-                                          },
-                                          "&.MuiPickersDay-today": {
-                                            border: "2px solid #10B981",
-                                            backgroundColor: "#10B981",
-                                          },
-                                          "&.MuiPickersDay-today.Mui-selected": {
-                                            backgroundColor: "#10B981",
-                                            color: "#fff",
-                                          },
-                                          "&:hover": { backgroundColor: "#10B981", color: "#ffffff" },
-                                        },
-                                      },
-                                    }}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                              <ErrorMessage
-                                name="desiredMoveInDate"
-                                component="div"
-                                className="text-red-500 text-xs mt-1"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                Reason for Moving
-                                <span className="text-red-600"> *</span>
-                              </Label>
-                              <FormikInputField
-                                wrapperClassName="mt-0"
-                                name="reasonForLeaving"
-                                placeholder="e.g., Job relocation, lease ending"
-                                value={values.reasonForLeaving}
-                                css="bg-white border-gray-200 focus:border-green-500 focus:ring-green-500 h-10 rounded-lg text-sm"
-                              />
-                            </div>
+                            <FormikDateInputField
+                              name="desiredMoveInDate"
+                              label="Desired Move-in Date"
+                              placeholder="Select move-in date"
+                              required
+                              disablePast
+                            />
+                            <InputField
+                              label="Reason for Moving"
+                              name="reasonForLeaving"
+                              variant="nested"
+                              required
+                              placeholder="e.g., Job relocation, lease ending"
+                              value={values.reasonForLeaving}
+                              onChange={(e) => setFieldValue("reasonForLeaving", e.target.value)}
+                            />
                           </div>
                         </div>
                       </div>
@@ -442,7 +371,7 @@ export function TenantPropertyApplicationPanel({
                         <Button
                           type="button"
                           size="large"
-                          className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                          className="w-full sm:flex-1 bg-nrvPrimaryGreen hover:bg-[#023524] text-white h-11 rounded-lg font-medium transition-all text-sm"
                           variant="darkPrimary"
                           showIcon={false}
                           onClick={async () => {
@@ -491,11 +420,11 @@ export function TenantPropertyApplicationPanel({
                         </Button>
                       </div>
 
-                      <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                      <div className="mt-6 p-4 bg-[#E9F4E7] rounded-lg border border-[#2B892B]/20">
                         <div className="flex items-start gap-3">
-                          <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <div className="w-6 h-6 bg-[#D4EBCF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                             <svg
-                              className="w-4 h-4 text-emerald-600"
+                              className="w-4 h-4 text-nrvPrimaryGreen"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -509,8 +438,8 @@ export function TenantPropertyApplicationPanel({
                             </svg>
                           </div>
                           <div>
-                            <h5 className="font-medium text-emerald-800 mb-2 text-sm">Application Tips</h5>
-                            <ul className="text-xs text-emerald-700 space-y-1">
+                            <h5 className="font-medium text-nrvPrimaryGreen mb-2 text-sm">Application Tips</h5>
+                            <ul className="text-xs text-[#2B892B] space-y-1">
                               <li>• Ensure all information is accurate and up-to-date</li>
                               <li>• Provide complete contact details for verification</li>
                               <li>• Be honest about your income and employment status</li>
@@ -531,9 +460,9 @@ export function TenantPropertyApplicationPanel({
               <div className="flex items-center justify-start sm:justify-center min-w-max px-2">
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className="flex items-center shrink-0">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#E9F4E7] rounded-full flex items-center justify-center">
                       <svg
-                        className="w-3 h-3 sm:w-4 sm:h-4 text-green-600"
+                        className="w-3 h-3 sm:w-4 sm:h-4 text-nrvPrimaryGreen"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -547,14 +476,14 @@ export function TenantPropertyApplicationPanel({
                       </svg>
                     </div>
                     <div className="ml-1.5 sm:ml-2">
-                      <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">
+                      <p className="text-[10px] sm:text-xs font-medium text-nrvPrimaryGreen whitespace-nowrap">
                         Property Selected
                       </p>
                     </div>
                   </div>
-                  <div className="w-6 sm:w-12 h-0.5 bg-green-200 shrink-0" />
+                  <div className="w-6 sm:w-12 h-0.5 bg-[#D4EBCF] shrink-0" />
                   <div className="flex items-center shrink-0">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-[#2B892B] rounded-full flex items-center justify-center">
                       <svg
                         className="w-3 h-3 sm:w-4 sm:h-4 text-white"
                         fill="none"
@@ -570,7 +499,7 @@ export function TenantPropertyApplicationPanel({
                       </svg>
                     </div>
                     <div className="ml-1.5 sm:ml-2">
-                      <p className="text-[10px] sm:text-xs font-medium text-green-600 whitespace-nowrap">
+                      <p className="text-[10px] sm:text-xs font-medium text-nrvPrimaryGreen whitespace-nowrap">
                         Application Form
                       </p>
                     </div>
@@ -602,8 +531,8 @@ export function TenantPropertyApplicationPanel({
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 sm:px-6 py-4 text-white">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+              <div className="bg-nrvPrimaryGreen px-4 py-3 text-white">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     type="button"
@@ -616,7 +545,7 @@ export function TenantPropertyApplicationPanel({
                     <h2 className="text-lg sm:text-xl font-bold truncate">
                       Review & Submit Application 📋
                     </h2>
-                    <p className="text-green-100 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
+                    <p className="text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 truncate">
                       Review your application details before final submission
                     </p>
                   </div>
@@ -624,18 +553,18 @@ export function TenantPropertyApplicationPanel({
               </div>
 
               <div className="p-4 sm:p-6">
-                <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-green-50 rounded-xl border border-green-100">
+                <div className="mb-6 p-4 bg-[#E9F4E7] rounded-lg border border-[#2B892B]/20">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
-                        <Building className="w-6 h-6 text-green-600" />
+                      <div className="w-12 h-12 bg-[#D4EBCF] rounded-lg flex items-center justify-center shrink-0">
+                        <Building className="w-6 h-6 text-nrvPrimaryGreen" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                           {apt} • {property.apartmentStyle}
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-1">{property.address}</p>
-                        <p className="text-xl font-bold text-green-600 mt-1">
+                        <p className="text-xl font-bold text-nrvPrimaryGreen mt-1">
                           ₦{property.price?.toLocaleString()}/year
                         </p>
                       </div>
@@ -650,7 +579,7 @@ export function TenantPropertyApplicationPanel({
                 <div className="space-y-6">
                   <div className="bg-gray-50 rounded-xl p-4">
                     <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
+                      <div className="w-2 h-2 bg-[#2B892B] rounded-full mr-2" />
                       Personal Information
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -671,7 +600,7 @@ export function TenantPropertyApplicationPanel({
 
                   <div className="bg-gray-50 rounded-xl p-4">
                     <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2" />
+                      <div className="w-2 h-2 bg-[#2B892B] rounded-full mr-2" />
                       Employment & Income
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -728,7 +657,7 @@ export function TenantPropertyApplicationPanel({
                   <Button
                     type="button"
                     size="large"
-                    className="w-full sm:flex-1 bg-green-600 hover:bg-green-700 text-white h-11 rounded-lg font-medium transition-all duration-200 hover:scale-105 shadow-md text-sm"
+                    className="w-full sm:flex-1 bg-nrvPrimaryGreen hover:bg-[#023524] text-white h-11 rounded-lg font-medium transition-all text-sm"
                     variant="darkPrimary"
                     showIcon={false}
                     onClick={() => handleSubmit(formData)}
@@ -760,11 +689,11 @@ export function TenantPropertyApplicationPanel({
                   </Button>
                 </div>
 
-                <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                <div className="mt-6 p-4 bg-[#E9F4E7] rounded-lg border border-[#2B892B]/20">
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-6 h-6 bg-[#D4EBCF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                       <svg
-                        className="w-4 h-4 text-emerald-600"
+                        className="w-4 h-4 text-nrvPrimaryGreen"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -778,8 +707,8 @@ export function TenantPropertyApplicationPanel({
                       </svg>
                     </div>
                     <div>
-                      <h5 className="font-medium text-emerald-800 mb-2 text-sm">Final Review Checklist</h5>
-                      <ul className="text-xs text-emerald-700 space-y-1">
+                      <h5 className="font-medium text-nrvPrimaryGreen mb-2 text-sm">Final Review Checklist</h5>
+                      <ul className="text-xs text-[#2B892B] space-y-1">
                         <li>• All personal information is accurate and complete</li>
                         <li>• Employment details are up-to-date</li>
                         <li>• Move-in date is realistic and works for you</li>

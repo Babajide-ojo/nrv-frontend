@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -10,8 +10,10 @@ import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import { RootState } from "../../../../../redux/store";
 import { API_URL } from "../../../../../config/constant";
 import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
+import TierFeatureList from "@/app/components/shared/TierFeatureList";
 
 const MAX_CREDIT_QTY = 999;
+const PAYMENT_HISTORY_PAGE_SIZE = 10;
 
 function fallbackUnitPrice(plan: { slug?: string; unitPriceNaira?: number }) {
   if (plan.unitPriceNaira != null && plan.unitPriceNaira > 0) return plan.unitPriceNaira;
@@ -27,6 +29,7 @@ function friendlyPlanDescription(isPremium: boolean) {
 
 interface PaymentRecord {
   _id: string;
+  reference?: string;
   planId?: string;
   planName?: string;
   amountNaira: number;
@@ -44,6 +47,20 @@ const PlansPage = () => {
   const [quantityByPlanId, setQuantityByPlanId] = useState<Record<string, number>>({});
   const [paymentHistory, setPaymentHistory] = useState<PaymentRecord[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const [resumingReference, setResumingReference] = useState<string | null>(null);
+  const prevUserIdRef = useRef<string | undefined>();
+
+  const historyTotalPages =
+    historyTotal === 0 ? 0 : Math.ceil(historyTotal / PAYMENT_HISTORY_PAGE_SIZE);
+
+  const pendingPayments = useMemo(
+    () => paymentHistory.filter((p) => p.status === "pending" && p.reference),
+    [paymentHistory],
+  );
+
+  const [latestPending, setLatestPending] = useState<PaymentRecord | null>(null);
 
   const userDoc = user?.user ?? user;
   const userId = userDoc?._id ?? (user as any)?._id;
@@ -65,18 +82,122 @@ const PlansPage = () => {
     dispatch(fetchPlans() as any);
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!userId) return;
+  const refreshPaymentHistory = (page = historyPage) => {
+    if (!userId) {
+      return;
+    }
     setHistoryLoading(true);
     axios
-      .get(`${API_URL}/payments/history/${userId}`)
+      .get(`${API_URL}/payments/history/${userId}`, {
+        params: { page, limit: PAYMENT_HISTORY_PAGE_SIZE },
+      })
       .then((res) => {
         const data = res.data?.data ?? res.data;
+        const pagination = res.data?.pagination;
         setPaymentHistory(Array.isArray(data) ? data : []);
+        setHistoryTotal(pagination?.total ?? (Array.isArray(data) ? data.length : 0));
+        if (pagination?.page) {
+          setHistoryPage(pagination.page);
+        }
       })
-      .catch(() => setPaymentHistory([]))
+      .catch(() => {
+        setPaymentHistory([]);
+        setHistoryTotal(0);
+      })
       .finally(() => setHistoryLoading(false));
-  }, [userId]);
+  };
+
+  const refreshPendingPayment = () => {
+    if (!userId) {
+      setLatestPending(null);
+      return;
+    }
+    axios
+      .get(`${API_URL}/payments/pending/${userId}`)
+      .then((res) => {
+        const data = res.data?.data ?? null;
+        setLatestPending(data?.reference ? data : null);
+      })
+      .catch(() => setLatestPending(null));
+  };
+
+  useEffect(() => {
+    if (!userId) {
+      setPaymentHistory([]);
+      setHistoryTotal(0);
+      return;
+    }
+
+    if (prevUserIdRef.current !== userId) {
+      prevUserIdRef.current = userId;
+      if (historyPage !== 1) {
+        setHistoryPage(1);
+        return;
+      }
+    }
+
+    refreshPaymentHistory(historyPage);
+    refreshPendingPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, historyPage]);
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && userId) {
+        refreshPaymentHistory(historyPage);
+        refreshPendingPayment();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, historyPage]);
+
+  const resumePaymentByReference = async (reference: string) => {
+    if (!userId) {
+      return;
+    }
+    setResumingReference(reference);
+    try {
+      const res = await axios.post(`${API_URL}/payments/resume/${reference}`, {
+        userId,
+      });
+      const payload = res.data?.data ?? res.data;
+      const authUrl = payload?.authorization_url;
+      if (authUrl) {
+        window.location.href = authUrl;
+        return;
+      }
+      if (payload?.alreadyPaid) {
+        toast.success("Payment already completed. Credits are on your account.");
+        refreshPaymentHistory();
+        refreshPendingPayment();
+        return;
+      }
+      toast.error(res.data?.message || "Could not resume payment.");
+      refreshPaymentHistory();
+      refreshPendingPayment();
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Payment expired. Please start a new purchase.",
+      );
+      refreshPaymentHistory();
+      refreshPendingPayment();
+    } finally {
+      setResumingReference(null);
+    }
+  };
+
+  const handleResumePayment = async (payment: PaymentRecord) => {
+    if (!payment.reference || payment.status !== "pending") {
+      return;
+    }
+    await resumePaymentByReference(payment.reference);
+  };
+
+  const bannerPending = latestPending ?? pendingPayments[0] ?? null;
 
   const getQuantity = (planId: string) => quantityByPlanId[planId] ?? 1;
   const setQuantity = (planId: string, value: number) => {
@@ -106,8 +227,12 @@ const PlansPage = () => {
       });
       const data = res.data?.data || res.data;
       const authUrl = data?.authorization_url;
+      const reference = data?.reference;
       if (!authUrl) {
         throw new Error("Could not get Paystack authorization URL.");
+      }
+      if (reference) {
+        sessionStorage.setItem("nrv-pending-payment-ref", reference);
       }
       window.location.href = authUrl;
     } catch (err: any) {
@@ -144,6 +269,31 @@ const PlansPage = () => {
             </div>
           </div>
 
+          {bannerPending?.reference && (
+            <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-amber-950">
+                  Incomplete payment
+                </p>
+                <p className="text-sm text-amber-900/80 mt-0.5">
+                  {bannerPending.planName ?? "Verification credits"} · ₦
+                  {(bannerPending.amountNaira ?? 0).toLocaleString()} — you can
+                  continue checkout within 30 minutes.
+                </p>
+              </div>
+              <button
+                type="button"
+                disabled={resumingReference === bannerPending.reference}
+                onClick={() => resumePaymentByReference(bannerPending.reference!)}
+                className="shrink-0 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800 disabled:opacity-60"
+              >
+                {resumingReference === bannerPending.reference
+                  ? "Opening…"
+                  : "Continue payment"}
+              </button>
+            </div>
+          )}
+
           {loading === "pending" ? (
             <div className="flex justify-center items-center h-48">
               <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-green-600"></div>
@@ -174,9 +324,14 @@ const PlansPage = () => {
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                       {friendlyPlanDescription(isPremium)}
                     </p>
+                    <TierFeatureList
+                      tier={isPremium ? "premium" : "standard"}
+                      premiumAddonsOnly={isPremium}
+                      className="mb-6"
+                    />
 
                     <div className="mt-auto space-y-3">
                       <div className="rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
@@ -276,8 +431,40 @@ const PlansPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {paymentHistory.map((p) => (
-                      <tr key={p._id} className="border-b border-gray-100 last:border-0">
+                    {paymentHistory.map((p) => {
+                      const isPending = p.status === "pending";
+                      const isResuming = resumingReference === p.reference;
+                      return (
+                      <tr
+                        key={p._id}
+                        className={`border-b border-gray-100 last:border-0 ${
+                          isPending && p.reference
+                            ? "cursor-pointer hover:bg-amber-50/60"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          if (isPending && p.reference) {
+                            handleResumePayment(p);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (
+                            isPending &&
+                            p.reference &&
+                            (e.key === "Enter" || e.key === " ")
+                          ) {
+                            e.preventDefault();
+                            handleResumePayment(p);
+                          }
+                        }}
+                        tabIndex={isPending && p.reference ? 0 : undefined}
+                        role={isPending && p.reference ? "button" : undefined}
+                        aria-label={
+                          isPending && p.reference
+                            ? `Continue payment for ${p.planName ?? "pack"}`
+                            : undefined
+                        }
+                      >
                         <td className="py-3 px-4 text-gray-600">
                           {p.paidAt
                             ? new Date(p.paidAt).toLocaleDateString()
@@ -289,22 +476,71 @@ const PlansPage = () => {
                         <td className="py-3 px-4 text-right text-gray-600">{p.quantity ?? 1}</td>
                         <td className="py-3 px-4 text-right text-gray-900">₦{(p.amountNaira ?? 0).toLocaleString()}</td>
                         <td className="py-3 px-4">
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                              p.status === "success"
-                                ? "bg-green-100 text-green-800"
-                                : p.status === "failed"
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-gray-100 text-gray-700"
-                            }`}
-                          >
-                            {p.status}
-                          </span>
+                          {isPending && p.reference ? (
+                            <button
+                              type="button"
+                              disabled={isResuming}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleResumePayment(p);
+                              }}
+                              className="inline-flex items-center rounded-md bg-amber-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-amber-800 disabled:opacity-60"
+                            >
+                              {isResuming ? "Opening…" : "Continue"}
+                            </button>
+                          ) : (
+                            <span
+                              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                                p.status === "success"
+                                  ? "bg-green-100 text-green-800"
+                                  : p.status === "failed"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {p.status}
+                            </span>
+                          )}
                         </td>
                       </tr>
-                    ))}
+                    );})}
                   </tbody>
                 </table>
+                {historyTotal > PAYMENT_HISTORY_PAGE_SIZE && (
+                  <div className="flex flex-col gap-3 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs text-gray-600">
+                      Showing{" "}
+                      {(historyPage - 1) * PAYMENT_HISTORY_PAGE_SIZE + 1}–
+                      {Math.min(historyPage * PAYMENT_HISTORY_PAGE_SIZE, historyTotal)}{" "}
+                      of {historyTotal}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={historyPage <= 1 || historyLoading}
+                        onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Previous page"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-gray-600 tabular-nums">
+                        Page {historyPage} of {Math.max(1, historyTotalPages)}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={historyPage >= historyTotalPages || historyLoading}
+                        onClick={() =>
+                          setHistoryPage((p) => Math.min(historyTotalPages, p + 1))
+                        }
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Next page"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

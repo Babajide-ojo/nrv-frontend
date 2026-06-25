@@ -9,6 +9,7 @@ import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import { toast } from "react-toastify";
 import { requestVerification } from "@/redux/slices/verificationSlice";
 import { useRouter, useSearchParams } from "next/navigation";
+import TierFeatureList from "@/app/components/shared/TierFeatureList";
 
 
 export default function OnboardTenant() {
@@ -173,9 +174,10 @@ export default function OnboardTenant() {
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 leading-relaxed">
+                      <p className="text-xs text-gray-500 leading-relaxed mb-3">
                         Identity verification and Criminal/Fraud history checks to help you confidently screen a tenant before renting.
                       </p>
+                      <TierFeatureList tier="standard" className="text-xs" />
                     </div>
 
                     <div
@@ -196,9 +198,10 @@ export default function OnboardTenant() {
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 leading-relaxed">
+                      <p className="text-xs text-gray-500 leading-relaxed mb-3">
                         Everything in Standard verification, plus Credit Score (Affordability) to check if the tenant can realistically sustain the rent.
                       </p>
+                      <TierFeatureList tier="premium" premiumAddonsOnly className="text-xs" />
                     </div>
                   </div>
                 </div>

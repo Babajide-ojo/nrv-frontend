@@ -39,6 +39,144 @@ interface PaymentRecord {
   createdAt?: string;
 }
 
+const formatPaymentDate = (payment: PaymentRecord) => {
+  if (payment.paidAt) {
+    return new Date(payment.paidAt).toLocaleDateString();
+  }
+  if (payment.createdAt) {
+    return new Date(payment.createdAt).toLocaleDateString();
+  }
+  return "—";
+};
+
+const PaymentStatusBadge = ({ status }: { status: string }) => {
+  const label =
+    status === "success" ? "Paid" : status === "failed" ? "Failed" : status;
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${
+        status === "success"
+          ? "bg-green-100 text-green-800"
+          : status === "failed"
+            ? "bg-red-100 text-red-800"
+            : status === "pending"
+              ? "bg-amber-100 text-amber-900"
+              : "bg-gray-100 text-gray-700"
+      }`}
+    >
+      {label}
+    </span>
+  );
+};
+
+interface PaymentHistoryListProps {
+  payments: PaymentRecord[];
+  resumingReference: string | null;
+  onResume: (payment: PaymentRecord) => void;
+}
+
+const PaymentHistoryList = ({
+  payments,
+  resumingReference,
+  onResume,
+}: PaymentHistoryListProps) => (
+  <>
+    {/* Mobile: card layout */}
+    <div className="md:hidden divide-y divide-gray-100">
+      {payments.map((p) => {
+        const isPending = p.status === "pending" && !!p.reference;
+        const isResuming = resumingReference === p.reference;
+
+        return (
+          <div
+            key={p._id}
+            className={`p-4 ${isPending ? "bg-amber-50/40" : "bg-white"}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-gray-900 truncate">
+                  {p.planName ?? "Pack"}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {formatPaymentDate(p)} · Qty {p.quantity ?? 1}
+                </p>
+              </div>
+              <p className="shrink-0 text-sm font-semibold text-gray-900 tabular-nums">
+                ₦{(p.amountNaira ?? 0).toLocaleString()}
+              </p>
+            </div>
+
+            <div className="mt-3">
+              <PaymentStatusBadge status={p.status} />
+            </div>
+
+            {isPending && (
+              <button
+                type="button"
+                disabled={isResuming}
+                onClick={() => onResume(p)}
+                className="mt-3 w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-800 disabled:opacity-60"
+              >
+                {isResuming ? "Opening checkout…" : "Continue payment"}
+              </button>
+            )}
+          </div>
+        );
+      })}
+    </div>
+
+    {/* Desktop: table */}
+    <table className="hidden md:table w-full text-sm">
+      <thead className="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
+          <th className="text-left py-3 px-4 font-medium text-gray-700">Plan</th>
+          <th className="text-right py-3 px-4 font-medium text-gray-700">Qty</th>
+          <th className="text-right py-3 px-4 font-medium text-gray-700">Amount</th>
+          <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {payments.map((p) => {
+          const isPending = p.status === "pending";
+          const isResuming = resumingReference === p.reference;
+
+          return (
+            <tr
+              key={p._id}
+              className={`border-b border-gray-100 last:border-0 ${
+                isPending && p.reference ? "hover:bg-amber-50/60" : ""
+              }`}
+            >
+              <td className="py-3 px-4 text-gray-600">{formatPaymentDate(p)}</td>
+              <td className="py-3 px-4 text-gray-900">{p.planName ?? "Pack"}</td>
+              <td className="py-3 px-4 text-right text-gray-600">{p.quantity ?? 1}</td>
+              <td className="py-3 px-4 text-right text-gray-900 tabular-nums">
+                ₦{(p.amountNaira ?? 0).toLocaleString()}
+              </td>
+              <td className="py-3 px-4">
+                {isPending && p.reference ? (
+                  <button
+                    type="button"
+                    disabled={isResuming}
+                    onClick={() => onResume(p)}
+                    className="inline-flex items-center rounded-md bg-amber-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-amber-800 disabled:opacity-60"
+                  >
+                    {isResuming ? "Opening…" : "Continue"}
+                  </button>
+                ) : (
+                  <PaymentStatusBadge status={p.status} />
+                )}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </>
+);
+
 const PlansPage = () => {
   const dispatch = useDispatch();
   const { plans, loading } = useSelector((state: RootState) => state.plans);
@@ -248,7 +386,7 @@ const PlansPage = () => {
   return (
     <ProtectedRoute>
       <LandLordLayout path="Buy verification credit" mainPath="Settings" subMainPath="Buy verification credit">
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="max-w-4xl mx-auto px-4 py-5 sm:p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-gray-900 mb-1">
               Verification credits
@@ -285,7 +423,7 @@ const PlansPage = () => {
                 type="button"
                 disabled={resumingReference === bannerPending.reference}
                 onClick={() => resumePaymentByReference(bannerPending.reference!)}
-                className="shrink-0 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-800 disabled:opacity-60"
+                className="w-full sm:w-auto shrink-0 rounded-lg bg-amber-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-amber-800 disabled:opacity-60"
               >
                 {resumingReference === bannerPending.reference
                   ? "Opening…"
@@ -419,93 +557,12 @@ const PlansPage = () => {
             ) : paymentHistory.length === 0 ? (
               <p className="text-sm text-gray-500 py-4">No purchases yet.</p>
             ) : (
-              <div className="border border-gray-200 rounded-xl overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Plan</th>
-                      <th className="text-right py-3 px-4 font-medium text-gray-700">Qty</th>
-                      <th className="text-right py-3 px-4 font-medium text-gray-700">Amount</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paymentHistory.map((p) => {
-                      const isPending = p.status === "pending";
-                      const isResuming = resumingReference === p.reference;
-                      return (
-                      <tr
-                        key={p._id}
-                        className={`border-b border-gray-100 last:border-0 ${
-                          isPending && p.reference
-                            ? "cursor-pointer hover:bg-amber-50/60"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          if (isPending && p.reference) {
-                            handleResumePayment(p);
-                          }
-                        }}
-                        onKeyDown={(e) => {
-                          if (
-                            isPending &&
-                            p.reference &&
-                            (e.key === "Enter" || e.key === " ")
-                          ) {
-                            e.preventDefault();
-                            handleResumePayment(p);
-                          }
-                        }}
-                        tabIndex={isPending && p.reference ? 0 : undefined}
-                        role={isPending && p.reference ? "button" : undefined}
-                        aria-label={
-                          isPending && p.reference
-                            ? `Continue payment for ${p.planName ?? "pack"}`
-                            : undefined
-                        }
-                      >
-                        <td className="py-3 px-4 text-gray-600">
-                          {p.paidAt
-                            ? new Date(p.paidAt).toLocaleDateString()
-                            : p.createdAt
-                              ? new Date(p.createdAt).toLocaleDateString()
-                              : "—"}
-                        </td>
-                        <td className="py-3 px-4 text-gray-900">{p.planName ?? "Pack"}</td>
-                        <td className="py-3 px-4 text-right text-gray-600">{p.quantity ?? 1}</td>
-                        <td className="py-3 px-4 text-right text-gray-900">₦{(p.amountNaira ?? 0).toLocaleString()}</td>
-                        <td className="py-3 px-4">
-                          {isPending && p.reference ? (
-                            <button
-                              type="button"
-                              disabled={isResuming}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleResumePayment(p);
-                              }}
-                              className="inline-flex items-center rounded-md bg-amber-700 px-2.5 py-1 text-xs font-medium text-white hover:bg-amber-800 disabled:opacity-60"
-                            >
-                              {isResuming ? "Opening…" : "Continue"}
-                            </button>
-                          ) : (
-                            <span
-                              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                p.status === "success"
-                                  ? "bg-green-100 text-green-800"
-                                  : p.status === "failed"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-gray-100 text-gray-700"
-                              }`}
-                            >
-                              {p.status}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );})}
-                  </tbody>
-                </table>
+              <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+                <PaymentHistoryList
+                  payments={paymentHistory}
+                  resumingReference={resumingReference}
+                  onResume={handleResumePayment}
+                />
                 {historyTotal > PAYMENT_HISTORY_PAGE_SIZE && (
                   <div className="flex flex-col gap-3 border-t border-gray-200 bg-gray-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-xs text-gray-600">

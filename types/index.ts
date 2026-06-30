@@ -7,6 +7,8 @@ export interface User {
   phoneNumber: string;
   accountType: 'landlord' | 'tenant' | 'admin';
   status: 'active' | 'inactive' | 'pending';
+  nin?: string;
+  homeAddress?: string;
   createdAt: string;
   updatedAt: string;
 }

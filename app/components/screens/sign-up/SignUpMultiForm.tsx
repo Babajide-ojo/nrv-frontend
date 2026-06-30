@@ -29,11 +29,7 @@ const validationSchema = yup.object({
     .string()
     .email("Invalid email address")
     .required("Email is required"),
-    nin: yup.string().when("accountType", {
-      is: "tenant", // condition
-      then: (schema) => schema.required("NIN is required for tenant accounts"),
-      otherwise: (schema) => schema.optional(),
-    }),
+  nin: yup.string().optional(),
   phoneNumber: yup.string().required("Phone Number is required"),
   accountType: yup.string().required("Account Type is required"),
   password: yup
@@ -68,9 +64,13 @@ const SignUpMultiForm = () => {
       return;
     }
     const { confirmPassword, ...payload } = values;
+    if (payload.accountType === "tenant") {
+      delete payload.nin;
+    }
     setIsLoading(true);
     try {
       await dispatch(createUser(payload) as any).unwrap();
+      localStorage.setItem("stepToLoad", JSON.stringify(3));
       setCurrentStep(3);
       setIsLoading(false);
     } catch (error: any) {
@@ -145,7 +145,7 @@ const SignUpMultiForm = () => {
                     icon: <User className="text-gray-500" />,
                     text: "Sign Up as a Tenant",
                     description:
-                      "Sign up as a Tenant to Find and secure your dream home with genuine listings, Complete your rental agreement and payments securely without stress and extra cost or fee.",
+                      "Find and secure your dream home with genuine listings. Sign-up uses only basic contact details — we do not ask for your NIN or BVN here. If a landlord requests tenant screening later, you will provide those securely in the verification flow.",
                   },
                 ].map(({ role, icon, text, description }) => (
                   <div
@@ -209,6 +209,24 @@ const SignUpMultiForm = () => {
                 NaijaRentVerify
               </h1>
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
+              {selectedRole === "tenant" && (
+                <div
+                  className="mb-6 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-700 leading-relaxed"
+                  role="note"
+                >
+                  <p className="font-semibold text-[#03442C] mb-1">
+                    No NIN or BVN required to sign up
+                  </p>
+                  <p>
+                    We only need your name, email, phone, and password to create
+                    your account. Your National Identification Number (NIN) and
+                    Bank Verification Number (BVN) are{" "}
+                    <strong>not</strong> collected during registration. If a
+                    landlord asks you to complete tenant screening, you will enter
+                    those details separately in a secure verification step.
+                  </p>
+                </div>
+              )}
               <Formik
                 enableReinitialize
                 initialValues={{
@@ -224,17 +242,20 @@ const SignUpMultiForm = () => {
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
               >
-                {({ handleChange, handleBlur, values, errors }) => (
+                {({ handleChange, handleBlur, values, errors }) => {
+                  const formFields = [
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "phoneNumber",
+                    ...(selectedRole === "landlord" ? (["nin"] as const) : []),
+                    "password",
+                    "confirmPassword",
+                  ] as const;
+
+                  return (
                   <Form className="space-y-4">
-                    {[
-                      "firstName",
-                      "lastName",
-                      "email",
-                      "phoneNumber",
-                      "nin",
-                      "password",
-                      "confirmPassword",
-                    ].map((name) => (
+                    {formFields.map((name) => (
                       <InputField
                         key={name}
                         placeholder="Start Typing..."
@@ -321,7 +342,8 @@ const SignUpMultiForm = () => {
                       Return to Home Page
                     </Button>
                   </Form>
-                )}
+                  );
+                }}
               </Formik>
             </div>
           </div>

@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
 import {
   FiHome,
   FiClipboard,
   FiTool,
   FiMessageSquare,
-  FiHeadphones,
   FiSettings,
   FiCheckCircle,
 } from "react-icons/fi";
@@ -60,11 +59,11 @@ const links = [
 
 const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
-  const [activeLink, setActiveLink] = useState<string>("");
+  const activeLink = pathname ?? "";
 
   useEffect(() => {
-    setActiveLink(window.location.pathname);
     try {
       const storedUser = localStorage.getItem("nrv-user");
       if (storedUser) {
@@ -79,7 +78,6 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
       }
     } catch (error) {
       console.error("Error parsing user data from localStorage:", error);
-      // Clear invalid data
       localStorage.removeItem("nrv-user");
     }
   }, []);
@@ -126,15 +124,26 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </nav>
       </div>
 
-      {/* Support, Settings, and User Info */}
-      <div className="px-6 pt-4 pb-1 border-t border-gray-600">
-        <div className="flex items-center gap-4 mb-3 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
-          <FiHeadphones className="font-lighter text-[12px] text-[#98A2B3]" />{" "}
-          <span>Contact Support</span>
-        </div>
-        <div className="flex items-center gap-4 mb-3 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
-          <FiSettings className="font-lighter text-[12px] text-[#98A2B3]" />{" "}
-          <span>System Settings</span>
+      {/* Settings and user */}
+      <div className="px-6 py-4 border-t border-gray-600">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => router.push("/dashboard/tenant/settings")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              router.push("/dashboard/tenant/settings");
+            }
+          }}
+          className={`flex items-center gap-4 mb-6 cursor-pointer font-lighter text-[12px] rounded-lg px-0 py-1 ${
+            activeLink.startsWith("/dashboard/tenant/settings")
+              ? "text-[#BBFF37]"
+              : "text-[#98A2B3]"
+          }`}
+        >
+          <FiSettings className="font-lighter text-[12px]" />
+          <span>Settings</span>
         </div>
         {user && (
           <div className="flex items-center gap-4 justify-between pt-0 pb-0">

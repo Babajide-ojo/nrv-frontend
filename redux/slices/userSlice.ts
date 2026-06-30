@@ -219,18 +219,35 @@ export const verifyAccount = createAsyncThunk<UserToken, VerifyData>(
         }
       );
       
-      // Save the user data in the expected format
+      const payload = response.data?.data ?? response.data;
       const userData = {
-        user: response.data.user,
-        accessToken: response.data.accessToken,
-        notificationSettings: response.data.notificationSettings
+        user: payload?.user ?? response.data?.user,
+        accessToken: payload?.accessToken ?? response.data?.accessToken,
+        notificationSettings: payload?.notificationSettings ?? response.data?.notificationSettings,
       };
       localStorage.setItem("nrv-user", JSON.stringify(userData));
+      localStorage.removeItem("emailToVerify");
       return userData;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
     }
   }
+);
+
+export const resendVerificationOtp = createAsyncThunk<string, { email: string }>(
+  "user/resendVerificationOtp",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<{ status: string; message: string }>(
+        `${API_URL}/users/resend-verification`,
+        { email },
+        { headers: { "Content-Type": "application/json" } },
+      );
+      return response.data?.message || "Verification code sent.";
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  },
 );
 
 export const loginUser = createAsyncThunk<UserToken, LoginFormData>(

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyAccount } from "@/redux/slices/userSlice";
+import { resendVerificationOtp, verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import OtpInput from "react-otp-input";
@@ -18,38 +18,55 @@ interface SignUpVerifyAccountProps {
   mode?: VerifyMode;
 }
 
+const resolveVerifyEmail = (): string | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const raw = localStorage.getItem("emailToVerify");
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return (
+      parsed?.data?.email ||
+      parsed?.user?.email ||
+      parsed?.email ||
+      null
+    );
+  } catch {
+    return null;
+  }
+};
+
 const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signup" }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const { error } = useSelector((state: any) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [timer, setTimer] = useState(120);
-  const [canResend, setCanResend] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [step, setStep] = useState(1);
   const [data, setData] = useState<any>(null);
+  const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const countdown = setInterval(() => {
-      setTimer((prev) => {
-        if (prev === 1) {
-          clearInterval(countdown);
-          setCanResend(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdown);
+    setVerifyEmail(resolveVerifyEmail());
   }, []);
 
   const handleSubmit = async () => {
-    if (otp.length !== 6) return;
-    const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
+    if (otp.length !== 6) {
+      return;
+    }
+
+    const email = verifyEmail ?? resolveVerifyEmail();
+    if (!email) {
+      toast.error("Missing email for verification. Please sign up again.");
+      return;
+    }
 
     const payload = {
-      email: user?.data?.email || user.user.email,
+      email,
       confirmationCode: otp,
     };
 
@@ -57,6 +74,8 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
     try {
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
       localStorage.removeItem("stepToLoad");
+      setIsLoading(false);
+
       if (mode === "login") {
         toast.success("Account confirmed. Redirecting...");
         const accountType = response?.user?.accountType;
@@ -72,16 +91,33 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
 
       setData(response);
       setStep(2);
-    } catch (error: any) {
+    } catch (err: any) {
       setIsLoading(false);
-      toast.error(error);
+      toast.error(err);
     }
   };
 
-  const handleResend = () => {
-    setTimer(120);
-    setCanResend(false);
+  const handleResend = async () => {
+    const email = verifyEmail ?? resolveVerifyEmail();
+    if (!email) {
+      toast.error("Missing email. Please sign up again.");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const message = await dispatch(
+        resendVerificationOtp({ email }) as any,
+      ).unwrap();
+      toast.success(message);
+    } catch (err: any) {
+      toast.error(err);
+    } finally {
+      setIsResending(false);
+    }
   };
+
+  const emailDisplay = useMemo(() => verifyEmail ?? "your email", [verifyEmail]);
 
   return (
     <main className=" bg-white">
@@ -100,16 +136,17 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
                   Verify Your Email Address
                 </h2>
                 <p className="mt-2 text-gray-600">
-                  We&#34;ve sent a verification link to your email.
+                  We&apos;ve sent a 6-digit verification code to{" "}
+                  <strong className="text-gray-900">{emailDisplay}</strong>.
                 </p>
                 <p className="mt-1 text-gray-600">
-                  Enter the 6-digit OTP to verify your account.
+                  Enter the code below to activate your account.
                 </p>
 
                 <div className="mt-4 text-left text-gray-700">
                   <p className="font-semibold">Instructions:</p>
                   <ul className="list-disc list-inside text-sm">
-                    <li className="mt-4">Open your email inbox.</li>
+                    <li className="mt-4">Open your email inbox (and spam folder).</li>
                     <li className="mt-4">
                       Look for an email from NaijaRentVerify.
                     </li>
@@ -145,23 +182,24 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
                 </div>
 
                 <p className="mt-4 text-sm text-gray-500 text-center">
-                  Did not receive verification code?
+                  Did not receive the verification code?
                 </p>
-                <div className="mt-2 flex items-center justify-center space-x-2 text-green-600 text-center">
-                  {canResend ? (
-                    <button
-                      onClick={handleResend}
-                      className="flex items-center gap-1"
-                    >
-                      <IoReload className="text-lg" /> Resend OTP
-                    </button>
-                  ) : (
-                    <p className="text-gray-500">
-                      {Math.floor(timer / 60)}:
-                      {(timer % 60).toString().padStart(2, "0")}s
-                    </p>
-                  )}
+                <div className="mt-2 flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isResending}
+                    className="flex items-center gap-1.5 text-green-700 font-medium hover:text-green-800 disabled:opacity-60"
+                    aria-label="Resend verification code"
+                  >
+                    <IoReload className={`text-lg ${isResending ? "animate-spin" : ""}`} />
+                    {isResending ? "Sending code…" : "Resend OTP"}
+                  </button>
                 </div>
+
+                {error && (
+                  <p className="mt-3 text-sm text-red-600 text-center">{error}</p>
+                )}
 
                 <Button
                   size="large"
@@ -176,7 +214,12 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
                 </Button>
 
                 <p className="mt-4 text-gray-500 italic text-center font-light">
-                  Contact Support
+                  <a
+                    href="mailto:info@naijarentverify.com"
+                    className="text-green-800 hover:underline not-italic"
+                  >
+                    Contact Support
+                  </a>
                 </p>
               </div>
             </div>

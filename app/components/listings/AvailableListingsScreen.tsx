@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { getAllPropertyForTenant } from "@/redux/slices/propertySlice";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
-import InputField from "@/app/components/shared/input-fields/InputFields";
 import Button from "@/app/components/shared/buttons/Button";
 import { RefreshCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import { Button as Btn } from "@/components/ui/button";
@@ -17,6 +16,9 @@ const INITIAL_FILTERS = {
 };
 
 const LIMIT = 12;
+
+const FILTER_INPUT_CLASS =
+  "w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/20 focus:border-green-600 focus:bg-white transition-all";
 
 export type AvailableListingsVariant = "public" | "dashboard";
 
@@ -190,7 +192,7 @@ export function AvailableListingsScreen({
                   value={formData.searchTerm}
                   onChange={handleInputChange}
                   onKeyDown={handleSearchKeyDown}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/20 focus:border-green-600 focus:bg-white transition-all"
+                  className={`${FILTER_INPUT_CLASS} pl-10`}
                 />
               </div>
             </div>
@@ -198,27 +200,30 @@ export function AvailableListingsScreen({
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Min Price (₦)
               </label>
-              <InputField
-                css="bg-gray-50 border border-gray-300 rounded-xl text-sm py-2.5 focus:bg-white transition-all"
+              <input
+                type="text"
+                inputMode="numeric"
                 placeholder="e.g. 100,000"
                 name="minimiumPrice"
                 value={minPriceDisplay}
                 onChange={handleInputChange}
-                onKeyPress={(e: any) => e.key === "Enter" && handleApplyFilters()}
+                onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
+                className={FILTER_INPUT_CLASS}
               />
             </div>
             <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Max Price (₦)
               </label>
-              <InputField
-                css="bg-gray-50 border border-gray-300 rounded-xl text-sm py-2.5 focus:bg-white transition-all"
+              <input
+                type="text"
+                inputMode="numeric"
                 placeholder="e.g. 5,000,000"
-                inputType="text"
                 name="maximiumPrice"
                 value={maxPriceDisplay}
                 onChange={handleInputChange}
-                onKeyPress={(e: any) => e.key === "Enter" && handleApplyFilters()}
+                onKeyDown={(e) => e.key === "Enter" && handleApplyFilters()}
+                className={FILTER_INPUT_CLASS}
               />
             </div>
             <div className="md:col-span-2 flex gap-2 h-[42px]">

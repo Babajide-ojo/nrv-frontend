@@ -10,7 +10,6 @@ import {
   FaStar,
   FaPaintRoller,
 } from "react-icons/fa";
-import { FaAirbnb } from "react-icons/fa6";
 import { CgStyle } from "react-icons/cg";
 import WatermarkedImage from "../WatermarkedImage";
 

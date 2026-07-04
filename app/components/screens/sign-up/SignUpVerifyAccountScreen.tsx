@@ -6,16 +6,16 @@ import { toast } from "react-toastify";
 import OtpInput from "react-otp-input";
 import { IoReload } from "react-icons/io5";
 import Button from "../../shared/buttons/Button";
-import PreferencesForm from "./PreferencesForm";
 import VerifyAccountSideBar from "./VerifyAccountSideBar";
-import CompleteProfileSideBar from "./CompleteProfileSideBar";
 import AddPropertySideBar from "./AddPropertySideBar";
 import MultiStepForm from "./MultiStepForm";
+import AccountTypeBadge from "./AccountTypeBadge";
 
 type VerifyMode = "signup" | "login";
 
 interface SignUpVerifyAccountProps {
   mode?: VerifyMode;
+  accountType?: string | null;
 }
 
 const resolveVerifyEmail = (): string | null => {
@@ -39,7 +39,10 @@ const resolveVerifyEmail = (): string | null => {
   }
 };
 
-const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signup" }) => {
+const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
+  mode = "signup",
+  accountType: accountTypeProp,
+}) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
@@ -89,6 +92,13 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
         return;
       }
 
+      const accountType = response?.user?.accountType;
+      if (accountType === "tenant") {
+        toast.success("Account verified. Welcome to NaijaRentVerify!");
+        router.push("/dashboard/tenant");
+        return;
+      }
+
       setData(response);
       setStep(2);
     } catch (err: any) {
@@ -118,6 +128,8 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
   };
 
   const emailDisplay = useMemo(() => verifyEmail ?? "your email", [verifyEmail]);
+  const resolvedAccountType =
+    data?.user?.accountType ?? accountTypeProp ?? null;
 
   return (
     <main className=" bg-white">
@@ -125,13 +137,17 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
         {step === 1 ? (
           <div className="w-full flex">
             <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
-              <VerifyAccountSideBar />
+              <VerifyAccountSideBar accountType={resolvedAccountType ?? accountTypeProp} />
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
               <div className="max-w-md mx-auto">
                 <h1 className="text-2xl font-bold text-green-600 my-10">
                   NaijaRentVerify
                 </h1>
+                <AccountTypeBadge
+                  accountType={resolvedAccountType ?? accountTypeProp}
+                  className="mb-4"
+                />
                 <h2 className="text-2xl font-semibold text-gray-900">
                   Verify Your Email Address
                 </h2>
@@ -226,26 +242,14 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({ mode = "signu
           </div>
         ) : (
           <div>
-            {data.user.accountType === "tenant" && (
-              <div className="flex w-full">
-                <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
-                  <CompleteProfileSideBar />
-                </div>
-                <div className="w-full lg:w-1/2 p-5 flex-col justify-center">
-                  <div className="max-w-md mx-auto">
-                    <PreferencesForm />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {data.user.accountType === "landlord" && (
               <div className="flex min-h-screen w-full lg:h-screen lg:overflow-hidden">
                 <div className="hidden w-full max-w-md shrink-0 bg-[#E9F4E7] lg:block lg:w-1/2">
-                  <AddPropertySideBar />
+                  <AddPropertySideBar accountType={resolvedAccountType} />
                 </div>
                 <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto p-5 sm:p-8 lg:w-1/2">
                   <div className="mx-auto w-full max-w-xl">
+                    <AccountTypeBadge accountType={resolvedAccountType} className="mb-4" />
                     <MultiStepForm />
                   </div>
                 </div>

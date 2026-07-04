@@ -1,6 +1,7 @@
 import { Mail } from "lucide-react";
+import AccountTypeBadge from "./AccountTypeBadge";
 
-const VerifyAccountSideBar = () => {
+const VerifyAccountSideBar = ({ accountType }: { accountType?: string | null }) => {
   return (
     <div>
       {/* Sidebar Navigation */}
@@ -14,6 +15,9 @@ const VerifyAccountSideBar = () => {
                 Log in here.
               </a>
             </p>
+          </div>
+          <div className="px-6">
+            <AccountTypeBadge accountType={accountType} />
           </div>
           <div className="mt-8 space-y-12">
             <div className="flex items-start space-x-2">
@@ -203,43 +207,6 @@ const VerifyAccountSideBar = () => {
               </div>
             ))}
 
-            <div className="flex items-start space-x-2">
-              <span className="">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clip-path="url(#clip0_401_9062)">
-                    <rect width="32" height="32" rx="16" fill="#F7F7F8" />
-                    <rect
-                      x="1"
-                      y="1"
-                      width="30"
-                      height="30"
-                      rx="15"
-                      stroke="#E0E0E6"
-                      stroke-width="2"
-                    />
-                    <circle cx="16" cy="16" r="5" fill="#E0E0E6" />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_401_9062">
-                      <rect width="32" height="32" rx="16" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </span>
-              <div>
-                <h3 className="font-medium text-[#645D5D]">Complete Your Profile</h3>
-                <p className="text-sm text-gray-600">
-                Help us personalize your experience by providing a few more details.
-                </p>
-              </div>
-            </div>
-     
           </div>
         </div>
 

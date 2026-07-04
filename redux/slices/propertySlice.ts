@@ -345,6 +345,27 @@ export const updateApplicationStatus = createAsyncThunk<any, {}>(
     }
 );
 
+export const withdrawApplication = createAsyncThunk<
+  any,
+  { id: string; tenantId: string }
+>(
+  "property/application-withdraw",
+  async ({ id, tenantId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/properties/application/withdraw/${id}`,
+        { tenantId },
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message ||
+          "Could not withdraw application. Please try again.",
+      );
+    }
+  },
+);
+
 export const inviteApplicant = createAsyncThunk<any, {}>(
     "property/invite-applicant",
     async (formData: any, { rejectWithValue }) => {

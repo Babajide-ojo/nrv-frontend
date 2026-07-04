@@ -1,6 +1,7 @@
 import { Mail } from "lucide-react";
+import AccountTypeBadge from "./AccountTypeBadge";
 
-const AccountSideBar = () => {
+const AccountSideBar = ({ accountType }: { accountType?: string | null }) => {
   return (
     <div>
       {/* Sidebar Navigation */}
@@ -14,6 +15,9 @@ const AccountSideBar = () => {
                 Log in here.
               </a>
             </p>
+          </div>
+          <div className="px-6">
+            <AccountTypeBadge accountType={accountType} />
           </div>
           <div className="mt-8 space-y-12">
             <div className="flex items-start space-x-2">

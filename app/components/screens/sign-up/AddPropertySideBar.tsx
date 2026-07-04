@@ -1,4 +1,5 @@
 import { Mail } from "lucide-react";
+import AccountTypeBadge from "./AccountTypeBadge";
 
 type StepStatus = "complete" | "current" | "upcoming";
 
@@ -71,7 +72,7 @@ const StepIcon = ({ status }: { status: StepStatus }) => {
   return <UpcomingIcon />;
 };
 
-const AddPropertySideBar = () => {
+const AddPropertySideBar = ({ accountType }: { accountType?: string | null }) => {
   return (
     <div className="flex h-full min-h-screen w-full flex-col">
       <div className="flex flex-1 flex-col overflow-y-auto p-4 sm:p-8">
@@ -83,6 +84,7 @@ const AddPropertySideBar = () => {
               Log in here.
             </a>
           </p>
+          <AccountTypeBadge accountType={accountType} />
         </div>
 
         <ol className="mt-8 space-y-6 px-2 sm:px-4">

@@ -146,6 +146,16 @@ const PendingVerificationRequests = () => {
     router.push(`/dashboard/tenant/verification/personal-info?verificationId=${verificationId}`);
   };
 
+  const featuredRequest = pendingRequests[0];
+  const remainingCount = pendingRequests.length - 1;
+  const landlordName = [
+    featuredRequest.requestedBy?.firstName,
+    featuredRequest.requestedBy?.lastName,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim() || "Landlord";
+
   return (
     <section
       aria-label="Pending verification requests"
@@ -158,10 +168,13 @@ const PendingVerificationRequests = () => {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              Pending verification {pendingRequests.length === 1 ? "request" : "requests"}
+              Pending verification request
             </h2>
             <p className="mt-1 text-sm text-gray-700">
               A landlord is waiting for you to complete your verification. Finish the form to continue.
+              {remainingCount > 0
+                ? ` You have ${remainingCount} more pending ${remainingCount === 1 ? "request" : "requests"}.`
+                : ""}
             </p>
           </div>
         </div>
@@ -171,48 +184,40 @@ const PendingVerificationRequests = () => {
           className="text-sm font-medium text-amber-900 hover:text-amber-950 hover:underline shrink-0"
         >
           View all verifications
+          {remainingCount > 0 ? ` (${pendingRequests.length})` : ""}
         </button>
       </div>
 
-      <div className="space-y-3">
-        {pendingRequests.map((req) => {
-          const landlordName = [req.requestedBy?.firstName, req.requestedBy?.lastName]
-            .filter(Boolean)
-            .join(" ")
-            .trim() || "Landlord";
+      <div className="flex flex-col gap-4 rounded-xl border border-amber-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
+              <FiUserCheck aria-hidden="true" />
+              Action required
+            </span>
+            <span className="text-xs text-gray-500">
+              Requested{" "}
+              {formatRequestDate(
+                featuredRequest.dateRequested || featuredRequest.createdAt,
+              )}
+            </span>
+          </div>
+          <p className="mt-2 text-sm font-semibold text-gray-900">
+            From {landlordName}
+          </p>
+          <p className="text-sm text-gray-600">
+            {tierLabel(featuredRequest.verificationTier)}
+          </p>
+        </div>
 
-          return (
-            <div
-              key={req._id}
-              className="flex flex-col gap-4 rounded-xl border border-amber-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
-                    <FiUserCheck aria-hidden="true" />
-                    Action required
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    Requested {formatRequestDate(req.dateRequested || req.createdAt)}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm font-semibold text-gray-900">
-                  From {landlordName}
-                </p>
-                <p className="text-sm text-gray-600">{tierLabel(req.verificationTier)}</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleComplete(req._id)}
-                className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors shrink-0"
-                aria-label={`Complete verification request from ${landlordName}`}
-              >
-                Complete verification
-              </button>
-            </div>
-          );
-        })}
+        <button
+          type="button"
+          onClick={() => handleComplete(featuredRequest._id)}
+          className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors shrink-0"
+          aria-label={`Complete verification request from ${landlordName}`}
+        >
+          Complete verification
+        </button>
       </div>
     </section>
   );

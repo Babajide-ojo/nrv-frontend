@@ -11,6 +11,7 @@ import { RootState } from "../../../../../redux/store";
 import { API_URL } from "../../../../../config/constant";
 import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
 import TierFeatureList from "@/app/components/shared/TierFeatureList";
+import { calculatePackPricing } from "@/helpers/paymentPricing";
 
 const MAX_CREDIT_QTY = 999;
 const PAYMENT_HISTORY_PAGE_SIZE = 10;
@@ -350,7 +351,8 @@ const PlansPage = () => {
   ) => {
     if (!userId) return;
     const quantity = getQuantity(planId);
-    const amountNaira = quantity * unitPriceNaira;
+    const pricing = calculatePackPricing(quantity, unitPriceNaira);
+    const amountNaira = pricing.totalNaira;
     if (quantity * creditsPerUnit < 1) {
       toast.error("Invalid plan configuration.");
       return;
@@ -446,7 +448,7 @@ const PlansPage = () => {
                 const unitPrice = fallbackUnitPrice(plan);
                 const quantity = getQuantity(plan._id);
                 const totalCredits = quantity * creditsPerUnit;
-                const totalPrice = quantity * unitPrice;
+                const pricing = calculatePackPricing(quantity, unitPrice);
 
                 return (
                   <div
@@ -481,16 +483,30 @@ const PlansPage = () => {
                           <span className="text-gray-600">Credits</span>
                           <span className="font-semibold">
                             {totalCredits.toLocaleString()}
-                            <span className="font-normal text-gray-600">
-                              {" "}
-                              ({quantity.toLocaleString()} × {creditsPerUnit})
-                            </span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-2 mt-1">
+                          <span className="text-gray-600">Subtotal</span>
+                          <span className="font-semibold">
+                            ₦{pricing.subtotalNaira.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-2 mt-1">
+                          <span className="text-gray-600">Paystack fee (2.1%)</span>
+                          <span className="font-semibold">
+                            ₦{pricing.paystackFeeNaira.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between gap-2 mt-1">
+                          <span className="text-gray-600">VAT (7.5%)</span>
+                          <span className="font-semibold">
+                            ₦{pricing.vatNaira.toLocaleString()}
                           </span>
                         </div>
                         <div className="mt-2 pt-2 border-t border-[#03442C]/15 flex justify-between items-center">
                           <span className="font-medium text-[#03442C]">Total</span>
                           <span className="text-lg font-bold text-gray-900">
-                            ₦{totalPrice.toLocaleString()}
+                            ₦{pricing.totalNaira.toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -539,7 +555,7 @@ const PlansPage = () => {
                       >
                         {purchasingPlanId === plan._id
                           ? "Processing…"
-                          : `Pay ₦${totalPrice.toLocaleString()}`}
+                          : `Pay ₦${pricing.totalNaira.toLocaleString()}`}
                       </button>
                     </div>
                   </div>

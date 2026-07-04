@@ -1,6 +1,7 @@
 "use client";
 
 import { FC } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface ConfirmationModalProps {
   heading: string;
@@ -9,6 +10,10 @@ interface ConfirmationModalProps {
   onCancel: () => void;
   onConfirm: () => void;
   isOpen: boolean;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  confirmLoading?: boolean;
+  tone?: "default" | "warning";
 }
 
 const ConfirmationModal: FC<ConfirmationModalProps> = ({
@@ -18,27 +23,45 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
   onCancel,
   onConfirm,
   isOpen,
+  confirmLabel = "Save Changes",
+  cancelLabel = "Cancel",
+  confirmLoading = false,
+  tone = "default",
 }) => {
   if (!isOpen) {
     return null;
   }
 
+  const isWarning = tone === "warning";
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirmation-modal-title"
+      onClick={onCancel}
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
+      <div
+        className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-6 pb-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#E7F6EC]">
-              <img
-                src="/icons/SuccessIcon.svg"
-                alt=""
-                className="h-5 w-5"
-              />
+            <div
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                isWarning ? "bg-amber-100" : "bg-[#E7F6EC]"
+              }`}
+            >
+              {isWarning ? (
+                <AlertTriangle className="h-5 w-5 text-amber-700" aria-hidden />
+              ) : (
+                <img
+                  src="/icons/SuccessIcon.svg"
+                  alt=""
+                  className="h-5 w-5"
+                />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <h2
@@ -63,16 +86,22 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="order-2 rounded-full px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-200/60 hover:text-gray-900 sm:order-1"
+            disabled={confirmLoading}
+            className="order-2 rounded-full px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-200/60 hover:text-gray-900 disabled:opacity-60 sm:order-1"
           >
-            Cancel
+            {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="order-1 min-h-[44px] rounded-full border-0 bg-[#03442C] px-6 py-2.5 text-sm font-semibold text-white shadow-sm outline-none transition hover:bg-[#022f21] focus-visible:ring-2 focus-visible:ring-[#03442C] focus-visible:ring-offset-2 sm:order-2"
+            disabled={confirmLoading}
+            className={`order-1 min-h-[44px] rounded-full border-0 px-6 py-2.5 text-sm font-semibold text-white shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 sm:order-2 ${
+              isWarning
+                ? "bg-amber-700 hover:bg-amber-800 focus-visible:ring-amber-700"
+                : "bg-[#03442C] hover:bg-[#022f21] focus-visible:ring-[#03442C]"
+            }`}
           >
-            Save Changes
+            {confirmLoading ? "Please wait…" : confirmLabel}
           </button>
         </div>
       </div>

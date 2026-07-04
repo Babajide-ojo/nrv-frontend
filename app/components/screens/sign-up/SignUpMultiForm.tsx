@@ -13,6 +13,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { CheckCircle, Smile, User } from "lucide-react";
 import { toast } from "react-toastify";
 import AccountSideBar from "./AccountSideBar";
+import AccountTypeBadge from "./AccountTypeBadge";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,7 +53,7 @@ const validationSchema = yup.object({
 const SignUpMultiForm = () => {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [prefillPhone, setPrefillPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -128,9 +129,13 @@ const SignUpMultiForm = () => {
                 Create an Account!
               </h1>
               <p className="text-gray-500 mt-2 text-[15px] sm:text-base leading-relaxed">
-                Welcome to NaijarentVerify! Choose your role to get started.
-                We&apos;ll tailor your experience to meet your needs.
+                Welcome to NaijaRentVerify! Choose your role to get started.
               </p>
+              {selectedRole && (
+                <div className="mt-4">
+                  <AccountTypeBadge accountType={selectedRole} />
+                </div>
+              )}
               <div className="mt-6 space-y-4">
                 {[
                   {
@@ -145,7 +150,7 @@ const SignUpMultiForm = () => {
                     icon: <User className="text-gray-500" />,
                     text: "Sign Up as a Tenant",
                     description:
-                      "Find and secure your dream home with genuine listings. Sign-up uses only basic contact details — we do not ask for your NIN or BVN here. If a landlord requests tenant screening later, you will provide those securely in the verification flow.",
+                      "Find and secure your dream home with genuine listings.",
                   },
                 ].map(({ role, icon, text, description }) => (
                   <div
@@ -201,32 +206,15 @@ const SignUpMultiForm = () => {
       {currentStep === 2 && (
         <div className="flex w-full h-screen overflow-hidden">
           <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
-            <AccountSideBar />
+            <AccountSideBar accountType={selectedRole} />
           </div>
           <div className="w-full lg:w-1/2 bg-white p-12 pb-20 overflow-y-auto">
             <div className="max-w-md mx-auto ">
               <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
                 NaijaRentVerify
               </h1>
+              <AccountTypeBadge accountType={selectedRole} className="mb-4" />
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
-              {selectedRole === "tenant" && (
-                <div
-                  className="mb-6 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-700 leading-relaxed"
-                  role="note"
-                >
-                  <p className="font-semibold text-[#03442C] mb-1">
-                    No NIN or BVN required to sign up
-                  </p>
-                  <p>
-                    We only need your name, email, phone, and password to create
-                    your account. Your National Identification Number (NIN) and
-                    Bank Verification Number (BVN) are{" "}
-                    <strong>not</strong> collected during registration. If a
-                    landlord asks you to complete tenant screening, you will enter
-                    those details separately in a secure verification step.
-                  </p>
-                </div>
-              )}
               <Formik
                 enableReinitialize
                 initialValues={{
@@ -349,7 +337,9 @@ const SignUpMultiForm = () => {
           </div>
         </div>
       )}
-      {currentStep === 3 && <SignUppVerifyAccountScreen />}
+      {currentStep === 3 && (
+        <SignUppVerifyAccountScreen accountType={selectedRole} />
+      )}
     </div>
   );
 };

@@ -29,6 +29,7 @@ const links = [
     name: "Dashboard",
     route: "/dashboard/tenant",
     icon: <FiClipboard />,
+    exact: true,
   },
   {
     name: "Properties",
@@ -62,6 +63,21 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const activeLink = pathname ?? "";
+
+  const isNavActive = (route: string, exact?: boolean) => {
+    if (route === "/dashboard/tenant/properties") {
+      return (
+        activeLink === route ||
+        (activeLink.startsWith(`${route}/`) &&
+          !activeLink.startsWith("/dashboard/tenant/properties/applications") &&
+          !activeLink.startsWith("/dashboard/tenant/properties/maintenance"))
+      );
+    }
+    if (exact) {
+      return activeLink === route;
+    }
+    return activeLink === route || activeLink.startsWith(`${route}/`);
+  };
 
   useEffect(() => {
     try {
@@ -98,12 +114,14 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         {/* Navigation Links */}
         <nav className="mt-6">
           <ul className="font-lighter text-[12px] text-[#98A2B3]">
-            {links.map(({ name, route, icon }, index) => (
+            {links.map(({ name, route, icon, exact }, index) => (
               <li
                 key={index}
                 onClick={() => router.push(route)}
-                className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px]  ${
-                  activeLink === route ? "text-[#BBFF37]" : "text-[#98A2B3]"
+                className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${
+                  isNavActive(route, exact)
+                    ? "text-[#BBFF37] bg-white/10 ring-1 ring-[#BBFF37]/40 font-semibold"
+                    : "text-[#98A2B3] hover:text-white/90"
                 }`}
               >
                 {icon} {name}

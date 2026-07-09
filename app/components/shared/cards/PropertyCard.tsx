@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { format } from "date-fns";
 import Button from "../buttons/Button";
 import {
   FaMapMarkerAlt,
@@ -32,6 +33,17 @@ const formatAddress = (addr: string) => {
   return formatted.trim() || addr;
 };
 
+const formatListedDate = (value?: string) => {
+  if (!value) {
+    return null;
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return format(date, "dd MMM yyyy");
+};
+
 const PropertyCard: React.FC<PropertyCardProps> = ({
   imageUrl,
   address,
@@ -45,6 +57,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
   const bathrooms = property?.noOfBaths ?? property?.propertyId?.noOfBaths ?? "N/A";
   const style = (property?.apartmentStyle ?? property?.propertyId?.apartmentStyle)?.toString()?.trim() || "N/A";
   const type = (property?.apartmentType ?? property?.propertyId?.apartmentType)?.toString()?.trim() || "N/A";
+  const listedDate = formatListedDate(property?.createdAt ?? property?.updatedAt);
 
   return (
     <div className="w-full h-full flex flex-col bg-white shadow-lg border border-gray-100 rounded-2xl p-4 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
@@ -144,6 +157,14 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             <span className="text-sm text-gray-600 font-medium">Payment:</span>
             <span className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-1 rounded-md border border-gray-100">
               {property.paymentOption}
+            </span>
+          </div>
+        )}
+        {listedDate && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600 font-medium">Date Listed:</span>
+            <span className="text-sm font-medium text-gray-800 bg-gray-50 px-3 py-1 rounded-md border border-gray-100">
+              {listedDate}
             </span>
           </div>
         )}

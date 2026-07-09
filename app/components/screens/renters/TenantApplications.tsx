@@ -109,7 +109,8 @@ const TenantApplications = () => {
     if (!user?._id) return;
     dispatch(getTenantMetrics({ id: user._id }) as any)
       .unwrap()
-      .then((data: any) => {
+      .then((response: any) => {
+        const data = response?.data ?? response;
         setMetrics({
           totalNew: data?.totalNew ?? 0,
           totalAccepted: data?.totalAccepted ?? 0,
@@ -253,19 +254,6 @@ const TenantApplications = () => {
                 key: "createdAt",
                 label: "Applied Date & Time",
                 render: (val) => <span>{formatDateToWords(val)}</span>,
-              },
-              {
-                key: "status",
-                label: "Next Step",
-                render: (val) => (
-                  <span
-                    className={`font-medium italic ${
-                      val === "New" ? "text-[#045D23]" : ""
-                    }`}
-                  >
-                    {val === "New" ? "Background Check" : "Null"}
-                  </span>
-                ),
               },
             ]}
           />

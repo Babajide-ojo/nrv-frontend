@@ -26,7 +26,6 @@ import Button from "@/app/components/shared/buttons/Button";
 import AgreementDocumentScreen from "@/app/components/dashboard/tenant/AgreementDocumentScreen";
 import Modal from "@/app/components/shared/modals/Modal";
 import Image from "next/image";
-import House from "@/app/components/icons/House";
 import CheckMark from "@/app/components/icons/CheckMark";
 import MessageIcon from "@/app/components/icons/MessageIcon";
 import PdfIcon from "@/app/components/icons/PdfIcon";
@@ -52,6 +51,31 @@ const formatAddress = (addr: string) => {
   }
   return formatted.trim() || addr;
 };
+
+const hasDisplayValue = (value: unknown) => {
+  if (value == null) {
+    return false;
+  }
+  const text = String(value).trim();
+  return text.length > 0 && text !== "—";
+};
+
+const DetailItem = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-3 sm:p-4">
+    <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
+      {label}
+    </p>
+    <div className="mt-1.5 text-sm font-semibold text-gray-900 break-words">
+      {value}
+    </div>
+  </div>
+);
 
 const RentedPropertiesScreen = () => {
   const pathname = usePathname();
@@ -90,6 +114,40 @@ const RentedPropertiesScreen = () => {
 
   const room = property?.propertyId;
   const listing = room?.propertyId;
+  const propertyAddress = [
+    formatAddress(listing?.streetAddress ?? room?.streetAddress ?? ""),
+    listing?.city,
+    listing?.state,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  const unitTitle =
+    room?.apartmentType ??
+    room?.apartmentStyle ??
+    listing?.propertyType?.label ??
+    "Apartment";
+  const applicationDetails = isApplicationMode
+    ? [
+        { label: "Job Title", value: property?.jobTitle ?? "—" },
+        { label: "Current Employer", value: property?.currentEmployer ?? "—" },
+        {
+          label: "Monthly Income",
+          value: property?.monthlyIncome
+            ? `₦${Number(property.monthlyIncome).toLocaleString()}`
+            : "—",
+        },
+        { label: "Reason for Moving", value: property?.reasonForLiving ?? "—" },
+        { label: "Current Residence", value: property?.currentResidence ?? "—" },
+        { label: "Payment Option", value: room?.paymentOption ?? "—" },
+        { label: "Lease Terms", value: room?.leaseTerms ?? "—" },
+        {
+          label: "Property Owner",
+          value: property?.ownerId
+            ? `${property.ownerId.firstName ?? ""} ${property.ownerId.lastName ?? ""}`.trim()
+            : "—",
+        },
+      ].filter((item) => hasDisplayValue(item.value))
+    : [];
 
   const handleWithdrawApplication = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as string);
@@ -265,11 +323,16 @@ const RentedPropertiesScreen = () => {
                         : "Manage Your Apartment"}
                     </h3>
                     <p className="mt-0.5 text-xs sm:text-sm text-gray-600 break-words">
-                      {formatAddress(listing?.streetAddress ?? room?.streetAddress)}
-                      {listing?.city ? `, ${listing.city}` : ""}
+                      {propertyAddress || "—"}
                     </p>
                   </div>
                 </div>
+
+                {isApplicationMode && property?.status === "Withdrawn" && (
+                  <div className="mb-4 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-900">
+                    This application has been withdrawn and is no longer under review.
+                  </div>
+                )}
 
                 {/* Property hero — top of page on mobile */}
                 <div className="mb-4 md:hidden rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
@@ -301,41 +364,79 @@ const RentedPropertiesScreen = () => {
                   )}
                 </div>
 
-                <div className="flex flex-col border border-nrvLightGray rounded-2xl bg-white overflow-hidden shadow-sm">
-                  <div className="px-4 py-4 sm:px-6 sm:py-5 bg-[#E4E7EC] flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className="rounded-full h-11 w-11 shrink-0 bg-[#429634] flex items-center justify-center">
-                        <House width={20} height={20} />
+                <div className="flex flex-col border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
+                  <div className="grid md:grid-cols-[minmax(0,1fr)_220px]">
+                    <div className="px-4 py-5 sm:px-6 sm:py-6 border-b md:border-b-0 md:border-r border-gray-100">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h4 className="text-lg sm:text-xl font-semibold text-gray-900">
+                              {unitTitle}
+                            </h4>
+                            {isApplicationMode && <Status status={property?.status} />}
+                          </div>
+                          <p className="mt-1 text-sm text-gray-600 break-words">
+                            {propertyAddress || "—"}
+                          </p>
+                          <p className="mt-3 text-xs text-gray-500">
+                            Application ID{" "}
+                            <span className="font-mono font-medium text-gray-700">
+                              {property?._id?.slice(-8)?.toUpperCase()}
+                            </span>
+                            {room?.roomId ? (
+                              <>
+                                {" "}
+                                · Unit{" "}
+                                <span className="font-medium text-gray-700">
+                                  {room.roomId}
+                                </span>
+                              </>
+                            ) : null}
+                          </p>
+                        </div>
+                        <Button
+                          variant="darkPrimary"
+                          className="w-full sm:w-auto shrink-0 text-sm"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          View owner contact
+                        </Button>
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-sm sm:text-base leading-snug break-words">
-                          {room?.description ?? listing?.description ?? "Apartment"}
+
+                      {room?.description && (
+                        <p className="mt-4 text-sm leading-relaxed text-gray-600 line-clamp-3">
+                          {room.description}
                         </p>
-                        <p className="text-xs sm:text-sm text-[#475367] mt-1 break-all">
-                          Application ID: {property?._id?.slice(-8)?.toUpperCase()}
-                          {room?.roomId ? ` · Unit ${room.roomId}` : ""}
-                        </p>
-                      </div>
+                      )}
                     </div>
-                    <Button
-                      variant="darkPrimary"
-                      className="w-full sm:w-auto shrink-0 text-sm"
-                      onClick={() => setIsModalOpen(true)}
-                    >
-                      View owner contact
-                    </Button>
+
+                    <div className="relative hidden md:block min-h-[220px] bg-gray-100">
+                      <Image
+                        src={
+                          listing?.file ??
+                          room?.file ??
+                          "/images/featured-img.svg"
+                        }
+                        alt="Apartment"
+                        fill
+                        className="object-cover"
+                        sizes="220px"
+                      />
+                    </div>
                   </div>
 
-                  <div className="px-3 py-4 sm:px-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 border-t border-gray-200/80">
-                    {rentDetails.map((detail, i) => (
+                  <div className="px-3 py-4 sm:px-5 grid grid-cols-2 lg:grid-cols-4 gap-3 border-t border-gray-100 bg-[#FAFAFA]">
+                    {rentDetails
+                      .filter((detail) => detail.name !== "Application Status")
+                      .map((detail, i) => (
                       <div
                         key={i}
-                        className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 lg:border-r lg:border-gray-200 lg:pr-4 last:lg:border-r-0"
+                        className="rounded-xl border border-white bg-white p-3 shadow-sm"
                       >
-                        <p className="text-[#475367] text-xs sm:text-sm">
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
                           {detail.name}
                         </p>
-                        <div className="mt-1 text-sm sm:text-base font-medium break-words">
+                        <div className="mt-1.5 text-sm font-semibold text-gray-900 break-words">
                           {detail.value}
                         </div>
                       </div>
@@ -343,108 +444,61 @@ const RentedPropertiesScreen = () => {
                   </div>
                 </div>
 
-                <div className="mt-4 sm:mt-5 flex flex-col border border-nrvLightGray rounded-2xl bg-white overflow-hidden shadow-sm">
-                  <p className="px-4 py-4 sm:px-5 text-sm sm:text-base font-semibold border-b">
+                <div className="mt-4 sm:mt-5 flex flex-col border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
+                  <p className="px-4 py-4 sm:px-5 text-sm sm:text-base font-semibold border-b bg-white">
                     {isApplicationMode
                       ? "Application & Property Details"
                       : "Apartment Information"}
                   </p>
-                  {isApplicationMode && (
-                    <div className="px-4 py-4 border-b grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F9FAFB]">
-                      {[
-                        {
-                          label: "Job Title",
-                          value: property?.jobTitle ?? "—",
-                        },
-                        {
-                          label: "Current Employer",
-                          value: property?.currentEmployer ?? "—",
-                        },
-                        {
-                          label: "Monthly Income",
-                          value: property?.monthlyIncome
-                            ? `₦${Number(property.monthlyIncome).toLocaleString()}`
-                            : "—",
-                        },
-                        {
-                          label: "Reason for Moving",
-                          value: property?.reasonForLiving ?? "—",
-                        },
-                        {
-                          label: "Current Residence",
-                          value: property?.currentResidence ?? "—",
-                        },
-                        {
-                          label: "Payment Option",
-                          value: room?.paymentOption ?? "—",
-                        },
-                        {
-                          label: "Lease Terms",
-                          value: room?.leaseTerms ?? "—",
-                        },
-                        {
-                          label: "Property Owner",
-                          value: property?.ownerId
-                            ? `${property.ownerId.firstName ?? ""} ${property.ownerId.lastName ?? ""}`.trim()
-                            : "—",
-                        },
-                      ].map(({ label, value }) => (
-                        <div key={label}>
-                          <p className="text-xs text-[#475467]">{label}</p>
-                          <p className="text-sm font-medium text-gray-900 mt-0.5">
-                            {value}
-                          </p>
-                        </div>
-                      ))}
+                  {isApplicationMode && applicationDetails.length > 0 && (
+                    <div className="px-4 py-5 sm:px-5 border-b">
+                      <h5 className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#03442C]">
+                        Your application
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {applicationDetails.map(({ label, value }) => (
+                          <DetailItem key={label} label={label} value={value} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {isApplicationMode && applicationDetails.length === 0 && (
+                    <div className="px-4 py-5 sm:px-5 border-b text-sm text-gray-500">
+                      No additional application details were provided.
                     </div>
                   )}
                   <div className="flex flex-col md:flex-row px-3 sm:px-4">
                     <div className="md:border-r w-full md:w-[70%] min-w-0">
-                      <div className="py-4 grid grid-cols-1 sm:grid-cols-2 gap-4 border-b">
-                        <div className="min-w-0">
-                          <p className="text-[#475367] text-xs sm:text-sm">
-                            Apartment Style
-                          </p>
-                          <p className="font-medium text-sm sm:text-base mt-0.5 break-words">
-                            {room?.apartmentStyle ?? listing?.apartmentStyle ?? "—"}
-                          </p>
+                      {isApplicationMode && (
+                        <div className="px-1 py-4 border-b">
+                          <h5 className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#03442C]">
+                            Unit information
+                          </h5>
                         </div>
-                        <div className="min-w-0 sm:border-l sm:pl-4">
-                          <p className="text-[#475367] text-xs sm:text-sm">
-                            Apartment Address/Location
-                          </p>
-                          <p className="font-medium text-sm sm:text-base mt-0.5 break-words">
-                            {formatAddress(listing?.streetAddress ?? "")}{" "}
-                            {listing?.city} {listing?.state}
-                          </p>
-                        </div>
+                      )}
+                      <div className="py-4 grid grid-cols-1 sm:grid-cols-2 gap-3 border-b px-1">
+                        <DetailItem
+                          label="Apartment Style"
+                          value={room?.apartmentStyle ?? listing?.apartmentStyle ?? "—"}
+                        />
+                        <DetailItem
+                          label="Apartment Address"
+                          value={`${formatAddress(listing?.streetAddress ?? "")} ${listing?.city ?? ""} ${listing?.state ?? ""}`.trim() || "—"}
+                        />
                       </div>
-                      <div className="py-4 border-b">
-                        <p className="text-[#475367] text-xs sm:text-sm">Flat Number</p>
-                        <p className="font-medium text-sm sm:text-base mt-0.5">
-                          {room?.roomId ?? "—"}
-                        </p>
+                      <div className="py-4 px-1 grid grid-cols-2 sm:grid-cols-3 gap-3 border-b">
+                        <DetailItem label="Flat Number" value={room?.roomId ?? "—"} />
+                        <DetailItem
+                          label="Bedrooms"
+                          value={room?.noOfRooms ?? listing?.noOfRooms ?? "—"}
+                        />
+                        <DetailItem
+                          label="Bathrooms"
+                          value={room?.noOfBaths ?? listing?.noOfBaths ?? "—"}
+                        />
                       </div>
-                      <div className="py-4 grid grid-cols-2 gap-4 border-b">
-                        <div className="min-w-0">
-                          <p className="text-[#475367] text-xs sm:text-sm">
-                            Bedrooms
-                          </p>
-                          <p className="font-medium text-sm sm:text-base mt-0.5">
-                            {room?.noOfRooms ?? listing?.noOfRooms ?? "—"}
-                          </p>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[#475367] text-xs sm:text-sm">
-                            Bathrooms
-                          </p>
-                          <p className="font-medium text-sm sm:text-base mt-0.5">
-                            {room?.noOfBaths ?? listing?.noOfBaths ?? "—"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="py-4 border-b md:border-b-0">
-                        <p className="text-[#475367] text-xs sm:text-sm">
+                      <div className="py-4 px-1 border-b md:border-b-0">
+                        <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
                           Facilities / Amenities
                         </p>
                         <div className="flex gap-2 flex-wrap mt-2">
@@ -461,7 +515,7 @@ const RentedPropertiesScreen = () => {
                               ),
                             )
                           ) : (
-                            <p className="text-sm text-gray-500">—</p>
+                            <p className="text-sm text-gray-500">No amenities listed</p>
                           )}
                         </div>
                       </div>

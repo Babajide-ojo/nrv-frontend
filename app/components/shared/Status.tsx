@@ -18,7 +18,7 @@ const Status = ({ status }: statusProps) => {
       classNames += "bg-[#FDF2FA] text-[#C11574] text-center";
       break;
     case "withdrawn":
-      classNames += "bg-gray-200 text-gray-700 text-center";
+      classNames += "bg-orange-50 text-orange-800 border border-orange-200 text-center";
       displayStatus = "Withdrawn";
       break;
     case "activetenant":

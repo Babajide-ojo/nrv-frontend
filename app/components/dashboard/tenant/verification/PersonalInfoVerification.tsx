@@ -442,13 +442,12 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
               label="Date of Birth"
               name="dateOfBirth"
               variant="nested"
-              placeholder="Select date of birth"
+              placeholder="e.g. 9 May 1996"
               value={formData.dateOfBirth}
               disabled={isPrefilled}
               required
               disableFuture
-              openTo="year"
-              displayFormat="yyyy-MM-dd"
+              displayFormat="dd MMM yyyy"
               error={errors.dateOfBirth}
               onChange={(selectedDate) => {
                 setFormData((prevData) => ({
@@ -518,7 +517,7 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
           </Button>
           <Button
             onClick={handleSubmit}
-            className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
+            className="h-auto w-full rounded-lg bg-[#03442C] px-8 py-2.5 text-white shadow-sm transition-all hover:bg-[#023524] hover:shadow sm:w-auto"
             disabled={isPrefilled && allFieldsFilled && !isDirty}
           >
             Save and Continue

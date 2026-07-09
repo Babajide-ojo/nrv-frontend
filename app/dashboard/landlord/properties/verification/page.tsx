@@ -198,6 +198,7 @@ export default function TenantVerification() {
                   {
                     key: "status",
                     label: "Verification Status",
+                    width: "max-content",
                     render: (val) => {
                       let colorClass = "bg-gray-100 text-gray-600";
                       let label = val;
@@ -214,7 +215,9 @@ export default function TenantVerification() {
                       }
 
                       return (
-                        <span className={`text-xs px-2 py-1 rounded-full font-semibold ${colorClass}`}>
+                        <span
+                          className={`inline-flex items-center whitespace-nowrap text-xs px-2.5 py-1 rounded-full font-semibold ${colorClass}`}
+                        >
                           {label}
                         </span>
                       );

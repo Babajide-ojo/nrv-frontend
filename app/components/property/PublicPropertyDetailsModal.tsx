@@ -105,6 +105,8 @@ export type PublicPropertyDetailsModalProps = {
   onOpenChange: (open: boolean) => void;
 };
 
+type ModalView = "details" | "apply" | "contact";
+
 export function PublicPropertyDetailsModal({
   roomId,
   open,
@@ -120,7 +122,8 @@ export function PublicPropertyDetailsModal({
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
-  const [contactOpen, setContactOpen] = useState(false);
+  const [activeView, setActiveView] = useState<ModalView>("details");
+
   const [contactLoading, setContactLoading] = useState(false);
   const [contactError, setContactError] = useState<string | null>(null);
   const [contactOwner, setContactOwner] = useState<{
@@ -129,7 +132,6 @@ export function PublicPropertyDetailsModal({
     phone?: string;
   } | null>(null);
 
-  const [applyOpen, setApplyOpen] = useState(false);
   const [applyLoading, setApplyLoading] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
   const [applyProperty, setApplyProperty] = useState<TenantPropertyApplicationView | null>(null);
@@ -148,6 +150,17 @@ export function PublicPropertyDetailsModal({
       setAccountType(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setActiveView("details");
+      setApplyProperty(null);
+      setApplyError(null);
+      setApplyUser(null);
+      setContactOwner(null);
+      setContactError(null);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open || !roomId) {
@@ -404,7 +417,7 @@ export function PublicPropertyDetailsModal({
     }
   }, [listingId]);
 
-  const openTenantApplyModal = useCallback(() => {
+  const openTenantApplyFlow = useCallback(() => {
     if (!listingId) return;
     try {
       const raw = localStorage.getItem("nrv-user");
@@ -413,14 +426,14 @@ export function PublicPropertyDetailsModal({
     } catch {
       setApplyUser(null);
     }
-    setApplyOpen(true);
+    setActiveView("apply");
     void fetchTenantApplyContext();
   }, [listingId, fetchTenantApplyContext]);
 
   const handleContactClick = useCallback(() => {
     if (!room || !listingId) return;
     if (accountType === "tenant") {
-      setContactOpen(true);
+      setActiveView("contact");
       void fetchTenantContact();
       return;
     }
@@ -441,7 +454,7 @@ export function PublicPropertyDetailsModal({
         const type = String(parsed?.user?.accountType || "").toLowerCase();
 
         if (type === "tenant") {
-          openTenantApplyModal();
+          openTenantApplyFlow();
           return;
         }
         if (type === "landlord") {
@@ -457,7 +470,7 @@ export function PublicPropertyDetailsModal({
       // fall through
     }
     router.push(`/sign-up?redirect=/properties/${listingId}`);
-  }, [listingId, router, onOpenChange, openTenantApplyModal]);
+  }, [listingId, router, onOpenChange, openTenantApplyFlow]);
 
   const contactOwnerLabel = useMemo(() => {
     if (accountType === "tenant") return "Contact owner";
@@ -482,11 +495,17 @@ export function PublicPropertyDetailsModal({
           <div className="mb-4 md:hidden">
             <button
               type="button"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                if (activeView === "details") {
+                  onOpenChange(false);
+                  return;
+                }
+                setActiveView("details");
+              }}
               className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-[#03442C]"
             >
               <ArrowLeft className="w-4 h-4" />
-              Close
+              {activeView === "details" ? "Close" : "Back"}
             </button>
           </div>
 
@@ -520,6 +539,111 @@ export function PublicPropertyDetailsModal({
                 Property not found or is no longer available.
               </p>
             </div>
+          ) : activeView === "apply" ? (
+            <div className="mx-auto w-full max-w-2xl">
+              <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+                <DialogHeader className="space-y-1 text-left">
+                  <DialogTitle className="text-lg text-gray-900">Apply for this listing</DialogTitle>
+                  <DialogDescription className="text-sm text-gray-600">
+                    Complete your application without leaving this listing.
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
+              {applyLoading ? (
+                <div className="flex justify-center py-16">
+                  <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
+                </div>
+              ) : applyError ? (
+                <p className="rounded-xl border border-red-100 bg-white px-4 py-6 text-center text-sm text-red-600">
+                  {applyError}
+                </p>
+              ) : (
+                <TenantPropertyApplicationPanel
+                  variant="modal"
+                  property={applyProperty}
+                  propertyId={listingId ?? ""}
+                  user={applyUser}
+                  onBack={() => setActiveView("details")}
+                  onSuccess={() => {
+                    setActiveView("details");
+                    setApplyProperty(null);
+                    onOpenChange(false);
+                    router.push("/dashboard/tenant/properties/applications");
+                  }}
+                />
+              )}
+            </div>
+          ) : activeView === "contact" ? (
+            <div className="mx-auto w-full max-w-md">
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+                <DialogHeader className="space-y-2 text-left">
+                  <DialogTitle className="flex items-center gap-2 text-gray-900">
+                    <User className="h-5 w-5 text-nrvPrimaryGreen" />
+                    Contact owner
+                  </DialogTitle>
+                  <DialogDescription className="text-left text-gray-600">
+                    Reach out using the details below. You can still submit an application when
+                    you&apos;re ready.
+                  </DialogDescription>
+                </DialogHeader>
+
+                {contactLoading ? (
+                  <div className="flex justify-center py-10">
+                    <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
+                  </div>
+                ) : contactError ? (
+                  <p className="text-sm text-red-600 py-4">{contactError}</p>
+                ) : contactOwner ? (
+                  <div className="space-y-3 py-2">
+                    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+                      <User className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-gray-500">Name</p>
+                        <p className="font-semibold text-gray-900">{contactOwner.name}</p>
+                      </div>
+                    </div>
+                    {contactOwner.email ? (
+                      <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+                        <Mail className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-500">Email</p>
+                          <a
+                            href={`mailto:${contactOwner.email}`}
+                            className="font-semibold text-[#03442C] hover:underline break-all"
+                          >
+                            {contactOwner.email}
+                          </a>
+                        </div>
+                      </div>
+                    ) : null}
+                    {contactOwner.phone ? (
+                      <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+                        <Phone className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-500">Phone</p>
+                          <a
+                            href={`tel:${contactOwner.phone}`}
+                            className="font-semibold text-gray-900 hover:underline"
+                          >
+                            {contactOwner.phone}
+                          </a>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+
+                <div className="flex justify-end pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setActiveView("details")}
+                    className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-200"
+                  >
+                    Back to listing
+                  </button>
+                </div>
+              </div>
+            </div>
           ) : (
             <>
               {/* Header — matches tenant dashboard */}
@@ -536,12 +660,14 @@ export function PublicPropertyDetailsModal({
 
                   <div className="mx-auto md:mx-0" />
 
-                  <a
-                    href={loginHref}
-                    className="text-xs sm:text-sm text-nrvPrimaryGreen font-medium hover:underline text-right"
-                  >
-                    Already have an account? Click here to login
-                  </a>
+                  {!isAuthenticated ? (
+                    <a
+                      href={loginHref}
+                      className="text-xs sm:text-sm text-nrvPrimaryGreen font-medium hover:underline text-right"
+                    >
+                      Already have an account? Click here to login
+                    </a>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
@@ -936,131 +1062,6 @@ export function PublicPropertyDetailsModal({
                 )}
               </div>
             </>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-
-    <Dialog
-      open={contactOpen}
-      onOpenChange={(next) => {
-        setContactOpen(next);
-        if (!next) {
-          setContactOwner(null);
-          setContactError(null);
-        }
-      }}
-    >
-      <DialogContent className="fixed left-1/2 top-[50%] z-[100] max-h-[85vh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-gray-200 bg-white p-6 shadow-2xl sm:rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-gray-900">
-            <User className="h-5 w-5 text-nrvPrimaryGreen" />
-            Contact owner
-          </DialogTitle>
-          <DialogDescription className="text-left text-gray-600">
-            Reach out using the details below. You can still submit an application from your tenant
-            dashboard when you&apos;re ready.
-          </DialogDescription>
-        </DialogHeader>
-
-        {contactLoading ? (
-          <div className="flex justify-center py-10">
-            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
-          </div>
-        ) : contactError ? (
-          <p className="text-sm text-red-600 py-4">{contactError}</p>
-        ) : contactOwner ? (
-          <div className="space-y-3 py-2">
-            <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-              <User className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
-              <div>
-                <p className="text-xs font-medium text-gray-500">Name</p>
-                <p className="font-semibold text-gray-900">{contactOwner.name}</p>
-              </div>
-            </div>
-            {contactOwner.email ? (
-              <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-                <Mail className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
-                <div>
-                  <p className="text-xs font-medium text-gray-500">Email</p>
-                  <a
-                    href={`mailto:${contactOwner.email}`}
-                    className="font-semibold text-[#03442C] hover:underline break-all"
-                  >
-                    {contactOwner.email}
-                  </a>
-                </div>
-              </div>
-            ) : null}
-            {contactOwner.phone ? (
-              <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-                <Phone className="h-5 w-5 shrink-0 text-nrvPrimaryGreen mt-0.5" />
-                <div>
-                  <p className="text-xs font-medium text-gray-500">Phone</p>
-                  <a
-                    href={`tel:${contactOwner.phone}`}
-                    className="font-semibold text-gray-900 hover:underline"
-                  >
-                    {contactOwner.phone}
-                  </a>
-                </div>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        <div className="flex justify-end pt-2">
-          <button
-            type="button"
-            onClick={() => setContactOpen(false)}
-            className="rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-200"
-          >
-            Close
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
-
-    <Dialog
-      open={applyOpen}
-      onOpenChange={(next) => {
-        setApplyOpen(next);
-        if (!next) {
-          setApplyProperty(null);
-          setApplyError(null);
-          setApplyUser(null);
-        }
-      }}
-    >
-      <DialogContent className="fixed left-1/2 top-[50%] z-[101] flex max-h-[min(90vh,900px)] w-[calc(100vw-1rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden border border-gray-200 bg-[#F8FAF9] p-0 shadow-2xl sm:rounded-2xl">
-        <div className="border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg text-gray-900">Apply for this listing</DialogTitle>
-            <DialogDescription className="text-sm text-gray-600">
-              Complete your application here — same steps as in your tenant dashboard, without leaving
-              this listing.
-            </DialogDescription>
-          </DialogHeader>
-        </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-2 py-3 sm:px-4">
-          {applyLoading ? (
-            <div className="flex justify-center py-16">
-              <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-nrvPrimaryGreen" />
-            </div>
-          ) : applyError ? (
-            <p className="px-2 py-6 text-center text-sm text-red-600">{applyError}</p>
-          ) : (
-            <TenantPropertyApplicationPanel
-              variant="modal"
-              property={applyProperty}
-              propertyId={listingId ?? ""}
-              user={applyUser}
-              onBack={() => setApplyOpen(false)}
-              onSuccess={() => {
-                setApplyOpen(false);
-                setApplyProperty(null);
-              }}
-            />
           )}
         </div>
       </DialogContent>

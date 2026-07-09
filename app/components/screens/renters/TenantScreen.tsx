@@ -4,16 +4,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { format, startOfToday } from "date-fns";
 import {
-  createUploadAgreement,
   getApplicationsById,
   updateApplicationStatus,
 } from "@/redux/slices/propertySlice";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { format, startOfToday } from "date-fns";
-`import PdfIcon from "../../icons/PdfIcon";
-import { DownloadIcon, EyeIcon } from "lucide-react";`;
 import { Form, Formik, FormikHelpers } from "formik";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import {
@@ -27,7 +24,45 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
 import BackIcon from "../../shared/icons/BackIcon";
 import Modal from "../../shared/modals/Modal";
-import CustomDatePicker from "../../shared/CustomDatePicker";
+import {
+  Bath,
+  BedDouble,
+  Briefcase,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  Home,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+} from "lucide-react";
+
+const DetailItem = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+    <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
+      {label}
+    </p>
+    <p className="mt-1 text-sm font-semibold text-gray-900 break-words">{value}</p>
+  </div>
+);
+
+const formatDisplayDate = (value?: string) => {
+  if (!value) {
+    return "—";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+  return format(date, "dd MMM yyyy");
+};
 
 const TenantScreen = () => {
   const dispatch = useDispatch();
@@ -248,12 +283,32 @@ const TenantScreen = () => {
   };
 
   const handleVerifyTenant = () => {
-    const sp = new URLSearchParams();
     const applicant = application?.applicant;
-    if (applicant?.firstName) sp.set("firstName", applicant.firstName);
-    if (applicant?.lastName) sp.set("lastName", applicant.lastName);
-    if (applicant?.email) sp.set("email", applicant.email);
-    if (applicant?.nin) sp.set("nin", applicant.nin);
+    const sp = new URLSearchParams();
+    if (applicant?.firstName) {
+      sp.set("firstName", applicant.firstName);
+    }
+    if (applicant?.lastName) {
+      sp.set("lastName", applicant.lastName);
+    }
+    if (applicant?.email) {
+      sp.set("email", applicant.email);
+    }
+
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      if (stored) {
+        const user = JSON.parse(stored)?.user;
+        const landlordDisplayName =
+          `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim();
+        if (landlordDisplayName) {
+          sp.set("landlordDisplayName", landlordDisplayName);
+        }
+      }
+    } catch {
+      // ignore malformed local storage
+    }
+
     router.push(
       `/dashboard/landlord/properties/verification/request${
         sp.toString() ? `?${sp.toString()}` : ""
@@ -275,202 +330,335 @@ const TenantScreen = () => {
 
   if (!application) return <div className="p-4">Loading lease details...</div>;
 
+  const room = application?.propertyId;
+  const listing = room?.propertyId;
+  const applicant = application?.applicant;
+  const tenantInitials =
+    `${applicant?.firstName?.[0] ?? ""}${applicant?.lastName?.[0] ?? ""}`.toUpperCase() ||
+    "?";
+  const isLeaseActive =
+    application?.status === "Active_lease" ||
+    application?.status === ApplicationStatus.ACTIVE_LEASE;
+  const isLeaseEnded =
+    application?.status === "Ended" ||
+    application?.status === ApplicationStatus.ENDED;
+  const isAccepted = application?.status === "Accepted";
+  const isRejected = application?.status === "Rejected";
+  const canReviewApplication =
+    !isAccepted && !isLeaseActive && !isLeaseEnded && !isRejected;
+  const canRequestVerification = !isRejected;
+  const statusLabel =
+    status === ApplicationStatus.ACTIVE_LEASE
+      ? "Active Lease"
+      : status === ApplicationStatus.ENDED || application?.status === "Ended"
+        ? "Ended Lease"
+        : status;
+
   return (
-    <div className="mx-4 sm:mx-5 my-4">
-      {/* Breadcrumb and Back Button */}
-      <div className="flex items-center justify-between gap-5 mb-4">
-        <div className="flex items-center gap-3 text-sm">
-          <button
-            type="button"
-            className="text-nrvGreyBlack"
-            onClick={handleBack}
-            aria-label="Go back"
-          >
-            <BackIcon />
-          </button>
-          <span className="text-nrvGreyBlack font-medium">Tenant Profile</span>
-        </div>
+    <div className="mx-4 sm:mx-5 my-4 max-w-6xl">
+      <div className="flex items-center gap-3 text-sm mb-5">
+        <button
+          type="button"
+          className="text-nrvGreyBlack"
+          onClick={handleBack}
+          aria-label="Go back"
+        >
+          <BackIcon />
+        </button>
+        <span className="text-nrvGreyBlack font-medium">Tenant Profile</span>
       </div>
 
-      <div className="flex flex-col gap-4">
-        <div className="w-full md:w-full bg-white rounded-md">
-          <div className="border rounded-lg flex flex-col sm:flex-row overflow-hidden">
-            {/* <div className="h-[168px] aspect-square" ></div> */}
-            <Image
-              height={168}
-              width={168}
-              src={application?.propertyId?.propertyId?.file}
-              alt="property"
-              className="object-cover w-full h-[200px] sm:h-full sm:w-[168px] sm:aspect-square"
-            />
-            <div className="px-5 py-3">
-              <div
-                className={`${style?.bg} ${style?.text} w-fit text-xs py-1 px-4 rounded-full`}
-              >
-                {status === ApplicationStatus.ACTIVE_LEASE
-                  ? "Active Lease"
-                  : status === ApplicationStatus.ENDED || application?.status === "Ended"
-                  ? "Ended Lease"
-                  : status}
+      <div className="flex flex-col gap-5">
+        {/* Property summary */}
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="flex flex-col sm:flex-row">
+            <div className="relative h-48 w-full shrink-0 sm:h-auto sm:w-56">
+              {listing?.file ? (
+                <Image
+                  fill
+                  src={listing.file}
+                  alt="property"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                  <Building2 className="h-10 w-10 text-gray-300" />
+                </div>
+              )}
+            </div>
+            <div className="flex flex-1 flex-col justify-between gap-4 p-5">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`${style?.bg} ${style?.text} rounded-full px-3 py-1 text-xs font-medium`}
+                  >
+                    {statusLabel}
+                  </span>
+                  {room?.roomId != null && (
+                    <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
+                      Unit #{room.roomId}
+                    </span>
+                  )}
+                </div>
+                <h1 className="mt-3 text-lg font-semibold text-gray-900 sm:text-xl">
+                  {room?.description || "Property unit"}
+                </h1>
+                <p className="mt-1 flex items-start gap-1.5 text-sm text-[#101928]">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+                  {[listing?.streetAddress, listing?.city, listing?.state]
+                    .filter(Boolean)
+                    .join(", ")}
+                </p>
               </div>
-              <div className="text-sm sm:text-base font-normal mt-2 leading-snug">
-                {application?.propertyId?.description}
+              <div className="flex flex-wrap gap-4 text-sm">
+                <div className="flex items-center gap-1.5 text-[#475467]">
+                  <Calendar className="h-4 w-4" />
+                  Applied {formatDisplayDate(application?.createdAt)}
+                </div>
+                {application?.updatedAt && (
+                  <div className="flex items-center gap-1.5 text-[#475467]">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Updated {formatDisplayDate(application?.updatedAt)}
+                  </div>
+                )}
+                {room?.rentAmount != null && (
+                  <div className="font-semibold text-nrvPrimaryGreen">
+                    ₦{Number(room.rentAmount).toLocaleString()}/yr
+                  </div>
+                )}
               </div>
-              <p className="text-sm sm:text-base text-[#101928] mt-1">
-                {application?.propertyId?.propertyId?.streetAddress},{" "}
-                {application?.propertyId?.propertyId?.city},{" "}
-                {application?.propertyId?.propertyId?.state}
-              </p>
-              <p className="text-sm text-[#807F94] mt-1">
-                Applied on{" "}
-                {application?.createdAt
-                  ? format(new Date(application?.createdAt), "do, MMM yyyy")
-                  : ""}
-              </p>
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col lg:flex-row gap-4 mt-5">
-            <div className="w-full text-center border rounded-lg">
-              <div className="flex flex-col items-center">
-                <p className="text-xl sm:text-2xl text-[#03442C] font-semibold mt-3">
-                  {application?.applicant?.firstName}{" "}
-                  {application?.applicant?.lastName}
-                </p>
-                <p className="text-sm sm:text-base text-gray-500 mt-1 break-words px-4">
-                  {application?.applicant?.email}
-                </p>
+        {/* Tenant + application */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm lg:col-span-1">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#E9F4E7] text-lg font-bold text-[#03442C]">
+                {tenantInitials}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg font-semibold text-[#03442C]">
+                  {applicant?.firstName} {applicant?.lastName}
+                </h2>
+                <div className="mt-2 space-y-1.5 text-sm text-gray-600">
+                  <p className="flex items-center gap-2 break-all">
+                    <Mail className="h-4 w-4 shrink-0 text-gray-400" />
+                    {applicant?.email || "—"}
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 shrink-0 text-gray-400" />
+                    {applicant?.phoneNumber || "—"}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                <p className="text-sm sm:text-base text-gray-700 mt-1">
-                  {application?.applicant?.phoneNumber}
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-[#C8E6C0] bg-[#E9F4E7] px-4 py-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-[#03442C]/70">
+                  National ID (NIN)
+                </p>
+                <p className="truncate text-sm font-semibold text-[#03442C]">
+                  {showNIN ? applicant?.nin || "—" : "••••••••••"}
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => setShowNIN(!showNIN)}
+                className="shrink-0 text-xs font-medium text-[#03442C] underline"
+              >
+                {!showNIN ? "Show" : "Hide"}
+              </button>
+            </div>
 
-              <div className="mt-4 bg-[#E9F4E7] p-3 sm:p-4 text-base sm:text-2xl font-semibold rounded flex justify-between items-center gap-3">
-                <span className="truncate">
-                  {showNIN ? application?.applicant?.nin : "**********"}
-                </span>
-                <button
-                  onClick={() => setShowNIN(!showNIN)}
-                  className="underline text-sm sm:text-base text-green-700 shrink-0"
+            <div className="mt-5 space-y-2 border-t border-gray-100 pt-5">
+              {canRequestVerification && (
+                <Button
+                  className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
+                  disabled={isLoading}
+                  onClick={handleVerifyTenant}
                 >
-                  {!showNIN ? "Show NIN" : "Hide NIN"}
-                </button>
-              </div>
-
-              {!(
-                application?.status == "Accepted" ||
-                application?.status == "activeTenant" ||
-                application?.status == "Ended" ||
-                application?.status == "Active_lease"
-              ) && (
-                <div className="flex flex-col sm:flex-row gap-2 mt-5 justify-center px-4 pb-4">
+                  <ShieldCheck className="mr-2 h-4 w-4" />
+                  Request verification
+                </Button>
+              )}
+              {canReviewApplication && (
+                <div className="grid grid-cols-2 gap-2">
                   <Button
-                    className="bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                    className="bg-[#03442C] text-white hover:bg-[#023522]"
                     disabled={isLoading}
-                    onClick={handleVerifyTenant}
+                    onClick={() => handleApplicationStatus("Accepted")}
                   >
-                    Verify Tenant
+                    Accept
                   </Button>
                   <Button
-                    className="bg-white hover:bg-black/10 border border-red-500 text-red-500 text-xs px-4 py-2 w-full"
+                    variant="outline"
+                    className="border-red-300 bg-white text-red-600 hover:bg-red-50"
+                    disabled={isLoading}
                     onClick={() => handleApplicationStatus("Rejected")}
                   >
                     Reject
                   </Button>
                 </div>
               )}
-              {application?.status == "Accepted" && (
+              {isAccepted && (
                 <Button
-                  className="mt-4 bg-nrvPrimaryGreen hover:bg-nrvPrimaryGreen/80 text-white text-xs px-4 py-2 w-full"
+                  className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
                   disabled={isLoading}
                   onClick={() => setOpenAssignDateModal(true)}
                 >
-                  Set Lease Period
+                  Set lease period
                 </Button>
               )}
-
-              {application?.status == "Active_lease" && (
-               <div className="flex flex-col md:flex-row gap-4 mt-6 w-full">
-               <div
-                 onClick={() => setOpenAddTenantModal(true)}
-                 className="flex-1 flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 cursor-pointer transition duration-300"
-               >
-                 <span className="text-sm font-medium text-nrvGreyBlack">
-                   End Lease Tenure
-                 </span>
-                 <span className="text-nrvPrimaryGreen hover:underline text-sm">
-                   Click here
-                 </span>
-               </div>
-             </div>
+              {isLeaseActive && (
+                <button
+                  type="button"
+                  onClick={() => setOpenAddTenantModal(true)}
+                  className="flex w-full items-center justify-between rounded-xl border border-gray-200 p-3 text-left text-sm transition hover:bg-gray-50"
+                >
+                  <span className="font-medium text-nrvGreyBlack">End Lease Tenure</span>
+                  <span className="text-nrvPrimaryGreen">Click here</span>
+                </button>
               )}
-
-              {(application?.status === "Ended" || application?.status === ApplicationStatus.ENDED) && (
-                <div className="mt-6 p-3 bg-gray-100 border border-gray-200 rounded-lg">
-                  <p className="text-sm font-medium text-gray-700">
-                    This lease ended
-                    {application?.rentEndDate
-                      ? ` on ${format(new Date(application.rentEndDate), "do MMMM yyyy")}`
-                      : "."}
-                  </p>
+              {isLeaseEnded && (
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                  This lease ended
+                  {application?.rentEndDate
+                    ? ` on ${formatDisplayDate(application.rentEndDate)}`
+                    : "."}
                 </div>
               )}
-
-            </div>
-            <div className="w-full p-4 border rounded-lg">
-              <div className="flex">
-                <p className="text-lg font-semibold">Employment Details</p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="w-full mt-4 text-sm text-start">
-                  <p className="text-[#475467]">Employer</p>
-                  <p className="font-semibold">
-                    {application?.currentEmployer ?? "N/A"}
-                  </p>
-                </div>
-
-                <div className="w-full mt-4 text-sm flex flex-col  text-start">
-                  <p className=" text-[#475467]">Salary</p>
-                  <p className="font-semibold">
-                  {application?.monthlyIncome != null
-                    ? `₦${Number(application.monthlyIncome).toLocaleString()}`
-                    : "N/A"}
-                </p>
-                </div>
-              </div>
             </div>
           </div>
-          <div className="p-4 border rounded-lg mt-5">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold">Lease Period</p>
-            </div>
-            <div className="mt-4 flex flex-col sm:flex-row gap-4">
-              <div className="w-full text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div>
-                  <p className="text-sm font-semibold">Lease Start Date</p>
-                  <p>
-                    {application?.rentStartDate &&
-                      formatDateToWords(
-                        application?.rentStartDate?.slice(0, 10)
-                      )}
+
+          <div className="flex flex-col gap-5 lg:col-span-2">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+                <Briefcase className="h-5 w-5 text-nrvPrimaryGreen" />
+                Employment & Income
+              </h3>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <DetailItem label="Job Title" value={application?.jobTitle || "—"} />
+                <DetailItem
+                  label="Employer"
+                  value={application?.currentEmployer || "—"}
+                />
+                <DetailItem
+                  label="Monthly Income"
+                  value={
+                    application?.monthlyIncome != null
+                      ? `₦${Number(application.monthlyIncome).toLocaleString()}`
+                      : "—"
+                  }
+                />
+                <DetailItem
+                  label="Current Residence"
+                  value={application?.currentResidence || "—"}
+                />
+              </div>
+              {application?.reasonForLiving && (
+                <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
+                    Reason for Moving
+                  </p>
+                  <p className="mt-1 text-sm text-gray-900">
+                    {application.reasonForLiving}
                   </p>
                 </div>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+                <Building2 className="h-5 w-5 text-nrvPrimaryGreen" />
+                Unit Details
+              </h3>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <DetailItem
+                  label="Apartment Type"
+                  value={room?.apartmentType || "—"}
+                />
+                <DetailItem
+                  label="Style"
+                  value={room?.apartmentStyle || "—"}
+                />
+                <DetailItem
+                  label="Bedrooms"
+                  value={
+                    room?.noOfRooms != null ? (
+                      <span className="inline-flex items-center gap-1">
+                        <BedDouble className="h-4 w-4" />
+                        {room.noOfRooms}
+                      </span>
+                    ) : (
+                      "—"
+                    )
+                  }
+                />
+                <DetailItem
+                  label="Bathrooms"
+                  value={
+                    room?.noOfBaths != null ? (
+                      <span className="inline-flex items-center gap-1">
+                        <Bath className="h-4 w-4" />
+                        {room.noOfBaths}
+                      </span>
+                    ) : (
+                      "—"
+                    )
+                  }
+                />
+                <DetailItem
+                  label="Lease Terms"
+                  value={room?.leaseTerms || "—"}
+                />
+                <DetailItem
+                  label="Payment Option"
+                  value={room?.paymentOption || "—"}
+                />
               </div>
-              <div className="w-full text-sm flex items-center gap-2 justify-between border rounded-md p-2">
-                <div>
-                  <p className="text-sm font-semibold">Lease End Date</p>
-                  <p>
-                    {application?.rentStartDate &&
-                      formatDateToWords(application?.rentEndDate.slice(0, 10))}
+              {room?.otherAmentities && (
+                <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50/70 p-3">
+                  <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
+                    Amenities
+                  </p>
+                  <p className="mt-1 text-sm text-gray-900">{room.otherAmentities}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h3 className="flex items-center gap-2 text-base font-semibold text-gray-900">
+                <Home className="h-5 w-5 text-nrvPrimaryGreen" />
+                Lease Period
+              </h3>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-gray-200 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-[#667085]">
+                    Lease Start Date
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-gray-900">
+                    {application?.rentStartDate
+                      ? formatDateToWords(application.rentStartDate.slice(0, 10))
+                      : "Not set"}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-gray-200 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wide text-[#667085]">
+                    Lease End Date
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-gray-900">
+                    {application?.rentEndDate
+                      ? formatDateToWords(application.rentEndDate.slice(0, 10))
+                      : "Not set"}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="w-full md:w-full grid grid-cols-1 md:grid-cols-1 gap-4 h-fit"></div>
       </div>
 
       <Modal
@@ -675,6 +863,7 @@ const TenantScreen = () => {
           </Formik>
         </div>
       </Modal>
+
     </div>
   );
 };

@@ -159,6 +159,9 @@ function identityNinCheck(v: VerificationResponse): { label: string; tone: Check
   if (meta === "failed" || res?.status === "failed") {
     return { label: "Failed", tone: "bad" };
   }
+  if (res && res.namesMatch === false) {
+    return { label: "Name mismatch", tone: "bad" };
+  }
   const match = res?.namesMatch === true && res?.dobMatch === true;
   if (meta === "verified" && match) {
     return { label: "Verified", tone: "good" };

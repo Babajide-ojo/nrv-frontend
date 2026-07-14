@@ -284,6 +284,8 @@ const TenantScreen = () => {
 
   const handleVerifyTenant = () => {
     const applicant = application?.applicant;
+    const room = application?.propertyId;
+    const listing = room?.propertyId;
     const sp = new URLSearchParams();
     if (applicant?.firstName) {
       sp.set("firstName", applicant.firstName);
@@ -293,6 +295,33 @@ const TenantScreen = () => {
     }
     if (applicant?.email) {
       sp.set("email", applicant.email);
+    }
+
+    const applicationId = application?._id ? String(application._id) : "";
+    const roomId = room?._id ? String(room._id) : "";
+    const propertyId = listing?._id
+      ? String(listing._id)
+      : typeof listing === "string"
+        ? listing
+        : "";
+    if (applicationId) {
+      sp.set("applicationId", applicationId);
+    }
+    if (roomId) {
+      sp.set("roomId", roomId);
+    }
+    if (propertyId) {
+      sp.set("propertyId", propertyId);
+    }
+
+    const unitPart =
+      room?.roomId != null ? `Unit #${room.roomId}` : room?.description || "Unit";
+    const addressPart = [listing?.streetAddress, listing?.city, listing?.state]
+      .filter(Boolean)
+      .join(", ");
+    const propertyLabel = [unitPart, addressPart].filter(Boolean).join(" · ");
+    if (propertyLabel) {
+      sp.set("propertyLabel", propertyLabel);
     }
 
     try {
@@ -312,7 +341,7 @@ const TenantScreen = () => {
     router.push(
       `/dashboard/landlord/properties/verification/request${
         sp.toString() ? `?${sp.toString()}` : ""
-      }`
+      }`,
     );
   };
 

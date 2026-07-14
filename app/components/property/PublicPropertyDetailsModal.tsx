@@ -479,9 +479,8 @@ export function PublicPropertyDetailsModal({
   }, [accountType]);
 
   const applyLabel = useMemo(() => {
-    if (accountType === "tenant") return "Apply now";
     if (accountType === "landlord") return "Go to dashboard";
-    return "Sign up to apply";
+    return "Apply Now";
   }, [accountType]);
 
   return (

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useSearchParams } from "next/navigation";
 import { fetchPlans } from "../../../../../redux/slices/plansSlice";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
 import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
@@ -100,7 +101,8 @@ const PaymentHistoryList = ({
                   {p.planName ?? "Pack"}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  {formatPaymentDate(p)} · Qty {p.quantity ?? 1}
+                  {formatPaymentDate(p)} · {p.quantity ?? 1} verification
+                  {(p.quantity ?? 1) === 1 ? "" : "s"}
                 </p>
               </div>
               <p className="shrink-0 text-sm font-semibold text-gray-900 tabular-nums">
@@ -133,7 +135,9 @@ const PaymentHistoryList = ({
         <tr>
           <th className="text-left py-3 px-4 font-medium text-gray-700">Date</th>
           <th className="text-left py-3 px-4 font-medium text-gray-700">Plan</th>
-          <th className="text-right py-3 px-4 font-medium text-gray-700">Qty</th>
+          <th className="text-right py-3 px-4 font-medium text-gray-700">
+            Verifications
+          </th>
           <th className="text-right py-3 px-4 font-medium text-gray-700">Amount</th>
           <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
         </tr>
@@ -180,6 +184,7 @@ const PaymentHistoryList = ({
 
 const PlansPage = () => {
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const { plans, loading } = useSelector((state: RootState) => state.plans);
   const user = useSelector((state: RootState) => state.user.data);
   const [purchasingPlanId, setPurchasingPlanId] = useState<string | null>(null);
@@ -190,6 +195,9 @@ const PlansPage = () => {
   const [historyTotal, setHistoryTotal] = useState(0);
   const [resumingReference, setResumingReference] = useState<string | null>(null);
   const prevUserIdRef = useRef<string | undefined>();
+
+  const preferredTier = searchParams.get("tier");
+  const insufficientCredits = searchParams.get("reason") === "insufficient_credits";
 
   const historyTotalPages =
     historyTotal === 0 ? 0 : Math.ceil(historyTotal / PAYMENT_HISTORY_PAGE_SIZE);
@@ -395,7 +403,7 @@ const PlansPage = () => {
             </h1>
             <p className="text-gray-600">
               Choose Standard for a full tenant check, or Premium for the same plus affordability.
-              Price is per credit; totals update when you change quantity.
+              Price is per verification; totals update when you change the number of verifications.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
               <span className="font-semibold text-[#03442C]">Your verification credits</span>
@@ -407,6 +415,13 @@ const PlansPage = () => {
                 <strong className="text-gray-900 tabular-nums">{creditBalances.premium}</strong>
               </span>
             </div>
+            {insufficientCredits && (
+              <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+                You do not have enough{" "}
+                {preferredTier === "premium" ? "Premium" : preferredTier === "standard" ? "Standard" : ""}{" "}
+                verification credits for that request. Purchase credits below to continue.
+              </div>
+            )}
           </div>
 
           {bannerPending?.reference && (
@@ -453,7 +468,13 @@ const PlansPage = () => {
                 return (
                   <div
                     key={plan._id}
-                    className={`relative flex flex-col rounded-xl border p-6 border-gray-200 bg-white ${isPremium ? "border-green-300" : ""}`}
+                    className={`relative flex flex-col rounded-xl border p-6 bg-white ${
+                      preferredTier === plan.slug
+                        ? "border-green-500 ring-2 ring-green-200"
+                        : isPremium
+                          ? "border-green-300"
+                          : "border-gray-200"
+                    }`}
                   >
                     {isPremium && (
                       <span className="inline-block text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded mb-3">
@@ -476,11 +497,13 @@ const PlansPage = () => {
                     <div className="mt-auto space-y-3">
                       <div className="rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
                         <div className="flex justify-between gap-2">
-                          <span className="text-gray-600">Price / credit</span>
-                          <span className="font-semibold">₦{unitPrice.toLocaleString()}</span>
+                          <span className="text-gray-600">Price / verification</span>
+                          <span className="font-semibold">
+                            ₦{pricing.displayUnitPriceNaira.toLocaleString()}
+                          </span>
                         </div>
                         <div className="flex justify-between gap-2 mt-1">
-                          <span className="text-gray-600">Credits</span>
+                          <span className="text-gray-600">Verifications</span>
                           <span className="font-semibold">
                             {totalCredits.toLocaleString()}
                           </span>
@@ -488,13 +511,7 @@ const PlansPage = () => {
                         <div className="flex justify-between gap-2 mt-1">
                           <span className="text-gray-600">Subtotal</span>
                           <span className="font-semibold">
-                            ₦{pricing.subtotalNaira.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between gap-2 mt-1">
-                          <span className="text-gray-600">Paystack fee (2.1%)</span>
-                          <span className="font-semibold">
-                            ₦{pricing.paystackFeeNaira.toLocaleString()}
+                            ₦{pricing.displaySubtotalNaira.toLocaleString()}
                           </span>
                         </div>
                         <div className="flex justify-between gap-2 mt-1">
@@ -512,13 +529,14 @@ const PlansPage = () => {
                       </div>
 
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-sm text-gray-600">Quantity</span>
+                        <span className="text-sm text-gray-600">Number of Verifications</span>
                         <div className="flex items-center gap-2 border border-gray-200 rounded-lg overflow-hidden">
                           <button
                             type="button"
                             disabled={purchasingPlanId === plan._id || quantity <= 1}
                             onClick={() => setQuantity(plan._id, quantity - 1)}
                             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
+                            aria-label="Decrease number of verifications"
                           >
                             −
                           </button>
@@ -531,6 +549,7 @@ const PlansPage = () => {
                             onChange={(e) =>
                               setQuantity(plan._id, Number(e.target.value) || 1)
                             }
+                            aria-label="Number of verifications"
                             className="w-14 text-center font-medium border-0 focus:ring-0 bg-transparent py-1.5 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                           <button
@@ -540,6 +559,7 @@ const PlansPage = () => {
                             }
                             onClick={() => setQuantity(plan._id, quantity + 1)}
                             className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50"
+                            aria-label="Increase number of verifications"
                           >
                             +
                           </button>

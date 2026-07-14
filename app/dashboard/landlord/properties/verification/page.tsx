@@ -70,7 +70,7 @@ export default function TenantVerification() {
         // Fallback to default options if API fails
         setStatusOptions([
           { value: '', label: 'All Status' },
-          { value: 'pending', label: 'Pending' },
+          { value: 'pending', label: 'Verification Requested' },
           { value: 'approved', label: 'Verification completed' },
           { value: 'rejected', label: 'Rejected' },
         ]);
@@ -196,6 +196,34 @@ export default function TenantVerification() {
                     ),
                   },
                   {
+                    key: "propertyLabel",
+                    label: "Property / Unit",
+                    render: (val, row) => (
+                      <span className="text-sm text-[#344054]">
+                        {val || row.propertyLabel || "—"}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "creditCostNaira",
+                    label: "Amount",
+                    render: (val, row) => {
+                      const amount =
+                        val != null
+                          ? Number(val)
+                          : row.creditCostNaira != null
+                            ? Number(row.creditCostNaira)
+                            : null;
+                      return (
+                        <span className="text-sm font-medium text-[#101828] tabular-nums">
+                          {amount != null && Number.isFinite(amount)
+                            ? `₦${amount.toLocaleString()}`
+                            : "—"}
+                        </span>
+                      );
+                    },
+                  },
+                  {
                     key: "status",
                     label: "Verification Status",
                     width: "max-content",
@@ -204,8 +232,8 @@ export default function TenantVerification() {
                       let label = val;
 
                       if (val === "pending") {
-                        colorClass = "bg-yellow-100 text-yellow-700";
-                        label = "Pending";
+                        colorClass = "bg-yellow-100 text-yellow-800";
+                        label = "Verification Requested";
                       } else if (val === "approved") {
                         colorClass = "bg-green-100 text-green-700";
                         label = "Verification completed";

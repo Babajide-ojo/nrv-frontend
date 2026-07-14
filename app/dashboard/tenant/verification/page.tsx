@@ -321,8 +321,12 @@ const TenantVerificationSummaryPage = () => {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Status</p>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100 capitalize">
-                      {request?.status || "Pending"}
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
+                      {request?.status === "approved"
+                        ? "Verification completed"
+                        : request?.status === "rejected"
+                          ? "Rejected"
+                          : "Verification Requested"}
                     </span>
                   </div>
                 </CardContent>

@@ -77,7 +77,6 @@ const TenantScreen = () => {
       router.push("/dashboard/landlord/properties/renters");
     }
   };
-  const [showNIN, setShowNIN] = useState(false);
   const application = useSelector((state: any) => state?.property?.data?.data);
   const [isLoading, setIsLoading] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
@@ -482,24 +481,6 @@ const TenantScreen = () => {
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-[#C8E6C0] bg-[#E9F4E7] px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-[#03442C]/70">
-                  National ID (NIN)
-                </p>
-                <p className="truncate text-sm font-semibold text-[#03442C]">
-                  {showNIN ? applicant?.nin || "—" : "••••••••••"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowNIN(!showNIN)}
-                className="shrink-0 text-xs font-medium text-[#03442C] underline"
-              >
-                {!showNIN ? "Show" : "Hide"}
-              </button>
             </div>
 
             <div className="mt-5 space-y-2 border-t border-gray-100 pt-5">

@@ -106,7 +106,10 @@ const Maintainance = () => {
                   {[
                     {
                       title: "Active Requests",
-                      value: `${maintenance?.summary?.New || 0} Open Tickets`,
+                      value: `${
+                        (maintenance?.summary?.New || 0) +
+                        (maintenance?.summary?.Acknowledged || 0)
+                      } Open Tickets`,
                       change: "0%",
                       trend: "up",
                       comparison: "compared to the last 6 months",
@@ -114,7 +117,7 @@ const Maintainance = () => {
                     {
                       title: "Resolved",
                       value: `${
-                        maintenance?.summary?.Completed || 0
+                        maintenance?.summary?.Resolved || 0
                       } Completed`,
                       change: "10%",
                       trend: "up",
@@ -132,7 +135,7 @@ const Maintainance = () => {
                     {
                       title: "Urgent",
                       value: `${
-                        maintenance?.summary?.emergency || 0
+                        maintenance?.summary?.Emergency || 0
                       } Emergency`,
                       change: "10%",
                       trend: "down",
@@ -177,28 +180,28 @@ const Maintainance = () => {
                 </Button>
                 <Button
                   className={`${
-                    activeTab === "In progress"
+                    activeTab === "In Progress"
                       ? "bg-green-700 text-white"
                       : "bg-white text-gray-800 border"
                   }`}
-                  onClick={() => handleTabClick("In progress")}
+                  onClick={() => handleTabClick("In Progress")}
                 >
                   In Progress{" "}
                   <span className="ml-2 font-semibold">
-                    {maintenance?.summary?.inProgress}
+                    {maintenance?.summary?.["In Progress"] || 0}
                   </span>
                 </Button>
                 <Button
                   className={`${
-                    activeTab === "Completed"
+                    activeTab === "Resolved"
                       ? "bg-green-700 text-white"
                       : "bg-white text-gray-800 border"
                   }`}
-                  onClick={() => handleTabClick("Completed")}
+                  onClick={() => handleTabClick("Resolved")}
                 >
-                  Completed{" "}
+                  Resolved{" "}
                   <span className="ml-2 font-semibold">
-                    {maintenance?.summary?.completed}
+                    {maintenance?.summary?.Resolved || 0}
                   </span>
                 </Button>
               </div>

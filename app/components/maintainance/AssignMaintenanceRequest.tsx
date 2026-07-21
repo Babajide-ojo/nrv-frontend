@@ -16,14 +16,17 @@ import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
-import { BsWindowSidebar } from "react-icons/bs";
 
-const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => void , onCancel?: () => void }) => {
+const AssignMaintenanceRequest = ({
+  onSuccess,
+  onCancel,
+}: {
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}) => {
   const [loading, setIsLoading] = useState<boolean>(false);
-  const {id} = useParams(); 
+  const { id } = useParams();
   const dispatch = useDispatch();
-  const router = useRouter()
 
   const formik = useFormik({
     initialValues: {
@@ -31,6 +34,7 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
       assigneePhoneNumber: "",
       extraNoteToTenant: "",
       scheduledDate: new Date(),
+      scheduledTime: "",
     },
     validationSchema: Yup.object({
       assignedTo: Yup.string().required("Expert is required"),
@@ -39,17 +43,24 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
         .required("Phone is required")
         .max(11),
       scheduledDate: Yup.date().required("Scheduled date is required"),
+      scheduledTime: Yup.string().required("Scheduled time is required"),
     }),
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        const response =await dispatch(updateMaintenance({ id: JSON.stringify(id), formData: values }) as any).unwrap();
-        setIsLoading(false);
-        window.location.reload();
-      } catch (error) {
+        await dispatch(
+          updateMaintenance({
+            id: JSON.stringify(id),
+            formData: values,
+          }) as any,
+        ).unwrap();
+        toast.success("Vendor visit scheduled. The tenant has been notified.");
+        onSuccess?.();
+      } catch (error: any) {
         console.error("Update failed:", error);
+        toast.error(error?.message || error || "Unable to schedule the vendor.");
+      } finally {
         setIsLoading(false);
-
       }
     },
   });
@@ -125,17 +136,39 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
                 </LocalizationProvider>
               </div>
               {formik.errors.scheduledDate && (
-                <p className="text-red-500 text-sm mt-1">{}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {String(formik.errors.scheduledDate)}
+                </p>
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="scheduledTime">Scheduled time</Label>
+                <Input
+                  id="scheduledTime"
+                  name="scheduledTime"
+                  type="time"
+                  className="mt-2"
+                  value={formik.values.scheduledTime}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                {formik.touched.scheduledTime &&
+                  formik.errors.scheduledTime && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {formik.errors.scheduledTime}
+                    </p>
+                  )}
+              </div>
+
               <div>
                 <Label htmlFor="assignedTo">Assigned to</Label>
                 <Input
                   id="assignedTo"
                   name="assignedTo"
                   placeholder="e.g. AquaFix Plumbers"
+                  className="mt-2"
                   value={formik.values.assignedTo}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -147,11 +180,15 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
                 )}
               </div>
 
-              <div>
-                <Label>Assignee Phone Number</Label>
+              <div className="md:col-span-2">
+                <Label htmlFor="assigneePhoneNumber">
+                  Vendor phone number
+                </Label>
                 <Input
+                  id="assigneePhoneNumber"
                   name="assigneePhoneNumber"
                   placeholder="0803-XXX-XXXX"
+                  className="mt-2"
                   value={formik.values.assigneePhoneNumber}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -166,10 +203,14 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
             </div>
 
             <div>
-              <Label>Add Note for Tenants (Optional)</Label>
+              <Label htmlFor="extraNoteToTenant">
+                Note for tenant (optional)
+              </Label>
               <Textarea
+                id="extraNoteToTenant"
                 name="extraNoteToTenant"
                 placeholder="Enter your notes here"
+                className="mt-2"
                 value={formik.values.extraNoteToTenant}
                 onChange={formik.handleChange}
               />
@@ -184,8 +225,7 @@ const AssignMaintenanceRequest = ({ onSuccess, onCancel }: { onSuccess?: () => v
                 type="submit"
                 className="bg-green-800 hover:bg-green-900 text-white"
               >
-                {loading? "Saving" : "Save"}
-                
+                {loading ? "Scheduling..." : "Schedule vendor"}
               </Button>
             </div>
           </CardContent>

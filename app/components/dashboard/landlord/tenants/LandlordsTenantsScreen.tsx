@@ -1,12 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-// import { updateApplicationStatus } from "../../../../redux/slices/propertySlice";
 import { toast } from "react-toastify";
 import { formatDateToWords } from "@/helpers/utils";
-// import DataTable from "../../shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
@@ -19,6 +17,14 @@ type TenantManagementMetrics = {
   retentionRateChange: number;
   rentCollectionRate: number;
   rentCollectionRateChange: number;
+};
+
+const formatLeaseDate = (value: unknown) => {
+  if (!value) {
+    return "—";
+  }
+  const formatted = formatDateToWords(String(value));
+  return formatted || "—";
 };
 
 const formatTrend = (change: number | null) => {
@@ -103,6 +109,7 @@ const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
 const LandlordsTenantsScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [isLoading, setIsLoading] = useState(true);
   const [metricsLoading, setMetricsLoading] = useState(true);
@@ -113,7 +120,9 @@ const LandlordsTenantsScreen = () => {
   const [application, setApplication] = useState<any>([]);
 
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<string>("Active_lease");
+  const [activeTab, setActiveTab] = useState<string>(
+    searchParams.get("tab") === "ended" ? "ended" : "Active_lease",
+  );
 
   const handleSubmit = async (status: any) => {
     const payload = {
@@ -150,7 +159,21 @@ const LandlordsTenantsScreen = () => {
 
   const handleTabClick = (status: string) => {
     setActiveTab(status);
+    router.replace(
+      status === "ended"
+        ? "/dashboard/landlord/tenants?tab=ended"
+        : "/dashboard/landlord/tenants",
+    );
   };
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "ended") {
+      setActiveTab("ended");
+    } else if (!tab) {
+      setActiveTab("Active_lease");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem("nrv-user") as any);
@@ -289,9 +312,13 @@ const LandlordsTenantsScreen = () => {
 
             {/* Section Title */}
             <div className="flex-col items-center gap-4 mt-2">
-              <h4 className="text-lg font-semibold">Tenants</h4>
+              <h4 className="text-lg font-semibold">
+                {activeTab === "ended" ? "Past Leases" : "Tenants"}
+              </h4>
               <span className="text-gray-400 text-sm">
-                View and manage Tenants
+                {activeTab === "ended"
+                  ? "Ended leases appear here — open a row to view details"
+                  : "View and manage Tenants"}
               </span>
             </div>
           </div>
@@ -305,38 +332,72 @@ const LandlordsTenantsScreen = () => {
             status={activeTab}
             columns={[
               {
+                key: "applicant",
+                label: "Tenant",
+                render: (val) => (
+                  <div>
+                    <div className="text-[#101828] font-medium text-[13px]">
+                      {[val?.firstName, val?.lastName]
+                        .filter(Boolean)
+                        .join(" ") ||
+                        val?.fullName ||
+                        "—"}
+                    </div>
+                    {val?.email && (
+                      <div className="text-[#667085] font-light text-[12px]">
+                        {val.email}
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
+              {
                 key: "propertyId",
                 label: "Apartment Name & Address",
                 render: (val) => (
                   <div>
                     <div className="text-[#101828] font-medium text-[13px]">
-                      {val?.apartmentStyle || "N/A"}
+                      {val?.apartmentStyle || val?.description || "N/A"}
                     </div>
                     <div className="text-[#667085] font-light">
-                      {val?.propertyId?.streetAddress}, {val?.propertyId?.state}
-                      , Nigeria
+                      {[
+                        val?.propertyId?.streetAddress,
+                        val?.propertyId?.state,
+                      ]
+                        .filter(Boolean)
+                        .join(", ") || "—"}
                     </div>
                   </div>
                 ),
               },
-              // {
-              //   key: "status",
-              //   label: "Status",
-              //   render: (val) => (
-              //     <span className="font-medium italic text-[#045D23]">
-              //       {val === "activeTenant" ? "Active Tenancy" : val}
-              //     </span>
-              //   ),
-              // },
+              {
+                key: "status",
+                label: "Status",
+                render: (val) => (
+                  <span
+                    className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      val === "Ended" || val === "ended"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-[#E9F4E7] text-[#045D23]"
+                    }`}
+                  >
+                    {val === "Active_lease"
+                      ? "Active Lease"
+                      : val === "Ended" || val === "ended"
+                        ? "Ended"
+                        : val || "—"}
+                  </span>
+                ),
+              },
               {
                 key: "rentStartDate",
                 label: "Lease Start Date",
-                render: (val) => <span>{formatDateToWords(val)}</span>,
+                render: (val) => <span>{formatLeaseDate(val)}</span>,
               },
               {
                 key: "rentEndDate",
                 label: "Lease End Date",
-                render: (val) => <span>{formatDateToWords(val)}</span>,
+                render: (val) => <span>{formatLeaseDate(val)}</span>,
               },
             ]}
           />

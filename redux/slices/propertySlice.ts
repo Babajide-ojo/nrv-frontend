@@ -656,7 +656,23 @@ const propertySlice = createSlice({
             })
             .addCase(updateApplicationStatus.fulfilled, (state, action) => {
                 state.loading = "succeeded";
-                state.data = action.payload;
+                // Preserve existing application document when response is a status update.
+                // Other thunks (e.g. application-count) share `state.data` and must not
+                // leave this slice looking like metrics when the detail page is open.
+                const updated = action.payload?.data;
+                const existing = state.data?.data;
+                if (
+                  updated?._id &&
+                  existing?._id &&
+                  String(updated._id) === String(existing._id)
+                ) {
+                  state.data = {
+                    ...action.payload,
+                    data: { ...existing, ...updated, status: updated.status },
+                  };
+                } else {
+                  state.data = action.payload;
+                }
             })
             .addCase(updateApplicationStatus.rejected, (state, action) => {
                 state.loading = "failed";
@@ -716,7 +732,17 @@ const propertySlice = createSlice({
             })
             .addCase(getApplicationCount.fulfilled, (state, action) => {
                 state.loading = "succeeded";
-                state.data = action.payload;
+                // Don't clobber an in-view application document with metrics —
+                // TenantScreen and others read `state.data.data` as the application.
+                const existing = state.data?.data;
+                if (existing?._id && existing?.status && !existing?.totalNew) {
+                  state.data = {
+                    ...state.data,
+                    metrics: action.payload?.data ?? action.payload,
+                  };
+                } else {
+                  state.data = action.payload;
+                }
             })
             .addCase(getApplicationCount.rejected, (state, action) => {
                 state.loading = "failed";

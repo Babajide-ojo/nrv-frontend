@@ -395,54 +395,74 @@ const SingleMaintainance = () => {
   
           {/* Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left: Tenant Info */}
-            <div className="border rounded-sm shadow-sm p-4 flex flex-col gap-4">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div className="w-full sm:w-1/3">
-                  <div className="relative h-[120px] w-full">
-                    <Image
-                      src={maintenance?.roomId?.propertyId?.file}
-                      alt="Property Image"
-                      fill
-                      className="object-cover rounded-sm"
-                    />
-                  </div>
+            {/* Left: linked apartment */}
+            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+              {maintenance?.roomId?.propertyId?.file ||
+              maintenance?.roomId?.imageUrls?.[0] ||
+              maintenance?.roomId?.file ? (
+                <div className="relative aspect-[16/9] w-full bg-gray-100">
+                  <Image
+                    src={
+                      maintenance?.roomId?.propertyId?.file ||
+                      maintenance?.roomId?.imageUrls?.[0] ||
+                      maintenance?.roomId?.file
+                    }
+                    alt="Linked apartment"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
                 </div>
-                <div className="min-w-0 w-full sm:w-2/3">
-                  <p className="font-medium text-[15px] text-[#263245]">
-                    Apartment ID : {maintenance?.roomId?.roomId}
-                  </p>
-                  <p className="font-medium text-[13px] text-[#263245] pt-2">
-                    <div className="flex gap-2">
-                      <LocationIcon />{" "}
-                      <div>
-                        {maintenance?.roomId?.propertyId?.streetAddress},{" "}
-                        {maintenance?.roomId?.propertyId?.city},{" "}
-                        {maintenance?.roomId?.propertyId?.state}
-                      </div>
-                    </div>
-                  </p>
-  
-                  <div></div>
+              ) : (
+                <div className="flex aspect-[16/9] items-center justify-center bg-gray-100 text-sm text-gray-500">
+                  No apartment image available
                 </div>
+              )}
+
+              <div className="p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  Linked apartment
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {maintenance?.roomId?.apartmentStyle ||
+                      maintenance?.roomId?.apartmentType ||
+                      maintenance?.roomId?.description ||
+                      "Apartment"}
+                  </h2>
+                  {maintenance?.roomId?.roomId != null && (
+                    <span className="whitespace-nowrap rounded-full bg-[#E9F4E7] px-2.5 py-1 text-xs font-semibold text-[#03442C]">
+                      Unit {maintenance.roomId.roomId}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-3 flex items-start gap-2 text-sm text-gray-600">
+                  <LocationIcon />
+                  <p>
+                    {[
+                      maintenance?.roomId?.propertyId?.streetAddress,
+                      maintenance?.roomId?.propertyId?.city,
+                      maintenance?.roomId?.propertyId?.state,
+                    ]
+                      .filter(Boolean)
+                      .join(", ") || "Address unavailable"}
+                  </p>
+                </div>
+
+                {maintenance?.roomId?._id && (
+                  <Button
+                    variant="outline"
+                    className="mt-5 w-full rounded-xl border-[#03442C]/20 text-[#03442C] hover:bg-[#E9F4E7]"
+                    onClick={() =>
+                      router.push(
+                        `/dashboard/landlord/properties/rooms/${maintenance.roomId._id}`,
+                      )
+                    }
+                  >
+                    View apartment
+                  </Button>
+                )}
               </div>
-              <div className="flex justify-center my-8">
-                <Image
-                  src="/images/confirmed-user-icon.svg"
-                  alt="Property Image"
-                  width={300}
-                  height={300}
-                  className="object-cover rounded-sm"
-                />
-              </div>
-  
-              <div className="bg-[#ECFDF3] text-[#027A48] text-center text-sm py-6 rounded-md">
-                +234 81 3226 5445
-              </div>
-  
-              <Button className="bg-nrvPrimaryGreen text-white w-4/5 p-6 mx-auto">
-                Send Message
-              </Button>
             </div>
   
             <div>
@@ -511,7 +531,8 @@ const SingleMaintainance = () => {
                 </div>
   
                 <div className="flex gap-3 mt-4">
-                  {maintenance.status === "New" && (
+                  {maintenance.status !== "Resolved" &&
+                    maintenance.status !== "Declined" && (
                     <Button
                       className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
                       onClick={() => {
@@ -519,14 +540,6 @@ const SingleMaintainance = () => {
                       }}
                     >
                       Mark As Resolved
-                    </Button>
-                  )}
-                  {maintenance.status === "New" && (
-                    <Button
-                      variant="outline"
-                      className="border border-red-500 text-red-500 hover:text-red-500 rounded-md text-[12px] font-medium"
-                    >
-                      Decline Request
                     </Button>
                   )}
                 </div>
@@ -552,19 +565,32 @@ const SingleMaintainance = () => {
                         </span>
                       </p>
                       <p className="text-sm text-[#475467]">
-                        Scheduled Date:{" "}
+                        Scheduled visit:{" "}
                         <span className="text-gray-500">
                           {formatDate(maintenance?.scheduledDate?.slice(0, 10))}
+                          {maintenance?.scheduledTime
+                            ? ` at ${maintenance.scheduledTime}`
+                            : ""}
                         </span>
                       </p>
+                      {maintenance?.extraNoteToTenant && (
+                        <div className="rounded-lg bg-gray-50 p-3">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                            Note shared with tenant
+                          </p>
+                          <p className="mt-1 whitespace-pre-wrap text-sm text-[#475467]">
+                            {maintenance.extraNoteToTenant}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="p-8 items-center flex justify-center">
                       <Button
-                        className="text-[#2B892B] bg-[#BBFF37] rounded-md text-[12px] font-semibold"
+                        className="rounded-xl bg-[#03442C] px-4 text-xs font-semibold text-white hover:bg-[#023522]"
                         onClick={() => setIsOpen(true)}
                       >
-                        Assign Expert To Request
+                        Assign an expert
                       </Button>
                     </div>
                   )}
@@ -575,63 +601,116 @@ const SingleMaintainance = () => {
                     Timeline
                   </h3>
                   <div className="space-y-6">
-                    <p className="text-sm text-[#475467]">
-                      Ticket opened: {maintenance?.createdAt}
-                    </p>
-                    <p className="text-sm text-[#475467]">
-                      Diagnosed & Assigned: -
-                    </p>
-                    <p className="text-sm text-[#475467]">Repair Completed: -</p>
+                    {maintenance?.statusHistory?.length > 0 ? (
+                      [...maintenance.statusHistory]
+                        .reverse()
+                        .map((entry: any, index: number) => (
+                          <div
+                            key={`${entry.status}-${entry.changedAt}-${index}`}
+                            className="flex gap-3"
+                          >
+                            <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-[#03442C]" />
+                            <div>
+                              <p className="text-sm font-semibold text-[#344054]">
+                                {entry.status}
+                              </p>
+                              {entry.note && (
+                                <p className="text-sm text-[#475467]">
+                                  {entry.note}
+                                </p>
+                              )}
+                              <p className="mt-1 text-xs text-gray-500">
+                                {new Intl.DateTimeFormat("en-NG", {
+                                  dateStyle: "medium",
+                                  timeStyle: "short",
+                                }).format(new Date(entry.changedAt))}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                    ) : (
+                      <p className="text-sm text-[#475467]">
+                        Ticket opened:{" "}
+                        {maintenance?.createdAt
+                          ? new Intl.DateTimeFormat("en-NG", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }).format(new Date(maintenance.createdAt))
+                          : "—"}
+                      </p>
+                    )}
                   </div>
                 </div>
   
                 <div className="border rounded-xl shadow-sm">
                   <p className="text-nrvPrimaryGreen font-medium text-sm p-4">
-                    Your Maintenance Request is in Progress!
+                    Maintenance request received
                   </p>
                   <p className="text-sm text-gray-500 px-4 pb-4">
-                    Your maintenance request has been received. You will be
-                    notified once its assigned.
+                    Review the issue, assign an expert, and keep the tenant
+                    informed as work progresses.
                   </p>
-                  <div className="flex justify-end bg-gray-50 p-4">
-                    <Button className="border text-nrvPrimaryGreen" size="sm">
-                      Contact Property Owner
-                    </Button>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
   
-          <div className="border rounded-xl p-4 shadow-sm">
-            <h3 className="text-md font-medium text-[#101828] mb-4">
-              Attachments from Tenant
-            </h3>
-            {maintenance?.attachments?.length ? (
-              maintenance.attachments.map((file: any, index: number) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center p-3 mb-2 bg-gray-100 rounded text-sm"
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div className="border-b border-gray-100 px-5 py-4">
+              <h3 className="font-semibold text-[#101828]">
+                Evidence uploaded by tenant
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Photo submitted when this maintenance request was logged.
+              </p>
+            </div>
+            {maintenance?.file ? (
+              <div className="grid gap-5 p-5 md:grid-cols-[minmax(0,560px)_1fr]">
+                <a
+                  href={maintenance.file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block aspect-[16/10] overflow-hidden rounded-xl bg-gray-100"
                 >
-                  <span className="truncate max-w-[70%]">{file.name}</span>
-                  <div className="flex gap-3">
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">
-                      👁️
-                    </a>
-                    <a href={file.url} download>
-                      ⬇️
-                    </a>
-                  </div>
+                  <Image
+                    src={maintenance.file}
+                    alt={`Evidence for ${maintenance?.title || "maintenance request"}`}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 560px"
+                  />
+                </a>
+                <div className="flex flex-col justify-center">
+                  <p className="text-sm font-medium text-gray-900">
+                    Tenant evidence
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-gray-500">
+                    Open the original image to inspect the reported issue in
+                    full resolution.
+                  </p>
+                  <a
+                    href={maintenance.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex h-10 w-fit items-center rounded-xl bg-[#03442C] px-4 text-sm font-semibold text-white"
+                  >
+                    View full image
+                  </a>
                 </div>
-              ))
+              </div>
             ) : (
-              <p className="text-sm text-gray-400">No attachments provided.</p>
+              <p className="px-5 py-8 text-sm text-gray-500">
+                No evidence image was attached to this request.
+              </p>
             )}
           </div>
           <CenterModal isOpen={isOpen} onClose={() => setIsOpen(false)}>
             <AssignMaintenanceRequest
               onCancel={() => setIsOpen(false)}
-              onSuccess={() => () => setIsOpen(false)}
+              onSuccess={() => {
+                setIsOpen(false);
+                void fetchData();
+              }}
             />
           </CenterModal>
   

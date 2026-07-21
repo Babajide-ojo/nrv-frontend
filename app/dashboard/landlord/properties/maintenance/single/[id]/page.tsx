@@ -80,8 +80,8 @@ const SingleMaintainance = () => {
         ? "bg-[#107E4B]" // Green for Resolved
         : maintenance?.status === "New"
         ? "bg-blue-500" // Blue for New
-        : maintenance?.status === "Acknowleged"
-        ? "bg-yellow-500" // Yellow for Acknowleged
+        : maintenance?.status === "Acknowledged"
+        ? "bg-yellow-500" // Yellow for Acknowledged
         : maintenance?.status === "Declined"
         ? "bg-red-500" // Red for Declined
         : "bg-nrvPrimaryGreen" // Default color if none match
@@ -151,7 +151,7 @@ const SingleMaintainance = () => {
                           )}
                         </div>
                         <div>
-                          {maintenance?.status === "Acknowleged" && (
+                          {maintenance?.status === "Acknowledged" && (
                             <p
                               className="underline pt-2 text-green-600 text-sm cursor-pointer"
                               onClick={() => {
@@ -164,7 +164,7 @@ const SingleMaintainance = () => {
                         </div>
                         <div>
                           {(maintenance?.status === "New" ||
-                            maintenance?.status === "Acknowleged") && (
+                            maintenance?.status === "Acknowledged") && (
                             <p
                               className="underline pt-2 text-red-500 text-sm cursor-pointer"
                               onClick={() => {
@@ -249,7 +249,7 @@ const SingleMaintainance = () => {
                   Acknowledge Complaint/Issue
                 </h2>
                 <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-                  Performing this action will mark this issue as Acknowleged.
+                  Performing this action will mark this issue as Acknowledged.
                   This means the issue resolution has commenced.
                 </p>
 
@@ -261,7 +261,7 @@ const SingleMaintainance = () => {
                     showIcon={false}
                     disabled={isLoading}
                     onClick={() => {
-                      handleSubmit("Acknowleged");
+                      handleSubmit("Acknowledged");
                     }}
                   >
                     Submit

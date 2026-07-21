@@ -521,23 +521,8 @@ const RentedPropertiesScreen = () => {
                       </div>
                     </div>
                     <div className="hidden md:block w-full md:w-[30%] md:pl-4 pb-5 shrink-0">
-                      <div className="w-full aspect-square rounded-lg p-3 bg-[#F9FAFB]">
-                        <div className="h-full w-full rounded-lg overflow-hidden relative">
-                          <Image
-                            src={
-                              listing?.file ??
-                              room?.file ??
-                              "/images/featured-img.svg"
-                            }
-                            alt="Apartment Image"
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 30vw"
-                          />
-                        </div>
-                      </div>
                       {isApplicationMode ? (
-                        <div className="mt-4 space-y-3">
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between text-sm gap-4 rounded-xl border border-gray-100 bg-gray-50 p-3">
                             <div className="flex flex-col min-w-0">
                               <p className="text-sm text-[#475467]">
@@ -568,7 +553,7 @@ const RentedPropertiesScreen = () => {
                           )}
                         </div>
                       ) : (
-                        <div className="mt-4 flex flex-col gap-2">
+                        <div className="flex flex-col gap-2">
                           <Button
                             variant="darkPrimary"
                             className="h-10 rounded-md w-full"
@@ -588,7 +573,7 @@ const RentedPropertiesScreen = () => {
                             className="h-10 rounded-md w-full"
                             onClick={() =>
                               router.push(
-                                `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${id}`
+                                `/dashboard/tenant/rented-properties/maintenance/request-maintainance/${room?._id ?? id}`
                               )
                             }
                           >

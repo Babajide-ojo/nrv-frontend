@@ -377,7 +377,7 @@ const TenantTable = () => {
               <Button
                 variant="default"
                 className={`${
-                  activeTab === "activeTenant"
+                  activeTab === "Active_lease"
                     ? "bg-green-700 text-white"
                     : "bg-white text-gray-800 border"
                 }`}

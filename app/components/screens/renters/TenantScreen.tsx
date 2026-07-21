@@ -36,7 +36,19 @@ import {
   MapPin,
   Phone,
   ShieldCheck,
+  XCircle,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import VerificationRequestModal, {
+  type VerificationRequestContext,
+} from "@/app/components/shared/VerificationRequestModal";
 
 const DetailItem = ({
   label,
@@ -77,7 +89,12 @@ const TenantScreen = () => {
       router.push("/dashboard/landlord/properties/renters");
     }
   };
-  const application = useSelector((state: any) => state?.property?.data?.data);
+  // Keep application in local state — property slice `data` is shared with
+  // metrics/count thunks and gets overwritten, which broke status updates.
+  const applicationFromStore = useSelector(
+    (state: any) => state?.property?.data?.data,
+  );
+  const [application, setApplication] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [openAssignDateModal, setOpenAssignDateModal] = useState(false);
   const [openUploadAgreementDocsModal, setOpenUploadAgreementDocsModal] =
@@ -91,7 +108,12 @@ const TenantScreen = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
-
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<
+    null | "Accepted" | "Rejected"
+  >(null);
+  const [statusActionLoading, setStatusActionLoading] = useState(false);
+  const [postAcceptPrompt, setPostAcceptPrompt] = useState(false);
 
   const statusStyles: Record<ApplicationStatus, { bg: string; text: string }> =
     {
@@ -118,20 +140,42 @@ const TenantScreen = () => {
   const status = application?.status as ApplicationStatus;
   const style = statusStyles[status];
 
+  const refreshApplication = async () => {
+    if (!id || id === "undefined") {
+      return null;
+    }
+    const result = await dispatch(getApplicationsById({ id } as any) as any);
+    const payload = result?.payload;
+    const next =
+      payload?.data && payload?.data?._id
+        ? payload.data
+        : payload?._id
+          ? payload
+          : null;
+    if (next) {
+      setApplication(next);
+    }
+    return next;
+  };
+
   const endTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
-    dispatch
   ) => {
-    const refreshApplication = () => {
-      if (id) dispatch(getApplicationsById({ id } as any) as any);
-    };
-
     try {
       await dispatch(endTenancyTenure({ id: id || values?.id }) as any).unwrap();
-      toast.success("Lease ended successfully.");
+      setApplication((prev: any) =>
+        prev
+          ? {
+              ...prev,
+              status: ApplicationStatus.ENDED,
+              rentEndDate: new Date().toISOString(),
+            }
+          : prev,
+      );
+      toast.success("Lease ended successfully. It’s now under Past Leases.");
       resetForm();
-      refreshApplication();
+      await refreshApplication();
     } catch (err: any) {
       const message =
         err?.message ||
@@ -141,7 +185,7 @@ const TenantScreen = () => {
     } finally {
       setSubmitting(false);
       setOpenAddTenantModal(false);
-      refreshApplication();
+      await refreshApplication();
     }
   };
   
@@ -230,25 +274,78 @@ const TenantScreen = () => {
   const assignDateToTenancy: AddTenantFunction = async (
     values,
     { resetForm, setSubmitting },
-    dispatch
   ) => {
+    const applicationId = String(values?.id || id || "");
+    if (!applicationId || applicationId === "undefined") {
+      toast.error("Missing application id. Please refresh and try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    const toIso = (value: unknown) => {
+      if (!value) {
+        return null;
+      }
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      const parsed = new Date(value as string);
+      if (Number.isNaN(parsed.getTime())) {
+        return value;
+      }
+      return parsed.toISOString();
+    };
+
     try {
-      const result = (await dispatch(assignDateTenancyTenure(values))) as any;
+      const result = (await dispatch(
+        assignDateTenancyTenure({
+          id: applicationId,
+          rentStartDate: values.rentStartDate,
+          rentEndDate: values.rentEndDate,
+        } as any) as any,
+      )) as any;
+
       if (result.error) {
         if (result.error.message === "Rejected") {
           toast.error(
-            result.payload || "Failed to activate lease. Please try again."
+            result.payload || "Failed to activate lease. Please try again.",
           );
         } else {
           toast.error("Failed to activate lease. Please try again.");
         }
-      } else {
-        toast.success("Active lease activated");
-        resetForm();
+        return;
       }
+
+      const rentStartDate = toIso(values.rentStartDate);
+      const rentEndDate = toIso(values.rentEndDate);
+      const updatedFromApi =
+        result.payload && typeof result.payload === "object"
+          ? result.payload
+          : null;
+
+      // Optimistic UI update — keep populated applicant/property fields intact.
+      setApplication((prev: any) => {
+        if (!prev) {
+          return prev;
+        }
+        return {
+          ...prev,
+          status:
+            updatedFromApi?.status || ApplicationStatus.ACTIVE_LEASE,
+          rentStartDate: updatedFromApi?.rentStartDate || rentStartDate,
+          rentEndDate: updatedFromApi?.rentEndDate || rentEndDate,
+          updatedAt: new Date().toISOString(),
+        };
+      });
+
+      toast.success("Active lease activated");
+      resetForm();
+      setOpenAssignDateModal(false);
+      setPostAcceptPrompt(false);
+      await refreshApplication();
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
+        error?.response?.data?.message || "An unexpected error occurred.",
       );
     } finally {
       setSubmitting(false);
@@ -257,45 +354,10 @@ const TenantScreen = () => {
     }
   };
 
-  const handleApplicationStatus = async (status: any) => {
-    const payload = {
-      id: application?._id,
-      status: status,
-    };
-    try {
-      setIsLoading(true);
-      await dispatch(updateApplicationStatus(payload) as any).unwrap();
-      if (payload.status == "Accepted") {
-        toast.success("Application accepted");
-      } else {
-        toast.error("Application declined");
-      }
-    } catch (error: any) {
-      toast.error(error);
-    } finally {
-      setIsLoading(false);
-      const formData = { id: application?._id };
-      if (id) {
-        dispatch(getApplicationsById(formData as any) as any);
-      }
-    }
-  };
-
-  const handleVerifyTenant = () => {
+  const buildVerificationContext = (): VerificationRequestContext => {
     const applicant = application?.applicant;
     const room = application?.propertyId;
     const listing = room?.propertyId;
-    const sp = new URLSearchParams();
-    if (applicant?.firstName) {
-      sp.set("firstName", applicant.firstName);
-    }
-    if (applicant?.lastName) {
-      sp.set("lastName", applicant.lastName);
-    }
-    if (applicant?.email) {
-      sp.set("email", applicant.email);
-    }
-
     const applicationId = application?._id ? String(application._id) : "";
     const roomId = room?._id ? String(room._id) : "";
     const propertyId = listing?._id
@@ -303,45 +365,78 @@ const TenantScreen = () => {
       : typeof listing === "string"
         ? listing
         : "";
-    if (applicationId) {
-      sp.set("applicationId", applicationId);
-    }
-    if (roomId) {
-      sp.set("roomId", roomId);
-    }
-    if (propertyId) {
-      sp.set("propertyId", propertyId);
-    }
-
     const unitPart =
       room?.roomId != null ? `Unit #${room.roomId}` : room?.description || "Unit";
     const addressPart = [listing?.streetAddress, listing?.city, listing?.state]
       .filter(Boolean)
       .join(", ");
     const propertyLabel = [unitPart, addressPart].filter(Boolean).join(" · ");
-    if (propertyLabel) {
-      sp.set("propertyLabel", propertyLabel);
-    }
 
+    let landlordDisplayName = "";
     try {
       const stored = localStorage.getItem("nrv-user");
       if (stored) {
         const user = JSON.parse(stored)?.user;
-        const landlordDisplayName =
+        landlordDisplayName =
           `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim();
-        if (landlordDisplayName) {
-          sp.set("landlordDisplayName", landlordDisplayName);
-        }
       }
     } catch {
       // ignore malformed local storage
     }
 
-    router.push(
-      `/dashboard/landlord/properties/verification/request${
-        sp.toString() ? `?${sp.toString()}` : ""
-      }`,
-    );
+    return {
+      firstName: applicant?.firstName,
+      lastName: applicant?.lastName,
+      email: applicant?.email,
+      landlordDisplayName,
+      applicationId: applicationId || undefined,
+      roomId: roomId || undefined,
+      propertyId: propertyId || undefined,
+      propertyLabel: propertyLabel || undefined,
+    };
+  };
+
+  const handleApplicationStatus = async (nextStatus: "Accepted" | "Rejected") => {
+    const applicationId = String(id || application?._id || "");
+    if (!applicationId || applicationId === "undefined") {
+      toast.error("Missing application id. Please refresh and try again.");
+      return;
+    }
+
+    const payload = {
+      id: applicationId,
+      status: nextStatus,
+    };
+    try {
+      setStatusActionLoading(true);
+      setIsLoading(true);
+      await dispatch(updateApplicationStatus(payload) as any).unwrap();
+      setApplication((prev: any) =>
+        prev ? { ...prev, status: nextStatus } : prev,
+      );
+      setConfirmAction(null);
+      if (nextStatus === "Accepted") {
+        toast.success("Application accepted");
+        setPostAcceptPrompt(true);
+      } else {
+        toast.success("Application declined");
+      }
+      await refreshApplication();
+    } catch (error: any) {
+      const message =
+        typeof error === "string"
+          ? error
+          : error?.message || "Could not update application status.";
+      toast.error(message);
+      await refreshApplication();
+    } finally {
+      setStatusActionLoading(false);
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyTenant = () => {
+    setVerifyModalOpen(true);
   };
 
   useEffect(() => {
@@ -349,8 +444,25 @@ const TenantScreen = () => {
       router.replace("/dashboard/landlord/properties/renters");
       return;
     }
-    dispatch(getApplicationsById({ id } as any) as any);
+    setApplication(null);
+    void refreshApplication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, dispatch, router]);
+
+  useEffect(() => {
+    // Only hydrate from Redux when we don't already have this application locally.
+    // Avoids stale shared-slice data overwriting an optimistic status update.
+    if (application) {
+      return;
+    }
+    if (
+      applicationFromStore?._id &&
+      String(applicationFromStore._id) === String(id) &&
+      applicationFromStore?.status
+    ) {
+      setApplication(applicationFromStore);
+    }
+  }, [applicationFromStore, id, application]);
 
   if (!id || id === "undefined") {
     return null;
@@ -483,45 +595,111 @@ const TenantScreen = () => {
               </div>
             </div>
 
-            <div className="mt-5 space-y-2 border-t border-gray-100 pt-5">
-              {canRequestVerification && (
+            <div className="mt-5 space-y-3 border-t border-gray-100 pt-5">
+              {canReviewApplication && (
+                <div className="rounded-xl border border-[#03442C]/15 bg-[#03442C]/[0.04] px-3 py-2.5 text-xs leading-relaxed text-gray-700">
+                  <p className="font-semibold text-[#03442C]">Recommended next steps</p>
+                  <ol className="mt-1.5 list-decimal space-y-0.5 pl-4">
+                    <li>Request verification to screen this applicant</li>
+                    <li>Accept or decline the application</li>
+                  </ol>
+                </div>
+              )}
+              {isAccepted && (
+                <div className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2.5 text-xs leading-relaxed text-sky-900">
+                  <p className="font-semibold">Application accepted</p>
+                  <p className="mt-1">
+                    Set a lease period to activate tenancy. You can still request
+                    verification if you haven&apos;t screened them yet.
+                  </p>
+                </div>
+              )}
+              {isRejected && (
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs leading-relaxed text-red-800">
+                  This application was declined. Verification is no longer available
+                  for this lead.
+                </div>
+              )}
+
+              {canRequestVerification && canReviewApplication && (
                 <Button
                   className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
-                  disabled={isLoading}
+                  disabled={isLoading || statusActionLoading}
                   onClick={handleVerifyTenant}
+                  aria-label="Request verification for this applicant"
                 >
-                  <ShieldCheck className="mr-2 h-4 w-4" />
+                  <ShieldCheck className="mr-2 h-4 w-4" aria-hidden />
                   Request verification
                 </Button>
               )}
+
               {canReviewApplication && (
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     className="bg-[#03442C] text-white hover:bg-[#023522]"
-                    disabled={isLoading}
-                    onClick={() => handleApplicationStatus("Accepted")}
+                    disabled={isLoading || statusActionLoading}
+                    onClick={() => setConfirmAction("Accepted")}
+                    aria-label="Accept this application"
                   >
+                    <CheckCircle2 className="mr-1.5 h-4 w-4" aria-hidden />
                     Accept
                   </Button>
                   <Button
                     variant="outline"
                     className="border-red-300 bg-white text-red-600 hover:bg-red-50"
-                    disabled={isLoading}
-                    onClick={() => handleApplicationStatus("Rejected")}
+                    disabled={isLoading || statusActionLoading}
+                    onClick={() => setConfirmAction("Rejected")}
+                    aria-label="Decline this application"
                   >
-                    Reject
+                    <XCircle className="mr-1.5 h-4 w-4" aria-hidden />
+                    Decline
                   </Button>
                 </div>
               )}
+
               {isAccepted && (
-                <Button
-                  className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
-                  disabled={isLoading}
-                  onClick={() => setOpenAssignDateModal(true)}
-                >
-                  Set lease period
-                </Button>
+                <>
+                  <Button
+                    className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
+                    disabled={isLoading || statusActionLoading}
+                    onClick={() => {
+                      setPostAcceptPrompt(false);
+                      setOpenAssignDateModal(true);
+                    }}
+                    aria-label="Set lease period for this applicant"
+                  >
+                    <Calendar className="mr-2 h-4 w-4" aria-hidden />
+                    Set lease period
+                  </Button>
+                  {canRequestVerification && (
+                    <Button
+                      variant="outline"
+                      className="w-full border-[#03442C]/30 text-[#03442C] hover:bg-[#E9F4E7]"
+                      disabled={isLoading || statusActionLoading}
+                      onClick={handleVerifyTenant}
+                      aria-label="Request verification for this applicant"
+                    >
+                      <ShieldCheck className="mr-2 h-4 w-4" aria-hidden />
+                      Request verification
+                    </Button>
+                  )}
+                </>
               )}
+
+              {canRequestVerification &&
+                !canReviewApplication &&
+                !isAccepted &&
+                !isRejected && (
+                  <Button
+                    className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
+                    disabled={isLoading || statusActionLoading}
+                    onClick={handleVerifyTenant}
+                    aria-label="Request verification for this applicant"
+                  >
+                    <ShieldCheck className="mr-2 h-4 w-4" aria-hidden />
+                    Request verification
+                  </Button>
+                )}
               {isLeaseActive && (
                 <button
                   type="button"
@@ -533,11 +711,24 @@ const TenantScreen = () => {
                 </button>
               )}
               {isLeaseEnded && (
-                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-                  This lease ended
-                  {application?.rentEndDate
-                    ? ` on ${formatDisplayDate(application.rentEndDate)}`
-                    : "."}
+                <div className="space-y-2">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
+                    This lease ended
+                    {application?.rentEndDate
+                      ? ` on ${formatDisplayDate(application.rentEndDate)}`
+                      : "."}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-[#03442C]/30 text-[#03442C] hover:bg-[#E9F4E7]"
+                    onClick={() =>
+                      router.push("/dashboard/landlord/tenants?tab=ended")
+                    }
+                    aria-label="View past leases"
+                  >
+                    View in Past Leases
+                  </Button>
                 </div>
               )}
             </div>
@@ -671,6 +862,135 @@ const TenantScreen = () => {
         </div>
       </div>
 
+      <VerificationRequestModal
+        open={verifyModalOpen}
+        onOpenChange={setVerifyModalOpen}
+        context={buildVerificationContext()}
+      />
+
+      <Dialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => {
+          if (!open && !statusActionLoading) {
+            setConfirmAction(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md bg-white sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-[#03442C]">
+              {confirmAction === "Accepted"
+                ? "Accept this application?"
+                : "Decline this application?"}
+            </DialogTitle>
+            <DialogDescription className="text-left text-sm text-gray-600">
+              {confirmAction === "Accepted" ? (
+                <>
+                  You&apos;re accepting{" "}
+                  <strong>
+                    {applicant?.firstName} {applicant?.lastName}
+                  </strong>
+                  . After accepting, you can set the lease period to activate
+                  tenancy.
+                </>
+              ) : (
+                <>
+                  This will mark the application from{" "}
+                  <strong>
+                    {applicant?.firstName} {applicant?.lastName}
+                  </strong>{" "}
+                  as declined. This action can&apos;t be undone from here.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={statusActionLoading}
+              onClick={() => setConfirmAction(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={statusActionLoading || !confirmAction}
+              onClick={() => {
+                if (confirmAction) {
+                  handleApplicationStatus(confirmAction);
+                }
+              }}
+              className={
+                confirmAction === "Rejected"
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-[#03442C] text-white hover:bg-[#023522]"
+              }
+            >
+              {statusActionLoading
+                ? "Updating…"
+                : confirmAction === "Accepted"
+                  ? "Yes, accept"
+                  : "Yes, decline"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={postAcceptPrompt}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPostAcceptPrompt(false);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md bg-white sm:rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#03442C]">
+              <CheckCircle2 className="h-5 w-5" aria-hidden />
+              Application accepted
+            </DialogTitle>
+            <DialogDescription className="text-left text-sm text-gray-600">
+              Next, set a lease start and end date to activate this tenancy. You
+              can also request verification anytime from this profile.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col sm:space-x-0">
+            <Button
+              type="button"
+              className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
+              onClick={() => {
+                setPostAcceptPrompt(false);
+                setOpenAssignDateModal(true);
+              }}
+            >
+              Set lease period
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-[#03442C]/30 text-[#03442C]"
+              onClick={() => {
+                setPostAcceptPrompt(false);
+                setVerifyModalOpen(true);
+              }}
+            >
+              <ShieldCheck className="mr-2 h-4 w-4" aria-hidden />
+              Request verification first
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full text-gray-600"
+              onClick={() => setPostAcceptPrompt(false)}
+            >
+              Do this later
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Modal
         isOpen={openAssignDateModal}
         onClose={() => setOpenAssignDateModal(false)}
@@ -686,10 +1006,11 @@ const TenantScreen = () => {
 
           <Formik
             initialValues={{
-              id: tenantDetails?.data?.finalResult?._id || id,
+              id: application?._id || id,
               rentStartDate: null,
               rentEndDate: null,
             }}
+            enableReinitialize
             validate={validateTenancyDateAssignment}
             onSubmit={(values, formikHelpers) =>
               assignDateToTenancy(values, formikHelpers, dispatch)

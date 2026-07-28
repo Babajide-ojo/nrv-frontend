@@ -29,6 +29,13 @@ interface ResetPasswordRequest {
   newPassword: string;
 }
 
+interface PasswordResetRequestResponse {
+  message: string;
+  expiresAt: string;
+}
+
+export const PASSWORD_RESET_CONTEXT_KEY = 'nrv-password-reset-context';
+
 interface LandlordUserData {
   firstName: string;
   lastName: string;
@@ -320,18 +327,21 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, { id: string 
   }
 );
 
-export const verifyEmail = createAsyncThunk<UserToken, VerifyEmailRequest>(
+export const verifyEmail = createAsyncThunk<
+  PasswordResetRequestResponse,
+  VerifyEmailRequest
+>(
   "user/reset-code-token",
   async (verifyEmail: VerifyEmailRequest, { rejectWithValue }) => {
     try {
-      const response = await axios.post<ApiResponse<UserToken>>(
+      const response = await axios.post<PasswordResetRequestResponse>(
         `${API_URL}/users/request-password-reset`, 
         verifyEmail,
         {
           headers: { "Content-Type": "application/json" }
         }
       );
-      return response.data.data;
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
     }
@@ -555,9 +565,8 @@ const userSlice = createSlice({
         state.loading = "pending";
         state.error = null;
       })
-      .addCase(verifyEmail.fulfilled, (state, action) => {
+      .addCase(verifyEmail.fulfilled, (state) => {
         state.loading = "succeeded";
-        state.data = action.payload;
       })
       .addCase(verifyEmail.rejected, (state, action) => {
         state.loading = "failed";

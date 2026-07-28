@@ -7,7 +7,7 @@ import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { verifyEmail } from "@/redux/slices/userSlice";
+import { verifyEmail, PASSWORD_RESET_CONTEXT_KEY } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { MdOutlineMail } from "react-icons/md";
@@ -66,9 +66,15 @@ const VerifyEmailScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const userData = await dispatch(verifyEmail(formData) as any).unwrap();
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
-      toast.success("Password reset code sent");
+      const response = await dispatch(verifyEmail(formData) as any).unwrap();
+      sessionStorage.setItem(
+        PASSWORD_RESET_CONTEXT_KEY,
+        JSON.stringify({
+          email: formData.email.trim(),
+          expiresAt: response?.expiresAt,
+        }),
+      );
+      toast.success(response?.message || "Password reset code sent");
       setFormData({ email: "" });
       router.push("/reset-password");
     } catch (error: any) {
@@ -103,7 +109,7 @@ const VerifyEmailScreen: React.FC = () => {
           </h1>
           <p className="mt-2 text-sm sm:text-base text-gray-500 font-light leading-relaxed">
             Enter the email linked to your account and we&apos;ll send you a reset
-            code.
+            code that stays valid for 1 hour.
           </p>
 
           <div className="mt-6">

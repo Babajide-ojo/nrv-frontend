@@ -2,15 +2,36 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosProgressE
 import { API_URL } from '@/config/constant';
 // Make sure to install @tanstack/react-query: npm install @tanstack/react-query
 import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
+import {
+  clearAuthSession,
+  expireIdleSession,
+  isSessionIdleExpired,
+  touchSessionActivity,
+} from '@/lib/sessionIdle';
+import { restoreSessionFromRememberMe } from '@/lib/rememberMe';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 30000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+let restoreInFlight: Promise<boolean> | null = null;
+
+const tryRestoreSession = async (): Promise<boolean> => {
+  if (!restoreInFlight) {
+    restoreInFlight = restoreSessionFromRememberMe()
+      .then((session) => Boolean(session?.accessToken))
+      .finally(() => {
+        restoreInFlight = null;
+      });
+  }
+  return restoreInFlight;
+};
 
 // Request interceptor
 apiClient.interceptors.request.use(
@@ -19,6 +40,10 @@ apiClient.interceptors.request.use(
     const userData = localStorage.getItem('nrv-user');
     if (userData) {
       try {
+        if (isSessionIdleExpired()) {
+          expireIdleSession();
+          return Promise.reject(new Error('Session expired due to inactivity'));
+        }
         const { accessToken } = JSON.parse(userData);
         if (accessToken) {
           config.headers.Authorization = `Bearer ${accessToken}`;
@@ -37,19 +62,42 @@ apiClient.interceptors.request.use(
 // Response interceptor
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
+    if (localStorage.getItem('nrv-user')) {
+      touchSessionActivity();
+    }
     return response;
   },
-  (error) => {
-    // Handle common errors
-    if (error.response?.status === 401) {
-      // Unauthorized - clear user data and redirect to login
-      localStorage.clear();
-      window.location.href = '/sign-in';
+  async (error) => {
+    const originalRequest = error.config;
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retryRememberMe
+    ) {
+      originalRequest._retryRememberMe = true;
+      const restored = await tryRestoreSession();
+      if (restored) {
+        const userData = localStorage.getItem('nrv-user');
+        if (userData) {
+          try {
+            const { accessToken } = JSON.parse(userData);
+            if (accessToken) {
+              originalRequest.headers = originalRequest.headers || {};
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            }
+          } catch {
+            // fall through
+          }
+        }
+        return apiClient(originalRequest);
+      }
+      clearAuthSession();
+      window.location.href =
+        '/sign-in?reason=' +
+        encodeURIComponent('Your session has expired. Please sign in again.');
     } else if (error.response?.status === 403) {
-      // Forbidden
       console.error('Access forbidden');
     } else if (error.response?.status >= 500) {
-      // Server error
       console.error('Server error:', error.response.data);
     }
     

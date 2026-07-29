@@ -10,6 +10,7 @@ import { FiUsers, FiFileText, FiCheck, FiMenu, FiX } from "react-icons/fi";
 import { useRouter, usePathname } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
+import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 
 function getMobileNavIcon(name: string, size: number) {
   const s = size;
@@ -41,6 +42,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   subMainPath,
   comingSoon = false,
 }) => {
+  useSessionIdleTimeout(true);
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const pathname = usePathname();

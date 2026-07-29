@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api";
 import { FiAlertCircle, FiUserCheck } from "react-icons/fi";
+import {
+  getVerificationNextStep,
+  isVerificationIncomplete,
+  verificationStepPath,
+} from "@/lib/verificationProgress";
 
 type PendingVerificationRequest = {
   _id: string;
@@ -14,6 +19,7 @@ type PendingVerificationRequest = {
     firstName?: string;
     lastName?: string;
   };
+  nextStep?: ReturnType<typeof getVerificationNextStep>;
 };
 
 const unwrapList = (res: unknown): unknown[] => {
@@ -112,8 +118,11 @@ const PendingVerificationRequests = () => {
         const pending = pairs
           .filter((pair) => pair.status === "fulfilled")
           .map((pair) => (pair as PromiseFulfilledResult<{ req: PendingVerificationRequest; submission: unknown }>).value)
-          .filter(({ submission }) => !submission)
-          .map(({ req }) => req);
+          .filter(({ submission }) => isVerificationIncomplete(submission))
+          .map(({ req, submission }) => ({
+            ...req,
+            nextStep: getVerificationNextStep(submission),
+          }));
 
         setPendingRequests(pending);
       } catch {
@@ -142,8 +151,10 @@ const PendingVerificationRequests = () => {
     return null;
   }
 
-  const handleComplete = (verificationId: string) => {
-    router.push(`/dashboard/tenant/verification/personal-info?verificationId=${verificationId}`);
+  const handleComplete = (verificationId: string, nextStep?: PendingVerificationRequest["nextStep"]) => {
+    router.push(
+      verificationStepPath(verificationId, nextStep || "personal"),
+    );
   };
 
   const featuredRequest = pendingRequests[0];
@@ -171,7 +182,7 @@ const PendingVerificationRequests = () => {
               Pending verification request
             </h2>
             <p className="mt-1 text-sm text-gray-700">
-              A landlord is waiting for you to complete your verification. Finish the form to continue.
+              A landlord is waiting for you to complete your verification. Continue where you left off.
               {remainingCount > 0
                 ? ` You have ${remainingCount} more pending ${remainingCount === 1 ? "request" : "requests"}.`
                 : ""}
@@ -212,11 +223,13 @@ const PendingVerificationRequests = () => {
 
         <button
           type="button"
-          onClick={() => handleComplete(featuredRequest._id)}
+          onClick={() => handleComplete(featuredRequest._id, featuredRequest.nextStep)}
           className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors shrink-0"
-          aria-label={`Complete verification request from ${landlordName}`}
+          aria-label={`Continue verification request from ${landlordName}`}
         >
-          Complete verification
+          {featuredRequest.nextStep && featuredRequest.nextStep !== "personal"
+            ? "Continue verification"
+            : "Complete verification"}
         </button>
       </div>
     </section>

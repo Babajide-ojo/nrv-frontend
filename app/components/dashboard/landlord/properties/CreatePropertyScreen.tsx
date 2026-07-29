@@ -99,18 +99,43 @@ const CreatePropertyScreen = () => {
     if (!propertyData.state.trim()) {
       nextErrors.state = "State is required";
     }
+    if (!buildingType?.value) {
+      nextErrors.buildingType = "Building type is required";
+    }
     if (!selectedFiles || selectedFiles.length === 0) {
-      nextErrors.file = "A file is required";
+      nextErrors.file = "Property photo is required";
     }
 
     if (!propertyData.units || propertyData.units.length === 0) {
       nextErrors.units = "At least one room/unit must be added";
     } else {
       propertyData.units.forEach((unit, index) => {
-        if (!unit.description?.trim() || !unit.rentAmount?.trim()) {
-          nextErrors[`unit-${index}`] = `Room ${
-            index + 1
-          }: Name and rent are required`;
+        if (!unit.description?.trim()) {
+          nextErrors[`unit-${index}-description`] = "Unit description is required";
+        }
+        if (!unit.rentAmount?.trim()) {
+          nextErrors[`unit-${index}-rentAmount`] = "Rent amount is required";
+        }
+        if (!unit.noOfRooms?.toString().trim()) {
+          nextErrors[`unit-${index}-noOfRooms`] = "Bedrooms is required";
+        }
+        if (!unit.noOfBaths?.toString().trim()) {
+          nextErrors[`unit-${index}-noOfBaths`] = "Bathrooms is required";
+        }
+        if (!unit.apartmentStyle?.trim()) {
+          nextErrors[`unit-${index}-apartmentStyle`] =
+            "Apartment style is required";
+        }
+        if (!unit.leaseTerms?.trim()) {
+          nextErrors[`unit-${index}-leaseTerms`] = "Lease terms is required";
+        }
+        if (!unit.rentAmountMetrics?.trim()) {
+          nextErrors[`unit-${index}-rentAmountMetrics`] =
+            "Rent collection preference is required";
+        }
+        if (!unit.paymentOption?.trim()) {
+          nextErrors[`unit-${index}-paymentOption`] =
+            "Payment option is required";
         }
       });
     }
@@ -118,6 +143,22 @@ const CreatePropertyScreen = () => {
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       toast.error("Please fill in all required fields.");
+      const firstKey = Object.keys(nextErrors)[0];
+      setTimeout(() => {
+        const el =
+          document.querySelector(`[name="${firstKey}"]`) ||
+          document.querySelector(`[data-error-field="${firstKey}"]`) ||
+          document.getElementById(firstKey);
+        if (el && "scrollIntoView" in el) {
+          (el as HTMLElement).scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          if ("focus" in el) {
+            (el as HTMLElement).focus();
+          }
+        }
+      }, 50);
       return false;
     }
 
@@ -223,6 +264,11 @@ const CreatePropertyScreen = () => {
       ...prevData,
       units: updatedUnits,
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`unit-${index}-${field}`]: "",
+      units: "",
+    }));
   };
 
   const handleUnitChangeWithComma = (
@@ -246,6 +292,11 @@ const CreatePropertyScreen = () => {
           units: updatedUnits,
         };
       });
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [`unit-${index}-${field}`]: "",
+        units: "",
+      }));
     }
   };
 
@@ -282,6 +333,10 @@ const CreatePropertyScreen = () => {
 
   const handleImageChange = (file: File) => {
     setSelectedFiles(file);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      file: "",
+    }));
   };
 
   const handleImagesChange = (files: File[]) => {
@@ -380,8 +435,12 @@ const CreatePropertyScreen = () => {
                           thumbnail.
                         </div>
                       </div>
-                      <div className="w-full md:w-1/2">
-                        <ImageUploader label="" onChange={handleImageChange} />
+                      <div className="w-full md:w-1/2" data-error-field="file">
+                        <ImageUploader
+                          label=""
+                          onChange={handleImageChange}
+                          error={errors.file}
+                        />
                       </div>
                     </div>
 
@@ -403,13 +462,17 @@ const CreatePropertyScreen = () => {
                         variant="nested"
                         value={buildingType}
                         required
-                        onChange={(val: any) => setBuildingType(val)}
+                        onChange={(val: any) => {
+                          setBuildingType(val);
+                          setErrors((prev) => ({ ...prev, buildingType: "" }));
+                        }}
                         options={[
                           { label: "Residential", value: "Residential" },
                           { label: "Commercial", value: "Commercial" },
                         ]}
                         placeholder="Select Building Type"
                         name={"buildingType"}
+                        error={errors.buildingType}
                       />
                       <InputField
                         label="City"
@@ -480,6 +543,7 @@ const CreatePropertyScreen = () => {
                                 placeholder="Spacious 2-bedroom apartment with sea view"
                                 value={unit?.description}
                                 required
+                                error={errors[`unit-${index}-description`]}
                                 icon={
                                   <div className="relative">
                                     <IoMdInformationCircleOutline
@@ -506,7 +570,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
-                                name={`descriotion-${index}`}
+                                name={`unit-${index}-description`}
                               />
 
                               <InputField
@@ -515,6 +579,7 @@ const CreatePropertyScreen = () => {
                                 placeholder="250,000"
                                 value={formatDisplayValue(unit.rentAmount)}
                                 required
+                                error={errors[`unit-${index}-rentAmount`]}
                                 // onKeyPress={preventNonNumeric}
                                 onChange={(e) =>
                                   handleUnitChangeWithComma(
@@ -523,7 +588,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
-                                name={`rentAmount-${index}`}
+                                name={`unit-${index}-rentAmount`}
                               />
 
                               <InputField
@@ -532,6 +597,7 @@ const CreatePropertyScreen = () => {
                                 placeholder="2"
                                 value={unit.noOfRooms}
                                 required
+                                error={errors[`unit-${index}-noOfRooms`]}
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -539,7 +605,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
-                                name={`noOfRooms-${index}`}
+                                name={`unit-${index}-noOfRooms`}
                               />
 
                               <InputField
@@ -548,6 +614,7 @@ const CreatePropertyScreen = () => {
                                 placeholder="2"
                                 value={unit.noOfBaths}
                                 required
+                                error={errors[`unit-${index}-noOfBaths`]}
                                 onChange={(e) =>
                                   handleUnitChange(
                                     index,
@@ -555,7 +622,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
-                                name={`noOfBaths-${index}`}
+                                name={`unit-${index}-noOfBaths`}
                               />
                               <SelectField
                                 label="Apartment Style"
@@ -566,6 +633,7 @@ const CreatePropertyScreen = () => {
                                   value: unit.apartmentStyle,
                                 }}
                                 required
+                                error={errors[`unit-${index}-apartmentStyle`]}
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -581,7 +649,7 @@ const CreatePropertyScreen = () => {
                                   },
                                   { label: "Classic", value: "Classic" },
                                 ]}
-                                name={`apartmentStyle-${index}`}
+                                name={`unit-${index}-apartmentStyle`}
                               />
 
                               <SelectField
@@ -593,6 +661,7 @@ const CreatePropertyScreen = () => {
                                   value: unit.leaseTerms,
                                 }}
                                 required
+                                error={errors[`unit-${index}-leaseTerms`]}
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -610,7 +679,7 @@ const CreatePropertyScreen = () => {
                                     value: "6 Months Lease",
                                   },
                                 ]}
-                                name={`leaseTerms-${index}`}
+                                name={`unit-${index}-leaseTerms`}
                               />
 
                               <SelectField
@@ -622,6 +691,7 @@ const CreatePropertyScreen = () => {
                                   value: unit.rentAmountMetrics,
                                 }}
                                 required
+                                error={errors[`unit-${index}-rentAmountMetrics`]}
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -634,7 +704,7 @@ const CreatePropertyScreen = () => {
                                   { label: "Monthly", value: "Monthly" },
                                   { label: "Quarterly", value: "Quarterly" },
                                 ]}
-                                name={`rentAmountMetrics-${index}`}
+                                name={`unit-${index}-rentAmountMetrics`}
                               />
 
                               <SelectField
@@ -646,6 +716,7 @@ const CreatePropertyScreen = () => {
                                   value: unit.paymentOption,
                                 }}
                                 required
+                                error={errors[`unit-${index}-paymentOption`]}
                                 onChange={(val: any) =>
                                   handleUnitChange(
                                     index,
@@ -663,7 +734,7 @@ const CreatePropertyScreen = () => {
                                     value: "Installment",
                                   },
                                 ]}
-                                name={`paymentOption-${index}`}
+                                name={`unit-${index}-paymentOption`}
                               />
 
                               {/* <SelectField

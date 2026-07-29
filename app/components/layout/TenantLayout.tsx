@@ -16,6 +16,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
+import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 
 const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
   [
@@ -69,6 +70,7 @@ interface TenantLayoutProps {
 }
 
 const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, subMainPath }) => {
+  useSessionIdleTimeout(true);
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

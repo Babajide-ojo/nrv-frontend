@@ -3,6 +3,7 @@ import "../globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
 import { ToastContainer } from "react-toastify";
+import { RememberMeBootstrap } from "./components/auth/RememberMeBootstrap";
 
 
 
@@ -20,8 +21,10 @@ export default function RootLayout({
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <Providers>
-          <div className="min-h-screen">{children}</div>
-          <ToastContainer position="top-right" autoClose={4000} />
+          <RememberMeBootstrap>
+            <div className="min-h-screen">{children}</div>
+            <ToastContainer position="top-right" autoClose={4000} />
+          </RememberMeBootstrap>
         </Providers>
       </body>
     </html>

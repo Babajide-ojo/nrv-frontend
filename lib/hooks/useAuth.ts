@@ -9,7 +9,7 @@ import {
   clearError
 } from '@/redux/slices/userSlice';
 import { LoginFormData, SignUpFormData, UserToken } from '@/types';
-import { getStoredData, removeStoredData, clearAllStoredData } from '@/helpers/utils';
+import { getStoredData } from '@/helpers/utils';
 
 interface UseAuthReturn {
   user: UserToken | null;
@@ -19,7 +19,7 @@ interface UseAuthReturn {
   login: (credentials: LoginFormData) => Promise<void>;
   register: (userData: SignUpFormData) => Promise<void>;
   verify: (code: string, email: string) => Promise<void>;
-  logout: () => void;
+  logout: () => void | Promise<void>;
   clearAuthError: () => void;
 }
 
@@ -58,9 +58,10 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, [dispatch, router]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const { performLogout } = await import("@/lib/logout");
+    await performLogout();
     dispatch(clearUserToken());
-    clearAllStoredData();
     router.push('/sign-in');
   }, [dispatch, router]);
 

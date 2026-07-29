@@ -263,20 +263,28 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
     try {
       const response: any = await axios.post<ApiResponse<UserToken>>(
         `${API_URL}/auth/login`, 
-        loginData,
         {
-          headers: { "Content-Type": "application/json" }
+          email: loginData.email,
+          password: loginData.password,
+          rememberMe: Boolean(loginData.rememberMe),
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       );
-console.log({response})
-      // Save the user data in the expected format
+      const safeUser = { ...(response.data.user || {}) };
+      delete safeUser.password;
+      delete safeUser.confirmationCode;
+      delete safeUser.passwordResetToken;
+      delete safeUser.passwordResetExpires;
+
       const userData = {
-        user: response.data.user,
+        user: safeUser,
         accessToken: response.data.accessToken,
         notificationSettings: response.data.notificationSettings
       };
 
-      console.log({userData})
       // Only persist a session for active users.
       // For inactive users, store the email so they can verify, but don't create a session token.
       if (userData?.user?.status === "inactive") {
@@ -287,6 +295,13 @@ console.log({response})
       } else {
         localStorage.setItem("nrv-user", JSON.stringify(userData));
         localStorage.removeItem("emailToVerify");
+        if (loginData.rememberMe) {
+          localStorage.setItem("rememberMe", "true");
+        } else {
+          localStorage.removeItem("rememberMe");
+        }
+        const { touchSessionActivity } = await import("@/lib/sessionIdle");
+        touchSessionActivity();
       }
       return userData;
     } catch (error: any) {

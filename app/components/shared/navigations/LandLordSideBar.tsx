@@ -19,7 +19,6 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import { BsPersonFill } from "react-icons/bs";
-import { clearAllStoredData } from "@/helpers/utils";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 
 interface User {
@@ -207,8 +206,9 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
               </div>
             </div>
             <BiLogOut
-              onClick={() => {
-                clearAllStoredData();
+              onClick={async () => {
+                const { performLogout } = await import("@/lib/logout");
+                await performLogout();
                 router.push("/sign-in");
               }}
               className="text-xl cursor-pointer"

@@ -13,7 +13,6 @@ import {
 } from "react-icons/fi";
 import { BsPersonFill } from "react-icons/bs";
 import { PiFileDocDuotone } from "react-icons/pi";
-import { clearAllStoredData } from "@/helpers/utils";
 
 interface User {
   name: string;
@@ -175,8 +174,9 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
               </div>
             </div>
             <BiLogOut
-              onClick={() => {
-                clearAllStoredData();
+              onClick={async () => {
+                const { performLogout } = await import("@/lib/logout");
+                await performLogout();
                 router.push("/sign-in");
               }}
               className="text-xl cursor-pointer"

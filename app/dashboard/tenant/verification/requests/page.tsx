@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { apiService } from "@/lib/api";
 import { FiUser, FiMail, FiHash, FiHome, FiUserCheck, FiPhone } from "react-icons/fi";
 import { MdArrowBackIos } from "react-icons/md";
+import {
+  getVerificationNextStep,
+  isVerificationIncomplete,
+  verificationStepPath,
+} from "@/lib/verificationProgress";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -82,7 +87,17 @@ const VerificationRequestsPage = () => {
     if (status === "approved" || status === "verification completed") {
       return true;
     }
-    return !!submissionByRequestId[req?._id];
+    const submission = submissionByRequestId[req?._id];
+    return Boolean(submission) && !isVerificationIncomplete(submission);
+  };
+
+  const handleOpenRequest = (req: any) => {
+    if (shouldOpenVerificationDetails(req)) {
+      router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
+      return;
+    }
+    const nextStep = getVerificationNextStep(submissionByRequestId[req?._id]);
+    router.push(verificationStepPath(req._id, nextStep));
   };
 
   return (
@@ -108,24 +123,12 @@ const VerificationRequestsPage = () => {
               <div
                 key={req._id}
                 className="border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow bg-gray-50 p-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-nrvPrimaryGreen"
-                onClick={() => {
-                  const openDetails = shouldOpenVerificationDetails(req);
-                  if (openDetails) {
-                    router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
-                    return;
-                  }
-                  router.push(`/dashboard/tenant/verification/personal-info?verificationId=${req._id}`);
-                }}
+                onClick={() => handleOpenRequest(req)}
                 tabIndex={0}
                 aria-label={`Open verification request ${req._id}`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    const openDetails = shouldOpenVerificationDetails(req);
-                    if (openDetails) {
-                      router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
-                      return;
-                    }
-                    router.push(`/dashboard/tenant/verification/personal-info?verificationId=${req._id}`);
+                    handleOpenRequest(req);
                   }
                 }}
               >

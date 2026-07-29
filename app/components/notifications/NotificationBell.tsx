@@ -15,9 +15,15 @@ function hrefForNotification(n: AppNotification): string | null {
   const m = n.metadata || {};
   const type = n.type;
 
+  if (typeof m.actionUrl === "string" && m.actionUrl.trim()) {
+    return m.actionUrl;
+  }
+
   if (
     type === "verification_assigned" ||
-    type === "verification_screening_complete"
+    type === "verification_screening_complete" ||
+    type === "verification_approved" ||
+    type === "verification_rejected"
   ) {
     const reqId = m.verificationRequestId as string | undefined;
     if (reqId) {
@@ -38,6 +44,33 @@ function hrefForNotification(n: AppNotification): string | null {
     if (reqId) {
       return `/dashboard/landlord/properties/verification?verificationId=${encodeURIComponent(reqId)}`;
     }
+  }
+
+  if (
+    type === "maintenance_created" ||
+    type === "maintenance_scheduled" ||
+    type === "maintenance_status_updated"
+  ) {
+    return "/dashboard/landlord/maintenance";
+  }
+
+  if (type === "application_received") {
+    return "/dashboard/landlord/tenants";
+  }
+
+  if (
+    type === "application_submitted" ||
+    type === "application_status_updated"
+  ) {
+    return "/dashboard/tenant/properties/applications";
+  }
+
+  if (type === "message_received") {
+    return "/dashboard/landlord/messages";
+  }
+
+  if (type === "payment_success" || type === "payment_failed") {
+    return "/dashboard/landlord/settings/plans";
   }
 
   return null;

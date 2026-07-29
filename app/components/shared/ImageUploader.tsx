@@ -5,9 +5,10 @@ import { SlCloudUpload } from "react-icons/sl";
 interface ImageUploadProps {
   label: string;
   onChange: (file: File) => void;
+  error?: string;
 }
 
-const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange }) => {
+const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange, error }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showOverlay, setShowOverlay] = useState(false);
   const [overlayImage, setOverlayImage] = useState<string | null>(null);
@@ -41,7 +42,7 @@ const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange }) => {
         className="text-center w-full mt-2 w-full rounded-lg pt-4 pb-4 text-swBlack"
         onDragOver={(e) => e.preventDefault()}
         style={{
-          borderColor: "#7d7d7d",
+          borderColor: error ? "#DC2626" : "#7d7d7d",
           borderStyle: "dotted",
           borderWidth: "1px",
         }}
@@ -126,6 +127,12 @@ const ImageUploader: React.FC<ImageUploadProps> = ({ label, onChange }) => {
           </label>
         </div>
       </div>
+
+      {error ? (
+        <p className="mt-2 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      ) : null}
 
       {/* Image Overlay Modal */}
       {showOverlay && overlayImage && (

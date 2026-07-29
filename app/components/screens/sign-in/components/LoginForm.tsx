@@ -34,6 +34,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           onChange={onInputChange}
           error={errors.email}
           placeholder="Enter your email address"
+          autoComplete="off"
           required
         />
       </div>
@@ -48,6 +49,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           error={errors.password}
           password={true}
           placeholder="Enter your password"
+          autoComplete="new-password"
           required
         />
       </div>

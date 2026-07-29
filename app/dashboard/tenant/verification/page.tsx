@@ -7,6 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MdArrowBackIos, MdEmail, MdPhone, MdBusiness, MdLocationOn, MdDateRange, MdPerson, MdWork, MdShield } from "react-icons/md";
 import { FaFileAlt, FaCheckCircle } from "react-icons/fa";
+import {
+  getVerificationNextStep,
+  isVerificationIncomplete,
+  verificationStepPath,
+} from "@/lib/verificationProgress";
 
 function formatValue(value: any) {
   if (value === undefined || value === null || value === "") return "—";
@@ -138,7 +143,12 @@ const TenantVerificationSummaryPage = () => {
           }),
         );
         const submitted = pairs
-          .filter((p) => p.status === "fulfilled" && (p as any).value.response)
+          .filter(
+            (p) =>
+              p.status === "fulfilled" &&
+              (p as any).value.response &&
+              !isVerificationIncomplete((p as any).value.response),
+          )
           .map((p: any) => ({ ...p.value.req, submission: p.value.response }));
         setSubmittedRequests(submitted);
       } catch {
@@ -163,7 +173,7 @@ const TenantVerificationSummaryPage = () => {
   // If a specific requestId is selected, render the submission details view (or a CTA to submit).
   if (verificationIdFromUrl) {
     if (!response) {
-      const startUrl = `/dashboard/tenant/verification/personal-info?verificationId=${verificationIdFromUrl}`;
+      const startUrl = verificationStepPath(verificationIdFromUrl, "personal");
       return (
         <TenantLayout path="Verification" mainPath=" / My Submissions" subMainPath="Details">
           <div className="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-gray-100 bg-white p-4 text-center shadow-sm sm:mt-8 sm:p-8">
@@ -188,6 +198,38 @@ const TenantVerificationSummaryPage = () => {
                 onClick={() => router.push(startUrl)}
               >
                 Start Verification
+              </Button>
+            </div>
+          </div>
+        </TenantLayout>
+      );
+    }
+
+    const nextStep = getVerificationNextStep(response);
+    if (nextStep !== "complete") {
+      const continueUrl = verificationStepPath(verificationIdFromUrl, nextStep);
+      return (
+        <TenantLayout path="Verification" mainPath=" / My Submissions" subMainPath="Details">
+          <div className="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-amber-200 bg-white p-4 text-center shadow-sm sm:mt-8 sm:p-8">
+            <div className="h-16 w-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaFileAlt className="text-amber-600 text-2xl" />
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-gray-900">Continue your verification</h2>
+            <p className="text-sm text-gray-600 mb-8 max-w-md mx-auto">
+              You started this verification but have not finished every step. Continue where you left off.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/tenant/verification/requests")}
+              >
+                Back to List
+              </Button>
+              <Button
+                className="bg-green-700 hover:bg-green-800 text-white"
+                onClick={() => router.push(continueUrl)}
+              >
+                Continue
               </Button>
             </div>
           </div>

@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { FiLock, FiLogOut, FiMail, FiPhone, FiUser } from "react-icons/fi";
 import Button from "../../shared/buttons/Button";
 import InputField from "../../shared/input-fields/InputFields";
-import { clearAllStoredData } from "../../../../helpers/utils";
 import { updateUser } from "@/redux/slices/userSlice";
 
 type SettingsTab = "profile" | "security";
@@ -121,8 +120,9 @@ const SettingsMainScreen = () => {
     }
   };
 
-  const handleLogout = () => {
-    clearAllStoredData();
+  const handleLogout = async () => {
+    const { performLogout } = await import("@/lib/logout");
+    await performLogout();
     router.push("/sign-in");
   };
 

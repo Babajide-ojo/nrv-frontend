@@ -121,6 +121,7 @@ const VerifyEmailScreen: React.FC = () => {
               name="email"
               onChange={handleInputChange}
               error={errors.email}
+              autoComplete="off"
               icon={<MdOutlineMail size={20} color="#999999" />}
             />
           </div>

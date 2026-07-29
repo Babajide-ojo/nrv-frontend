@@ -20,7 +20,7 @@ const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({
             : "border-gray-400 hover:border-gray-500"
         }`}
         onClick={() => onChange(!checked)}
-        aria-label="Remember this device"
+        aria-label="Remember me"
       >
         {checked && <FaCheck size={10} color="white" />}
       </button>
@@ -29,7 +29,7 @@ const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({
         className="ml-2 text-sm cursor-pointer select-none"
         onClick={() => onChange(!checked)}
       >
-        Remember this Device
+        Remember me
       </label>
     </div>
   );

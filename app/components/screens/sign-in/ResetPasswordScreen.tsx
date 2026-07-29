@@ -188,9 +188,8 @@ const ResetPasswordScreen: React.FC = () => {
             Reset your password
           </h1>
           <p className="mt-2 text-sm sm:text-base text-gray-500 font-light leading-relaxed">
-            Enter the 6-digit code we sent
-            {resetContext.email ? ` to ${resetContext.email}` : " to your email"}{" "}
-            and choose a new password.
+            Enter the 6-digit code we sent to your email and choose a new
+            password.
           </p>
 
           {expiryMessage && (
@@ -215,6 +214,7 @@ const ResetPasswordScreen: React.FC = () => {
               value={formData.token}
               onChange={handleInputChange}
               error={errors.token}
+              autoComplete="one-time-code"
               icon={<MdOutlineMail size={20} color="#999999" />}
             />
 
@@ -227,6 +227,7 @@ const ResetPasswordScreen: React.FC = () => {
               onChange={handleInputChange}
               error={errors.password}
               password={true}
+              autoComplete="new-password"
               icon={<MdOutlineKey size={20} color="#999999" />}
             />
           </div>

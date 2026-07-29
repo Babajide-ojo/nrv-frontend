@@ -29,6 +29,7 @@ interface InputFieldProps {
   ariaLabel?: any;
   required?: boolean;
   readOnly?: boolean;
+  autoComplete?: string;
 }
 
 const countryOptions: any = [{ code: "+234", country: "NG" }];
@@ -92,6 +93,7 @@ export default function InputField({
   variant: variantProp,
   required,
   readOnly,
+  autoComplete,
 }: InputFieldProps) {
   const [isValid, setIsValid] = useState(false);
   const [inputError, setInputError] = useState<string | null>(null);
@@ -233,6 +235,7 @@ export default function InputField({
         disabled={disabled}
         readOnly={readOnly}
         aria-label={ariaLabel}
+        autoComplete={autoComplete}
       />
 
       {inputType === "email" && isValid && !hasError && (

@@ -38,7 +38,7 @@ const LoginScreen: React.FC = () => {
   //const { loading, error, data } = useSelector((state: any) => state.user);
   
   // Custom hooks
-  const { formData, errors, handleInputChange, validateForm, setFormDataDirectly } = useLoginForm();
+  const { formData, errors, handleInputChange, validateForm } = useLoginForm();
   const { redirectUser } = useAuthRedirect();
   
   // Local state
@@ -46,19 +46,15 @@ const LoginScreen: React.FC = () => {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   useEffect(() => {
-    const shouldRemember = localStorage.getItem("rememberMe") === "true";
-    const rememberedEmail = localStorage.getItem("rememberedEmail");
-
-    if (shouldRemember) {
-      setRememberMe(true);
-      if (rememberedEmail) {
-        setFormDataDirectly({ email: rememberedEmail });
-      }
-      return;
-    }
-
     localStorage.removeItem("rememberedEmail");
-  }, [setFormDataDirectly]);
+    const reason = new URLSearchParams(window.location.search).get("reason");
+    if (reason) {
+      toast.info(reason);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("reason");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+  }, []);
 
   // Handle form submission
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -72,16 +68,15 @@ const LoginScreen: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const userData = await dispatch(loginUser(formData) as any).unwrap();
-      console.log({p: userData})
-      // Handle remember me functionality
+      const userData = await dispatch(
+        loginUser({ ...formData, rememberMe }) as any,
+      ).unwrap();
       if (rememberMe) {
         localStorage.setItem("rememberMe", "true");
-        localStorage.setItem("rememberedEmail", formData.email);
       } else {
         localStorage.removeItem("rememberMe");
-        localStorage.removeItem("rememberedEmail");
       }
+      localStorage.removeItem("rememberedEmail");
       
       // Redirect user based on account type and status
       redirectUser(userData);

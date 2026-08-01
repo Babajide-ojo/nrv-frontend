@@ -151,6 +151,11 @@ const RoomForm: React.FC<RoomFormProps> = ({
       }
     });
 
+    // When editing unit images, replace rather than append
+    if (roomData.images.length > 0 && Object.keys(initialData).length > 0) {
+      formData.append("replaceImages", "true");
+    }
+
     // Debug: Log all FormData entries
     console.log('RoomForm FormData entries:');
     for (let [key, value] of formData.entries()) {

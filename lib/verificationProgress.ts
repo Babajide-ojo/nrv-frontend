@@ -26,23 +26,25 @@ export const getVerificationNextStep = (
   }
 
   const hasEmployment =
-    hasText(response.employmentStatus) ||
-    hasText(response.companyName) ||
-    hasText(response.roleInCompany) ||
-    hasText(response.currentEmployer) ||
-    hasText(response.jobTitle);
+    hasText(response.employmentStatus) &&
+    (hasText(response.companyName) || hasText(response.currentEmployer)) &&
+    (hasText(response.roleInCompany) || hasText(response.jobTitle)) &&
+    hasText(response.companyAddress) &&
+    response.monthlyIncome != null &&
+    Number(response.monthlyIncome) > 0 &&
+    Boolean(response.dateJoined);
   if (!hasEmployment) {
     return "employment";
   }
 
   const hasGuarantor =
-    hasText(response.guarantorFirstName) ||
-    hasText(response.guarantorLastName) ||
-    hasText(response.guarantorFullName) ||
-    hasText(response.guarantorName) ||
-    hasText(response.guarantorEmail) ||
-    hasText(response.guarantorPhone) ||
-    hasText(response.guarantorPhoneNumber);
+    hasText(response.guarantorFirstName) &&
+    hasText(response.guarantorLastName) &&
+    hasText(response.guarantorEmail) &&
+    (hasText(response.guarantorPhone) || hasText(response.guarantorPhoneNumber)) &&
+    hasText(response.guarantorEmploymentStatus) &&
+    hasText(response.guarantorCompany) &&
+    (hasText(response.guarantorAddress) || hasText(response.guarantorHomeAddress));
   if (!hasGuarantor) {
     return "guarantor";
   }

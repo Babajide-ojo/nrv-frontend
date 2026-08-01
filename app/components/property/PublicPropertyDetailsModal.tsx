@@ -31,13 +31,17 @@ import {
   Mail,
   User,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import WatermarkedImage from "@/app/components/shared/WatermarkedImage";
 import { TenantPropertyApplicationPanel } from "@/app/components/tenant/TenantPropertyApplicationPanel";
 import {
   mapTenantRoomForApplication,
   type TenantPropertyApplicationView,
 } from "@/app/lib/mapTenantRoomForApplication";
+import {
+  getOccupancyLabel,
+  isPropertyOccupied,
+  normalizeAmenities,
+} from "@/helpers/utils";
 
 type RoomResponse = {
   _id: string;
@@ -51,7 +55,9 @@ type RoomResponse = {
   noOfBaths?: string;
   leaseTerms?: string;
   paymentOption?: string;
-  otherAmentities?: string[];
+  otherAmentities?: string[] | string;
+  assignedToTenant?: boolean;
+  listRoom?: boolean;
   file?: string;
   imageUrls?: string[];
   propertyId?: {
@@ -241,6 +247,11 @@ export function PublicPropertyDetailsModal({
     if (!room) return "";
     return room.apartmentType?.trim() || room.apartmentStyle?.trim() || "";
   }, [room]);
+
+  const amenitiesList = useMemo(
+    () => normalizeAmenities(room?.otherAmentities),
+    [room?.otherAmentities],
+  );
 
   const isAuthenticated =
     accountType === "tenant" || accountType === "landlord";
@@ -671,9 +682,22 @@ export function PublicPropertyDetailsModal({
 
                 <div className="mt-4 flex justify-between items-start md:items-center flex-col md:flex-row gap-4">
                   <div>
-                    <h1 className="text-xl font-bold text-gray-800 mb-1">
-                      View Property Details
-                    </h1>
+                    <div className="flex flex-wrap items-center gap-3 mb-1">
+                      <h1 className="text-xl font-bold text-gray-800">
+                        View Property Details
+                      </h1>
+                      {room ? (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            isPropertyOccupied(room)
+                              ? "bg-red-100 text-red-700 border border-red-200"
+                              : "bg-green-100 text-green-700 border border-green-200"
+                          }`}
+                        >
+                          {getOccupancyLabel(room)}
+                        </span>
+                      ) : null}
+                    </div>
                     {subtitle ? (
                       <p className="text-gray-600 text-base">{subtitle}</p>
                     ) : null}
@@ -940,18 +964,12 @@ export function PublicPropertyDetailsModal({
                       <span className="w-3 h-3 bg-nrvPrimaryGreen rounded-full mr-3 shrink-0" />
                       Apartment Facilities &amp; Amenities
                     </h3>
-                    {room.otherAmentities && room.otherAmentities.length > 0 ? (
-                      <div className="flex flex-wrap gap-3">
-                        {room.otherAmentities.map((amenity, idx) => (
-                          <Badge
-                            key={`${amenity}-${idx}`}
-                            variant="outline"
-                            className="text-nrvPrimaryGreen border-[#03442C]/30 bg-[#E9F4E7] px-4 py-2 text-sm font-medium"
-                          >
-                            {amenity}
-                          </Badge>
+                    {amenitiesList.length > 0 ? (
+                      <ul className="list-disc pl-5 space-y-1.5 text-sm text-gray-800">
+                        {amenitiesList.map((amenity, idx) => (
+                          <li key={`${amenity}-${idx}`}>{amenity}</li>
                         ))}
-                      </div>
+                      </ul>
                     ) : (
                       <p className="text-sm text-gray-500">
                         Amenities will appear here when the landlord adds them.

@@ -48,6 +48,7 @@ const VerificationRequestModal = ({
   const router = useRouter();
   const [tier, setTier] = useState<"standard" | "premium">("standard");
   const [landlordDisplayName, setLandlordDisplayName] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -87,6 +88,7 @@ const VerificationRequestModal = ({
       setLandlordDisplayName(context.landlordDisplayName || "");
     }
     setTier("standard");
+    setFieldErrors({});
   }, [open, context.landlordDisplayName]);
 
   const redirectToBuyCredits = (selectedTier: "standard" | "premium") => {
@@ -99,9 +101,35 @@ const VerificationRequestModal = ({
     );
   };
 
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!context.firstName?.trim()) {
+      errors.firstName = "Tenant first name is required";
+    }
+    if (!context.lastName?.trim()) {
+      errors.lastName = "Tenant last name is required";
+    }
+    if (!context.email?.trim()) {
+      errors.email = "Tenant email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(context.email.trim())) {
+      errors.email = "Enter a valid tenant email address";
+    }
+    if (!landlordDisplayName.trim()) {
+      errors.landlordDisplayName = "Name shown to tenant is required";
+    }
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const firstKey = ["firstName", "lastName", "email", "landlordDisplayName"].find(
+        (key) => errors[key],
+      );
+      toast.error(firstKey ? errors[firstKey] : "Please fix the highlighted fields.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
-    if (!context.email || !context.firstName || !context.lastName) {
-      toast.error("Tenant name and email are required to request verification.");
+    if (!validateForm()) {
       return;
     }
     if (selectedCredits < 1) {
@@ -172,6 +200,11 @@ const VerificationRequestModal = ({
                 <Mail className="h-3.5 w-3.5 shrink-0" aria-hidden />
                 {context.email || "—"}
               </p>
+              {(fieldErrors.firstName || fieldErrors.lastName || fieldErrors.email) && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.firstName || fieldErrors.lastName || fieldErrors.email}
+                </p>
+              )}
             </div>
           </div>
 
@@ -195,11 +228,28 @@ const VerificationRequestModal = ({
                 id="landlordDisplayName"
                 type="text"
                 value={landlordDisplayName}
-                onChange={(e) => setLandlordDisplayName(e.target.value)}
+                onChange={(e) => {
+                  setLandlordDisplayName(e.target.value);
+                  if (fieldErrors.landlordDisplayName) {
+                    setFieldErrors((prev) => {
+                      const next = { ...prev };
+                      delete next.landlordDisplayName;
+                      return next;
+                    });
+                  }
+                }}
                 placeholder="e.g. Oladipo Michael"
-                className="h-11 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-3 text-sm outline-none ring-offset-white focus:border-[#03442C] focus:ring-2 focus:ring-[#03442C]/20"
+                aria-invalid={Boolean(fieldErrors.landlordDisplayName)}
+                className={`h-11 w-full rounded-lg border bg-white pl-10 pr-3 text-sm outline-none ring-offset-white focus:ring-2 focus:ring-[#03442C]/20 ${
+                  fieldErrors.landlordDisplayName
+                    ? "border-red-400 focus:border-red-500"
+                    : "border-gray-200 focus:border-[#03442C]"
+                }`}
               />
             </div>
+            {fieldErrors.landlordDisplayName && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.landlordDisplayName}</p>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm">

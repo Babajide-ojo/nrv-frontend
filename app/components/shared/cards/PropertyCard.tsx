@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 import { CgStyle } from "react-icons/cg";
 import WatermarkedImage from "../WatermarkedImage";
+import { getOccupancyLabel, isPropertyOccupied } from "@/helpers/utils";
 
 interface PropertyCardProps {
   imageUrl: string;
@@ -137,11 +138,11 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600 font-medium">Status:</span>
           <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            property?.assignedToTenant 
+            isPropertyOccupied(property)
               ? 'bg-red-100 text-red-700 border border-red-200' 
               : 'bg-green-100 text-green-700 border border-green-200'
           }`}>
-            {property?.assignedToTenant ? 'Occupied' : 'Available'}
+            {getOccupancyLabel(property)}
           </span>
         </div>
         {property?.leaseTerms && (

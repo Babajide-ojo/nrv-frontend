@@ -28,6 +28,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
   const [verificationResponseId, setVerificationResponseId] = useState<string | null>(null);
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [prefilledData, setPrefilledData] = useState(formData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formKeys: (keyof typeof formData)[] = [
     "employmentStatus",
@@ -103,14 +104,45 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
   };
 
   const allFieldsFilled = useMemo(() => {
-    return Object.values(formData).every((val) => val && val !== "");
+    return Object.values(formData).every((val) => val && String(val).trim() !== "");
   }, [formData]);
 
   const isDirty = useMemo(() => {
     return formKeys.some(key => formData[key] !== prefilledData[key]);
   }, [formData, prefilledData]);
 
+  const validateForm = (): boolean => {
+    const nextErrors: { [key: string]: string } = {};
+    if (!formData.employmentStatus.trim()) {
+      nextErrors.employmentStatus = "Employment status is required";
+    }
+    if (!formData.nameOfCompany.trim()) {
+      nextErrors.nameOfCompany = "Company name is required";
+    }
+    if (!formData.role.trim()) {
+      nextErrors.role = "Role / job title is required";
+    }
+    if (!formData.companyAddress.trim()) {
+      nextErrors.companyAddress = "Company address is required";
+    }
+    const incomeRaw = formData.monthlyIncome.trim();
+    const incomeNum = Number(incomeRaw);
+    if (!incomeRaw) {
+      nextErrors.monthlyIncome = "Monthly income is required";
+    } else if (Number.isNaN(incomeNum) || incomeNum <= 0) {
+      nextErrors.monthlyIncome = "Enter a valid monthly income";
+    }
+    if (!formData.dateJoined.trim()) {
+      nextErrors.dateJoined = "Date joined is required";
+    }
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
     if (!verificationId) {
       alert('Verification ID missing.');
       return;
@@ -119,20 +151,23 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
       alert('Verification response ID missing.');
       return;
     }
-    const monthlyIncomeNum = formData.monthlyIncome ? Number(formData.monthlyIncome) : undefined;
+    const monthlyIncomeNum = Number(formData.monthlyIncome);
     const payload: Record<string, unknown> = {
-      employmentStatus: formData.employmentStatus || undefined,
-      roleInCompany: formData.role || undefined,
-      companyName: formData.nameOfCompany || undefined,
-      companyAddress: formData.companyAddress || undefined,
-      dateJoined: formData.dateJoined || undefined,
+      employmentStatus: formData.employmentStatus.trim(),
+      roleInCompany: formData.role.trim(),
+      companyName: formData.nameOfCompany.trim(),
+      companyAddress: formData.companyAddress.trim(),
+      dateJoined: formData.dateJoined,
+      monthlyIncome: monthlyIncomeNum,
     };
-    if (monthlyIncomeNum != null && !Number.isNaN(monthlyIncomeNum)) payload.monthlyIncome = monthlyIncomeNum;
+    setIsSubmitting(true);
     try {
       await apiService.put(`/verification/${verificationResponseId}/employment`, payload);
       router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
     } catch (error: any) {
       alert(error.message || "Failed to update employment info.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -149,6 +184,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
           <SelectField
             label="Employment Status"
             name="employmentStatus"
+            required
             variant="nested"
             placeholder="Select employment status"
             value={employmentStatusOptions.find(
@@ -171,6 +207,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Company Name"
               name="nameOfCompany"
+              required
               variant="nested"
               placeholder="e.g. Indigene Systems Ltd"
               value={formData.nameOfCompany}
@@ -180,6 +217,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Role / Job Title"
               name="role"
+              required
               variant="nested"
               placeholder="e.g. Software Engineer"
               value={formData.role}
@@ -189,6 +227,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Company Address"
               name="companyAddress"
+              required
               variant="nested"
               placeholder="Office or business address"
               value={formData.companyAddress}
@@ -198,6 +237,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <InputField
               label="Monthly Income"
               name="monthlyIncome"
+              required
               variant="nested"
               placeholder="e.g. 350000"
               value={formData.monthlyIncome}
@@ -208,6 +248,7 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
             <DateInputField
               label="Date Joined"
               name="dateJoined"
+              required
               variant="nested"
               placeholder="Select date joined"
               value={formData.dateJoined}
@@ -227,24 +268,11 @@ const EmploymentInfoVerification = ({ initialData }: EmploymentInfoVerificationP
         </div>
         <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
-            variant="outline"
-            onClick={() => {
-              if (!verificationId) {
-                alert('Verification link missing. Please use the link from your landlord\'s email.');
-                return;
-              }
-              router.push(`/dashboard/tenant/verification/guarantor-info?verificationId=${verificationId}`);
-            }}
-            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
-          >
-            Skip for now
-          </Button>
-          <Button
             onClick={handleSubmit}
             className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
-            disabled={isPrefilled && allFieldsFilled && !isDirty}
+            disabled={isSubmitting || (isPrefilled && allFieldsFilled && !isDirty)}
           >
-            Save and Continue
+            {isSubmitting ? "Saving..." : "Save and Continue"}
           </Button>
         </div>
       </div>

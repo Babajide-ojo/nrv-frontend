@@ -1,14 +1,16 @@
+"use client";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { FiInfo } from "react-icons/fi";
 import { apiService } from "@/lib/api";
 
 interface GuarantorInfoVerificationProps {
   initialData?: any;
 }
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationProps) => {
   const router = useRouter();
@@ -27,12 +29,23 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
   const [verificationResponseId, setVerificationResponseId] = useState<string | null>(null);
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [prefilledData, setPrefilledData] = useState(formData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const employmentStatusOptions = [
     { label: "Employed", value: "Employed" },
     { label: "Self Employed", value: "Self Employed" },
     { label: "UnEmployed", value: "UnEmployed" },
     { label: "Student", value: "Student" },
+  ];
+
+  const formKeys: (keyof typeof formData)[] = [
+    "firstName",
+    "lastName",
+    "email",
+    "phoneNumber",
+    "employmentStatus",
+    "company",
+    "guarantorHomeAddress",
   ];
 
   useEffect(() => {
@@ -123,30 +136,52 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
   };
 
   const allFieldsFilled = useMemo(() => {
-    // ...check all required fields for this step
-    return Object.values(formData).every((val) => val && val !== "");
+    return Object.values(formData).every((val) => val && String(val).trim() !== "");
   }, [formData]);
-
-  const formKeys: (keyof typeof formData)[] = [
-    "firstName",
-    "lastName",
-    "email",
-    "phoneNumber",
-    "employmentStatus",
-    "company",
-    "guarantorHomeAddress",
-  ];
 
   const isDirty = useMemo(() => {
     return formKeys.some(key => formData[key] !== prefilledData[key]);
   }, [formData, prefilledData]);
 
+  const validateForm = (): boolean => {
+    const nextErrors: { [key: string]: string } = {};
+    if (!formData.firstName.trim()) {
+      nextErrors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      nextErrors.lastName = "Last name is required";
+    }
+    const email = formData.email.trim();
+    if (!email) {
+      nextErrors.email = "Email address is required";
+    } else if (!EMAIL_PATTERN.test(email)) {
+      nextErrors.email = "Enter a valid email address";
+    }
+    if (!formData.phoneNumber.trim()) {
+      nextErrors.phoneNumber = "Phone number is required";
+    }
+    if (!formData.employmentStatus.trim()) {
+      nextErrors.employmentStatus = "Employment status is required";
+    }
+    if (!formData.company.trim()) {
+      nextErrors.company = "Company is required";
+    }
+    if (!formData.guarantorHomeAddress.trim()) {
+      nextErrors.guarantorHomeAddress = "Guarantor's home address is required";
+    }
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
-    if (allFieldsFilled && isPrefilled) {
-      if (!verificationId) {
-        alert('Verification ID missing.');
-        return;
-      }
+    if (!validateForm()) {
+      return;
+    }
+    if (!verificationId) {
+      alert('Verification ID missing.');
+      return;
+    }
+    if (allFieldsFilled && isPrefilled && !isDirty) {
       router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
       return;
     }
@@ -155,20 +190,23 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
       return;
     }
     const payload = {
-      guarantorFirstName: formData.firstName,
-      guarantorLastName: formData.lastName,
-      guarantorEmail: formData.email,
-      guarantorPhone: formData.phoneNumber,
-      guarantorEmploymentStatus: formData.employmentStatus,
-      guarantorCompany: formData.company,
-      guarantorAddress: formData.guarantorHomeAddress,
+      guarantorFirstName: formData.firstName.trim(),
+      guarantorLastName: formData.lastName.trim(),
+      guarantorEmail: formData.email.trim(),
+      guarantorPhone: formData.phoneNumber.trim(),
+      guarantorEmploymentStatus: formData.employmentStatus.trim(),
+      guarantorCompany: formData.company.trim(),
+      guarantorAddress: formData.guarantorHomeAddress.trim(),
       verificationId: verificationId,
     };
+    setIsSubmitting(true);
     try {
       await apiService.put(`/verification/${verificationResponseId}/guarantor`, payload);
       router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
     } catch (error: any) {
       alert(error.message || "Failed to update guarantor info.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -186,6 +224,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="First Name"
               name="firstName"
+              required
               variant="nested"
               placeholder="Guarantor's first name"
               value={formData.firstName}
@@ -195,6 +234,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Last Name"
               name="lastName"
+              required
               variant="nested"
               placeholder="Guarantor's last name"
               value={formData.lastName}
@@ -204,6 +244,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Email Address"
               name="email"
+              required
               variant="nested"
               placeholder="e.g. guarantor@email.com"
               inputType="email"
@@ -214,6 +255,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Phone Number"
               name="phoneNumber"
+              required
               variant="nested"
               placeholder="e.g. 08012345678"
               inputType="phone"
@@ -224,6 +266,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <SelectField
               label="Employment Status"
               name="employmentStatus"
+              required
               variant="nested"
               placeholder="Select employment status"
               value={employmentStatusOptions.find(
@@ -245,6 +288,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Company"
               name="company"
+              required
               variant="nested"
               placeholder="Guarantor's employer or business"
               value={formData.company}
@@ -256,6 +300,7 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
             <InputField
               label="Guarantor's Home Address"
               name="guarantorHomeAddress"
+              required
               variant="nested"
               placeholder="Full residential address"
               value={formData.guarantorHomeAddress}
@@ -267,24 +312,11 @@ const GuarantorInfoVerification = ({ initialData }: GuarantorInfoVerificationPro
 
         <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
-            variant="outline"
-            onClick={() => {
-              if (!verificationId) {
-                alert('Verification ID missing.');
-                return;
-              }
-              router.push(`/dashboard/tenant/verification/income-assessment?verificationId=${verificationId}`);
-            }}
-            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
-          >
-            Skip for now
-          </Button>
-          <Button
             onClick={handleSubmit}
             className="h-auto w-full rounded-lg bg-green-700 px-8 py-2.5 text-white shadow-sm transition-all hover:bg-green-800 hover:shadow sm:w-auto"
-            disabled={isPrefilled && allFieldsFilled && !isDirty}
+            disabled={isSubmitting || (isPrefilled && allFieldsFilled && !isDirty)}
           >
-            Save and Continue
+            {isSubmitting ? "Saving..." : "Save and Continue"}
           </Button>
         </div>
       </div>

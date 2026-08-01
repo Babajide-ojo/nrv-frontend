@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { apiService } from "@/lib/api";
 import { FiAlertCircle, FiUserCheck } from "react-icons/fi";
 import {
@@ -14,6 +15,7 @@ type PendingVerificationRequest = {
   _id: string;
   dateRequested?: string;
   createdAt?: string;
+  status?: string;
   verificationTier?: "standard" | "premium";
   requestedBy?: {
     firstName?: string;
@@ -68,72 +70,81 @@ const tierLabel = (tier?: "standard" | "premium") => {
   return "Tenant verification";
 };
 
+const getTenantEmail = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const userStr = localStorage.getItem("nrv-user");
+  if (!userStr) {
+    return null;
+  }
+  try {
+    const userObj = JSON.parse(userStr);
+    return userObj?.user?.email || userObj?.email || null;
+  } catch {
+    return null;
+  }
+};
+
 const PendingVerificationRequests = () => {
   const router = useRouter();
   const [pendingRequests, setPendingRequests] = useState<PendingVerificationRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [decliningId, setDecliningId] = useState<string | null>(null);
+
+  const loadPending = useCallback(async () => {
+    const email = getTenantEmail();
+    if (!email) {
+      setPendingRequests([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const reqRes = await apiService.get(
+        `/verification/by-email?email=${encodeURIComponent(email)}`,
+      );
+      const list = unwrapList(reqRes) as PendingVerificationRequest[];
+      const active = list.filter((req) => {
+        const status = String(req.status || "").toLowerCase();
+        return status !== "declined" && status !== "rejected";
+      });
+      const sorted = [...active].sort((a, b) => {
+        const dateA = new Date(a.dateRequested || a.createdAt || 0).getTime();
+        const dateB = new Date(b.dateRequested || b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
+
+      const pairs = await Promise.allSettled(
+        sorted.map(async (req) => {
+          const res = await apiService.get(
+            `/verification/response/by-request/${req._id}?email=${encodeURIComponent(email)}`,
+          );
+          return { req, submission: unwrapData(res) };
+        }),
+      );
+
+      const pending = pairs
+        .filter((pair) => pair.status === "fulfilled")
+        .map((pair) => (pair as PromiseFulfilledResult<{ req: PendingVerificationRequest; submission: unknown }>).value)
+        .filter(({ submission }) => isVerificationIncomplete(submission))
+        .map(({ req, submission }) => ({
+          ...req,
+          nextStep: getVerificationNextStep(submission),
+        }));
+
+      setPendingRequests(pending);
+    } catch {
+      setPendingRequests([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const run = async () => {
-      let email: string | null = null;
-      if (typeof window !== "undefined") {
-        const userStr = localStorage.getItem("nrv-user");
-        if (userStr) {
-          try {
-            const userObj = JSON.parse(userStr);
-            email = userObj?.user?.email || userObj?.email || null;
-          } catch {
-            email = null;
-          }
-        }
-      }
-
-      if (!email) {
-        setPendingRequests([]);
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const reqRes = await apiService.get(
-          `/verification/by-email?email=${encodeURIComponent(email)}`,
-        );
-        const list = unwrapList(reqRes) as PendingVerificationRequest[];
-        const sorted = [...list].sort((a, b) => {
-          const dateA = new Date(a.dateRequested || a.createdAt || 0).getTime();
-          const dateB = new Date(b.dateRequested || b.createdAt || 0).getTime();
-          return dateB - dateA;
-        });
-
-        const pairs = await Promise.allSettled(
-          sorted.map(async (req) => {
-            const res = await apiService.get(
-              `/verification/response/by-request/${req._id}?email=${encodeURIComponent(email as string)}`,
-            );
-            return { req, submission: unwrapData(res) };
-          }),
-        );
-
-        const pending = pairs
-          .filter((pair) => pair.status === "fulfilled")
-          .map((pair) => (pair as PromiseFulfilledResult<{ req: PendingVerificationRequest; submission: unknown }>).value)
-          .filter(({ submission }) => isVerificationIncomplete(submission))
-          .map(({ req, submission }) => ({
-            ...req,
-            nextStep: getVerificationNextStep(submission),
-          }));
-
-        setPendingRequests(pending);
-      } catch {
-        setPendingRequests([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    run();
-  }, []);
+    loadPending();
+  }, [loadPending]);
 
   if (loading) {
     return (
@@ -155,6 +166,28 @@ const PendingVerificationRequests = () => {
     router.push(
       verificationStepPath(verificationId, nextStep || "personal"),
     );
+  };
+
+  const handleDecline = async (verificationId: string) => {
+    const confirmed = window.confirm(
+      "Decline this verification request? The landlord will be notified and you will not continue this screening.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const email = getTenantEmail();
+    setDecliningId(verificationId);
+    try {
+      await apiService.post(`/verification/${verificationId}/decline`, email ? { email } : {});
+      toast.success("Verification request declined");
+      await loadPending();
+      router.push("/dashboard/tenant/verification/requests");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to decline verification request.");
+    } finally {
+      setDecliningId(null);
+    }
   };
 
   const featuredRequest = pendingRequests[0];
@@ -221,16 +254,28 @@ const PendingVerificationRequests = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => handleComplete(featuredRequest._id, featuredRequest.nextStep)}
-          className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors shrink-0"
-          aria-label={`Continue verification request from ${landlordName}`}
-        >
-          {featuredRequest.nextStep && featuredRequest.nextStep !== "personal"
-            ? "Continue verification"
-            : "Complete verification"}
-        </button>
+        <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => handleDecline(featuredRequest._id)}
+            disabled={decliningId === featuredRequest._id}
+            className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 transition-colors disabled:opacity-60"
+            aria-label={`Decline verification request from ${landlordName}`}
+          >
+            {decliningId === featuredRequest._id ? "Declining…" : "Decline"}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleComplete(featuredRequest._id, featuredRequest.nextStep)}
+            disabled={decliningId === featuredRequest._id}
+            className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors disabled:opacity-60"
+            aria-label={`Continue verification request from ${landlordName}`}
+          >
+            {featuredRequest.nextStep && featuredRequest.nextStep !== "personal"
+              ? "Continue verification"
+              : "Complete verification"}
+          </button>
+        </div>
       </div>
     </section>
   );

@@ -26,7 +26,6 @@ import Button from "@/app/components/shared/buttons/Button";
 import AgreementDocumentScreen from "@/app/components/dashboard/tenant/AgreementDocumentScreen";
 import Modal from "@/app/components/shared/modals/Modal";
 import Image from "next/image";
-import CheckMark from "@/app/components/icons/CheckMark";
 import MessageIcon from "@/app/components/icons/MessageIcon";
 import PdfIcon from "@/app/components/icons/PdfIcon";
 import EyeIcon from "@/app/components/icons/EyeIcon";
@@ -34,6 +33,7 @@ import { DownloadIcon, Mail, Phone, User } from "lucide-react";
 import { format } from "date-fns";
 import Status from "@/app/components/shared/Status";
 import { toast } from "react-toastify";
+import { normalizeAmenities } from "@/helpers/utils";
 import {
   Dialog,
   DialogContent,
@@ -501,23 +501,17 @@ const RentedPropertiesScreen = () => {
                         <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
                           Facilities / Amenities
                         </p>
-                        <div className="flex gap-2 flex-wrap mt-2">
-                          {room?.otherAmentities?.length > 0 ? (
-                            room.otherAmentities.map(
+                        {normalizeAmenities(room?.otherAmentities).length > 0 ? (
+                          <ul className="list-disc pl-5 space-y-1.5 mt-2 text-sm text-gray-800">
+                            {normalizeAmenities(room?.otherAmentities).map(
                               (amenity: string, i: number) => (
-                                <div
-                                  key={i}
-                                  className="flex items-center gap-1.5 bg-[#E9F4E7] px-3 py-1 text-xs font-medium rounded-full"
-                                >
-                                  <CheckMark height={14} width={14} />
-                                  {amenity}
-                                </div>
+                                <li key={`${amenity}-${i}`}>{amenity}</li>
                               ),
-                            )
-                          ) : (
-                            <p className="text-sm text-gray-500">No amenities listed</p>
-                          )}
-                        </div>
+                            )}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-gray-500 mt-2">No amenities listed</p>
+                        )}
                       </div>
                     </div>
                     <div className="hidden md:block w-full md:w-[30%] md:pl-4 pb-5 shrink-0">

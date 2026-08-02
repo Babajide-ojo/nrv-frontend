@@ -322,6 +322,49 @@ export const formatDisplayValue = (value: string): string => {
 };
 
 /**
+ * Normalize amenities from string (comma-separated) or array into a clean string list.
+ */
+export const normalizeAmenities = (amenities: unknown): string[] => {
+  if (!amenities) {
+    return [];
+  }
+  if (Array.isArray(amenities)) {
+    return amenities
+      .map((item) => (item == null ? "" : String(item).trim()))
+      .filter(Boolean);
+  }
+  if (typeof amenities === "string") {
+    return amenities
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
+
+/**
+ * Occupancy label for marketplace/property cards.
+ * Occupied when assigned to a tenant or unlisted (!listRoom).
+ */
+export const getOccupancyLabel = (property: {
+  assignedToTenant?: boolean;
+  listRoom?: boolean;
+} | null | undefined): "Occupied" | "Available" => {
+  if (!property) {
+    return "Available";
+  }
+  if (property.assignedToTenant === true || property.listRoom === false) {
+    return "Occupied";
+  }
+  return "Available";
+};
+
+export const isPropertyOccupied = (property: {
+  assignedToTenant?: boolean;
+  listRoom?: boolean;
+} | null | undefined): boolean => getOccupancyLabel(property) === "Occupied";
+
+/**
  * Validates email format
  */
 export const isValidEmail = (email: string): boolean => {

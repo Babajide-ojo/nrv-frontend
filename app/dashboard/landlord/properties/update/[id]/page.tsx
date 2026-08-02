@@ -17,8 +17,6 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { nigerianStates } from "@/helpers/data";
 import ImageUploader from "@/app/components/shared/ImageUploader";
 
-// ...imports
-
 const UpdatePropertyScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [fileError, setFileError] = useState("");
@@ -41,6 +39,17 @@ const UpdatePropertyScreen = () => {
     city: "",
     state: { label: "", value: "" },
   });
+
+  const resolveImageUrl = (data: any): string | null => {
+    if (!data) return null;
+    if (typeof data.file === "string" && data.file.trim()) {
+      return data.file.trim();
+    }
+    if (Array.isArray(data.imageUrls) && data.imageUrls.length > 0) {
+      return data.imageUrls[0];
+    }
+    return null;
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -69,11 +78,7 @@ const UpdatePropertyScreen = () => {
               value: data.propertyType?.value || data.propertyType || "Residential",
             });
 
-            const current =
-              (typeof data.file === "string" && data.file.trim() ? data.file.trim() : null) ||
-              (Array.isArray(data.imageUrls) && data.imageUrls.length > 0 ? data.imageUrls[0] : null) ||
-              null;
-            setExistingImageUrl(current);
+            setExistingImageUrl(resolveImageUrl(data));
           }
         } catch (error) {
           toast.error("Error fetching property data");
@@ -122,14 +127,28 @@ const UpdatePropertyScreen = () => {
 
     try {
       setLoading(true);
-      await dispatch(updateProperty({ id, body: formData }) as any).unwrap();
-      setPropertyData({
-        streetAddress: "",
-        city: "",
-        state: { label: "", value: "" },
-      });
+      const response = await dispatch(
+        updateProperty({ id, body: formData }) as any
+      ).unwrap();
+      const updated = response?.data ?? response;
+      const returnedUrl = resolveImageUrl(updated);
+
+      if (returnedUrl) {
+        setExistingImageUrl(returnedUrl);
+      } else if (selectedFile) {
+        setExistingImageUrl(URL.createObjectURL(selectedFile));
+      } else if (id) {
+        try {
+          const refetched = await dispatch(getPropertyById(id) as any).unwrap();
+          setExistingImageUrl(resolveImageUrl(refetched?.data));
+        } catch {
+          // keep previous preview
+        }
+      }
+
       setSelectedFile(null);
       setLoading(false);
+      toast.success("Property updated successfully");
       setCurrentAmountStep(1);
     } catch (error: any) {
       setLoading(false);
@@ -163,6 +182,9 @@ const UpdatePropertyScreen = () => {
   const handleImageChange = (file: File) => {
     setSelectedFile(file);
     setFileError("");
+    if (file) {
+      setExistingImageUrl(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -221,7 +243,9 @@ const UpdatePropertyScreen = () => {
                       <div className="w-full md:w-1/2">
                         {existingImageUrl && (
                           <div className="mb-3">
-                            <p className="text-[#344054] text-sm font-medium mb-2">Current Image</p>
+                            <p className="text-[#344054] text-sm font-medium mb-2">
+                              {selectedFile ? "New Image Preview" : "Current Image"}
+                            </p>
                             <div className="w-full rounded-lg overflow-hidden border border-[#ECECEE] bg-[#F8FAFC]">
                               <img
                                 src={existingImageUrl}
@@ -232,7 +256,11 @@ const UpdatePropertyScreen = () => {
                             </div>
                           </div>
                         )}
-                        <ImageUploader label="" onChange={handleImageChange} />
+                        <ImageUploader
+                          label=""
+                          onChange={handleImageChange}
+                          error={fileError}
+                        />
                       </div>
                     </div>
 
@@ -293,5 +321,3 @@ const UpdatePropertyScreen = () => {
 };
 
 export default UpdatePropertyScreen;
-
-

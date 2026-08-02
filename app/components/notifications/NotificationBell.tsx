@@ -15,6 +15,14 @@ function hrefForNotification(n: AppNotification): string | null {
   const m = n.metadata || {};
   const type = n.type;
 
+  // Prefer verification list until admin approval unlocks the full report.
+  if (
+    type === "verification_documents_uploaded" ||
+    type === "verification_complete"
+  ) {
+    return "/dashboard/landlord/properties/verification";
+  }
+
   if (typeof m.actionUrl === "string" && m.actionUrl.trim()) {
     return m.actionUrl;
   }
@@ -28,21 +36,6 @@ function hrefForNotification(n: AppNotification): string | null {
     const reqId = m.verificationRequestId as string | undefined;
     if (reqId) {
       return `/dashboard/tenant/verification?verificationId=${encodeURIComponent(reqId)}`;
-    }
-  }
-
-  if (
-    type === "verification_documents_uploaded" ||
-    type === "verification_complete"
-  ) {
-    const responseId = m.verificationResponseId as string | undefined;
-    const email = m.tenantEmail as string | undefined;
-    if (responseId && email) {
-      return `/dashboard/landlord/properties/verification/response/${encodeURIComponent(responseId)}?email=${encodeURIComponent(email)}`;
-    }
-    const reqId = m.verificationRequestId as string | undefined;
-    if (reqId) {
-      return `/dashboard/landlord/properties/verification?verificationId=${encodeURIComponent(reqId)}`;
     }
   }
 

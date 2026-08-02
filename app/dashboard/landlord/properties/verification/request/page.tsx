@@ -24,6 +24,7 @@ export default function OnboardTenant() {
     email: "",
     landlordDisplayName: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [verificationTier, setVerificationTier] = useState<"standard" | "premium">("standard");
   const [user, setUser] = useState<any>({});
   const [propertyContext, setPropertyContext] = useState<{
@@ -38,10 +39,45 @@ export default function OnboardTenant() {
   const creditBalances = useMemo(() => getVerificationCreditBalances(user), [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    if (!formData.firstName.trim()) {
+      errors.firstName = "First name is required";
+    }
+    if (!formData.lastName.trim()) {
+      errors.lastName = "Last name is required";
+    }
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = "Enter a valid email address";
+    }
+    if (!formData.landlordDisplayName.trim()) {
+      errors.landlordDisplayName = "Landlord display name is required";
+    }
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const firstKey = ["firstName", "lastName", "email", "landlordDisplayName"].find(
+        (key) => errors[key],
+      );
+      toast.error(firstKey ? errors[firstKey] : "Please fix the highlighted fields.");
+      return false;
+    }
+    return true;
   };
 
   const redirectToBuyCredits = (tier: "standard" | "premium") => {
@@ -52,6 +88,10 @@ export default function OnboardTenant() {
   };
 
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     const available =
       verificationTier === "premium" ? creditBalances.premium : creditBalances.standard;
     if (available < 1) {
@@ -104,6 +144,7 @@ export default function OnboardTenant() {
       email: "",
       landlordDisplayName: "",
     });
+    setFieldErrors({});
   };
 
   useEffect(() => {
@@ -202,8 +243,14 @@ export default function OnboardTenant() {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                    aria-invalid={Boolean(fieldErrors.firstName)}
+                    className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${
+                      fieldErrors.firstName ? "border-red-400 focus:border-red-500" : ""
+                    }`}
                   />
+                  {fieldErrors.firstName && (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.firstName}</p>
+                  )}
                 </div>
 
                 <div>
@@ -213,8 +260,14 @@ export default function OnboardTenant() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                    aria-invalid={Boolean(fieldErrors.lastName)}
+                    className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${
+                      fieldErrors.lastName ? "border-red-400 focus:border-red-500" : ""
+                    }`}
                   />
+                  {fieldErrors.lastName && (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.lastName}</p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -225,8 +278,14 @@ export default function OnboardTenant() {
                     value={formData.email}
                     onChange={handleChange}
                     type="email"
-                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                    aria-invalid={Boolean(fieldErrors.email)}
+                    className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${
+                      fieldErrors.email ? "border-red-400 focus:border-red-500" : ""
+                    }`}
                   />
+                  {fieldErrors.email && (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -236,8 +295,14 @@ export default function OnboardTenant() {
                     name="landlordDisplayName"
                     value={formData.landlordDisplayName}
                     onChange={handleChange}
-                    className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                    aria-invalid={Boolean(fieldErrors.landlordDisplayName)}
+                    className={`bg-gray-50 border-gray-200 focus:bg-white transition-colors ${
+                      fieldErrors.landlordDisplayName ? "border-red-400 focus:border-red-500" : ""
+                    }`}
                   />
+                  {fieldErrors.landlordDisplayName && (
+                    <p className="mt-1 text-xs text-red-600">{fieldErrors.landlordDisplayName}</p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2 mt-2">

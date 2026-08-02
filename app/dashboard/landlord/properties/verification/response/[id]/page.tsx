@@ -3,8 +3,9 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { MdArrowBackIos } from "react-icons/md";
 import { FaFilePdf } from "react-icons/fa";
-import { apiService } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import LandLordLayout from "@/app/components/layout/LandLordLayout";
+import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
 import { toast } from "react-toastify";
 
 interface VerificationResponse {
@@ -592,31 +593,74 @@ const VerificationResponsePage = () => {
   const email = searchParams.get('email');
   
   const [verificationData, setVerificationData] = useState<VerificationResponse | null>(null);
-  const [verificationRequest, setVerificationRequest] = useState<{ verificationTier?: "standard" | "premium" } | null>(null);
+  const [verificationRequest, setVerificationRequest] = useState<{
+    verificationTier?: "standard" | "premium";
+    status?: string;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unauthorized, setUnauthorized] = useState(false);
   const [pdfExportLoading, setPdfExportLoading] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      if (!raw) {
+        router.push("/sign-in");
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed?.accessToken) {
+        router.push("/sign-in");
+      }
+    } catch {
+      router.push("/sign-in");
+    }
+  }, [router]);
+
+  useEffect(() => {
     const fetchVerificationData = async () => {
       setLoading(true);
+      setUnauthorized(false);
       try {
         if (!id || !email) {
           setError("Missing verification ID or email");
           return;
         }
         const [res, reqRes] = await Promise.all([
-          apiService.get(`/verification/response/by-request/${id}?email=${encodeURIComponent(email)}`, { timeout: 60000 }),
-          apiService.get(`/verification/${id}`, { timeout: 15000 }).catch(() => ({ data: {} })),
+          apiClient.get(`/verification/response/by-request/${id}?email=${encodeURIComponent(email)}`, { timeout: 60000 }),
+          apiClient.get(`/verification/${id}`, { timeout: 15000 }).catch((err) => {
+            if (err?.response?.status === 401 || err?.response?.status === 403) {
+              throw err;
+            }
+            return { data: {} };
+          }),
         ]);
         const data = res?.data?.data ?? res?.data ?? null;
         setVerificationData(data || null);
         const req = reqRes?.data?.data ?? reqRes?.data ?? null;
         setVerificationRequest(req || null);
       } catch (err: any) {
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          setUnauthorized(true);
+          setError("You are not authorized to view this report.");
+          toast.error("Unauthorized. Please sign in again.");
+          router.push("/sign-in");
+          return;
+        }
         const msg = err?.response?.data?.message ?? err?.response?.data?.error ?? err?.message;
-        setError(msg && typeof msg === "string" ? msg : "Failed to load verification data");
+        const normalized =
+          Array.isArray(msg)
+            ? msg.map((m: unknown) => (typeof m === "object" ? JSON.stringify(m) : String(m))).join(". ")
+            : msg && typeof msg === "object"
+              ? JSON.stringify(msg)
+              : msg;
+        setError(normalized && typeof normalized === "string" ? normalized : "Failed to load verification data");
       } finally {
         setLoading(false);
       }
@@ -624,8 +668,13 @@ const VerificationResponsePage = () => {
 
     if (id && email) {
       fetchVerificationData();
+    } else {
+      setLoading(false);
+      if (!id || !email) {
+        setError("Missing verification ID or email");
+      }
     }
-  }, [id, email]);
+  }, [id, email, router]);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'N/A';
@@ -684,28 +733,48 @@ const VerificationResponsePage = () => {
 
   if (loading) {
     return (
-      <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading verification details...</p>
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading verification details...</p>
+            </div>
           </div>
-        </div>
-      </LandLordLayout>
+        </LandLordLayout>
+      </ProtectedRoute>
+    );
+  }
+
+  if (unauthorized) {
+    return (
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-red-500 text-6xl mb-4">🔒</div>
+              <p className="text-red-600 text-lg mb-2">Unauthorized</p>
+              <p className="text-gray-600">You are not authorized to view this report. Redirecting to sign in…</p>
+            </div>
+          </div>
+        </LandLordLayout>
+      </ProtectedRoute>
     );
   }
 
   if (error) {
     return (
-      <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <p className="text-red-600 text-lg mb-2">Error Loading Data</p>
-            <p className="text-gray-600">{error}</p>
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-red-500 text-6xl mb-4">⚠️</div>
+              <p className="text-red-600 text-lg mb-2">Error Loading Data</p>
+              <p className="text-gray-600">{error}</p>
+            </div>
           </div>
-        </div>
-      </LandLordLayout>
+        </LandLordLayout>
+      </ProtectedRoute>
     );
   }
 
@@ -713,26 +782,77 @@ const VerificationResponsePage = () => {
 
   if (!verificationData) {
     return (
-      <LandLordLayout path="Verification" mainPath="/ Verification Response">
-        <div className="m-6">
-          <button
-            onClick={() => router.push(verificationListPath)}
-            className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
-          >
-            <MdArrowBackIos size={16} />
-            Back to Tenant Verification
-          </button>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="text-gray-400 text-6xl mb-4">📄</div>
-              <p className="text-gray-800 text-lg font-medium">Verification still pending</p>
-              <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
-                The report will appear here once your tenant finishes verification.
-              </p>
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="m-6">
+            <button
+              onClick={() => router.push(verificationListPath)}
+              className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
+            >
+              <MdArrowBackIos size={16} />
+              Back to Tenant Verification
+            </button>
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-center">
+                <div className="text-gray-400 text-6xl mb-4">📄</div>
+                <p className="text-gray-800 text-lg font-medium">Verification still pending</p>
+                <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">
+                  The report will appear here once your tenant finishes verification.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </LandLordLayout>
+        </LandLordLayout>
+      </ProtectedRoute>
+    );
+  }
+
+  const requestStatus = String(verificationRequest?.status || "").toLowerCase();
+  const isAdminApproved = requestStatus === "approved";
+
+  if (!isAdminApproved) {
+    return (
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="m-6">
+            <button
+              type="button"
+              onClick={() => router.push(verificationListPath)}
+              className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
+            >
+              <MdArrowBackIos size={16} />
+              Back to Tenant Verification
+            </button>
+            <div className="mx-auto max-w-2xl rounded-xl border border-amber-200 bg-white p-6 text-center shadow-sm sm:p-8">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-2xl">
+                ⏳
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Awaiting admin review</h2>
+              <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                The tenant has submitted their verification. Risk score and full landlord report will be available after an admin approves this request.
+              </p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-left text-sm text-gray-700 space-y-2">
+                <p>
+                  <span className="font-medium text-gray-900">Tenant: </span>
+                  {verificationData.fullName || "—"}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Email: </span>
+                  {verificationData.email || email || "—"}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Submission status: </span>
+                  Submitted — pending admin approval
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Request status: </span>
+                  {requestStatus || "pending"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </LandLordLayout>
+      </ProtectedRoute>
     );
   }
 
@@ -786,6 +906,7 @@ const VerificationResponsePage = () => {
         : null;
 
   return (
+    <ProtectedRoute>
     <LandLordLayout path="Verification" mainPath="/ Verification Response">
       <div className="min-h-screen bg-[#F4F6F4] px-2 py-3 sm:px-6 sm:py-6 print:bg-white">
         <div className="max-w-[960px] mx-auto">
@@ -1061,6 +1182,7 @@ const VerificationResponsePage = () => {
         </div>
       </div>
     </LandLordLayout>
+    </ProtectedRoute>
   );
 };
 

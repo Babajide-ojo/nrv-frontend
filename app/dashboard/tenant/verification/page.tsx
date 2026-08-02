@@ -1,6 +1,7 @@
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { apiService } from "@/lib/api";
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +68,22 @@ function DocCard({ label, url }: { label: string; url?: string }) {
   );
 }
 
+const getTenantEmail = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const userStr = localStorage.getItem("nrv-user");
+  if (!userStr) {
+    return null;
+  }
+  try {
+    const userObj = JSON.parse(userStr);
+    return userObj?.user?.email || userObj?.email || null;
+  } catch {
+    return null;
+  }
+};
+
 const TenantVerificationSummaryPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -75,6 +92,31 @@ const TenantVerificationSummaryPage = () => {
   const [request, setRequest] = useState<any>(null);
   const [submittedRequests, setSubmittedRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [declining, setDeclining] = useState(false);
+
+  const handleDeclineRequest = async (verificationId: string) => {
+    const confirmed = window.confirm(
+      "Decline this verification request? The landlord will be notified and you will not continue this screening.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    const email = getTenantEmail() || request?.email || null;
+    setDeclining(true);
+    try {
+      await apiService.post(
+        `/verification/${verificationId}/decline`,
+        email ? { email } : {},
+      );
+      toast.success("Verification request declined");
+      router.push("/dashboard/tenant/verification/requests");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to decline verification request.");
+    } finally {
+      setDeclining(false);
+    }
+  };
 
   useEffect(() => {
     const run = async () => {
@@ -190,12 +232,22 @@ const TenantVerificationSummaryPage = () => {
               <Button
                 variant="outline"
                 onClick={() => router.push("/dashboard/tenant/verification/requests")}
+                disabled={declining}
               >
                 Back to List
               </Button>
               <Button
+                variant="outline"
+                onClick={() => handleDeclineRequest(verificationIdFromUrl)}
+                disabled={declining}
+                className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+              >
+                {declining ? "Declining…" : "Decline"}
+              </Button>
+              <Button
                 className="bg-green-700 hover:bg-green-800 text-white"
                 onClick={() => router.push(startUrl)}
+                disabled={declining}
               >
                 Start Verification
               </Button>
@@ -222,12 +274,22 @@ const TenantVerificationSummaryPage = () => {
               <Button
                 variant="outline"
                 onClick={() => router.push("/dashboard/tenant/verification/requests")}
+                disabled={declining}
               >
                 Back to List
               </Button>
               <Button
+                variant="outline"
+                onClick={() => handleDeclineRequest(verificationIdFromUrl)}
+                disabled={declining}
+                className="border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+              >
+                {declining ? "Declining…" : "Decline"}
+              </Button>
+              <Button
                 className="bg-green-700 hover:bg-green-800 text-white"
                 onClick={() => router.push(continueUrl)}
+                disabled={declining}
               >
                 Continue
               </Button>
@@ -366,8 +428,8 @@ const TenantVerificationSummaryPage = () => {
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                       {request?.status === "approved"
                         ? "Verification completed"
-                        : request?.status === "rejected"
-                          ? "Rejected"
+                        : request?.status === "rejected" || request?.status === "declined"
+                          ? "Declined / Rejected"
                           : "Verification Requested"}
                     </span>
                   </div>
@@ -409,7 +471,7 @@ const TenantVerificationSummaryPage = () => {
           </div>
           <h2 className="text-xl font-bold mb-2 text-gray-900">No submissions yet</h2>
           <p className="text-sm text-gray-600 mb-8">
-            You haven't submitted any verification requests yet. Check your pending requests to get started.
+            You haven&apos;t submitted any verification requests yet. Check your pending requests to get started.
           </p>
           <Button
             className="bg-green-700 hover:bg-green-800 text-white"

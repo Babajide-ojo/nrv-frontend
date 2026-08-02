@@ -18,8 +18,28 @@ const initialState: VerificationState = {
 };
 
 // Helper function for error messages
-const extractErrorMessage = (error: any) =>
-  error.response?.data?.message || "An error occurred, please try again later";
+const extractErrorMessage = (error: any) => {
+  const message = error.response?.data?.message;
+  if (Array.isArray(message)) {
+    const parts = message.map((item) => {
+      if (item == null) {
+        return "";
+      }
+      if (typeof item === "object") {
+        return JSON.stringify(item);
+      }
+      return String(item);
+    }).filter(Boolean);
+    return parts.join(". ") || parts[0] || "An error occurred, please try again later";
+  }
+  if (message && typeof message === "object") {
+    return JSON.stringify(message);
+  }
+  if (typeof message === "string" && message.trim()) {
+    return message;
+  }
+  return "An error occurred, please try again later";
+};
 
 // ─── Thunks ─────────────────────────────────────────────
 

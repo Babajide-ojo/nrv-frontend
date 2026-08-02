@@ -18,7 +18,7 @@ import {
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
-import { ApplicationStatus, getFileExtension } from "@/helpers/utils";
+import { ApplicationStatus, getFileExtension, normalizeAmenities } from "@/helpers/utils";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
@@ -820,12 +820,18 @@ const TenantScreen = () => {
                   value={room?.paymentOption || "—"}
                 />
               </div>
-              {room?.otherAmentities && (
+              {normalizeAmenities(room?.otherAmentities).length > 0 && (
                 <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50/70 p-3">
                   <p className="text-[11px] font-medium uppercase tracking-wide text-[#667085]">
                     Amenities
                   </p>
-                  <p className="mt-1 text-sm text-gray-900">{room.otherAmentities}</p>
+                  <ul className="mt-2 list-disc pl-5 space-y-1 text-sm text-gray-900">
+                    {normalizeAmenities(room?.otherAmentities).map(
+                      (amenity, i) => (
+                        <li key={`${amenity}-${i}`}>{amenity}</li>
+                      ),
+                    )}
+                  </ul>
                 </div>
               )}
             </div>

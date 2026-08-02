@@ -2,6 +2,7 @@
 import TenantLayout from "@/app/components/layout/TenantLayout";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { apiService } from "@/lib/api";
 import { FiUser, FiMail, FiHash, FiHome, FiUserCheck, FiPhone } from "react-icons/fi";
 import { MdArrowBackIos } from "react-icons/md";
@@ -15,6 +16,7 @@ const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
   approved: "bg-green-100 text-green-800 border-green-300",
   rejected: "bg-red-100 text-red-800 border-red-300",
+  declined: "bg-red-100 text-red-800 border-red-300",
 };
 
 const VerificationRequestsPage = () => {
@@ -24,6 +26,7 @@ const VerificationRequestsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [decliningId, setDecliningId] = useState<string | null>(null);
 
   useEffect(() => {
     let email = null;
@@ -100,6 +103,40 @@ const VerificationRequestsPage = () => {
     router.push(verificationStepPath(req._id, nextStep));
   };
 
+  const canDeclineRequest = (req: any) => {
+    const status = String(req?.status || "").toLowerCase();
+    if (status === "declined" || status === "rejected" || status === "approved") {
+      return false;
+    }
+    return isVerificationIncomplete(submissionByRequestId[req?._id]);
+  };
+
+  const handleDeclineRequest = async (req: any, e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    const confirmed = window.confirm(
+      "Decline this verification request? The landlord will be notified and you will not continue this screening.",
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setDecliningId(req._id);
+    try {
+      await apiService.post(
+        `/verification/${req._id}/decline`,
+        userEmail ? { email: userEmail } : {},
+      );
+      toast.success("Verification request declined");
+      if (userEmail) {
+        await fetchRequests(userEmail);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to decline verification request.");
+    } finally {
+      setDecliningId(null);
+    }
+  };
+
   return (
     <TenantLayout path="Verification" mainPath=" / My Verifications">
       <div className="max-w-3xl mx-auto w-full p-3 bg-white rounded-lg mt-8">
@@ -145,9 +182,11 @@ const VerificationRequestsPage = () => {
                   >
                     {(req.status || "").toLowerCase() === "approved"
                       ? "Verification completed"
-                      : req.status
-                        ? String(req.status).charAt(0).toUpperCase() + String(req.status).slice(1).toLowerCase()
-                        : "-"}
+                      : (req.status || "").toLowerCase() === "declined"
+                        ? "Declined"
+                        : req.status
+                          ? String(req.status).charAt(0).toUpperCase() + String(req.status).slice(1).toLowerCase()
+                          : "-"}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-2">
@@ -181,6 +220,25 @@ const VerificationRequestsPage = () => {
                     )}
                   </div>
                 </div>
+                {canDeclineRequest(req) && (
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeclineRequest(req, e)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          handleDeclineRequest(req, e);
+                        }
+                      }}
+                      disabled={decliningId === req._id}
+                      className="rounded-lg border border-red-200 bg-white px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
+                      aria-label={`Decline verification request ${req._id}`}
+                      tabIndex={0}
+                    >
+                      {decliningId === req._id ? "Declining…" : "Decline"}
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

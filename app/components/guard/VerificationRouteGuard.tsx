@@ -10,16 +10,8 @@ interface VerificationRouteGuardProps {
 
 /**
  * Session handling for tenant verification:
- *
- * - If the user has a session (nrv-user in localStorage) → allow access.
- * - If the user has no session but has verificationId in the URL (invite link) → allow access
- *   so they can complete verification without signing up first.
- * - If the user has no session and no verificationId → redirect to sign-in with returnUrl
- *   so they can sign in and then come back to verification (or use the link from the email).
- *
- * This supports "verification first, account optional": tenants can complete verification
- * via the email link without creating an account; we optionally prompt them to create
- * an account after completion to track applications.
+ * - Requires a signed-in session (JWT) so report/response APIs stay authorized.
+ * - Invite links without a session redirect to sign-in with returnUrl.
  */
 const VerificationRouteGuard: React.FC<VerificationRouteGuardProps> = ({ children }) => {
   const router = useRouter();
@@ -31,23 +23,17 @@ const VerificationRouteGuard: React.FC<VerificationRouteGuardProps> = ({ childre
     if (typeof window === "undefined") return;
 
     const userStr = localStorage.getItem("nrv-user");
-    let hasUser = false;
+    let hasSession = false;
     if (userStr) {
       try {
         const parsed = JSON.parse(userStr);
-        hasUser = !!(parsed?.user || parsed?.email);
+        hasSession = !!(parsed?.accessToken && (parsed?.user || parsed?.email));
       } catch {
-        hasUser = false;
+        hasSession = false;
       }
     }
 
-    const verificationId = searchParams.get("verificationId");
-
-    if (hasUser) {
-      setAllowed(true);
-      return;
-    }
-    if (verificationId) {
+    if (hasSession) {
       setAllowed(true);
       return;
     }

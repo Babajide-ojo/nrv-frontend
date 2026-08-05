@@ -85,7 +85,7 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   }, [pathname]);
 
   return (
-    <div className="relative flex h-screen min-h-0 min-w-0 max-w-full flex-col overflow-hidden">
+    <div className="relative flex h-screen min-h-0 min-w-0 max-w-full flex-col overflow-x-hidden">
       {/* Mobile menu overlay */}
       {mobileMenuOpen && (
         <div
@@ -173,12 +173,12 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
         {/* Main Content */}
         <div className="relative h-full min-w-0 w-full max-w-full flex-1 overflow-y-auto">
           {/* Header – responsive padding */}
-          <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
+          <div className="px-3 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
                 <button
                   type="button"
-                  className="shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
-                  aria-label="Open menu"
+                  className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"
+                  aria-label="Open navigation menu"
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen(true)}
                 >

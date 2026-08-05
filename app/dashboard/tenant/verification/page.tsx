@@ -214,6 +214,29 @@ const TenantVerificationSummaryPage = () => {
 
   // If a specific requestId is selected, render the submission details view (or a CTA to submit).
   if (verificationIdFromUrl) {
+    const requestStatus = String(request?.status || "").toLowerCase();
+    if (requestStatus === "declined") {
+      return (
+        <TenantLayout path="Verification" mainPath=" / My Submissions" subMainPath="Details">
+          <div className="mx-auto mt-4 w-full max-w-2xl rounded-xl border border-red-200 bg-white p-4 text-center shadow-sm sm:mt-8 sm:p-8">
+            <div className="h-16 w-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaFileAlt className="text-red-500 text-2xl" />
+            </div>
+            <h2 className="text-xl font-bold mb-2 text-gray-900">Verification declined</h2>
+            <p className="text-sm text-gray-600 mb-8 max-w-md mx-auto">
+              You declined this verification request. The form is no longer available for this request.
+            </p>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/dashboard/tenant/verification/requests")}
+            >
+              Back to List
+            </Button>
+          </div>
+        </TenantLayout>
+      );
+    }
+
     if (!response) {
       const startUrl = verificationStepPath(verificationIdFromUrl, "personal");
       return (

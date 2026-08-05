@@ -167,12 +167,12 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
         {/* Main Content */}
         <div className="relative h-full min-w-0 w-full max-w-full flex-1 overflow-y-auto">
           {/* Header */}
-          <div className="p-4 bg-white shadow-sm sticky top-0 z-30">
+          <div className="px-3 sm:p-4 py-3 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
                 <button
                   type="button"
-                  className="shrink-0 rounded-lg p-2 text-nrvPrimaryGreen hover:bg-[#E9F4E7] lg:hidden"
-                  aria-label="Open menu"
+                  className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"
+                  aria-label="Open navigation menu"
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen(true)}
                 >

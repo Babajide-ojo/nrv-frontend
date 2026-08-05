@@ -87,6 +87,9 @@ const VerificationRequestsPage = () => {
 
   const shouldOpenVerificationDetails = (req: any) => {
     const status = String(req?.status || "").toLowerCase();
+    if (status === "declined" || status === "rejected") {
+      return true;
+    }
     if (status === "approved" || status === "verification completed") {
       return true;
     }
@@ -95,6 +98,12 @@ const VerificationRequestsPage = () => {
   };
 
   const handleOpenRequest = (req: any) => {
+    const status = String(req?.status || "").toLowerCase();
+    // Always land on summary page for declined — never open the form wizard.
+    if (status === "declined" || status === "rejected") {
+      router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
+      return;
+    }
     if (shouldOpenVerificationDetails(req)) {
       router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
       return;

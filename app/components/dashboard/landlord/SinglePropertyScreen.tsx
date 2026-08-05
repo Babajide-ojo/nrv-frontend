@@ -206,6 +206,12 @@ const SinglePropertyScreen = () => {
   };
 
   const openDeleteConfirmation = () => {
+    if (isPropertyRented) {
+      toast.error(
+        "This property cannot be deleted because one or more units are rented.",
+      );
+      return;
+    }
     setShowDeleteConfirmation(true);
     setShowEditProperty(false);
   };
@@ -249,6 +255,7 @@ const SinglePropertyScreen = () => {
   const occupiedRooms = singleProperty?.rooms?.filter(
     (room: any) => room?.assignedToTenant
   ).length;
+  const isPropertyRented = occupiedRooms > 0;
   const vacantRooms = totalRooms - occupiedRooms;
 
   const occupancyRate = ((occupiedRooms / totalRooms) * 100).toFixed(0);
@@ -335,8 +342,19 @@ const SinglePropertyScreen = () => {
                     </Button>
                     <Button
                       variant="light"
-                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto border border-red-200 text-red-700 hover:bg-red-50"
+                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto border border-red-200 text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                       onClick={openDeleteConfirmation}
+                      disabled={isPropertyRented}
+                      title={
+                        isPropertyRented
+                          ? "Cannot delete a property with rented units"
+                          : "Delete property"
+                      }
+                      aria-label={
+                        isPropertyRented
+                          ? "Delete disabled: property has rented units"
+                          : "Delete property"
+                      }
                     >
                       Delete Property
                     </Button>
@@ -560,11 +578,16 @@ const SinglePropertyScreen = () => {
                   className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
                 >
                   <div className="rounded bg-white p-4 text-center shadow-md sm:p-8">
-                    <p>Are you sure you want to delete this property?</p>
+                    <p>
+                      {isPropertyRented
+                        ? "This property has rented units and cannot be deleted."
+                        : "Are you sure you want to delete this property?"}
+                    </p>
                     <div className="mt-4 flex justify-center space-x-4">
                       <button
                         onClick={deleteProperty}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        disabled={isPropertyRented || loading}
+                        className="bg-red-500 text-white px-4 py-2 rounded disabled:opacity-60"
                       >
                         Yes
                       </button>

@@ -596,6 +596,9 @@ const VerificationResponsePage = () => {
   const [verificationRequest, setVerificationRequest] = useState<{
     verificationTier?: "standard" | "premium";
     status?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -624,6 +627,23 @@ const VerificationResponsePage = () => {
 
   useEffect(() => {
     const fetchVerificationData = async () => {
+      if (typeof window === "undefined") {
+        return;
+      }
+      let hasToken = false;
+      try {
+        const raw = localStorage.getItem("nrv-user");
+        const parsed = raw ? JSON.parse(raw) : null;
+        hasToken = Boolean(parsed?.accessToken);
+      } catch {
+        hasToken = false;
+      }
+      if (!hasToken) {
+        setLoading(false);
+        setUnauthorized(true);
+        return;
+      }
+
       setLoading(true);
       setUnauthorized(false);
       try {
@@ -781,6 +801,48 @@ const VerificationResponsePage = () => {
   const verificationListPath = "/dashboard/landlord/properties/verification";
 
   if (!verificationData) {
+    if (String(verificationRequest?.status || "").toLowerCase() === "declined") {
+      return (
+        <ProtectedRoute>
+          <LandLordLayout path="Verification" mainPath="/ Verification Response">
+            <div className="m-6">
+              <button
+                onClick={() => router.push(verificationListPath)}
+                className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
+              >
+                <MdArrowBackIos size={16} />
+                Back to Tenant Verification
+              </button>
+              <div className="mx-auto max-w-2xl rounded-xl border border-red-200 bg-white p-6 text-center shadow-sm sm:p-8">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-2xl">
+                  ✕
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Tenant declined verification</h2>
+                <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                  This tenant declined your verification consent request. No screening report will be generated for this request.
+                </p>
+                <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-left text-sm text-gray-700 space-y-2">
+                  <p>
+                    <span className="font-medium text-gray-900">Tenant: </span>
+                    {verificationRequest?.firstName
+                      ? `${verificationRequest.firstName} ${verificationRequest.lastName || ""}`.trim()
+                      : email || "—"}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Email: </span>
+                    {verificationRequest?.email || email || "—"}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Request status: </span>
+                    Declined
+                  </p>
+                </div>
+              </div>
+            </div>
+          </LandLordLayout>
+        </ProtectedRoute>
+      );
+    }
     return (
       <ProtectedRoute>
         <LandLordLayout path="Verification" mainPath="/ Verification Response">
@@ -809,6 +871,48 @@ const VerificationResponsePage = () => {
 
   const requestStatus = String(verificationRequest?.status || "").toLowerCase();
   const isAdminApproved = requestStatus === "approved";
+
+  if (requestStatus === "declined") {
+    return (
+      <ProtectedRoute>
+        <LandLordLayout path="Verification" mainPath="/ Verification Response">
+          <div className="m-6">
+            <button
+              type="button"
+              onClick={() => router.push(verificationListPath)}
+              className="flex items-center gap-2 text-sm text-[#667085] hover:text-[#101828] mb-6"
+            >
+              <MdArrowBackIos size={16} />
+              Back to Tenant Verification
+            </button>
+            <div className="mx-auto max-w-2xl rounded-xl border border-red-200 bg-white p-6 text-center shadow-sm sm:p-8">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-2xl">
+                ✕
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Tenant declined verification</h2>
+              <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+                This tenant declined your verification consent request. The full report is not available.
+              </p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-left text-sm text-gray-700 space-y-2">
+                <p>
+                  <span className="font-medium text-gray-900">Tenant: </span>
+                  {verificationData.fullName || "—"}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Email: </span>
+                  {verificationData.email || email || "—"}
+                </p>
+                <p>
+                  <span className="font-medium text-gray-900">Request status: </span>
+                  Declined
+                </p>
+              </div>
+            </div>
+          </div>
+        </LandLordLayout>
+      </ProtectedRoute>
+    );
+  }
 
   if (!isAdminApproved) {
     return (

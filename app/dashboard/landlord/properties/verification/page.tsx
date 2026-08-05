@@ -240,6 +240,9 @@ export default function TenantVerification() {
                       } else if (val === "rejected") {
                         colorClass = "bg-red-100 text-red-700";
                         label = "Rejected";
+                      } else if (val === "declined") {
+                        colorClass = "bg-red-100 text-red-700";
+                        label = "Declined by tenant";
                       }
 
                       return (

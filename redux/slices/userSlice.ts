@@ -289,6 +289,8 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
       // For inactive users, store the email so they can verify, but don't create a session token.
       if (userData?.user?.status === "inactive") {
         localStorage.removeItem("nrv-user");
+        const { clearRoleCookie } = await import("@/lib/authSession");
+        clearRoleCookie();
         if (userData?.user?.email) {
           localStorage.setItem("emailToVerify", JSON.stringify({ data: { email: userData.user.email } }));
         }
@@ -301,7 +303,9 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
           localStorage.removeItem("rememberMe");
         }
         const { touchSessionActivity } = await import("@/lib/sessionIdle");
+        const { syncRoleCookieFromSession } = await import("@/lib/authSession");
         touchSessionActivity();
+        syncRoleCookieFromSession(userData);
       }
       return userData;
     } catch (error: any) {

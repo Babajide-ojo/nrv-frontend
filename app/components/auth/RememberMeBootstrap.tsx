@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { restoreSessionFromRememberMe } from "@/lib/rememberMe";
+import {
+  getDashboardHomeForRole,
+  getStoredSession,
+  isPathAllowedForRole,
+  resolveNrvRole,
+  syncRoleCookieFromSession,
+} from "@/lib/authSession";
 
 /**
- * On first load, if there is no nrv-user session, try restoring from the
- * httpOnly remember-me cookie. If restored while on sign-in, redirect home.
+ * On first load, sync role cookie from local session (or restore from remember-me).
+ * Redirect away from the wrong role dashboard if needed.
  */
 export function RememberMeBootstrap({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
@@ -18,23 +25,33 @@ export function RememberMeBootstrap({ children }: { children: React.ReactNode })
 
     const run = async () => {
       try {
-        const existing = localStorage.getItem("nrv-user");
-        if (!existing) {
-          const session = await restoreSessionFromRememberMe();
-          if (
-            !cancelled &&
-            session?.accessToken &&
-            (pathname === "/sign-in" || pathname === "/forgot-password")
-          ) {
-            const accountType = String(
-              session.user?.accountType || "",
-            ).toLowerCase();
-            if (accountType === "tenant") {
-              router.replace("/dashboard/tenant");
-            } else {
-              router.replace("/dashboard/landlord");
-            }
-          }
+        let session = getStoredSession();
+        if (!session?.accessToken) {
+          session = await restoreSessionFromRememberMe();
+        } else {
+          syncRoleCookieFromSession(session);
+        }
+
+        if (cancelled || !session?.accessToken) {
+          return;
+        }
+
+        const role = resolveNrvRole(session.user?.accountType);
+        if (!role) {
+          return;
+        }
+
+        const onAuthPage =
+          pathname === "/sign-in" || pathname === "/forgot-password";
+        if (onAuthPage) {
+          router.replace(getDashboardHomeForRole(role));
+          return;
+        }
+
+        const onRoleArea =
+          pathname.startsWith("/dashboard/") || pathname.startsWith("/onboard/");
+        if (onRoleArea && !isPathAllowedForRole(pathname, role)) {
+          window.location.replace(getDashboardHomeForRole(role));
         }
       } finally {
         if (!cancelled) {
@@ -43,7 +60,7 @@ export function RememberMeBootstrap({ children }: { children: React.ReactNode })
       }
     };
 
-    run();
+    void run();
     return () => {
       cancelled = true;
     };

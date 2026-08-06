@@ -72,9 +72,12 @@ export function TenantPropertyApplicationPanel({
     fd.append("applicant", user?._id ?? "");
     fd.append("status", "New");
     fd.append("ownerId", property?.owner?.id ?? "");
+    fd.append("jobTitle", value.jobTitle);
     fd.append("currentEmployer", value.currentEmployer);
     fd.append("monthlyIncome", value.monthlyIncome);
-    fd.append("currentAddress", value.currentResidence);
+    fd.append("currentResidence", value.currentResidence);
+    // Backend field is reasonForLiving; keep alias for older API clients
+    fd.append("reasonForLiving", value.reasonForLeaving);
     fd.append("reasonForLeaving", value.reasonForLeaving);
     fd.append("file", selectedFiles);
     try {

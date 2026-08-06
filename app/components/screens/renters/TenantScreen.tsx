@@ -779,7 +779,12 @@ const TenantScreen = () => {
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <DetailItem
                   label="Apartment Type"
-                  value={room?.apartmentType || "—"}
+                  value={
+                    room?.apartmentType ||
+                    room?.apartmentStyle ||
+                    room?.name ||
+                    "—"
+                  }
                 />
                 <DetailItem
                   label="Style"

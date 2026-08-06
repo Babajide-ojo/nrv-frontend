@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import Button from "../../../components/shared/buttons/Button";

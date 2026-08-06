@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
 import Spinner from "@/app/components/loaders/Spinner";
-import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
@@ -237,7 +236,6 @@ const RentedPropertiesScreen = () => {
 
   return (
     <div className="w-full min-w-0">
-      <ProtectedRoute>
         <TenantLayout
           path={
             isApplicationMode ? "Applications" : "Rented Apartments"
@@ -684,7 +682,6 @@ const RentedPropertiesScreen = () => {
             }}
             onConfirm={handleWithdrawApplication}
           />
-        </ProtectedRoute>
     </div>
   );
 };

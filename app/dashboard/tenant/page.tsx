@@ -1,20 +1,18 @@
 "use client";
 
-import React from "react";
-import ProtectedRoute from "../../components/guard/LandlordProtectedRoute";
 import TenantLayout from "../../components/layout/TenantLayout";
 import TenantDashboardScreen from "../../components/dashboard/tenant/TenantDashboardScreen";
 
-const SignIn = () => {
+/**
+ * Role/session checks are applied by app/dashboard/tenant/layout.tsx.
+ * Do not wrap with LandlordProtectedRoute here — that caused an infinite redirect loop.
+ */
+const TenantDashboardPage = () => {
   return (
-    <div>
-      <ProtectedRoute>
-        <TenantLayout>
-          <TenantDashboardScreen />
-        </TenantLayout>
-      </ProtectedRoute>
-    </div>
+    <TenantLayout>
+      <TenantDashboardScreen />
+    </TenantLayout>
   );
 };
 
-export default SignIn;
+export default TenantDashboardPage;

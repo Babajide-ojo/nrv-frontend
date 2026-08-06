@@ -27,6 +27,7 @@ export const restoreSessionFromRememberMe = async (): Promise<RestoredSession | 
     const response = await axios.get(`${API_URL}/auth/session`, {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
+      timeout: 8000,
     });
     const safeUser = { ...(response.data?.user || {}) };
     delete safeUser.password;

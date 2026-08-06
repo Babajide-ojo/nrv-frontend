@@ -499,23 +499,6 @@ const PersonalInfoVerification = ({ verificationId: verificationIdProp, initialD
 
         <div className="mt-10 flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end sm:gap-4">
           <Button
-            variant="outline"
-            onClick={() => {
-              if (!verificationId) {
-                alert('Verification link missing. Please use the link from your landlord\'s email.');
-                return;
-              }
-              if (allFieldsFilled && !isPrefilled) {
-                handleSubmit();
-                return;
-              }
-              router.push(`/dashboard/tenant/verification/employment-info?verificationId=${verificationId}`);
-            }}
-            className="h-auto w-full rounded-lg border-gray-200 px-6 py-2.5 text-gray-700 hover:bg-gray-50 sm:w-auto"
-          >
-            Skip for now
-          </Button>
-          <Button
             onClick={handleSubmit}
             className="h-auto w-full rounded-lg bg-[#03442C] px-8 py-2.5 text-white shadow-sm transition-all hover:bg-[#023524] hover:shadow sm:w-auto"
             disabled={isPrefilled && allFieldsFilled && !isDirty}

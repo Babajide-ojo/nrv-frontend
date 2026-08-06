@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import LoadingPage from "../../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
 import Button from "../../../../components/shared/buttons/Button";
 import { toast } from "react-toastify";
 import { useRouter, useParams } from "next/navigation";
@@ -271,7 +270,6 @@ const TenantPropertiesScreen = () => {
 
   return (
     <div className="pb-10 bg-gray-50 min-h-screen">
-      <ProtectedRoute>
         <TenantLayout mainPath="/dashboard/tenant/properties">
           {isLoading ? (
             <div className="mx-auto max-w-7xl space-y-6 p-3 animate-pulse sm:space-y-8 sm:p-4 md:p-8">
@@ -974,7 +972,6 @@ const TenantPropertiesScreen = () => {
             </DialogContent>
           </Dialog>
         </TenantLayout>
-      </ProtectedRoute>
     </div>
   );
 };

@@ -6,10 +6,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { createUser, updateUser } from "../../../../redux/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { IoIosArrowBack } from "react-icons/io";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import dynamic from "next/dynamic";
 import OnboardingCard from "../../shared/cards/OnboardingCard";
-import Carousel from "./Carousel";
+
+const Carousel = dynamic(() => import("./Carousel"), {
+  ssr: false,
+  loading: () => <div className="w-full h-screen bg-gradient-to-br from-[#03442C] to-[#022419]" />,
+});
 import {
   enquiryData,
   onboardingOptions,
@@ -23,7 +27,6 @@ interface FormData {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
   familyType: string;
   rentAmount: string;
   securityDeposit: string;
@@ -45,7 +48,6 @@ const OnboardingFormScreen: React.FC = () => {
     unit: "",
     city: "",
     state: "",
-    zipCode: "",
     familyType: "",
     securityDeposit: "",
     rentAmount: "",
@@ -65,9 +67,6 @@ const OnboardingFormScreen: React.FC = () => {
     }
     if (!formData.state.trim()) {
       errors.state = "State is required";
-    }
-    if (!formData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
     }
     if (!formData.familyType.trim()) {
       errors.familyType = "Family type is required";
@@ -122,12 +121,11 @@ const OnboardingFormScreen: React.FC = () => {
 
   return (
     <div className="">
-      <ToastContainer />
       <div className="h-screen">
         <div className="">
           {currentStep === 1 && (
             <div className="flex justify-center h-screen">
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",
@@ -191,7 +189,7 @@ const OnboardingFormScreen: React.FC = () => {
           {currentStep === 2 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",
@@ -261,7 +259,7 @@ const OnboardingFormScreen: React.FC = () => {
           {currentStep === 3 && (
             <div className="flex justify-center h-screen">
               <MarketingDetailsScreen />
-              <div className="w-full sm:w-1/2 p-8 justify-center">
+              <div className="w-full justify-center p-4 sm:w-1/2 sm:p-8">
                 <div
                   style={{
                     minHeight: "95vh",

@@ -1,60 +1,110 @@
 import React, { useState } from "react";
-import { Formik, Form } from "formik";
+// import { Formik, Form } from "formik";
 import * as yup from "yup";
 import InputField from "@/app/components/shared/input-fields/InputFields";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import Button from "@/app/components/shared/buttons/Button";
-import { AnyComponent } from "styled-components/dist/types";
+// import { AnyComponent } from "styled-components/dist/types";
 import { createProperty } from "@/redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
 import CenterModal from "../../shared/modals/CenterModal";
 import { useRouter } from "next/navigation";
+// import FormikSelectField from "../../shared/input-fields/FormikSelectField";
+// import { nigerianStatesAndLGAs } from "@/helpers/data";
+import ImageUploader from "../../shared/ImageUploader";
+import MultiImageUploader from "../../shared/MultiImageUploader";
+import { toast } from "react-toastify";
+import { nigerianStates } from "@/helpers/data";
+import { formatDisplayValue } from "@/helpers/utils";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
-const propertyTypes = [
-  { value: "apartment", label: "Residential – Apartment" },
-  { value: "house", label: "Residential – House" },
-  { value: "commercial", label: "Commercial Property" },
-];
+// const propertyTypes = [
+//   { value: "apartment", label: "Residential – Apartment" },
+//   { value: "house", label: "Residential – House" },
+//   { value: "commercial", label: "Commercial Property" },
+// ];
 
-const cities = [
-  { value: "lagos-island", label: "Lagos Island" },
-  { value: "ikeja", label: "Ikeja" },
-];
+// const cities = [
+//   { value: "lagos-island", label: "Lagos Island" },
+//   { value: "ikeja", label: "Ikeja" },
+// ];
 
-const states = [
-  { value: "lagos", label: "Lagos State" },
-  { value: "abuja", label: "Abuja" },
-];
+// const states = [
+//   { value: "abia", label: "Abia" },
+//   { value: "adamawa", label: "Adamawa" },
+//   { value: "akwaibom", label: "Akwa Ibom" },
+//   { value: "anambra", label: "Anambra" },
+//   { value: "bauchi", label: "Bauchi" },
+//   { value: "bayelsa", label: "Bayelsa" },
+//   { value: "benue", label: "Benue" },
+//   { value: "borno", label: "Borno" },
+//   { value: "crossriver", label: "Cross River" },
+//   { value: "delta", label: "Delta" },
+//   { value: "ebonyi", label: "Ebonyi" },
+//   { value: "edo", label: "Edo" },
+//   { value: "ekiti", label: "Ekiti" },
+//   { value: "enugu", label: "Enugu" },
+//   { value: "gombe", label: "Gombe" },
+//   { value: "imo", label: "Imo" },
+//   { value: "jigawa", label: "Jigawa" },
+//   { value: "kaduna", label: "Kaduna" },
+//   { value: "kano", label: "Kano" },
+//   { value: "katsina", label: "Katsina" },
+//   { value: "kebbi", label: "Kebbi" },
+//   { value: "kogi", label: "Kogi" },
+//   { value: "kwara", label: "Kwara" },
+//   { value: "lagos", label: "Lagos" },
+//   { value: "nasarawa", label: "Nasarawa" },
+//   { value: "niger", label: "Niger" },
+//   { value: "ogun", label: "Ogun" },
+//   { value: "ondo", label: "Ondo" },
+//   { value: "osun", label: "Osun" },
+//   { value: "oyo", label: "Oyo" },
+//   { value: "plateau", label: "Plateau" },
+//   { value: "rivers", label: "Rivers" },
+//   { value: "sokoto", label: "Sokoto" },
+//   { value: "taraba", label: "Taraba" },
+//   { value: "yobe", label: "Yobe" },
+//   { value: "zamfara", label: "Zamfara" },
+//   { value: "fct", label: "Federal Capital Territory (Abuja)" },
+// ];
 
-const rentCollectionOptions = [
-  { value: "monthly", label: "Monthly" },
-  { value: "quarterly", label: "Quarterly" },
-  { value: "annually", label: "Annually" },
-];
+// const rentCollectionOptions = [
+//   { value: "monthly", label: "Monthly" },
+//   { value: "quarterly", label: "Quarterly" },
+//   { value: "annually", label: "Annually" },
+// ];
 
-const validationSchema = yup.object({
-  propertyName: yup.string().required("Property Name is required"),
-  address: yup.string().required("Address is required"),
-  propertyType: yup.string().required("Property Type is required"),
-  zipCode: yup.string().optional(),
-  city: yup.string().required("City is required"),
-  state: yup.string().required("State is required"),
-  file: yup
-    .mixed()
-    .test("fileSize", "File size is too large", (file: any) =>
-      file ? file.size <= 8000000 : true
-    ) // Optional file validation (max 8MB)
-    .test("fileType", "Unsupported file format", (file: any) =>
-      file
-        ? ["image/png", "image/jpeg", "image/gif", "image/svg+xml"].includes(
-            file.type
-          )
-        : true
-    ),
-});
+// const validationSchema = yup.object({
+//   propertyName: yup.string().required("Property Name is required"),
+//   address: yup.string().required("Address is required"),
+//   propertyType: yup.string().required("Property Type is required"),
+//   city: yup.string().required("City is required"),
+//   state: yup.string().required("State is required"),
+//   rentCollection: yup.string().required("Rent collection cycle is required"),
+// });
 
+interface UnitData {
+  description: string;
+  rentAmount: string;
+  noOfRooms: string;
+  noOfBaths: string;
+  apartmentStyle: string;
+  leaseTerms: string;
+  rentAmountMetrics: string;
+  paymentOption: string;
+  // availableUnits: string;
+  otherAmentities: string[];
+  images?: File[];
+}
 
-
+interface PropertyData {
+  location: string;
+  buildingType: string;
+  city: string;
+  state: string;
+  units: UnitData[];
+}
 
 const MultiStepForm = () => {
   const dispatch = useDispatch();
@@ -62,355 +112,635 @@ const MultiStepForm = () => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<any>(false);
-  const [propertyData, setFormData] = useState<any>({
-    propertyName: "",
-    address: "",
-    propertyType: "",
-    zipCode: "",
+  const [showDescription, setShowDescription] = useState(false);
+  // const [selectedState, setSelectedState] = useState<string | null>(null);
+  // const [lgaOptions, setLgaOptions] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [selectedFiles, setSelectedFiles] = useState<any>([]);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [buildingType, setBuildingType] = useState<any>({
+    label: "Residential",
+    value: "Residential",
+  });
+  const [propertyData, setPropertyData] = useState<PropertyData>({
+    location: "",
+    buildingType: "Residential",
     city: "",
     state: "",
-    rentCollection: "",
-    preferredTenants: [],
-    file: null,
+    units: [
+      {
+        description: "",
+        rentAmount: "",
+        noOfRooms: "",
+        noOfBaths: "",
+        apartmentStyle: "",
+        leaseTerms: "",
+        rentAmountMetrics: "",
+        // availableUnits: "1",
+        paymentOption: "",
+        otherAmentities: [],
+        images: [],
+      },
+    ],
   });
 
-  const handleNext = () => {
-    setStep(step + 1);
+  const validateForm = () => {
+    let errors: { [key: string]: string } = {};
+
+    if (!propertyData.location.trim()) {
+      errors.location = "Address/Location is required";
+    }
+    if (!propertyData.city.trim()) {
+      errors.city = "City is required";
+    }
+    if (!propertyData.state.trim()) {
+      errors.state = "State is required";
+    }
+    if (!selectedFiles || selectedFiles.length === 0) {
+      errors.file = "A file is required";
+    }
+
+    if (!propertyData.units || propertyData.units.length === 0) {
+      errors.units = "At least one room/unit must be added";
+    } else {
+      propertyData.units.forEach((unit, index) => {
+        if (!unit.description?.trim() || !unit.rentAmount?.trim()) {
+          errors[`unit-${index}`] = `Room ${
+            index + 1
+          }: Name and rent are required`;
+        }
+      });
+    }
+
+    // ✅ Show a single toast if any errors exist
+    if (Object.keys(errors).length > 0) {
+      toast.error("All fields are required");
+      return false;
+    }
+
+    return true;
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev: any) => ({
-        ...prev,
-        file: file,
-      }));
-    }
-  };
-  
-  const handleNextAndVerify = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNextAndVerify = async (e: any) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
     const formData = new FormData();
-    formData.append("streetAddress", propertyData.streetAddress);
+    formData.append("location", propertyData.location);
+    formData.append("buildingType", buildingType.value);
     formData.append("city", propertyData.city);
     formData.append("state", propertyData.state);
-    formData.append("zipCode", propertyData.zipCode);
-  
-    // Append file (if any selected files)
-    if (propertyData.file) {
-      formData.append("file", propertyData.file);
-    }
-  
-    // Append createdBy (user ID)
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    formData.append("createdBy", user?.user?._id);
-  
-    // Handle optional fields and arrays (e.g., preferredTenants, landlordInsurancePolicy)
-    if (propertyData.preferredTenants) {
-      propertyData.preferredTenants.forEach((tenant: any) => {
-        formData.append("preferredTenants[]", tenant); // Using '[]' to indicate an array
-      });
-    }
-  
-    if (propertyData.propertyName) {
-      formData.append("propertyName", propertyData.propertyName);
-    }
-  
-    if (propertyData.propertyType) {
-      formData.append("propertyType", JSON.stringify(propertyData.propertyType)); // Assuming propertyType is an object
-    }
-  
-    if (propertyData.rentCollection) {
-      formData.append("rentCollection", JSON.stringify(propertyData.rentCollection)); // Assuming rentCollection is an object
-    }
-  
-    // Handle landlordInsurancePolicy, utilityAndMaintenance, and otherDocuments (all are arrays)
-    if (propertyData.landlordInsurancePolicy) {
-      propertyData.landlordInsurancePolicy.forEach((document: any) => {
-        formData.append("landlordInsurancePolicy[]", document);
-      });
-    }
-  
-    if (propertyData.utilityAndMaintenance) {
-      propertyData.utilityAndMaintenance.forEach((document: any) => {
-        formData.append("utilityAndMaintenance[]", document);
-      });
-    }
-  
-    if (propertyData.otherDocuments) {
-      propertyData.otherDocuments.forEach((document: any) => {
-        formData.append("otherDocuments[]", document);
-      });
-    }
-  
-    try {
+    formData.append("file", selectedFiles);
+    
+    formData.append(
+      "createdBy",
+      JSON.parse(localStorage.getItem("nrv-user") as string)?.user?._id
+    );
+    formData.append("units", JSON.stringify(propertyData.units));
 
-      const userData = await dispatch(createProperty(formData) as any).unwrap();
-      setFormData({
-        streetAddress: "",
+    try {
+      setIsLoading(true);
+      await dispatch(createProperty(formData) as any).unwrap();
+      setPropertyData({
+        location: "",
+        buildingType: "Residential",
         city: "",
         state: "",
-        zipCode: "",
-        preferredTenants: [],
-        propertyName: "",
-        propertyType: { value: '', label: '' },
-        rentCollection: { value: '', label: '' },
-        landlordInsurancePolicy: [],
-        utilityAndMaintenance: [],
-        otherDocuments: [],
+        units: [
+          {
+            description: "",
+            rentAmount: "",
+            noOfRooms: "",
+            noOfBaths: "",
+            apartmentStyle: "",
+            // availableUnits: "1",
+            leaseTerms: "",
+            rentAmountMetrics: "",
+            paymentOption: "",
+            otherAmentities: [],
+          },
+        ],
       });
-      setShowModal(true)
+      setSelectedFiles([]);
+      setShowModal(true);
+      setIsLoading(false);
     } catch (error: any) {
-      alert(error)
+      alert(error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPropertyData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+  };
+
+  const handleUnitChange = (
+    index: number,
+    field: keyof UnitData,
+    value: UnitData[keyof UnitData]
+  ) => {
+    const updatedUnits = [...propertyData.units];
+    updatedUnits[index] = {
+      ...updatedUnits[index],
+      [field]: value,
+    };
+    setPropertyData((prevData) => ({
+      ...prevData,
+      units: updatedUnits,
+    }));
+  };
+
+  const handleUnitChangeWithComma = (
+    index: number,
+    field: keyof UnitData,
+    value: string
+  ) => {
+    // Remove commas for thousands separators
+    const cleanedValue = value.replace(/,/g, "");
+
+    // Allow empty input, decimal point, or valid decimal numbers
+    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
+      setPropertyData((prevData) => {
+        const updatedUnits = [...prevData.units];
+        updatedUnits[index] = {
+          ...updatedUnits[index],
+          [field]: cleanedValue,
+        };
+        return {
+          ...prevData,
+          units: updatedUnits,
+        };
+      });
+    }
+  };
+
+  const addUnit = () => {
+    setPropertyData((prevData) => ({
+      ...prevData,
+      units: [
+        ...prevData.units,
+        {
+          description: "",
+          rentAmount: "",
+          noOfRooms: "",
+          noOfBaths: "",
+          apartmentStyle: "",
+          // availableUnits: "1",
+          leaseTerms: "",
+          rentAmountMetrics: "",
+          paymentOption: "",
+          otherAmentities: [],
+          images: [],
+        },
+      ],
+    }));
+  };
+
+  const removeUnit = (index: number) => {
+    const updatedUnits = [...propertyData.units];
+    updatedUnits.splice(index, 1);
+    setPropertyData((prevData) => ({
+      ...prevData,
+      units: updatedUnits,
+    }));
+  };
+
+  const handleImageChange = (file: File) => {
+    setSelectedFiles(file);
+  };
+
+  const handleImagesChange = (files: File[]) => {
+    setSelectedImages(files);
+  };
+
+  const handleUnitImagesChange = (index: number, files: File[]) => {
+    const updatedUnits = [...propertyData.units];
+    updatedUnits[index] = {
+      ...updatedUnits[index],
+      images: files,
+    };
+    setPropertyData((prevData) => ({
+      ...prevData,
+      units: updatedUnits,
+    }));
+  };
+
   return (
-    <div className="mx-auto mt-10 p-8 bg-white w-full">
-      {step === 1 && (
-        <Formik
-          initialValues={propertyData}
-          // validationSchema={validationSchema}
-          onSubmit={handleNext}
-        >
-          {() => (
-            <Form className="space-y-8">
-              <h2 className="text-2xl font-bold">Add Your Property</h2>
-              <p className="text-gray-500">
+    <div className="mx-auto w-full max-w-xl bg-white p-4 sm:p-6 md:p-8">
+      <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
+        {step === 1 && (
+          <div className="space-y-5">
+            <h1 className="mb-6 text-2xl font-bold text-green-600 lg:hidden">
+              NaijaRentVerify
+            </h1>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="text-sm text-gray-500 hover:text-gray-700"
+                onClick={() => router.push("/sign-in")}
+              >
+                Skip for Now →
+              </button>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Add Your Property</h2>
+              <p className="mt-1 text-sm text-gray-500">
                 Help us personalize your experience by providing more details.
               </p>
+            </div>
 
+            <InputField
+              label="Property Address/Location"
+              name="location"
+              required
+              variant="nested"
+              placeholder="Street address or area"
+              value={propertyData.location}
+              onChange={handleInputChange}
+              error={errors.location}
+            />
+
+            <SelectField
+              label="Building Type"
+              required
+              variant="nested"
+              value={buildingType}
+              onChange={(val: { label: string; value: string }) => setBuildingType(val)}
+              options={[
+                { label: "Residential", value: "Residential" },
+                { label: "Commercial", value: "Commercial" },
+              ]}
+              placeholder="Select Building Type"
+              name="buildingType"
+            />
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <InputField
-                label="Name of Property"
-                name="propertyName"
-                value={propertyData.propertyName}
-                onChange={(e) =>
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    propertyName: e.target.value,
-                  }))
-                }
-                placeholder="Luxury Apartment, Lekki Phase 1"
+                label="City"
+                name="city"
+                required
+                variant="nested"
+                placeholder="City"
+                value={propertyData.city}
+                onChange={handleInputChange}
+                error={errors.city}
               />
-
-              <InputField
-                label="Property Street Address/Location"
-                name="address"
-                value={propertyData.address}
-                onChange={(e) =>
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    address: e.target.value,
-                  }))
+              <SelectField
+                label="State"
+                variant="nested"
+                value={
+                  propertyData.state
+                    ? { label: propertyData.state, value: propertyData.state }
+                    : null
                 }
-                placeholder="12 Admiralty Way, Lekki, Lagos"
+                required
+                onChange={(val: { label: string; value: string } | null) =>
+                  setPropertyData({
+                    ...propertyData,
+                    state: val?.value ?? "",
+                  })
+                }
+                options={nigerianStates}
+                placeholder="Select State"
+                error={errors.state}
+                name="state"
               />
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <SelectField
-                  label="Property Type"
-                  name="propertyType"
-                  value={propertyData.propertyType} // Use formData.propertyType here
-                  onChange={(selected) => {
-                    setFormData((prev: any) => ({
-                      ...prev,
-                      propertyType: selected, // Make sure to pass selected.value here
-                    }));
-                  }}
-                  options={propertyTypes}
-                  placeholder="Select Property Type"
-                />
+            <ImageUploader label="" onChange={handleImageChange} />
 
-                <InputField
-                  label="Zip Code"
-                  name="zipCode"
-                  value={propertyData.zipCode}
-                  onChange={(e) =>
-                    setFormData((prev: any) => ({
-                      ...prev,
-                      zipCode: e.target.value,
-                    }))
-                  }
-                  placeholder="Enter Zip Code"
-                />
-              </div>
+            <Button
+              type="button"
+              onClick={() => setStep(2)}
+              variant="darkPrimary"
+              size="large"
+              className="w-full p-4"
+            >
+              Save and Continue
+            </Button>
+          </div>
+        )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <SelectField
-                  label="City"
-                  name="city"
-                  value={propertyData.city} // Use formData.city here
-                  onChange={(selected) => {
-                    setFormData((prev: any) => ({
-                      ...prev,
-                      city: selected, // Ensure selected.value is set here
-                    }));
-                  }}
-                  options={cities}
-                  placeholder="Select City"
-                />
-
-                <SelectField
-                  label="State"
-                  name="state"
-                  value={propertyData.state} // Use formData.state here
-                  onChange={(selected) => {
-                    setFormData((prev: any) => ({
-                      ...prev,
-                      state: selected, // Ensure selected.value is set here
-                    }));
-                  }}
-                  options={states}
-                  placeholder="Select State"
-                />
-              </div>
-
-              <div className="border-dashed border-2 p-6 text-center rounded-lg mb-6 relative">
-                {propertyData.file ? (
-                  <div>
-                    <div className="flex justify-center">
-                      <img
-                        src={URL.createObjectURL(propertyData.file)}
-                        alt="Profile Preview"
-                        className="h-20 w-20 rounded-full"
-                      />
-                    </div>
-                    <p className="text-gray-500 mt-2 text-sm">
-                      <span className="text-nrvPrimaryGreen font-medium">
-                        Click to upload
-                      </span>{" "}
-                      or drag and drop
-                    </p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      SVG, PNG, JPG, GIF (max. 800×400px)
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex justify-center">
-                      <img
-                        src="/icons/Upload.svg"
-                        alt="Profile Preview"
-                        className=""
-                      />
-                    </div>
-                    <p className="text-gray-500 mt-2">
-                      <span className="text-nrvPrimaryGreen">
-                        Click to upload
-                      </span>{" "}
-                      or drag and drop
-                    </p>
-                    <p className="text-sm text-gray-400 mt-2">
-                      SVG, PNG, JPG, GIF (max. 800×400px)
-                    </p>
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={handleFileChange}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="darkPrimary"
-                size="large"
-                className="w-full p-4"
-              >
-                Save and Continue
-              </Button>
-
-              <p className="text-center text-gray-500 mt-2 cursor-pointer">
-                Skip for Now →
-              </p>
-            </Form>
-          )}
-        </Formik>
-      )}
-
-      {step === 2 && (
-        <Formik
-          initialValues={propertyData}
-          // validationSchema={validationSchema[1]}
-          onSubmit={handleNextAndVerify}
-        >
-          {() => (
-            <Form className="space-y-4">
+        {step === 2 && (
+          <div className="space-y-4">
+            <div className="flex justify-between">
+              {" "}
               <h2 className="text-2xl font-bold">
                 Set Up Your Property Preferences
               </h2>
-              <p className="text-gray-500">
-                Tell us more about what you&apos;re looking for.
-              </p>
+            </div>
+            <p className="text-gray-500">
+              Tell us more about what you&apos;re looking for.
+            </p>
 
-              <SelectField
-                label="Rent Collection Preference"
-                name="rentCollection"
-                value={propertyData.rentCollection}
-                onChange={(selected) => {
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    rentCollection: selected, // Make sure to pass selected.value here
-                  }));
-                }}
-                options={rentCollectionOptions}
-                placeholder="Select Preference"
-              />
+            {propertyData.units.map((unit, index) => (
+              <div key={index} className="rounded-xl mb-6 bg-white">
+                <div className="flex justify-between">
+                  <h3 className="font-semibold mb-2">Unit {index + 1}</h3>
 
-              <div>
-                <label className="block font-medium">
-                  Preferred Tenant Type
-                </label>
-                <div className="flex space-x-4 mt-2">
-                  {["Families", "Professionals", "Students", "Singles"].map(
-                    (type) => (
-                      <label key={type} className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          value={type}
-                          checked={propertyData.preferredTenants.includes(type)}
-                          onChange={() => {
-                            setFormData((prev: any) => ({
-                              ...prev,
-                              preferredTenants: prev.preferredTenants.includes(
-                                type
-                              )
-                                ? prev.preferredTenants.filter(
-                                    (t: string) => t !== type
-                                  ) // Remove if already selected
-                                : [...prev.preferredTenants, type], // Add if not selected
-                            }));
-                          }}
-                        />
-                        <span>{type}</span>
-                      </label>
-                    )
+                  {index > 0 && (
+                    <Button
+                      variant="light"
+                      className="text-red-500"
+                      type="button"
+                      onClick={() => removeUnit(index)}
+                    >
+                      - Remove Unit
+                    </Button>
                   )}
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                  <InputField
+                    label="Description"
+                    value={unit?.description}
+                    required
+                    icon={
+                      <div className="relative ">
+                        <IoMdInformationCircleOutline
+                          onMouseEnter={() => setShowDescription(true)}
+                          onMouseLeave={() => setShowDescription(false)}
+                          size={20}
+                        />
+                        {showDescription && (
+                          <div className="absolute text-start -right-3 bottom-full p-2 text-xs mb-1 rounded-md bg-white border w-[250px]">
+                            Describe the apartment, its features, and any unique
+                            selling points.
+                          </div>
+                        )}
+                      </div>
+                    }
+                    onChange={(e) =>
+                      handleUnitChange(index, "description", e.target.value)
+                    }
+                    name={`descriotion-${index}`}
+                  />
+
+                  <InputField
+                    label="Rent Amount"
+                    value={formatDisplayValue(unit.rentAmount)}
+                    required
+                    onChange={(e) =>
+                      handleUnitChangeWithComma(
+                        index,
+                        "rentAmount",
+                        e.target.value
+                      )
+                    }
+                    name={`rentAmount-${index}`}
+                  />
+
+                  <InputField
+                    label="Bedrooms"
+                    value={unit.noOfRooms}
+                    required
+                    onChange={(e) =>
+                      handleUnitChange(index, "noOfRooms", e.target.value)
+                    }
+                    name={`noOfRooms-${index}`}
+                  />
+
+                  <InputField
+                    label="Bathrooms"
+                    value={unit.noOfBaths}
+                    required
+                    onChange={(e) =>
+                      handleUnitChange(index, "noOfBaths", e.target.value)
+                    }
+                    name={`noOfBaths-${index}`}
+                  />
+                  <SelectField
+                    label="Apartment Style"
+                    value={{
+                      label: unit.apartmentStyle,
+                      value: unit.apartmentStyle,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "apartmentStyle", val?.value)
+                    }
+                    options={[
+                      { label: "Modern", value: "Modern" },
+                      {
+                        label: "Contemporary",
+                        value: "Contemporary",
+                      },
+                      { label: "Classic", value: "Classic" },
+                    ]}
+                    name={`apartmentStyle-${index}`}
+                  />
+
+                  <SelectField
+                    label="Lease Terms"
+                    value={{
+                      label: unit.leaseTerms,
+                      value: unit.leaseTerms,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "leaseTerms", val?.value)
+                    }
+                    options={[
+                      {
+                        label: "1-Year Lease, Renewable",
+                        value: "1-Year Lease, Renewable",
+                      },
+                      {
+                        label: "6 Months Lease",
+                        value: "6 Months Lease",
+                      },
+                    ]}
+                    name={`leaseTerms-${index}`}
+                  />
+
+                  <SelectField
+                    label="Rent Collection Preference"
+                    value={{
+                      label: unit.rentAmountMetrics,
+                      value: unit.rentAmountMetrics,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "rentAmountMetrics", val?.value)
+                    }
+                    options={[
+                      { label: "Annually", value: "Annually" },
+                      { label: "Monthly", value: "Monthly" },
+                      { label: "Quarterly", value: "Quarterly" },
+                    ]}
+                    name={`rentAmountMetrics-${index}`}
+                  />
+
+                  <SelectField
+                    label="Payment Option"
+                    value={{
+                      label: unit.paymentOption,
+                      value: unit.paymentOption,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "paymentOption", val.value)
+                    }
+                    options={[
+                      {
+                        label: "Full Payment",
+                        value: "Full Payment",
+                      },
+                      {
+                        label: "Installment",
+                        value: "Installment",
+                      },
+                    ]}
+                    name={`paymentOption-${index}`}
+                  />
+
+                  {/* <SelectField
+                    label="No of Available Units"
+                    value={{
+                      label: unit.availableUnits,
+                      value: unit.availableUnits,
+                    }}
+                    required
+                    onChange={(val: any) =>
+                      handleUnitChange(index, "availableUnits", val.value)
+                    }
+                    options={[
+                      { label: "1", value: "1" },
+                      { label: "2", value: "2" },
+                      { label: "3", value: "3" },
+                      { label: "4", value: "4" },
+                      { label: "5", value: "5" },
+                      { label: "6", value: "6" },
+                      { label: "7", value: "7" },
+                      { label: "8", value: "8" },
+                      { label: "9", value: "9" },
+                    ]}
+                    name={`availableUnits-${index}`}
+                  /> */}
+                </div>
+
+                <p className="text-sm font-medium my-2">Other Amenities</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {[
+                    "Parking Space",
+                    "Wi-Fi/Internet",
+                    "Gym/Fitness Centre",
+                    "Outdoor living area",
+                    "Security",
+                    "Spa",
+                    "Power Backup",
+                    "Swimming Pool",
+                    "Major appliances",
+                    "Smart Technology",
+                    "Smart Wine Cellar",
+                    "Home Theatres",
+                    "Elevator",
+                  ].map((amenity, i) => {
+                    const amenities = Array.isArray(unit.otherAmentities)
+                      ? unit.otherAmentities
+                      : [];
+
+                    return (
+                      <label
+                        key={i}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={amenities.includes(amenity)}
+                          onChange={(e) => {
+                            const updatedAmenities = e.target.checked
+                              ? [...amenities, amenity]
+                              : amenities.filter((a) => a !== amenity);
+                            handleUnitChange(
+                              index,
+                              "otherAmentities",
+                              updatedAmenities
+                            );
+                          }}
+                          className="peer hidden"
+                        />
+                        <div className="w-5 h-5 rounded border border-gray-300 flex items-center justify-center peer-checked:bg-green-600 transition">
+                          {amenities.includes(amenity) && (
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-sm">{amenity}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* Unit Images */}
+                <div className="mt-6">
+                  <MultiImageUploader 
+                    label={`Unit ${index + 1} Images`}
+                    onChange={(files) => handleUnitImagesChange(index, files)}
+                    value={unit.images || []}
+                    maxFiles={5}
+                  />
+                </div>
               </div>
-
+            ))}
+            <div className="flex items-center justify-center mb-5">
               <Button
-                type="submit"
-                variant="darkPrimary"
-                size="large"
-                className="w-full p-4"
+                variant="light"
+                className="mt-4"
+                onClick={addUnit}
+                type="button"
               >
-                Save Preferences
+                + Add Another Unit
               </Button>
+            </div>
 
-              <p className="text-center text-gray-500 mt-2 cursor-pointer">
-                Skip for Now →
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              variant="darkPrimary"
+              size="large"
+              className="w-full p-4"
+            >
+              Save Preferences
+            </Button>
+
+            <div className="flex justify-between mt-16">
+              <p
+                className="text-center text-sm text-red-500 mt-2 cursor-pointer"
+                onClick={() => setStep(1)}
+              >
+                {" "}
+                Go Back
               </p>
-            </Form>
-          )}
-        </Formik>
-      )}
+            </div>
+          </div>
+        )}
+      </form>
 
-<CenterModal isOpen={showModal} onClose={() => !showModal}>
+      <CenterModal isOpen={showModal} onClose={() => !showModal}>
         <div>
           <div className="flex justify-center items-center">
-            <div className="rounded-2xl p-8 w-full">
+            <div className="w-full rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full">
                   <svg

@@ -4,11 +4,9 @@ import SettingsMainScreen from "@/app/components/screens/settings/SettingsMainSc
 
 const SettingsMainPage = () => {
   return (
-    <div>
-      <LandLordLayout>
-        <SettingsMainScreen />
-      </LandLordLayout>
-    </div>
+    <LandLordLayout path="Settings" mainPath="Account">
+      <SettingsMainScreen />
+    </LandLordLayout>
   );
 };
 

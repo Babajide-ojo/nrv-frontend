@@ -1,103 +1,132 @@
-import { ArrowRight, Mail } from "lucide-react";
+"use client";
+
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-[#03442C] text-white  flex justify-center items-center py-32 w-full">
-      <div className="w-4/5 mx-auto">
-        <div className="max-w-9xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 md:gap-48 gap-10 p-4">
-          {/* Newsletter Section */}
-          <div>
-            <h3 className="text-[42px] font-medium">Explore with Us Now!</h3>
-            <p className="mt-2 font-light text-[#FFFFFFB2] leading-8 text-[16px] max-w-xs">
-              Stay updated with <strong>NaijaRentVerify</strong> by subscribing
-              to our newsletter for updates and tips!
-            </p>
-            <div className="flex items-center bg-white rounded-full px-6 py-3 w-full max-w-sm shadow-md mt-8">
-              <Mail className="text-gray-400 w-5 h-5" />
-              <input
-                type="email"
-                placeholder="Enter Your Email"
-                className="font-light flex-grow bg-transparent text-gray-600 text-sm placeholder-gray-400 focus:outline-none px-2"
-              />
-              <button className="bg-lime-300 text-black rounded-full w-8 h-8 flex items-center justify-center">
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+    <footer className="bg-[#0D3520] text-white w-full overflow-x-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        {/* CTA */}
+        <div className="bg-[#0D3520] rounded-2xl border border-white/10 px-6 sm:px-10 py-10 sm:py-12 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">Ready to Rent with Confidence?</h2>
+          <p className="mt-3 text-white/70 text-sm sm:text-base max-w-2xl mx-auto leading-7">
+            Join thousands of Nigerian landlords and tenants who trust NaijaRentVerify for safer, smarter
+            renting.
+          </p>
 
-          {/* Links Section */}
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-8">
-            <div>
-              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="#">
-                  {" "}
-                  <li>About Us</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Careers</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Contact Us</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Legal Notices</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Privacy Notice</li>
-                </Link>
-              </ul>
-            </div>
-
-            <div>
-              <ul className="mt-2 space-x-8 text-[14px] font-light text-[#FFFFFFB2]">
-                <Link href="#">
-                  {" "}
-                  <li>Add a Property</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>List Your Property for Rent</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Screen Applicants</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Create Rental</li>
-                </Link>
-                <Link href="#">
-                  {" "}
-                  <li>Customer Portal</li>
-                </Link>
-              </ul>
-            </div>
+          <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/sign-up"
+              className="inline-flex items-center justify-center gap-2 bg-white text-[#0D3520] font-semibold px-6 py-3 rounded-full"
+            >
+              Create Free Account <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/listings"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-full border border-white/25 text-white/90 hover:text-white hover:border-white/35 transition-colors"
+            >
+              View Properties
+            </Link>
           </div>
         </div>
 
-        <div className="text-white mt-8">
-          <nav className="md:flex hidden justify-between items-center px-10 py-6 rounded-full bg-[#03442C] max-w-7xl mx-auto mt-6 bg-[#0D3520] opacity-80">
-            <h1 className="text-lg font-bold">NaijaRentVerify</h1>
-            <ul className="flex space-x-8 text-sm">
-              <li className="cursor-pointer hover:text-gray-300">About Us</li>
-              <li className="cursor-pointer hover:text-gray-300">Management</li>
-              <li className="cursor-pointer hover:text-gray-300">Project</li>
-              <li className="cursor-pointer hover:text-gray-300">FAQs</li>
-            </ul>
-          </nav>
+        <div className="h-px bg-white/15 mt-10" />
 
-          {/* Footer */}
-          <footer className="text-center text-gray-400 text-sm py-6">
-            Copyright © 2025{" "}
-            <span className="text-white font-semibold">NaijaRentVerify</span>{" "}
-            All rights reserved
-          </footer>
+        {/* Columns */}
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-white/80" />
+              <span className="font-semibold text-white/90">NaijaRentVerify</span>
+            </div>
+            <p className="mt-3 text-sm text-white/60 leading-6 max-w-[230px]">
+              Nigeria&apos;s trusted platform for tenant verification and property management.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-white/90">Platform</h3>
+            <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
+              <li>
+                <Link href="/listings" className="hover:text-white transition-colors">
+                  Browse Listings
+                </Link>
+              </li>
+              <li>
+                <Link href="/sign-up?role=landlord" className="hover:text-white transition-colors">
+                  Landlord Sign Up
+                </Link>
+              </li>
+              <li>
+                <Link href="/sign-up?role=tenant" className="hover:text-white transition-colors">
+                  Tenant Sign Up
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/sign-up?role=landlord"
+                  className="hover:text-white transition-colors"
+                >
+                  Verify Tenants
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-white/90">Legal</h3>
+            <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
+              <li>
+                <Link href="/legal/terms" className="hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/data-processing" className="hover:text-white transition-colors">
+                  Data Processing Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/legal/disclaimer" className="hover:text-white transition-colors">
+                  Legal Disclaimer
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-white/90">Resources</h3>
+            <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
+              <li>
+                <Link href="/legal/safety-tips" className="hover:text-white transition-colors">
+                  Safety Tips
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-us" className="hover:text-white transition-colors">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <a href="mailto:safety@naijarentverify.com" className="hover:text-white transition-colors">
+                  Report a Problem
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Footer bottom */}
+        <div className="mt-10 border-t border-white/10 pt-6 text-center">
+          <p className="text-xs sm:text-sm text-white/60">2026 NaijaRentVerify. All rights reserved.</p>
         </div>
       </div>
     </footer>

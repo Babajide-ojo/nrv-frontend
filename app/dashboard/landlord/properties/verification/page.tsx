@@ -1,300 +1,274 @@
 "use client";
-import { useState, useEffect } from "react";
-import LoadingPage from "../../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../../components/layout/LandLordLayout";
-import Button from "../../../../components/shared/buttons/Button";
-import { useDispatch } from "react-redux";
-import { tenantRentalHistory } from "../../../../../redux/slices/propertySlice";
-import { Form, Formik, FormikHelpers } from "formik";
-import FormikInputField from "@/app/components/shared/input-fields/FormikInputField";
-import * as yup from "yup";
-import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FaHouse } from "react-icons/fa6";
-import {
-  FcBusinessContact,
-  FcCallback,
-  FcContacts,
-  FcHome,
-  FcInvite,
-  FcVoicemail,
-} from "react-icons/fc";
-import { formatDateToWords, calculateDateDifference } from "@/helpers/utils";
-import { AnyARecord } from "dns";
-import { FaArrowCircleLeft, FaArrowLeft } from "react-icons/fa";
-const VerificationScreen = () => {
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
-  const [tenantHistory, setTenantHistory] = useState<any[]>([]);
-  const [view, setView] = useState<"form" | "history">("form"); // Manage which view to display
-  const [user, setUser] = useState<any>({});
-  // Define a type for the function parameters
-  type AddTenantFunction = (
-    values: any,
-    formikHelpers: FormikHelpers<any>,
-    dispatch: ThunkDispatch<any, any, AnyAction>
-  ) => Promise<void>;
 
-  const getTenantHistory: AddTenantFunction = async (
-    values,
-    { resetForm, setSubmitting },
-    dispatch
-  ) => {
-    try {
-      const result = (await dispatch(tenantRentalHistory(values))) as any;
+import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import LandLordLayout from "@/app/components/layout/LandLordLayout";
+import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
+import { API_URL } from "@/config/constant";
+import { formatDateToWords } from "@/helpers/utils";
+import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { RootState } from "@/redux/store";
+import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
 
-      if (result.error) {
-        toast.error(
-          result.payload || "Failed to fetch tenant history. Please try again."
-        );
-      } else {
-        toast.success("Tenant history retrieved successfully");
-        setTenantHistory(result.payload.data || []); // Set tenant history data
-        setView("history"); // Switch to history view
-        resetForm(); // Reset form fields after successful submission
-      }
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
-      );
-    } finally {
-      setSubmitting(false); // Reset submitting state
-    }
-  };
-
-  const fetchVerifiedNin = async (values: Record<string, any>) => {
-    try {
-      const result: any = await dispatch(tenantRentalHistory(values) as any);
-      if (result.error) {
-        toast.error(
-          result.payload || "Failed to fetch tenant history. Please try again."
-        );
-      } else {
-        toast.success("Tenant history retrieved successfully");
-        setTenantHistory(result.payload?.data || []); // Set tenant history data
-        setView("history"); // Switch to history view
-      }
-    } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
-    }
-  };
-
-  const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-  };
-
-  const validationSchema = yup.object({
-    nin: yup
-      .string()
-      .required("NIN is required")
-      .length(11, "NIN must be 11 characters long"),
-  });
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      fetchData();
-    }, 4000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
+function VerificationListEmptyState() {
   return (
-    <div className="min-h-screen">
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <ProtectedRoute>
-          <ToastContainer />
-          <LandLordLayout>
-            <div className="container mx-auto md:p-8 p-2 rounded-lg w-full block md:gap-8 justify-center">
-              {view === "form" ? (
-                <div className="w-full md:p-8 block md:flex gap-8">
-                  <div className="md:w-1/2 w-full p-2">
-                    <Formik
-                      initialValues={{ nin: "", userId: user?._id }}
-                      validationSchema={validationSchema}
-                      onSubmit={(values, formikHelpers) =>
-                        getTenantHistory(values, formikHelpers, dispatch)
-                      }
-                    >
-                      {({ isSubmitting, isValid, dirty }) => (
-                        <Form>
-                          <div className="mb-8">
-                            <h1 className="md:text-2xl text-sm text-center font-medium">
-                              Tenant Verification with NIN
-                            </h1>
-                          </div>
-                          <div className="mb-6">
-                            <FormikInputField
-                              css="bg-[#eef0f2]"
-                              name="nin"
-                              placeholder="Enter National Identification Number"
-                              className="w-full p-3 rounded border border-gray-300"
-                            />
-                          </div>
-                          <Button
-                            type="submit"
-                            size="large"
-                            className="w-full"
-                            variant="lightGrey" 
-                            showIcon={false}
-                            disabled={isSubmitting || true || false}
-                          >
-                          Submit
-                          </Button>
-                        </Form>
-                      )}
-                    </Formik>
-                  </div>
-                  <div className="md:w-1/2 w-full mt-4 md:mt-0">
-                    <div className="md:text-lg text-sm text-center">
-                      {" "}
-                      Tenant Verification History
-                    </div>
-                    <div className="space-y-4 mt-8">
-                      {user.tenantVerficationHistory.length > 0 ? (
-                        user.tenantVerficationHistory?.map((item: any) => (
-                          <div
-                            key={item._id}
-                            className="bg-white shadow-lg rounded-lg p-4 mb-4 w-full max-w-md mx-auto border border-gray-200"
-                          >
-                            <div className="">
-                              <div className="flex justify-between">
-                                <h2 className="text-[14px] font-medium text-gray-700">
-                                  Date Verified :{" "}
-                                  {item.timestamp.slice(0, 10) ||
-                                    "Timestamp not available"}
-                                </h2>
-                                <p
-                                  className="text-[14px] font-light text-gray-600 underline cursor-pointer"
-                                  onClick={() => {
-                                    fetchVerifiedNin({
-                                      nin: item.nin,
-                                      userId: user?._id,
-                                    });
-                                  }}
-                                >
-                                  {item.nin || "NIN not available"}
-                                </p>
-                              </div>
-                              <p className="text-[14px] font-normal text-gray-600 mt-4">
-                                {item.details || "No additional details"}
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-gray-500 text-sm">
-                          No history available.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="w-full">
-                    <div className="font-medium text-nrvGreyBlack text-md  whitespace-nowrap mb-4 flex gap-4">
-                      <p>
-                        <FaArrowLeft color="red" size={15} className="cursor-pointer mt-1" onClick={() => {
-                          setView("form")
-                        }} />
-                      </p>
-                      <p> Tenant Screening Report</p>
-                    </div>
-
-                    <div className="w-full grid md:grid-cols-2 grid-cols-1 md:gap-8">
-                      {tenantHistory.length > 0 ? (
-                        tenantHistory?.map((item) => (
-                          <div
-                            key={item._id}
-                            className="mx-auto p-4 mb-2  bg-white rounded-lg shadow-lg transition-shadow duration-300 hover:shadow-xl w-full"
-                          >
-                            <div className="">
-                              <h2 className="md:text-xs text-[10px] font-normal text-center text-gray-600">
-                                {item.propertyId.propertyId.streetAddress},{" "}
-                                {item.propertyId.propertyId.city},{" "}
-                                {item.propertyId.propertyId.state}
-                              </h2>
-
-                              <div className="grid grid-cols-2 gap-3 mb-3 mt-4">
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-600">
-                                    Rent Start Date
-                                  </p>
-                                  <p className="text-[10px] font-normal text-[#187bca]">
-                                    {formatDateToWords(item.rentStartDate)}
-                                  </p>
-                                </div>
-                                <div className="text-center">
-                                  <p className="text-xs text-gray-600">
-                                    Rent End Date
-                                  </p>
-                                  <p className="text-[10px] font-normal text-[#187bca]">
-                                    {formatDateToWords(item.rentEndDate)}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <div className="mt-3 text-center">
-                                <p className="text-xs text-gray-600">
-                                  Rent Duration
-                                </p>
-                                <p className="text-[10px] font-normal text-[#187bca]">
-                                  {calculateDateDifference(
-                                    item.rentStartDate,
-                                    item.rentEndDate
-                                  )}
-                                </p>
-                              </div>
-
-                              <div className="mt-3">
-                                <p className="text-xs text-gray-800 font-medium mb-2">
-                                  Landlord Details
-                                </p>
-                                <div className="text-xs text-gray-800 mt-1">
-                                  <div className="flex gap-1">
-                                    <FcContacts size={16} />{" "}
-                                    {item.ownerId.firstName}{" "}
-                                    {item.ownerId.lastName}
-                                  </div>
-
-                                  <div className="flex gap-4 mt-1">
-                                    <div className="w-1/2 flex gap-1">
-                                      {" "}
-                                      <FcInvite size={16} />{" "}
-                                      {item.ownerId.email}{" "}
-                                    </div>
-                                    <div className="w-1/2 flex gap-1 justify-end">
-                                      {" "}
-                                      <FcCallback size={16} />{" "}
-                                      {item.ownerId.phoneNumber}{" "}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-gray-500 text-nrvPrimaryGreen">
-                          No Tenant history Available.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </LandLordLayout>
-        </ProtectedRoute>
-      )}
+    <div className="flex flex-col items-center justify-center py-10 text-center px-4">
+      <div className="text-gray-400 text-5xl mb-3" aria-hidden>
+        📄
+      </div>
+      <p className="text-gray-800 text-lg font-medium">Verification still pending</p>
+      <p className="text-gray-500 text-sm mt-2 max-w-md">
+        Your screening requests will show here. If you just sent one, your tenant may still be completing verification.
+      </p>
     </div>
   );
-};
+}
 
-export default VerificationScreen;
+export default function TenantVerification() {
+  const router = useRouter();
+  const reduxUser = useSelector((state: RootState) => state.user.data);
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [statusOptions, setStatusOptions] = useState<Array<{ value: string; label: string }>>([]);
+
+  // Use effect to safely access localStorage in browser
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
+      setUserId(user?.user?._id || null);
+    }
+  }, []);
+
+  const creditBalances = useMemo(() => {
+    const doc = reduxUser?.user ?? reduxUser;
+    if (doc && (doc as { _id?: string })?._id) {
+      return getVerificationCreditBalances(doc);
+    }
+    if (typeof window === "undefined") return { standard: 0, premium: 0 };
+    try {
+      const raw = localStorage.getItem("nrv-user");
+      return getVerificationCreditBalances(raw ? JSON.parse(raw)?.user : null);
+    } catch {
+      return { standard: 0, premium: 0 };
+    }
+  }, [reduxUser]);
+
+  // Fetch status options from backend
+  useEffect(() => {
+    const fetchStatusOptions = async () => {
+      try {
+        const response = await fetch(`${API_URL}/verification/statuses`);
+        if (response.ok) {
+          const data = await response.json();
+          setStatusOptions(data.data || []);
+        } else {
+          console.error('Failed to fetch status options:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching status options:', error);
+        // Fallback to default options if API fails
+        setStatusOptions([
+          { value: '', label: 'All Status' },
+          { value: 'pending', label: 'Verification Requested' },
+          { value: 'approved', label: 'Verification completed' },
+          { value: 'rejected', label: 'Rejected' },
+        ]);
+      }
+    };
+
+    fetchStatusOptions();
+  }, []);
+
+  /** Format short reference for display (unique ID instead of long DB _id) */
+  const formatVerificationRef = (row: BaseRow) => {
+    const id = row.uniqueId != null ? String(row.uniqueId) : (row._id ? String(row._id).slice(-6) : "");
+    return id ? `VRF-${id}` : "—";
+  };
+
+  const handleRowAction = (row: BaseRow) => {
+    return (
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={() => router.push(`/dashboard/landlord/properties/verification/response/${row._id}?email=${encodeURIComponent(row.email)}`)} 
+          className="p-2 hover:bg-blue-50 rounded-full transition-colors duration-200"
+          title="View verification details"
+        >
+          <Eye size={16} className="text-blue-600" />
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <LandLordLayout path="Tenant Verification">
+        <div className="mx-auto w-full min-w-0 max-w-7xl">
+          <div className="mb-4 flex flex-col gap-4 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Tenant Verification</h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Send tenant verification requests and review their profiles before a lease agreement.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="min-h-[44px] w-full shrink-0 touch-manipulation rounded-lg bg-green-900 px-4 py-2.5 text-sm text-white transition hover:bg-green-800 sm:w-auto"
+              onClick={() => router.push(`/dashboard/landlord/properties/verification/request`)}
+            >
+              + New Verification Request
+            </button>
+          </div>
+
+          <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-3 py-3 text-sm text-gray-800 sm:gap-x-4 sm:px-4">
+            <span className="font-semibold text-[#03442C]">Verification credits</span>
+            <span className="text-gray-700">
+              Standard{" "}
+              <strong className="text-gray-900 tabular-nums">{creditBalances.standard}</strong>
+              <span className="text-gray-400 mx-2">·</span>
+              Premium{" "}
+              <strong className="text-gray-900 tabular-nums">{creditBalances.premium}</strong>
+            </span>
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard/landlord/settings/plans")}
+              className="text-sm font-medium text-[#03442C] hover:underline ml-auto"
+            >
+              Buy credits
+            </button>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900">Tenant Screening Report</h4>
+            </div>
+
+            {/* Render DataTable only when userId is available */}
+            {userId && (
+              <DataTable
+                rowActions={handleRowAction}
+                endpoint={`${API_URL}/verification/user/${userId}`}
+                emptyStateComponent={VerificationListEmptyState}
+                filters={[
+                  {
+                    name: 'status',
+                    label: 'Status',
+                    options: statusOptions,
+                  },
+                ]}
+
+                columns={[
+                  {
+                    key: "uniqueId",
+                    label: "Reference",
+                    render: (_, row) => (
+                      <span className="text-sm font-mono font-medium text-[#101828]">
+                        {formatVerificationRef(row)}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "fullName",
+                    label: "Tenant Full Name",
+                    render: (val, row) => (
+                      <div className="flex items-center gap-2">
+                        <div>
+                          <div className="font-medium text-sm text-[#101828]">
+                            {row.firstName} {row.lastName}
+                          </div>
+                          {row.streetAddress && (
+                            <div className="text-xs text-[#667085]">
+                              {row.streetAddress}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ),
+                  },
+                  {
+                    key: "email",
+                    label: "Tenant Contact Info.",
+                    render: (val, row) => (
+                      <div>
+                        <div className="text-sm text-[#344054]">{val}</div>
+                        <div className="text-xs text-[#667085]">{row.phone}</div>
+                      </div>
+                    ),
+                  },
+                  {
+                    key: "propertyLabel",
+                    label: "Property / Unit",
+                    render: (val, row) => (
+                      <span className="text-sm text-[#344054]">
+                        {val || row.propertyLabel || "—"}
+                      </span>
+                    ),
+                  },
+                  {
+                    key: "creditCostNaira",
+                    label: "Amount",
+                    render: (val, row) => {
+                      const amount =
+                        val != null
+                          ? Number(val)
+                          : row.creditCostNaira != null
+                            ? Number(row.creditCostNaira)
+                            : null;
+                      return (
+                        <span className="text-sm font-medium text-[#101828] tabular-nums">
+                          {amount != null && Number.isFinite(amount)
+                            ? `₦${amount.toLocaleString()}`
+                            : "—"}
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    key: "status",
+                    label: "Verification Status",
+                    width: "max-content",
+                    render: (val) => {
+                      let colorClass = "bg-gray-100 text-gray-600";
+                      let label = val;
+
+                      if (val === "pending") {
+                        colorClass = "bg-yellow-100 text-yellow-800";
+                        label = "Verification Requested";
+                      } else if (val === "approved") {
+                        colorClass = "bg-green-100 text-green-700";
+                        label = "Verification completed";
+                      } else if (val === "rejected") {
+                        colorClass = "bg-red-100 text-red-700";
+                        label = "Rejected";
+                      } else if (val === "declined") {
+                        colorClass = "bg-red-100 text-red-700";
+                        label = "Declined by tenant";
+                      }
+
+                      return (
+                        <span
+                          className={`inline-flex items-center whitespace-nowrap text-xs px-2.5 py-1 rounded-full font-semibold ${colorClass}`}
+                        >
+                          {label}
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    key: "createdAt",
+                    label: "Verification Date",
+                    render: (val) => (
+                      <span className="text-sm text-[#667085]">
+                        {formatDateToWords(val)}
+                      </span>
+                    ),
+                  },
+                ]}
+              />
+            )}
+          </div>
+        </div>
+      </LandLordLayout>
+    </>
+  );
+}

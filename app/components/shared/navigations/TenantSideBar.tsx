@@ -1,18 +1,22 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import Logo from "../../../../public/images/nrv-logo.png";
-import { useRouter } from "next/navigation";
-import Button from "../buttons/Button";
-import { CiLogout } from "react-icons/ci";
+import { usePathname, useRouter } from "next/navigation";
 import { BiLogOut } from "react-icons/bi";
+import {
+  FiHome,
+  FiClipboard,
+  FiTool,
+  FiMessageSquare,
+  FiSettings,
+  FiCheckCircle,
+} from "react-icons/fi";
+import { BsPersonFill } from "react-icons/bs";
+import { PiFileDocDuotone } from "react-icons/pi";
 
-// Define the types for user data
 interface User {
   name: string;
   role: string;
-  loggedInTime: string;
 }
 
 interface TenantSideBarProps {
@@ -23,125 +27,162 @@ const links = [
   {
     name: "Dashboard",
     route: "/dashboard/tenant",
+    icon: <FiClipboard />,
+    exact: true,
   },
   {
     name: "Properties",
     route: "/dashboard/tenant/properties",
+    icon: <FiHome />,
   },
   {
     name: "Applications",
     route: "/dashboard/tenant/properties/applications",
+    icon: <PiFileDocDuotone />,
   },
   {
     name: "Rented Apartments",
     route: "/dashboard/tenant/rented-properties",
+    icon: <FiHome />,
   },
   {
     name: "Maintenance",
     route: "/dashboard/tenant/properties/maintenance",
+    icon: <FiTool />,
   },
   {
     name: "Messages",
     route: "/dashboard/tenant/messages",
-  },
-  {
-    name: "Settings",
-    route: "/dashboard/tenant/settings",
+    icon: <FiMessageSquare />,
   },
 ];
 
 const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   const router = useRouter();
-  const [currentPath, setCurrentPath] = useState<string>("");
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const activeLink = pathname ?? "";
+
+  const isNavActive = (route: string, exact?: boolean) => {
+    if (route === "/dashboard/tenant/properties") {
+      return (
+        activeLink === route ||
+        (activeLink.startsWith(`${route}/`) &&
+          !activeLink.startsWith("/dashboard/tenant/properties/applications") &&
+          !activeLink.startsWith("/dashboard/tenant/properties/maintenance"))
+      );
+    }
+    if (exact) {
+      return activeLink === route;
+    }
+    return activeLink === route || activeLink.startsWith(`${route}/`);
+  };
 
   useEffect(() => {
-    // Set the current path from the router
-    setCurrentPath(window.location.pathname);
-
-    // Fetch user info from localStorage
-    const fetchUserInfo = () => {
+    try {
       const storedUser = localStorage.getItem("nrv-user");
       if (storedUser) {
         const userInfo = JSON.parse(storedUser);
-        setUser({
-          name: userInfo?.user?.firstName || userInfo?.firstName || "User",
-          role: userInfo?.user?.accountType || userInfo?.accountType || "Role",
-          loggedInTime:
-            new Date(Date.now()).toLocaleString() || "Not available",
-        });
+        if (userInfo) {
+          setUser({
+            name:
+              `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
+            role: userInfo?.user?.accountType || "Property Owner",
+          });
+        }
       }
-    };
-
-    fetchUserInfo();
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      localStorage.removeItem("nrv-user");
+    }
   }, []);
 
   return (
-    <div
-      className={`fixed inset-y-0 left-0 z-50 w-1/5 bg-white transition duration-300 ease-in-out transform flex-col flex justify-between ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}
-    >
-    <div>
-    <div
-        className="mt-10"
-        onClick={() => {
-          router.push("/");
-        }}
-      >
-        <Image
-          src={Logo}
-          width={200}
-          height={50}
-          alt="logo"
-          className="object-none"
-        />
-      </div>
-      <nav className="mt-5">
-        <ul>
-          {links.map(({ name, route }, index) => (
-            <li
-              key={index}
-              className={`w-4/5 rounded-full mx-auto cursor-pointer px-6 py-3 flex justify-between text-sm font-light m-4 ${
-                currentPath === route
-                  ? "bg-nrvPrimaryGreen text-white"
-                  : "text-black"
-              }`}
-              onClick={() => {
-                router.push(route);
-              }}
-            >
-              {name}
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-    </div>
+    <div className="flex h-full min-h-0 w-full flex-1 flex-col justify-between bg-nrvPrimaryGreen text-white">
       <div>
-        {/* User Info Section */}
+        {/* Logo */}
+        <div
+          className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
+          onClick={() => router.push("/")}
+        >
+          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
+            NaijaRentVerify
+          </span>
+        </div>
+
+        {/* Navigation Links */}
+        <nav className="mt-6">
+          <ul className="font-lighter text-[12px] text-[#98A2B3]">
+            {links.map(({ name, route, icon, exact }, index) => (
+              <li
+                key={index}
+                onClick={() => router.push(route)}
+                className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${
+                  isNavActive(route, exact)
+                    ? "text-[#BBFF37] bg-white/10 ring-1 ring-[#BBFF37]/40 font-semibold"
+                    : "text-[#98A2B3] hover:text-white/90"
+                }`}
+              >
+                {icon} {name}
+              </li>
+            ))}
+          </ul>
+
+          {/* Verification Section */}
+          <div className="mt-8 mb-2 px-6 text-xs text-[#BBFF37] font-semibold uppercase tracking-wider">Verification</div>
+          <ul className="font-lighter text-[12px] text-[#98A2B3]">
+            <li
+              onClick={() => router.push("/dashboard/tenant/verification")}
+              className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px] ${activeLink.startsWith("/dashboard/tenant/verification") ? "text-[#BBFF37]" : "text-[#98A2B3]"}`}
+            >
+              <FiCheckCircle /> My Verifications
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {/* Settings and user */}
+      <div className="px-6 py-4 border-t border-gray-600">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => router.push("/dashboard/tenant/settings")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              router.push("/dashboard/tenant/settings");
+            }
+          }}
+          className={`flex items-center gap-4 mb-6 cursor-pointer font-lighter text-[12px] rounded-lg px-0 py-1 ${
+            activeLink.startsWith("/dashboard/tenant/settings")
+              ? "text-[#BBFF37]"
+              : "text-[#98A2B3]"
+          }`}
+        >
+          <FiSettings className="font-lighter text-[12px]" />
+          <span>Settings</span>
+        </div>
         {user && (
-          <div className="px-6 py-4 border-gray-200 ml-6 mt-12">
-            <p className="text-sm font-semibold">{user.name}</p>
-            <p className="text-sm text-nrvPrimaryGreen mt-2">
-              Account Type : {user.role}
-            </p>
+          <div className="flex items-center gap-4 justify-between pt-0 pb-0">
+            <div className="flex gap-1.5">
+              <BsPersonFill />
+              <div>
+                <p className="text-xs font-semibold text-[#FFFFFF]">
+                  {user.name}
+                </p>
+                <p className="text-xs text-green-400">{user.role}</p>
+              </div>
+            </div>
+            <BiLogOut
+              onClick={async () => {
+                const { performLogout } = await import("@/lib/logout");
+                await performLogout();
+                router.push("/sign-in");
+              }}
+              className="text-xl cursor-pointer"
+            />
           </div>
         )}
-
-        {/* Logout Button at the Bottom */}
-        <div className="mt-auto mb-12 ml-12">
-          <button
-          className="w-[208px] rounded-full flex gap-2 py-3 hover:px-5 cursor-pointer hover:text-white hover:bg-nrvPrimaryGreen bg-white text-nrvPrimaryGreen font-medium"
-            onClick={() => {
-              localStorage.removeItem("nrv-user");
-              router.push("/");
-            }}
-          >
-          <BiLogOut className="font-bold h-[20.5px] w-[20.5px] text-cwMidGray pt-1" />
-            Logout
-          </button>
-        </div>
       </div>
     </div>
   );

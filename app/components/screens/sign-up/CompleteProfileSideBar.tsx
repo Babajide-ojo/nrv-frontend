@@ -1,19 +1,23 @@
 import { Mail } from "lucide-react";
+import AccountTypeBadge from "./AccountTypeBadge";
 
-const CompleteProfileSideBar = () => {
+const CompleteProfileSideBar = ({ accountType }: { accountType?: string | null }) => {
   return (
     <div>
       {/* Sidebar Navigation */}
-      <div className="w-full p-8 flex flex-col justify-between h-screen">
+      <div className="flex h-screen w-full flex-col justify-between p-4 sm:p-8">
         <div>
           <div className="flex justify-between items-center px-6 py-4">
             <h1 className="text-2xl font-bold text-black">NaijaRentVerify</h1>
             <p className="text-gray-600 text-sm">
               Already have an account?{" "}
-              <a href="/login" className="font-semibold text-green-900">
+              <a href="/sign-in" className="font-semibold text-green-900">
                 Log in here.
               </a>
             </p>
+          </div>
+          <div className="px-6">
+            <AccountTypeBadge accountType={accountType} />
           </div>
           <div className="mt-8 space-y-12">
             <div className="flex items-start space-x-2">
@@ -53,7 +57,7 @@ const CompleteProfileSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>
@@ -94,7 +98,7 @@ const CompleteProfileSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>

@@ -14,7 +14,6 @@ interface FormData {
     unit: string;
     city: string;
     state: string;
-    zipCode: string;
     file: any;
     createdBy: string;
 }
@@ -34,6 +33,8 @@ export const createProperty = createAsyncThunk< FormData | any, {}>(
     "property/create",
     async (formData: any, { rejectWithValue }) => {
         try {
+            console.log({formData});
+            
             const response: any = await axios.post(`${API_URL}/properties/add`, formData);
             return response.data;
         } catch (error: any) {
@@ -51,7 +52,20 @@ export const updateProperty = createAsyncThunk< FormData, {}>(
     async (formData: any, { rejectWithValue }) => {
    
         try {
-            const response: any = await axios.patch(`${API_URL}/properties/update?propertyId=${formData.id}`, formData?.body);
+            const body = formData?.body;
+            const isFormData =
+              typeof FormData !== "undefined" && body instanceof FormData;
+            const response: any = await axios.patch(
+              `${API_URL}/properties/update?propertyId=${formData.id}`,
+              body,
+              isFormData
+                ? {
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
+                  }
+                : undefined,
+            );
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -99,7 +113,10 @@ export const getAllPropertyForTenant = createAsyncThunk<any, {}>(
     "property-tenant/all",
     async (formData: any, { rejectWithValue }) => {
       try {
-        let url = `${API_URL}/rooms/all?page=${formData.page}`
+        let url = `${API_URL}/rooms/all?page=${formData.page ?? 1}`
+        if (formData.limit != null) {
+            url = url + `&limit=${formData.limit}`
+        }
         if(formData.searchTerm){
             url = url + `&search=${formData.searchTerm}`
         }
@@ -291,6 +308,22 @@ export const getApplicationsByTenantId = createAsyncThunk<any, {}>(
     }
 );
 
+export const getApplicationsById = createAsyncThunk<any, {}>(
+    "property/single-applications",
+    async (formData: any, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${API_URL}/properties/single-application/${formData.id}`);
+        return response.data;
+      } catch (error: any) {
+        if (error.response.data.message) {
+          return rejectWithValue(error.response.data.message);
+        } else {
+          return rejectWithValue("An error occurred, please try again later");
+        }
+      }
+    }
+);
+
 export const updateApplicationStatus = createAsyncThunk<any, {}>(
     "property/application-update",
     async (formData: any, { rejectWithValue }) => {
@@ -310,6 +343,27 @@ export const updateApplicationStatus = createAsyncThunk<any, {}>(
         }
       }
     }
+);
+
+export const withdrawApplication = createAsyncThunk<
+  any,
+  { id: string; tenantId: string }
+>(
+  "property/application-withdraw",
+  async ({ id, tenantId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/properties/application/withdraw/${id}`,
+        { tenantId },
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message ||
+          "Could not withdraw application. Please try again.",
+      );
+    }
+  },
 );
 
 export const inviteApplicant = createAsyncThunk<any, {}>(
@@ -342,6 +396,24 @@ export const updateRoomStatus = createAsyncThunk<any, {}>(
         }
       }
     }
+);
+
+export const requestRoomApproval = createAsyncThunk<any, string>(
+  "room/request-approval",
+  async (roomId: string, { rejectWithValue }) => {
+    try {
+      const response: any = await axios.post(
+        `${API_URL}/rooms/${roomId}/request-approval`,
+      );
+      return response.data;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to request approval";
+      return rejectWithValue(message);
+    }
+  },
 );
 
 export const getApplicationCount = createAsyncThunk<any, {}>(
@@ -396,7 +468,7 @@ export const getRentedApartmentsForTenant = createAsyncThunk<any, {}>(
     "current-tenant/properties",
     async (formData: any, { rejectWithValue }) => {
         try {
-            const response: any = await axios.get(`${API_URL}/rooms/properties/renters?id=${formData.id}`);
+            const response: any = await axios.get(`${API_URL}/rooms/properties/rented-by-tenant?id=${formData.id}`);
             return response.data;
         } catch (error: any) {
             if (error.response.data.message) {
@@ -584,7 +656,23 @@ const propertySlice = createSlice({
             })
             .addCase(updateApplicationStatus.fulfilled, (state, action) => {
                 state.loading = "succeeded";
-                state.data = action.payload;
+                // Preserve existing application document when response is a status update.
+                // Other thunks (e.g. application-count) share `state.data` and must not
+                // leave this slice looking like metrics when the detail page is open.
+                const updated = action.payload?.data;
+                const existing = state.data?.data;
+                if (
+                  updated?._id &&
+                  existing?._id &&
+                  String(updated._id) === String(existing._id)
+                ) {
+                  state.data = {
+                    ...action.payload,
+                    data: { ...existing, ...updated, status: updated.status },
+                  };
+                } else {
+                  state.data = action.payload;
+                }
             })
             .addCase(updateApplicationStatus.rejected, (state, action) => {
                 state.loading = "failed";
@@ -644,7 +732,17 @@ const propertySlice = createSlice({
             })
             .addCase(getApplicationCount.fulfilled, (state, action) => {
                 state.loading = "succeeded";
-                state.data = action.payload;
+                // Don't clobber an in-view application document with metrics —
+                // TenantScreen and others read `state.data.data` as the application.
+                const existing = state.data?.data;
+                if (existing?._id && existing?.status && !existing?.totalNew) {
+                  state.data = {
+                    ...state.data,
+                    metrics: action.payload?.data ?? action.payload,
+                  };
+                } else {
+                  state.data = action.payload;
+                }
             })
             .addCase(getApplicationCount.rejected, (state, action) => {
                 state.loading = "failed";
@@ -707,6 +805,18 @@ const propertySlice = createSlice({
                 state.data = action.payload;
             })
             .addCase(getTenantMetrics.rejected, (state, action) => {
+                state.loading = "failed";
+                state.error = action.payload as string;
+            })
+            .addCase(getApplicationsById.pending, (state) => {
+                state.loading = "pending";
+                state.error = null;
+            })
+            .addCase(getApplicationsById.fulfilled, (state, action) => {
+                state.loading = "succeeded";
+                state.data = action.payload;
+            })
+            .addCase(getApplicationsById.rejected, (state, action) => {
                 state.loading = "failed";
                 state.error = action.payload as string;
             })

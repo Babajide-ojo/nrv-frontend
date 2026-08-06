@@ -1,19 +1,23 @@
 import { Mail } from "lucide-react";
+import AccountTypeBadge from "./AccountTypeBadge";
 
-const VerifyAccountSideBar = () => {
+const VerifyAccountSideBar = ({ accountType }: { accountType?: string | null }) => {
   return (
     <div>
       {/* Sidebar Navigation */}
-      <div className="w-full p-8 flex flex-col justify-between h-screen">
+      <div className="flex h-screen w-full flex-col justify-between p-4 sm:p-8">
         <div>
           <div className="flex justify-between items-center px-6 py-4">
             <h1 className="text-2xl font-bold text-black">NaijaRentVerify</h1>
             <p className="text-gray-600 text-sm">
               Already have an account?{" "}
-              <a href="/login" className="font-semibold text-green-900">
+              <a href="/sign-in" className="font-semibold text-green-900">
                 Log in here.
               </a>
             </p>
+          </div>
+          <div className="px-6">
+            <AccountTypeBadge accountType={accountType} />
           </div>
           <div className="mt-8 space-y-12">
             <div className="flex items-start space-x-2">
@@ -53,7 +57,7 @@ const VerifyAccountSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>
@@ -94,7 +98,7 @@ const VerifyAccountSideBar = () => {
               <div>
                 <h3 className="font-medium text-[#645D5D]">Select User Type</h3>
                 <p className="text-sm text-gray-600">
-                  Find and secure your dream home with verified listings.
+                  Find and secure your dream home with genuine listings.
                 </p>
               </div>
             </div>
@@ -203,43 +207,6 @@ const VerifyAccountSideBar = () => {
               </div>
             ))}
 
-            <div className="flex items-start space-x-2">
-              <span className="">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g clip-path="url(#clip0_401_9062)">
-                    <rect width="32" height="32" rx="16" fill="#F7F7F8" />
-                    <rect
-                      x="1"
-                      y="1"
-                      width="30"
-                      height="30"
-                      rx="15"
-                      stroke="#E0E0E6"
-                      stroke-width="2"
-                    />
-                    <circle cx="16" cy="16" r="5" fill="#E0E0E6" />
-                  </g>
-                  <defs>
-                    <clipPath id="clip0_401_9062">
-                      <rect width="32" height="32" rx="16" fill="white" />
-                    </clipPath>
-                  </defs>
-                </svg>
-              </span>
-              <div>
-                <h3 className="font-medium text-[#645D5D]">Complete Your Profile</h3>
-                <p className="text-sm text-gray-600">
-                Help us personalize your experience by providing a few more details.
-                </p>
-              </div>
-            </div>
-     
           </div>
         </div>
 

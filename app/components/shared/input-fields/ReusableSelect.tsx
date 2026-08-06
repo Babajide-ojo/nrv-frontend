@@ -55,6 +55,13 @@ const ReusableSelect: React.FC<ReusableSelectProps> = ({
     });
   });
 
+  const filteredOptions = optionValue?.filter((item) => {
+    return (
+      item?.label?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      item?.value?.toLowerCase().includes(searchTerm?.toLowerCase())
+    );
+  });
+
   useEffect(() => {
     if (searchValue) {
       setSearchTerm(searchValue);
@@ -67,8 +74,8 @@ const ReusableSelect: React.FC<ReusableSelectProps> = ({
   return (
     <div
       ref={popupRef}
-      className={`absolute z-[30] bg-white top-full left-0 w-full mt-1 overflow-hidden border-swGray100 rounded-2xl ${
-        searchable === false ? "" : "p-5 border"
+      className={`absolute z-[30] bg-white top-full left-0 w-full mt-1 overflow-hidden border border-gray-200 rounded-md shadow-lg ${
+        searchable === false ? "py-1" : "p-5"
       }`}
     >
       <div
@@ -80,12 +87,12 @@ const ReusableSelect: React.FC<ReusableSelectProps> = ({
           type="text"
            value={searchTerm}
           placeholder={placeholder || "Search"}
-          className="p-2 w-full focus:outline-none"
+          className="p-2 w-full focus:outline-none focus:ring-0 focus:border-gray-300"
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <div className={`p-5 w-full max-h-96 overflow-y-scroll hide-scrollbar border border-swGray100 rounded-2xl`}>
+      <div className={`w-full max-h-48 overflow-y-auto ${searchable === false ? "" : "p-5 border border-gray-100 rounded-2xl"}`}>
         {filter && filter.length > 0 ? (
           filter.map((item, i) => (
             <div
@@ -99,6 +106,19 @@ const ReusableSelect: React.FC<ReusableSelectProps> = ({
               {item?.label}
             </div>
           ))
+        ) : filteredOptions && filteredOptions.length > 0 ? (
+          filteredOptions.map((item, i) => (
+            <div
+              key={i}
+              onClick={() => {
+                setValue && setValue(item?.value);
+                onClose && onClose(false);
+              }}
+              className={`px-3 py-2 text-xs hover:bg-gray-50 cursor-pointer ${i !== 0 && "border-t border-gray-100"}`}
+            >
+              {item?.label}
+            </div>
+          ))
         ) : optionValue && optionValue.length > 0 ? (
           optionValue.map((item, i) => (
             <div
@@ -107,7 +127,7 @@ const ReusableSelect: React.FC<ReusableSelectProps> = ({
                 setValue && setValue(item?.value);
                 onClose && onClose(false);
               }}
-              className={`${i !== 0 && "border-t"}`}
+              className={`px-3 py-2 text-xs hover:bg-gray-50 cursor-pointer ${i !== 0 && "border-t border-gray-100"}`}
             >
               {item?.label}
             </div>

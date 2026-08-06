@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Carousel from "./Carousel";
 import OnboardingFormScreen from "./OnboardingFormScreen";
 
 const OnboardingScreen = () => {

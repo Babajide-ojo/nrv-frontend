@@ -1,57 +1,51 @@
-import React, { useState } from "react";
+"use client";
+
+"use client";
+
 import { useField } from "formik";
-import { format, isValid } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import FormikInputField from "./FormikInputField";
-import SelectDate from "../SelectDate";
+import DateInputField from "./DateInputField";
 
 interface DatePickerFieldProps {
   name: string;
   label: string;
   placeholder?: string;
-  onChange?: (date: string) => void; // Allow external state updates
+  disablePast?: boolean;
+  disableFuture?: boolean;
+  openTo?: "year" | "month" | "day";
+  onChange?: (isoDate: string) => void;
 }
 
 const DatePickerField: React.FC<DatePickerFieldProps> = ({
   name,
   label,
   placeholder = "DD-MM-YYYY",
+  disablePast = false,
+  disableFuture = false,
+  openTo = "day",
   onChange,
 }) => {
-  const [open, setOpen] = useState(false);
-  const [field, , helpers] = useField(name);
-
-  const formattedDate =
-    field.value && isValid(new Date(field.value))
-      ? format(new Date(field.value), "dd-MM-yyyy")
-      : "";
-
-  const handleDateChange = (selectedDate: string) => {
-    helpers.setValue(selectedDate); // Update Formik state
-    if (onChange) onChange(selectedDate); // Call external function if provided
-    setOpen(false);
-  };
+  const [field, meta, helpers] = useField(name);
 
   return (
-    <div className="w-full mb-8">
-      <div onClick={() => setOpen(true)} className="cursor-pointer">
-        <FormikInputField
-          name={name}
-          value={formattedDate}
-          onClick={() => setOpen(true)}
-          placeholder={placeholder}
-          icon={<CalendarIcon color="#7d7d7d" width={20} height={20} />}
-          isDisabled={false}
-          label={label}
-        />
-      </div>
-      <SelectDate
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        value={field.value}
-        onChange={handleDateChange}
-      />
-    </div>
+    <DateInputField
+      name={name}
+      label={label}
+      placeholder={placeholder}
+      value={field.value}
+      disablePast={disablePast}
+      disableFuture={disableFuture}
+      openTo={openTo}
+      displayFormat="dd-MM-yyyy"
+      error={meta.touched && meta.error ? String(meta.error) : null}
+      onChange={(date) => {
+        const iso = date.toISOString();
+        helpers.setValue(iso);
+        helpers.setTouched(true);
+        if (onChange) {
+          onChange(iso);
+        }
+      }}
+    />
   );
 };
 

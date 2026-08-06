@@ -7,7 +7,7 @@ import DatePickerField from "../../shared/input-fields/DatePickerField";
 import { updateUser } from "@/redux/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import Modal from "../../shared/modals/Modal";
 import CenterModal from "../../shared/modals/CenterModal";
 import Link from "next/link";
@@ -39,6 +39,53 @@ const incomeOptions = [
   { value: "below-300k", label: "Below ₦300,000" },
   { value: "above-300k", label: "Above ₦300,000" },
 ];
+
+const extractSelectValue = (value: unknown): string => {
+  if (!value) {
+    return "";
+  }
+  if (typeof value === "object" && value !== null && "value" in value) {
+    return String((value as { value: string }).value);
+  }
+  return String(value);
+};
+
+const buildProfilePayload = (formData: FormDataType): FormData => {
+  const payload = new FormData();
+
+  if (formData.file instanceof File) {
+    payload.append("file", formData.file);
+  }
+
+  const gender = extractSelectValue(formData.gender);
+  if (gender) {
+    payload.append("gender", gender);
+  }
+
+  if (formData.dob) {
+    payload.append("dateOfBirth", formData.dob);
+  }
+
+  const employmentStatus = extractSelectValue(formData.employmentStatus);
+  if (employmentStatus) {
+    payload.append("employmentStatus", employmentStatus);
+  }
+
+  if (formData.employer?.trim()) {
+    payload.append("currentEmployer", formData.employer.trim());
+  }
+
+  if (formData.jobTitle?.trim()) {
+    payload.append("jobTitle", formData.jobTitle.trim());
+  }
+
+  const incomeRange = extractSelectValue(formData.incomeRange);
+  if (incomeRange) {
+    payload.append("monthlyIncome", incomeRange);
+  }
+
+  return payload;
+};
 
 const PreferencesForm: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -87,6 +134,9 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({
   return (
     <div className="flex flex-col w-full justify-center h-screen">
       <div className="bg-white p-6 rounded-2xl w-full">
+        <h1 className="text-2xl font-bold text-green-600 md:hidden mb-10">
+          NaijaRentVerify
+        </h1>
         <h2 className="text-2xl font-semibold text-center mb-2">
           Complete Your Profile
         </h2>
@@ -204,26 +254,28 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
-      const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      console.log({ user });
+      const stored = JSON.parse(localStorage.getItem("nrv-user") as string);
+      const userId = stored?.user?._id;
+      if (!userId) {
+        toast.error("Could not find your account. Please sign in again.");
+        return;
+      }
 
-      const formDataObject = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value instanceof FileList) {
-          Array.from(value).forEach((file) => formDataObject.append(key, file));
-        } else {
-          formDataObject.append(key, value as any);
-        }
-      });
+      const formDataObject = buildProfilePayload(formData);
 
-      const userData = await dispatch(
-        updateUser({ id: user.user._id, payload: formDataObject }) as any
+      const updatedUser = await dispatch(
+        updateUser({ id: userId, payload: formDataObject }) as any,
       ).unwrap();
 
-      localStorage.setItem("nrv-user", JSON.stringify(userData));
-      setShowModal(true); // Show success modal
+      const mergedSession = {
+        ...stored,
+        user: updatedUser?.user ?? updatedUser,
+        accessToken: stored.accessToken,
+      };
+      localStorage.setItem("nrv-user", JSON.stringify(mergedSession));
+      setShowModal(true);
     } catch (error: any) {
-      toast.error(error);
+      toast.error(error || "Could not save your profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -231,7 +283,6 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
 
   return (
     <div className="flex flex-col justify-center w-full min-h-screen">
-      <ToastContainer />
       <div className="bg-white p-6 rounded-2xl w-full">
         <h2 className="text-2xl font-semibold text-center mb-2">
           Set Up Preferences
@@ -297,14 +348,16 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
         </Button>
 
         <div className="mt-4 text-center">
-             <Link href="/dashboard/tenant" className="text-[#807F94] text-xs">Skip for Now</Link>
-             </div>
+          <Link href="/dashboard/tenant" className="text-[#807F94] text-xs">
+            Skip for Now
+          </Link>
+        </div>
       </div>
 
       <CenterModal isOpen={showModal} onClose={() => !showModal}>
         <div>
           <div className="flex justify-center items-center">
-            <div className="rounded-2xl p-8 w-full">
+            <div className="w-full rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full">
                   <svg
@@ -331,8 +384,8 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
                 excited to have you on board.
               </p>
               <p className="mt-4 text-gray-600 text-sm">
-                You can now proceed to your dashboard to complete your Account
-                configuration. Its Secure, and Hassle-Free.
+                You can now proceed to your dashboard to complete your account
+                configuration. It&apos;s secure and hassle-free.
               </p>
             </div>
           </div>

@@ -9,8 +9,7 @@ import {
   inviteApplicant,
   updateApplicationStatus,
 } from "../../../../redux/slices/propertySlice";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { FcHome } from "react-icons/fc";
 
 const ApplicantScreenForDashboard = () => {
@@ -37,9 +36,6 @@ const ApplicantScreenForDashboard = () => {
     };
 
     try {
-      // Simulating a delay of 5 seconds for the preloader
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
       const response = await dispatch(
         getApplicationsByLandlordId(formData) as any
       );
@@ -57,7 +53,6 @@ const ApplicantScreenForDashboard = () => {
 
   return (
     <div>
-      <ToastContainer />
       {isLoading ? (
         <div className="w-full mx-auto">
           {[...Array(2)].map((_, index) => (

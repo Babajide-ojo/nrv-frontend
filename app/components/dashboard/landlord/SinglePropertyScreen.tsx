@@ -22,8 +22,7 @@ import {
 import { SlCloudUpload } from "react-icons/sl";
 
 import SelectField from "../../shared/input-fields/SelectField";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import SingleRoom from "../../../dashboard/landlord/properties/rooms/[id]/page";
 import React from "react";
@@ -32,7 +31,7 @@ import BackIcon from "../../shared/icons/BackIcon";
 const propertyDashboardLinks: any = [
   {
     id: 1,
-    name: "Overview",
+    name: "All Apartments",
   },
   {
     id: 4,
@@ -47,7 +46,6 @@ interface Property {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
 }
 
 interface PropertyData {
@@ -56,7 +54,6 @@ interface PropertyData {
   unit: string;
   city: string;
   state: string;
-  zipCode: string;
   propertyType: string;
 }
 
@@ -85,7 +82,6 @@ const SinglePropertyScreen = () => {
     unit: "",
     city: "",
     state: "",
-    zipCode: "",
     propertyType: "",
   });
 
@@ -100,9 +96,6 @@ const SinglePropertyScreen = () => {
     }
     if (!propertyData.state.trim()) {
       errors.state = "State is required";
-    }
-    if (!propertyData.zipCode.trim()) {
-      errors.zipCode = "Zip code is required";
     }
     setErrors(errors);
     return Object.keys(errors).length === 0;
@@ -120,7 +113,6 @@ const SinglePropertyScreen = () => {
         unit: propertyData.unit,
         city: propertyData.city,
         state: propertyData.state,
-        zipCode: propertyData.zipCode,
         propertyType: selectedOption.value,
       },
       id: propertyData._id,
@@ -134,7 +126,6 @@ const SinglePropertyScreen = () => {
         unit: "",
         city: "",
         state: "",
-        zipCode: "",
         propertyType: "",
       });
       const properties = await dispatch(getPropertyById(id) as any).unwrap();
@@ -204,17 +195,23 @@ const SinglePropertyScreen = () => {
   const deleteProperty = async () => {
     try {
       setLoading(true);
-      await dispatch(deletePropertyById(id) as any);
+      await dispatch(deletePropertyById(id) as any).unwrap();
       toast.success("Property deleted successfully");
-      setLoading(false);
       router.push("/dashboard/landlord/properties");
-    } catch (error) {
-      toast.error("An error occured while uploding document");
+    } catch (error: any) {
+      toast.error(error || "Could not delete property. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
   const openDeleteConfirmation = () => {
+    if (isPropertyRented) {
+      toast.error(
+        "This property cannot be deleted because one or more units are rented.",
+      );
+      return;
+    }
     setShowDeleteConfirmation(true);
     setShowEditProperty(false);
   };
@@ -225,15 +222,14 @@ const SinglePropertyScreen = () => {
   };
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-      setUser(user?.user);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
-
+      if (!cancelled) setUser(user?.user);
+      setIsLoading(true);
       try {
         const properties = await dispatch(getPropertyById(id) as any).unwrap();
+        if (cancelled) return;
         setPropertyData(properties?.data);
         setSingleProperty(properties?.data);
         const selectedPropertyType = [
@@ -242,259 +238,369 @@ const SinglePropertyScreen = () => {
           { value: "flat", label: "Flat" },
         ].filter((item) => item.value == properties?.data?.propertyType);
         setSelectedOption(selectedPropertyType);
-      } catch (error) {}
-      return () => clearTimeout(timer);
+      } catch (error) {
+        // keep prior state
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
     };
 
     fetchData();
-  }, [id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [id, dispatch]);
+
+  const totalRooms = singleProperty?.rooms?.length;
+  const occupiedRooms = singleProperty?.rooms?.filter(
+    (room: any) => room?.assignedToTenant
+  ).length;
+  const isPropertyRented = occupiedRooms > 0;
+  const vacantRooms = totalRooms - occupiedRooms;
+
+  const occupancyRate = ((occupiedRooms / totalRooms) * 100).toFixed(0);
+  const vacancyRate = ((vacantRooms / totalRooms) * 100).toFixed(0);
+
+  const summaryStats = [
+    {
+      label: "Active Tenants",
+      value: `${occupiedRooms} Occupied`,
+      detail: `${occupiedRooms} out of ${totalRooms} units occupied`,
+      color: "text-green-600",
+    },
+    {
+      label: "Number of Vacant Apartment",
+      value: `${vacantRooms} Vacant`,
+      detail: `${vacantRooms} out of ${totalRooms} units vacant`,
+      color: "text-yellow-600",
+    },
+    {
+      label: "Number of Selected Applicants",
+      value: "0",
+      detail: "Applicant data not available",
+      color: "text-gray-500",
+    },
+    {
+      label: "Click Leads",
+      value: "0",
+      detail: "Lead tracking not enabled",
+      color: "text-gray-500",
+    },
+  ];
 
   return (
     <div>
       <ProtectedRoute>
-        <LandLordLayout>
-          <ToastContainer />
-          <div>
-            <div className="flex justify-between px-4 py-12 md:px-12 md:py-12">
-              <div>
-                <div className="flex gap-2">
-                  <div>
-                    <BackIcon />
-                  </div>
-
-                  <p className="text-sm font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
-                    {singleProperty?.streetAddress}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div
-                  className="p-2 border border-gray-500 rounded rounded-full"
-                  onClick={() => {
-                    showProperty();
-                  }}
-                >
-                  <PiPencilSimpleLight />
-                </div>
+        <LandLordLayout
+          mainPath="Properties"
+          subMainPath="Manage Properties / View Property"
+        >
+          {isLoading ? (
+            <div className="flex justify-center items-center h-[70vh]">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-500 text-sm">
+                  Loading Property Details...
+                </p>
               </div>
             </div>
-            <div className="flex w-full gap-1 md:gap-6 bg-nrvGreyMediumBg mt-1 md:pl-12 pl-4 overflow-scroll">
-              {propertyDashboardLinks.map((item: any) => (
-                <div key={item.id}>
-                  <Button
-                    size="smaller"
-                    className={` text-nrvPrimaryGreen p-1 border border-nrvGreyMediumBg mt-2 rounded-md mb-2 ${
-                      currentState === item.id
-                        ? "bg-nrvPrimaryGreen text-white"
-                        : "bg-nrvGreyMediumBg"
-                    }`}
-                    variant="ordinary"
-                    showIcon={false}
-                    onClick={() => {
-                      setCurrentState(item.id);
-                    }}
-                  >
-                    <div className="text-[11px] p-2">{item.name}</div>
-                  </Button>
-                </div>
-              ))}
-            </div>
+          ) : (
+            <div>
+              <div className="p-3 sm:p-6 md:p-8">
+                <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
+                  {/* Left Section */}
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+                    {/* Back Button */}
+                    <div className="flex gap-2 items-center">
+                      <BackIcon />
+                      <span className="text-xs">Back</span>
+                    </div>
 
-            <div className="px-4 py-4 md:px-12 md:py-6">
-              {currentState === 1 && singleProperty && (
-                <PropertyOverview data={singleProperty} />
-              )}
-              {currentState === 3 && <PropertyMaintenance />}
-              {currentState === 4 && <PropertyDocuments />}
-              {currentState === 5 && <PropertyExpenses />}
-            </div>
-          </div>
-          {showEditProperty && (
-            <div
-              id="overlay"
-              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
-            >
-              <div className="bg-white w-4/5 md:w-3/5 p-4 relative mt-32 rounded-t-3xl overflow-auto max-h-full">
-                <button
-                  className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvPrimaryGreen rounded-full px-2.5 py-2.5"
-                  onClick={() => {
-                    openDeleteConfirmation();
-                  }}
-                >
-                  <RiDeleteBin7Line className="text-nrvPrimaryGreen" />
-                </button>
-
-                <form onSubmit={handleNextAndVerify}>
-                  <div className="w-full md:w-1/2 mx-auto p-0 md:p-8 justify-center">
+                    {/* Address Info */}
                     <div>
-                      <div className="mx-auto pt-8">
-                        <div className="w-full mt-4">
-                          <SelectField
-                            label="Property Type"
-                            name="propertyType"
-                            value={selectedOption}
-                            onChange={handleChange}
-                            options={[
-                              { value: "office", label: "Office" },
-                              { value: "duplex", label: "Duplex" },
-                              { value: "flat", label: "Flat" },
-                            ]}
-                            placeholder="Select Property Type"
-                          />
-                        </div>
-                        <div className="w-full mt-4">
-                          <InputField
-                          //  css="bg-white"
-                            label="Street Address"
-                            placeholder="Enter Street Address"
-                            inputType="text"
-                            name="streetAddress"
-                            value={propertyData.streetAddress}
-                            onChange={handleInputChange}
-                            error={errors.streetAddress}
-                          />
-                        </div>
-                        <div className="w-full mt-4">
-                          <InputField
-                        //    css="bg-white"
-                            label="Unit (Optional)"
-                            placeholder="Enter Unit"
-                            inputType="text"
-                            name="unit"
-                            value={singleProperty.propertyType}
-                            onChange={handleInputChange}
-                            error={errors.unit} // Corrected error prop name
-                          />
-                        </div>
-                        <div className="w-full mt-4 flex gap-3">
-                          <div className="w-1/2">
-                            <InputField
-                          //    css="bg-white"
-                              label="City"
-                              placeholder="Enter City"
-                              inputType="text"
-                              name="city"
-                              value={propertyData.city}
-                              onChange={handleInputChange}
-                              error={errors.city} // Corrected error prop name
-                            />
-                          </div>
-                          <div className="w-1/2">
-                            <InputField
-                           //   css="bg-white"
-                              label="State"
-                              placeholder="Enter State"
-                              inputType="text"
-                              name="state"
-                              value={propertyData.state}
-                              onChange={handleInputChange}
-                              error={errors.state} // Corrected error prop name
-                            />
-                          </div>
-                        </div>
-                        <div className="w-full mt-4">
-                          <InputField
-                           // css="bg-white"
-                            label="Zip Code"
-                            placeholder="Enter Zip Code"
-                            inputType="text"
-                            name="zipCode"
-                            value={propertyData.zipCode}
-                            onChange={handleInputChange}
-                            error={errors.zipCode} // Corrected error prop name
-                          />
-                        </div>
-                        <div className="w-full mt-4">
-                          <label className="text-nrvGreyBlack mb-2 text-sm">
-                            Property Photo
-                          </label>
-                          <div
-                            className="text-center w-full mt-2"
-                            onDrop={handleFileDrop}
-                            onDragOver={(e) => e.preventDefault()}
-                          >
-                            <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
-                              <input
-                                type="file"
-                                id="fileInput"
-                                className="hidden"
-                                accept=".png, .jpg , .jpeg"
-                                onChange={handleFileInputChange}
-                              />
-                              <label
-                                htmlFor="fileInput"
-                                className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
-                              >
-                                <div className="text-center flex justify-center">
-                                  {selectedFiles.length > 0 ? (
-                                    selectedFiles[0]?.name
-                                  ) : (
-                                    <SlCloudUpload size={30} fontWeight={900} />
-                                  )}
-                                </div>
-                                {selectedFiles.length > 0
-                                  ? "Change file"
-                                  : "Click to upload"}
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex justify-center mt-4 gap-4">
-                        <Button
-                          type="submit"
-                          size="large"
-                          className="max-w-md w-full mb-8"
-                          disabled={loading ? true : false}
-                          variant="bluebg"
-                          showIcon={false}
-                        >
-                          {loading ? "Submitting" : "Save"}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setShowEditProperty(false);
-                          }}
-                          type="button"
-                          size="large"
-                          className="max-w-md w-full mb-8"
-                          disabled={loading ? true : false}
-                          variant="lightGrey"
-                          showIcon={false}
-                        >
-                          Close
-                        </Button>
-                      </div>
+                      <p className="text-[16px] font-medium text-nrvPrimaryGreen text-nrvDarkGrey font-light">
+                        {singleProperty?.streetAddress}
+                      </p>
+                      <p className="text-[12px] font-light text-[#475467]">
+                        {singleProperty?.city}, {singleProperty?.state}
+                      </p>
                     </div>
                   </div>
-                </form>
-              </div>
-            </div>
-          )}
 
-          {showDeleteConfirmation && (
-            <div
-              id="overlay"
-              className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
-            >
-              <div className="bg-white p-8 rounded shadow-md text-center">
-                <p>Are you sure you want to delete this property?</p>
-                <div className="mt-4 flex justify-center space-x-4">
-                  <button
-                    onClick={deleteProperty}
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={closeDeleteConfirmation}
-                    className="bg-gray-500 text-white px-4 py-2 rounded"
-                  >
-                    No
-                  </button>
+                  {/* Right Section (Buttons) */}
+                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4 w-full md:w-auto">
+                    <Button
+                      variant="light"
+                      className="px-6 py-2 rounded-md flex gap-2 justify-center w-full md:w-auto"
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/landlord/properties/update/${singleProperty._id}`
+                        )
+                      }
+                    >
+                      Update Property Info
+                    </Button>
+                    <Button
+                      variant="light"
+                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto border border-red-200 text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      onClick={openDeleteConfirmation}
+                      disabled={isPropertyRented}
+                      title={
+                        isPropertyRented
+                          ? "Cannot delete a property with rented units"
+                          : "Delete property"
+                      }
+                      aria-label={
+                        isPropertyRented
+                          ? "Delete disabled: property has rented units"
+                          : "Delete property"
+                      }
+                    >
+                      Delete Property
+                    </Button>
+                    <Button
+                      variant="darkPrimary"
+                      className="px-6 py-2 rounded-md justify-center w-full md:w-auto"
+                      onClick={() => {
+                        router.push(
+                          "/dashboard/landlord/properties/rooms/create"
+                        );
+                      }}
+                    >
+                      + Add New Apartment
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Summary Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center mb-6">
+                  {summaryStats.map((stat: any, index: any) => (
+                    <div
+                      key={index}
+                      className="text-start p-5 bg-white space-y-2.5 border border-gray-100 shadow-sm rounded-xl hover:shadow-md transition-shadow duration-200"
+                    >
+                      <p className="text-[#67667A] font-medium text-sm">
+                        {stat?.label}
+                      </p>
+                      <p className={`text-2xl text-[#03442C] font-semibold tracking-tight`}>
+                        {stat?.value}
+                      </p>
+                      <p className="text-[#8D9196] text-xs font-medium bg-gray-50 inline-block px-2 py-1 rounded-md">
+                        {stat?.detail}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex w-full gap-1 md:gap-6 border-b-2 overflow-x-auto hide-scrollbar">
+                  {propertyDashboardLinks.map((item: any) => (
+                    <div key={item.id} className="flex-shrink-0">
+                      <div
+                        className={`text-[16px] font-medium mt-2 mb-2 cursor-pointer px-4 md:px-12 text-center whitespace-nowrap ${
+                          currentState === item.id
+                            ? "text-[#2B892B] border-b-2 border-[#2B892B] -mb-[2px]"
+                            : "text-[#344054]"
+                        }`}
+                        onClick={() => {
+                          setCurrentState(item.id);
+                        }}
+                      >
+                        {item.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-4">
+                  {currentState === 1 && singleProperty && (
+                    <PropertyOverview data={singleProperty} />
+                  )}
+                  {currentState === 3 && <PropertyMaintenance />}
+                  {currentState === 4 && <PropertyDocuments />}
+                  {currentState === 5 && <PropertyExpenses />}
                 </div>
               </div>
+              {showEditProperty && (
+                <div
+                  id="overlay"
+                  className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+                >
+                  <div className="bg-white w-4/5 md:w-3/5 p-4 relative mt-32 rounded-t-3xl overflow-auto max-h-full">
+                    <button
+                      className="absolute top-2 right-2 text-lg  bg-nrvLightGreyBg border border-nrvPrimaryGreen rounded-full px-2.5 py-2.5"
+                      onClick={() => {
+                        openDeleteConfirmation();
+                      }}
+                    >
+                      <RiDeleteBin7Line className="text-nrvPrimaryGreen" />
+                    </button>
+
+                    <form onSubmit={handleNextAndVerify}>
+                      <div className="w-full md:w-1/2 mx-auto p-0 md:p-8 justify-center">
+                        <div>
+                          <div className="mx-auto pt-8">
+                            <div className="w-full mt-4">
+                              <SelectField
+                                label="Property Type"
+                                name="propertyType"
+                                value={selectedOption}
+                                onChange={handleChange}
+                                options={[
+                                  { value: "office", label: "Office" },
+                                  { value: "duplex", label: "Duplex" },
+                                  { value: "flat", label: "Flat" },
+                                ]}
+                                placeholder="Select Property Type"
+                              />
+                            </div>
+                            <div className="w-full mt-4">
+                              <InputField
+                                //  css="bg-white"
+                                label="Street Address"
+                                placeholder="Enter Street Address"
+                                inputType="text"
+                                name="streetAddress"
+                                value={propertyData.streetAddress}
+                                onChange={handleInputChange}
+                                error={errors.streetAddress}
+                              />
+                            </div>
+                            <div className="w-full mt-4">
+                              <InputField
+                                //    css="bg-white"
+                                label="Unit (Optional)"
+                                placeholder="Enter Unit"
+                                inputType="text"
+                                name="unit"
+                                value={singleProperty.propertyType}
+                                onChange={handleInputChange}
+                                error={errors.unit} // Corrected error prop name
+                              />
+                            </div>
+                            <div className="w-full mt-4 flex gap-3">
+                              <div className="w-1/2">
+                                <InputField
+                                  //    css="bg-white"
+                                  label="City"
+                                  placeholder="Enter City"
+                                  inputType="text"
+                                  name="city"
+                                  value={propertyData.city}
+                                  onChange={handleInputChange}
+                                  error={errors.city} // Corrected error prop name
+                                />
+                              </div>
+                              <div className="w-1/2">
+                                <InputField
+                                  label="State"
+                                  placeholder="Enter State"
+                                  inputType="text"
+                                  name="state"
+                                  value={propertyData.state}
+                                  onChange={handleInputChange}
+                                  error={errors.state} // Corrected error prop name
+                                />
+                              </div>
+                            </div>
+                            <div className="w-full mt-4">
+                              <label className="text-nrvGreyBlack mb-2 text-sm">
+                                Property Photo
+                              </label>
+                              <div
+                                className="text-center w-full mt-2"
+                                onDrop={handleFileDrop}
+                                onDragOver={(e) => e.preventDefault()}
+                              >
+                                <div className="w-full border border-nrvLightGrey rounded-lg pt-4 pb-4 text-swBlack">
+                                  <input
+                                    type="file"
+                                    id="fileInput"
+                                    className="hidden"
+                                    accept=".png, .jpg , .jpeg"
+                                    onChange={handleFileInputChange}
+                                  />
+                                  <label
+                                    htmlFor="fileInput"
+                                    className="cursor-pointer p-2 rounded-md bg-swBlue text-nrvLightGrey font-light mx-auto mt-5 mb-3"
+                                  >
+                                    <div className="text-center flex justify-center">
+                                      {selectedFiles.length > 0 ? (
+                                        selectedFiles[0]?.name
+                                      ) : (
+                                        <SlCloudUpload
+                                          size={30}
+                                          fontWeight={900}
+                                        />
+                                      )}
+                                    </div>
+                                    {selectedFiles.length > 0
+                                      ? "Change file"
+                                      : "Click to upload"}
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-center mt-4 gap-4">
+                            <Button
+                              type="submit"
+                              size="large"
+                              className="max-w-md w-full mb-8"
+                              disabled={loading ? true : false}
+                              variant="bluebg"
+                              showIcon={false}
+                            >
+                              {loading ? "Submitting" : "Save"}
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setShowEditProperty(false);
+                              }}
+                              type="button"
+                              size="large"
+                              className="max-w-md w-full mb-8"
+                              disabled={loading ? true : false}
+                              variant="lightGrey"
+                              showIcon={false}
+                            >
+                              Close
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {showDeleteConfirmation && (
+                <div
+                  id="overlay"
+                  className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-40 z-50 flex justify-center items-center"
+                >
+                  <div className="rounded bg-white p-4 text-center shadow-md sm:p-8">
+                    <p>
+                      {isPropertyRented
+                        ? "This property has rented units and cannot be deleted."
+                        : "Are you sure you want to delete this property?"}
+                    </p>
+                    <div className="mt-4 flex justify-center space-x-4">
+                      <button
+                        onClick={deleteProperty}
+                        disabled={isPropertyRented || loading}
+                        className="bg-red-500 text-white px-4 py-2 rounded disabled:opacity-60"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={closeDeleteConfirmation}
+                        className="bg-gray-500 text-white px-4 py-2 rounded"
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </LandLordLayout>

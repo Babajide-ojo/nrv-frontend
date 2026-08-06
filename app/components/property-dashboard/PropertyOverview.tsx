@@ -4,60 +4,87 @@ import { BsPlus, BsPlusCircle, BsPlusCircleFill } from "react-icons/bs";
 import Button from "../shared/buttons/Button";
 import DashboardNavigationCard from "../shared/cards/DashboardNavigationCard";
 import { useRouter } from "next/navigation";
-import {useState} from 'react';
-
+import { useState } from "react";
+import { formatDate, formatDateToWords } from "@/helpers/utils";
 
 interface Data {
   data: any;
+  img?: string;
 }
 
-const PropertyOverview: React.FC<Data> = ({ data }) => {
-
- 
-
+const PropertyOverview: React.FC<Data> = ({ data, img }) => {
   const router = useRouter();
   return (
-    <div className="pb-12 md:pb-0">
-      <div className="bg-white max-w-full w-120 h-40 rounded rounded-2xl p-4">
-        <div className="flex justify-between border-b border-b-1 mb-4">
-          <div className="font-medium text-nrvPrimaryGreen text-sm">Apartments</div>
-          <div>
-            <Button
-              size="small"
-              className="bg-nrvGreyMediumBg p-2 border border-nrvGreyMediumBg mt-2 rounded-md mb-2  hover:text-white hover:bg-nrvPrimaryGreen"
-              variant="mediumGrey"
-              showIcon={false}
-              onClick={() => {
-                router.push("/dashboard/landlord/properties/rooms/create");
-              }}
-            >
-              <div className="text-xs md:text-md flex gap-2 font-medium">
-                <BsPlusCircleFill size={15} />
-                Add Apartment
-              </div>
-            </Button>
-          </div>
-        </div>
-        <div className="flex gap-4">
+    <div className="font-jakarta">
+      {/* Truncate long content instead of scrolling */}
+      <div className="bg-white max-w-full rounded-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data &&
-            data?.rooms?.map((item: any, index: any) => (
+            data?.rooms?.map((item: any) => (
               <div
-                key={index}
-                className="cursor-pointer"
+                key={item._id}
+                className="bg-white border border-[#F0F2F5] rounded-lg p-4 transition relative cursor-pointer"
                 onClick={() => {
                   router.push(
                     `/dashboard/landlord/properties/rooms/${item._id}`
                   );
                 }}
               >
-                <div className="h-10 w-10 text-sm bg-nrvLightGreyBg flex items-center border rounded rounded-2xl justify-center">
-                  {item?.roomId}
+                <div className="flex w-full justify-between">
+                  <div>
+                    <img
+                      src={data?.file}
+                      className="h-16 w-16 rounded-lg object-cover"
+                      alt="Property"
+                    />
+                  </div>
+                  <div>
+                    <button
+                      className={`px-4 py-1.5 text-[12px] font-semibold rounded-full ${
+                        item?.assignedToTenant
+                          ? "bg-[#FFF1DA] text-[#F3A218]"
+                          : "bg-[#E7F6EC] text-[#099137]"
+                      }`}
+                    >
+                      {item?.assignedToTenant
+                        ? "Occupied By Tenant"
+                        : "Currently Vacant"}
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <h3 className="text-md font-medium">{item?.propertyType}</h3>
+                  {/* Clamp description to two lines with ellipsis */}
+                  <p
+                    className="text-[13px] font-light text-[#101928] break-words"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: "2",
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <span className="font-semibold text-[13px]">Description :</span>{" "}
+                    {item?.description}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    Added on {formatDateToWords(item.createdAt)}
+                  </p>
+                  <div className="flex gap-2 w-full mt-2 justify-between border-t pt-2">
+                    <div className="text-[13px] font-medium text-[#1D2227] whitespace-nowrap">
+                      ₦{item.rentAmount.toLocaleString()} {" "}
+                      <span className="text-[11px] text-[#646D75]">per annum</span>
+                    </div>
+                    <div className="text-[13px] font-medium italic text-[#045D23] whitespace-nowrap">
+                      View Details
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
         </div>
       </div>
-
+      {/* 
       <div className="mt-8 md:w-full lg:w-full 2xl:w-1/2 xl:w-1/2 sm:w-full xs:w-full mx-auto grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
         {dashboardMetrics.map(({ title, imageLink, number }, index) => (
           <div key={index}>
@@ -94,8 +121,7 @@ const PropertyOverview: React.FC<Data> = ({ data }) => {
           centralized place to view, respond to, and track maintenance logged by
           you or your tenant.
         </div>
-      </div>
-   
+      </div> */}
     </div>
   );
 };

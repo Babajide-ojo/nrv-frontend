@@ -15,8 +15,7 @@ import {
   assignDateTenancyTenure,
   endTenancyTenure,
 } from "@/redux/slices/userSlice";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import CenterModal from "../../shared/modals/CenterModal";
 import FileUploader from "../../shared/upload/FileUploader";
@@ -54,18 +53,15 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
   const fetchData = async () => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
     try {
       const tenant = await dispatch(
         getCurrentTenantForProperty(id) as any
       ).unwrap();
       setTenantDetails(tenant);
-    } catch (error) {}
-
-    return () => clearTimeout(timer);
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const uploadTenantAgreement: AddTenantFunction = async (
@@ -184,8 +180,7 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
 
   return (
     <div className="pb-4 md:pb-0">
-      <ToastContainer />
-      <div className="mx-auto md:p-16 p-8 w-full h-full">
+      <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
         <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
           Upload Signed Agreement
         </h2>
@@ -248,7 +243,7 @@ const AgreementDocumentScreen: React.FC<Data> = ({ data }) => {
                     label="Upload your document"
                   />
 
-                  {errors.signedDocument && (
+                  {typeof errors.signedDocument === "string" && (
                     <div className="text-red-500 text-sm mt-2">
                       {errors.signedDocument}
                     </div>

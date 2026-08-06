@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import * as yup from "yup";
 import { Formik, Form, Field, ErrorMessage, useFormikContext } from "formik";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import "react-toastify/dist/ReactToastify.css";
 import FormikSelectField from "../shared/input-fields/FormikSelectField";
 import { createExpense } from "@/redux/slices/propertySlice";
 import { SlCloudUpload } from "react-icons/sl";
@@ -14,6 +13,7 @@ import BackIcon from "../shared/icons/BackIcon";
 import { ArrowBack } from "@/public/icons/iconsExport";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import ImageUploader from "../shared/ImageUploader";
+import Spinner from "@/app/components/loaders/Spinner";
 
 interface User {
   user: {
@@ -140,7 +140,11 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
   };
 
   if (!user || !user.user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[40vh] w-full">
+        <Spinner size={28} className="text-nrvPrimaryGreen" />
+      </div>
+    );
   }
 
   const handleFormReset = (values: any) => {
@@ -149,7 +153,6 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
 
   return (
     <div className="container">
-      <ToastContainer />
       <div className="max-w-lg mx-auto flex-grow w-full">
         <div className="flex justify-between">
           <div className="" onClick={onExpenseSubmit}>
@@ -221,7 +224,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onExpenseSubmit }) => {
                   disabled={isSubmitting}
                   isLoading={isSubmitting}
                 >
-                  {isSubmitting ? "Loading..." : "Add Expense"}
+                  Add Expense
                 </Button>
               </div>
             </Form>

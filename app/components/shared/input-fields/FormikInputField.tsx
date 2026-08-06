@@ -1,7 +1,12 @@
 import { ErrorMessage, useFormikContext } from "formik";
 import InputField from "./InputFields";
 
-const FormikInputField = ({ name , ...props }: any) => {
+const FormikInputField = ({
+  name,
+  /** Override outer wrapper margin. Default `mt-8` kept for older screens; use `mt-0` when a Label sits directly above the field (e.g. grid rows next to date pickers). */
+  wrapperClassName = "mt-8",
+  ...props
+}: any) => {
     const { setFieldValue, setFieldTouched } = useFormikContext();
   
     const handleChange = (event: any) => {
@@ -15,7 +20,7 @@ const FormikInputField = ({ name , ...props }: any) => {
     };
   
     return (
-      <div className="w-full mt-8">
+      <div className={`w-full ${wrapperClassName}`}>
         <InputField
           name={name}
           onChange={handleChange}

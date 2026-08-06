@@ -7,8 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { updateRoomStatus } from "@/redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import PropertyOptions from "../property-dashboard/PropertyOptions";
 
 interface Data {

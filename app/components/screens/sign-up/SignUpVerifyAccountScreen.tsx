@@ -1,94 +1,168 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyAccount } from "@/redux/slices/userSlice";
+import { resendVerificationOtp, verifyAccount } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import OtpInput from "react-otp-input";
 import { IoReload } from "react-icons/io5";
 import Button from "../../shared/buttons/Button";
-import PreferencesForm from "./PreferencesForm";
 import VerifyAccountSideBar from "./VerifyAccountSideBar";
-import CompleteProfileSideBar from "./CompleteProfileSideBar";
 import AddPropertySideBar from "./AddPropertySideBar";
 import MultiStepForm from "./MultiStepForm";
+import AccountTypeBadge from "./AccountTypeBadge";
 
-const SignUpVerifyAccount: React.FC = () => {
+type VerifyMode = "signup" | "login";
+
+interface SignUpVerifyAccountProps {
+  mode?: VerifyMode;
+  accountType?: string | null;
+}
+
+const resolveVerifyEmail = (): string | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const raw = localStorage.getItem("emailToVerify");
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return (
+      parsed?.data?.email ||
+      parsed?.user?.email ||
+      parsed?.email ||
+      null
+    );
+  } catch {
+    return null;
+  }
+};
+
+const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
+  mode = "signup",
+  accountType: accountTypeProp,
+}) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const { error } = useSelector((state: any) => state.user);
   const [isLoading, setIsLoading] = useState(false);
-  const [timer, setTimer] = useState(120);
-  const [canResend, setCanResend] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [step, setStep] = useState(1);
   const [data, setData] = useState<any>(null);
+  const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const countdown = setInterval(() => {
-      setTimer((prev) => {
-        if (prev === 1) {
-          clearInterval(countdown);
-          setCanResend(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdown);
+    setVerifyEmail(resolveVerifyEmail());
   }, []);
 
   const handleSubmit = async () => {
-    if (otp.length !== 6) return;
-    const user = JSON.parse(localStorage.getItem("emailToVerify") || "{}");
+    if (otp.length !== 6) {
+      return;
+    }
+
+    const email = verifyEmail ?? resolveVerifyEmail();
+    if (!email) {
+      toast.error("Missing email for verification. Please sign up again.");
+      return;
+    }
+
     const payload = {
-      email: user?.data?.email,
+      email,
       confirmationCode: otp,
     };
 
     setIsLoading(true);
     try {
       const response = await dispatch(verifyAccount(payload) as any).unwrap();
-      setData(response);
-
-      setStep(2); // Move to the second step
-    } catch (error: any) {
+      localStorage.removeItem("stepToLoad");
       setIsLoading(false);
-      toast.error(error);
+
+      if (mode === "login") {
+        toast.success("Account confirmed. Redirecting...");
+        const accountType = response?.user?.accountType;
+        if (accountType === "tenant") {
+          router.push("/dashboard/tenant");
+        } else if (accountType === "landlord") {
+          router.push("/dashboard/landlord");
+        } else {
+          router.push("/");
+        }
+        return;
+      }
+
+      const accountType = response?.user?.accountType;
+      if (accountType === "tenant") {
+        toast.success("Account verified. Welcome to NaijaRentVerify!");
+        router.push("/dashboard/tenant");
+        return;
+      }
+
+      setData(response);
+      setStep(2);
+    } catch (err: any) {
+      setIsLoading(false);
+      toast.error(err);
     }
   };
 
-  const handleResend = () => {
-    setTimer(120);
-    setCanResend(false);
+  const handleResend = async () => {
+    const email = verifyEmail ?? resolveVerifyEmail();
+    if (!email) {
+      toast.error("Missing email. Please sign up again.");
+      return;
+    }
+
+    setIsResending(true);
+    try {
+      const message = await dispatch(
+        resendVerificationOtp({ email }) as any,
+      ).unwrap();
+      toast.success(message);
+    } catch (err: any) {
+      toast.error(err);
+    } finally {
+      setIsResending(false);
+    }
   };
+
+  const emailDisplay = useMemo(() => verifyEmail ?? "your email", [verifyEmail]);
+  const resolvedAccountType =
+    data?.user?.accountType ?? accountTypeProp ?? null;
 
   return (
     <main className=" bg-white">
       <div className="w-full bg-white">
         {step === 1 ? (
           <div className="w-full flex">
-            <div className="w-1/2 bg-[#E9F4E7]">
-              {" "}
-              <VerifyAccountSideBar />
+            <div className="hidden lg:block w-1/2 bg-[#E9F4E7]">
+              <VerifyAccountSideBar accountType={resolvedAccountType ?? accountTypeProp} />
             </div>
-            <div className="w-1/2 flex flex-col justify-center">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
               <div className="max-w-md mx-auto">
+                <h1 className="text-2xl font-bold text-green-600 my-10">
+                  NaijaRentVerify
+                </h1>
+                <AccountTypeBadge
+                  accountType={resolvedAccountType ?? accountTypeProp}
+                  className="mb-4"
+                />
                 <h2 className="text-2xl font-semibold text-gray-900">
                   Verify Your Email Address
                 </h2>
                 <p className="mt-2 text-gray-600">
-                  We&#34;ve sent a verification link to your email.
+                  We&apos;ve sent a 6-digit verification code to{" "}
+                  <strong className="text-gray-900">{emailDisplay}</strong>.
                 </p>
                 <p className="mt-1 text-gray-600">
-                  Enter the 6-digit OTP to verify your account.
+                  Enter the code below to activate your account.
                 </p>
 
                 <div className="mt-4 text-left text-gray-700">
                   <p className="font-semibold">Instructions:</p>
                   <ul className="list-disc list-inside text-sm">
-                    <li className="mt-4">Open your email inbox.</li>
+                    <li className="mt-4">Open your email inbox (and spam folder).</li>
                     <li className="mt-4">
                       Look for an email from NaijaRentVerify.
                     </li>
@@ -124,23 +198,24 @@ const SignUpVerifyAccount: React.FC = () => {
                 </div>
 
                 <p className="mt-4 text-sm text-gray-500 text-center">
-                  Did not receive verification code?
+                  Did not receive the verification code?
                 </p>
-                <div className="mt-2 flex items-center justify-center space-x-2 text-green-600 text-center">
-                  {canResend ? (
-                    <button
-                      onClick={handleResend}
-                      className="flex items-center gap-1"
-                    >
-                      <IoReload className="text-lg" /> Resend OTP
-                    </button>
-                  ) : (
-                    <p className="text-gray-500">
-                      {Math.floor(timer / 60)}:
-                      {(timer % 60).toString().padStart(2, "0")}s
-                    </p>
-                  )}
+                <div className="mt-2 flex items-center justify-center">
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isResending}
+                    className="flex items-center gap-1.5 text-green-700 font-medium hover:text-green-800 disabled:opacity-60"
+                    aria-label="Resend verification code"
+                  >
+                    <IoReload className={`text-lg ${isResending ? "animate-spin" : ""}`} />
+                    {isResending ? "Sending code…" : "Resend OTP"}
+                  </button>
                 </div>
+
+                {error && (
+                  <p className="mt-3 text-sm text-red-600 text-center">{error}</p>
+                )}
 
                 <Button
                   size="large"
@@ -151,46 +226,35 @@ const SignUpVerifyAccount: React.FC = () => {
                   disabled={otp.length !== 6 || isLoading}
                   isLoading={isLoading}
                 >
-                  {isLoading ? "Loading..." : "Continue"}
+                  Continue
                 </Button>
 
                 <p className="mt-4 text-gray-500 italic text-center font-light">
-                  Contact Support
+                  <a
+                    href="mailto:info@naijarentverify.com"
+                    className="text-green-800 hover:underline not-italic"
+                  >
+                    Contact Support
+                  </a>
                 </p>
               </div>
             </div>
           </div>
         ) : (
           <div>
-            {data.user.accountType === "tenant" && (
-              <div className="flex w-full">
-                <div className="w-1/2 bg-[#E9F4E7]">
-                  <CompleteProfileSideBar />
-                </div>
-                <div className="w-1/2 flex-col justify-center">
-                  <div className="max-w-md mx-auto">
-                    <PreferencesForm />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {data.user.accountType === "landlord" && (
-              <div className="flex w-full">
-                <div className="w-1/2 bg-[#E9F4E7]">
-                  <AddPropertySideBar />
+              <div className="flex min-h-screen w-full lg:h-screen lg:overflow-hidden">
+                <div className="hidden w-full max-w-md shrink-0 bg-[#E9F4E7] lg:block lg:w-1/2">
+                  <AddPropertySideBar accountType={resolvedAccountType} />
                 </div>
-                <div className="w-1/2 flex-col justify-center">
-                  <div className="max-w-xl mx-auto">
+                <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto p-5 sm:p-8 lg:w-1/2">
+                  <div className="mx-auto w-full max-w-xl">
+                    <AccountTypeBadge accountType={resolvedAccountType} className="mb-4" />
                     <MultiStepForm />
                   </div>
                 </div>
               </div>
-
-              
             )}
-
-           
           </div>
         )}
       </div>

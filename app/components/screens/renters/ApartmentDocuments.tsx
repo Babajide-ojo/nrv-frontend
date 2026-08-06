@@ -1,114 +1,170 @@
 "use client";
 
-import "react-toastify/dist/ReactToastify.css";
-import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Progress } from "@/components/ui/progress";
+import { Eye } from "lucide-react";
+import {
+  fetchUploadedDocuments,
+  uploadDocument,
+} from "@/redux/slices/documentSlice";
 
-const Viewer = dynamic(() => import("react-viewer"), { ssr: false });
+const uploadSections = [
+  { title: "Upload Lease Agreement", category: "Tenant Lease Agreement" },
+  { title: "Upload Landlord Insurance Policy", category: "Landlord Insurance Policy" },
+  { title: "Update Your Utility & Maintenance", category: "Utility & Maintenance" },
+  { title: "Upload Other Documents", category: "Other Documents" },
+];
 
-const ApartmentDocuments = (data: any) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [viewDocs, setViewDocs] = useState<boolean>(false);
-  const [viewerVisible, setViewerVisible] = useState<boolean>(true);
-  const [pdf, setPdf] = useState<string | null>(null);
-  const [fileUrl, setFileUrl] = useState<string>("");
+const categoryToDtoKey: Record<string, string> = {
+  "Tenant Lease Agreement": "file",
+  "Landlord Insurance Policy": "landlordInsurancePolicy",
+  "Utility & Maintenance": "utilityAndMaintenance",
+  "Other Documents": "otherDocuments",
+};
 
-  const viewDocument = (item: string) => {
-    const fileType = getFileExtension(item);
-    if (["jpg", "jpeg", "png", "gif"].includes(fileType)) {
-      setPdf("image");
-    } else if (fileType === "pdf") {
-      setPdf("pdf");
+export default function DocumentUpload({ propertyId }: { propertyId: any }) {
+  const dispatch = useDispatch();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({});
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+
+  // **Select only the documents slice** :contentReference[oaicite:3]{index=3}
+  const uploadedFiles = useSelector((state: any) => state.document);
+  console.log({uploadedFiles, propertyId});
+  
+
+  // **Fetch on mount and when propertyId changes**, guard against undefined :contentReference[oaicite:4]{index=4}
+  useEffect(() => {
+    dispatch(fetchUploadedDocuments(propertyId) as any);
+  }, [dispatch, propertyId]);
+
+  const handleFileSelect = (category: string) => {
+    setSelectedSection(category);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedSection) return;
+    setSelectedFiles((prev) => ({ ...prev, [selectedSection]: file }));
+    setUploadProgress((prev) => ({ ...prev, [selectedSection]: 0 }));
+    setSelectedSection(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // **Upload all at once with async/await & try/catch** :contentReference[oaicite:5]{index=5}
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("property", propertyId);
+    Object.entries(selectedFiles).forEach(([category, file]) => {
+      const key = categoryToDtoKey[category];
+      formData.append(key, file);
+    });
+
+    try {
+      await dispatch(uploadDocument(formData) as any).unwrap();
+      setSelectedFiles({});
+      setUploadProgress({});
+      alert("Uploaded successfully");
+      dispatch(fetchUploadedDocuments(propertyId) as any);
+    } catch (err: any) {
+      console.error("Upload failed:", err);
+      alert("Upload failed: " + (err.message || err));
     }
-    setFileUrl(item);
-    setViewDocs(true);
-    setViewerVisible(true);
-  };
-
-  const closeViewer = () => {
-    setViewerVisible(false);
-    setViewDocs(false);
-    setFileUrl("");
-    setPdf(null);
-  };
-
-  const getFileExtension = (filename: string) => {
-    return filename.split(".").pop()?.toLowerCase() || "";
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 pb-12 md:pb-0">
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-          <div className="border-8 border-t-8 border-gray-200 rounded-full w-20 h-20 animate-spin"></div>
-        </div>
-      )}
+    <div className="flex flex-col gap-4 rounded-xl bg-white p-3 shadow sm:gap-6 sm:p-5 lg:flex-row lg:gap-8 lg:p-6">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        accept="application/pdf,image/*"
+      />
 
-      <div className="md:flex gap-6">
-        <div className="md:w-1/2 w-full mt-4 md:mt-0">
-          <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvPrimaryGreen text-sm font-semibold">Uploaded Land Insurance Documents</div>
-            {data.data.property?.propertyId?.landlordInsurancePolicy?.length > 0 ? (
-              <div className="mt-4">
-                {data.data.property.propertyId.landlordInsurancePolicy && data.data.property.propertyId.landlordInsurancePolicy.map((item: string, index: number) => (
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md mt-4 cursor-pointer hover:bg-gray-100" key={index} onClick={() => viewDocument(item)}>
-                    <span className="text-sm text-nrvLightGrey">Doc ({index})</span>
+      {/* Upload Sections */}
+      <div className="w-full lg:w-2/3 space-y-6">
+        <h2 className="text-xl font-semibold">Apartment Documentations</h2>
+        {uploadSections.map(({ title, category }) => (
+          <div
+            key={category}
+            className="flex justify-between rounded-lg p-4"
+          >
+            <div className="w-1/2">
+              <h3 className="font-medium text-sm">{title}</h3>
+            </div>
+            <div className="w-1/2">
+              {selectedFiles[category] ? (
+                <div className="flex justify-between items-center bg-gray-100 p-3 rounded-lg">
+                  <div>
+                    <p className="font-medium">{selectedFiles[category].name}</p>
+                    <p className="text-xs text-gray-500">
+                      {(selectedFiles[category].size / (1024 * 1024)).toFixed(2)} MB
+                    </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-xs italic text-nrvLightGrey mt-4">No document uploaded yet</div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvPrimaryGreen text-sm font-semibold">Utility & Maintenance Documents</div>
-            {data.data.property?.propertyId?.utilityAndMaintenance?.length > 0 ? (
-              <div className="mt-4">
-                {data.data.property.propertyId.utilityAndMaintenance && data.data.property.propertyId.utilityAndMaintenance.map((item: string, index: number) => (
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md mt-4 cursor-pointer hover:bg-gray-100" key={index} onClick={() => viewDocument(item)}>
-                    <span className="text-sm text-nrvLightGrey">Doc ({index})</span>
+                  <button
+                    onClick={() => handleFileSelect(category)}
+                    className="text-green-600 underline"
+                  >
+                    Change
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleFileSelect(category)}
+                  className="w-full h-20 border-dashed border-2 border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <span className="text-green-700 font-medium">Click to upload</span>
+                    <span className="text-xs text-gray-400">or drag & drop</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-xs italic text-nrvLightGrey mt-4">No document uploaded yet</div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-2xl p-4 shadow-md mt-8">
-            <div className="text-nrvPrimaryGreen text-sm font-semibold"> Uploaded</div>
-            {data.data.property?.propertyId?.otherDocuments?.length > 0 ? (
-              <div className="mt-4">
-                {data.data.property.propertyId.otherDocuments && data.data.property.propertyId.otherDocuments.map((item: string, index: number) => (
-                  <div className="flex items-center justify-between p-2 bg-gray-50 rounded-md mt-4 cursor-pointer hover:bg-gray-100" key={index} onClick={() => viewDocument(item)}>
-                    <span className="text-sm text-nrvLightGrey">Doc ({index})</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-xs italic text-nrvLightGrey mt-4">No document uploaded yet</div>
-            )}
-          </div>
-        </div>
-
-        {viewDocs && (
-          <div className={`fixed inset-0 z-50 flex items-center justify-center ${viewerVisible ? 'bg-black bg-opacity-50' : 'hidden'}`}>
-            {pdf === "image" ? (
-              <Viewer visible={viewerVisible} onClose={closeViewer} images={[{ src: fileUrl, alt: "Image" }]} />
-            ) : pdf === "pdf" ? (
-              <div className="relative bg-white p-4 rounded-lg shadow-lg max-w-3xl mx-auto">
-                <button onClick={closeViewer} className="absolute top-2 right-2 text-white rounded-full px-4 py-2">
-                  X
                 </button>
-                <iframe src={fileUrl} height="600" width="600" title="PDF Viewer" className="border-0"></iframe>
-              </div>
-            ) : null}
+              )}
+            </div>
           </div>
-        )}
+        ))}
+
+        <button
+          onClick={handleSubmit}
+          className="mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          Submit Documents
+        </button>
       </div>
+
+      {/* Uploaded Files List */}
+        {
+
+          uploadedFiles &&       <div className="w-full lg:w-1/3 space-y-4">
+          <h2 className="text-lg font-semibold">
+            Uploaded Files ({uploadedFiles?.data?.length})
+          </h2>
+          <div className="space-y-3">
+        {uploadedFiles?.data?.map((file: any, idx: number) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center p-3 border rounded"
+              >
+                <div>
+                  <p className="font-medium">{file.name}</p>
+                  <p className="text-xs text-gray-500">{file.category}</p>
+                </div>
+                <a
+                  href={file.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-green-600"
+                >
+                  <Eye className="h-5 w-5" />
+                </a>
+              </div>
+            )) ?? <p>No documents uploaded yet.</p>}
+          </div>
+        </div>
+        }
     </div>
   );
-};
-
-export default ApartmentDocuments;
+}

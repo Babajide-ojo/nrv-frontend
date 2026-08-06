@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_URL } from "@/config/constant";
 import { touchSessionActivity } from "@/lib/sessionIdle";
+import { syncRoleCookieFromSession } from "@/lib/authSession";
 
 export type RestoredSession = {
   user: any;
@@ -12,6 +13,7 @@ const persistSession = (userData: RestoredSession) => {
   localStorage.setItem("nrv-user", JSON.stringify(userData));
   localStorage.setItem("rememberMe", "true");
   touchSessionActivity();
+  syncRoleCookieFromSession(userData);
 };
 
 /**

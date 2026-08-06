@@ -1,18 +1,20 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   clearAuthSession,
   isSessionIdleExpired,
 } from "@/lib/sessionIdle";
 import { restoreSessionFromRememberMe } from "@/lib/rememberMe";
 import {
+  getDashboardHomeForRole,
   getSessionAccountType,
   getStoredSession,
   isAccessTokenExpired,
   isLandlordAccount,
   isTenantAccount,
+  syncRoleCookieFromSession,
 } from "@/lib/authSession";
 
 interface ProtectedRouteProps {
@@ -25,6 +27,7 @@ interface ProtectedRouteProps {
  */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
@@ -36,7 +39,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       if (reason) {
         params.set("reason", reason);
       }
-      router.replace(`/sign-in${params.toString() ? `?${params}` : ""}`);
+      window.location.replace(
+        `/sign-in${params.toString() ? `?${params}` : ""}`,
+      );
+    };
+
+    const sendToRoleHome = (role: "landlord" | "tenant") => {
+      const home = getDashboardHomeForRole(role);
+      if (pathname === home || pathname.startsWith(`${home}/`)) {
+        return;
+      }
+      window.location.replace(home);
     };
 
     const run = async () => {
@@ -65,10 +78,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       }
 
       const accountType = getSessionAccountType(session);
+      syncRoleCookieFromSession(session);
+
       if (isTenantAccount(accountType)) {
         if (!cancelled) {
           setAllowed(false);
-          router.replace("/dashboard/tenant");
+          sendToRoleHome("tenant");
         }
         return;
       }
@@ -92,7 +107,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router, pathname]);
 
   if (!allowed) {
     return (

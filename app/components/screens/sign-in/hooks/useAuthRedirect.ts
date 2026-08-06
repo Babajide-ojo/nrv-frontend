@@ -2,6 +2,13 @@ import { useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { UserData } from "../types";
 import { ROUTES } from "../constants";
+import {
+  isLandlordAccount,
+  isPathAllowedForRole,
+  isTenantAccount,
+  setRoleCookie,
+  type NrvRole,
+} from "@/lib/authSession";
 
 export const useAuthRedirect = () => {
   const router = useRouter();
@@ -10,6 +17,16 @@ export const useAuthRedirect = () => {
   const redirectUser = useCallback((userData: UserData) => {
     const userAccountType = String(userData?.user?.accountType || "").toLowerCase();
     const userStatus = String(userData?.user?.status || "");
+
+    const role: NrvRole | null = isTenantAccount(userAccountType)
+      ? "tenant"
+      : isLandlordAccount(userAccountType)
+        ? "landlord"
+        : null;
+
+    if (role) {
+      setRoleCookie(role);
+    }
 
     const redirectFromQuery =
       searchParams.get("redirect") || searchParams.get("returnUrl");
@@ -48,8 +65,8 @@ export const useAuthRedirect = () => {
         return;
       }
 
-      // Other deep links (best-effort).
-      if (safeRedirect) {
+      // Deep links only when they match this account's role area.
+      if (safeRedirect && role && isPathAllowedForRole(safeRedirect, role)) {
         router.push(safeRedirect);
         return;
       }

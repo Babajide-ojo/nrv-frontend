@@ -1,24 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { FiLock, FiLogOut, FiMail, FiPhone, FiUser } from "react-icons/fi";
+import { FiCamera, FiLock, FiLogOut, FiMail, FiPhone, FiUser } from "react-icons/fi";
 import Button from "../../shared/buttons/Button";
 import InputField from "../../shared/input-fields/InputFields";
 import { updateUser } from "@/redux/slices/userSlice";
+import UserAvatar from "@/app/components/shared/UserAvatar";
 
 type SettingsTab = "profile" | "security";
 
 const SettingsMainScreen = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
   const [userId, setUserId] = useState("");
   const [accountType, setAccountType] = useState("");
   const [status, setStatus] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [profileForm, setProfileForm] = useState({
     firstName: "",
@@ -33,34 +38,34 @@ const SettingsMainScreen = () => {
     if (typeof window === "undefined") {
       return;
     }
-    try {
-      const stored = JSON.parse(localStorage.getItem("nrv-user") || "{}");
-      const user = stored?.user ?? {};
-      setUserId(user._id ?? "");
-      setAccountType(user.accountType ?? "");
-      setStatus(user.status ?? "");
-      setProfileForm({
-        firstName: user.firstName ?? "",
-        lastName: user.lastName ?? "",
-        email: user.email ?? "",
-        phoneNumber: user.phoneNumber ?? "",
-        homeAddress: user.homeAddress ?? "",
-        nin: user.nin ?? "",
-      });
-    } catch {
-      // ignore
-    }
+    const load = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("nrv-user") || "{}");
+        const user = stored?.user ?? {};
+        setUserId(user._id ?? "");
+        setAccountType(user.accountType ?? "");
+        setStatus(user.status ?? "");
+        setAvatarUrl(user.file ?? "");
+        setProfileForm({
+          firstName: user.firstName ?? "",
+          lastName: user.lastName ?? "",
+          email: user.email ?? "",
+          phoneNumber: user.phoneNumber ?? "",
+          homeAddress: user.homeAddress ?? "",
+          nin: user.nin ?? "",
+        });
+      } catch {
+        // ignore
+      }
+    };
+    load();
+    window.addEventListener("nrv-user-updated", load);
+    return () => window.removeEventListener("nrv-user-updated", load);
   }, []);
 
   const displayName = useMemo(() => {
     const name = `${profileForm.firstName} ${profileForm.lastName}`.trim();
     return name || "Your profile";
-  }, [profileForm.firstName, profileForm.lastName]);
-
-  const initials = useMemo(() => {
-    const a = profileForm.firstName?.charAt(0) ?? "";
-    const b = profileForm.lastName?.charAt(0) ?? "";
-    return (a + b).toUpperCase() || "?";
   }, [profileForm.firstName, profileForm.lastName]);
 
   const accountLabel =
@@ -75,43 +80,73 @@ const SettingsMainScreen = () => {
     setProfileForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Profile photo must be under 5MB.");
+      return;
+    }
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
   const handleSaveProfile = async () => {
     if (!userId) {
       toast.error("Could not find your account. Please sign in again.");
       return;
     }
-    if (!profileForm.firstName.trim() || !profileForm.lastName.trim()) {
-      toast.error("First name and last name are required.");
-      return;
-    }
 
     setIsSaving(true);
     try {
-      await dispatch(
+      const payload = new FormData();
+      payload.append("phoneNumber", profileForm.phoneNumber.trim());
+      payload.append("homeAddress", profileForm.homeAddress.trim());
+      if (avatarFile instanceof File) {
+        payload.append("file", avatarFile);
+      }
+
+      const updated = await dispatch(
         updateUser({
           id: userId,
-          payload: {
-            firstName: profileForm.firstName.trim(),
-            lastName: profileForm.lastName.trim(),
-            phoneNumber: profileForm.phoneNumber.trim(),
-            homeAddress: profileForm.homeAddress.trim(),
-          },
+          payload,
         }) as any,
       ).unwrap();
 
       const stored = JSON.parse(localStorage.getItem("nrv-user") || "{}");
+      const updatedDoc =
+        updated && typeof updated === "object"
+          ? (updated as any).user && (updated as any).accessToken
+            ? (updated as any).user
+            : updated
+          : {};
+      const nextFile = String(
+        updatedDoc?.file ||
+          avatarPreview ||
+          stored?.user?.file ||
+          "",
+      ).trim();
       const updatedUser = {
         ...stored.user,
-        firstName: profileForm.firstName.trim(),
-        lastName: profileForm.lastName.trim(),
+        ...updatedDoc,
         phoneNumber: profileForm.phoneNumber.trim(),
         homeAddress: profileForm.homeAddress.trim(),
+        file: nextFile,
       };
       localStorage.setItem(
         "nrv-user",
         JSON.stringify({ ...stored, user: updatedUser }),
       );
       window.dispatchEvent(new Event("nrv-user-updated"));
+      setAvatarUrl(nextFile);
+      setAvatarFile(null);
+      setAvatarPreview(null);
       toast.success("Profile updated.");
     } catch (err: any) {
       toast.error(err || "Could not update profile.");
@@ -126,6 +161,8 @@ const SettingsMainScreen = () => {
     router.push("/sign-in");
   };
 
+  const photoSrc = avatarPreview || avatarUrl;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
       <header className="mb-8">
@@ -135,7 +172,6 @@ const SettingsMainScreen = () => {
         </p>
       </header>
 
-      {/* Tab switcher */}
       <div
         className="mb-8 inline-flex w-full max-w-md rounded-xl bg-gray-100 p-1 sm:w-auto"
         role="tablist"
@@ -167,14 +203,29 @@ const SettingsMainScreen = () => {
 
       {activeTab === "profile" && (
         <div className="space-y-6">
-          {/* Profile summary */}
           <section className="rounded-2xl border border-gray-200 bg-gradient-to-br from-[#03442C]/5 to-white p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <div
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#03442C] text-xl font-semibold text-white"
-                aria-hidden
-              >
-                {initials}
+              <div className="relative shrink-0">
+                <UserAvatar
+                  src={photoSrc}
+                  name={displayName}
+                  size="lg"
+                />
+                <button
+                  type="button"
+                  className="absolute -bottom-1 -right-1 rounded-full border border-gray-200 bg-white p-1.5 text-[#03442C] shadow-sm hover:bg-gray-50"
+                  aria-label="Change profile photo"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <FiCamera className="h-3.5 w-3.5" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleAvatarChange}
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="text-lg font-semibold text-gray-900 truncate">
@@ -201,31 +252,34 @@ const SettingsMainScreen = () => {
             </div>
           </section>
 
-          {/* Editable details */}
           <section className="rounded-2xl border border-gray-200 bg-white p-6">
             <h3 className="text-base font-semibold text-gray-900">
               Personal details
             </h3>
             <p className="mt-1 text-sm text-gray-500">
-              Update the name and contact information shown on your account.
+              Name and email are fixed for security. You can update phone,
+              address, and your profile photo.
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <InputField
                 label="First name"
                 name="firstName"
-                placeholder="First name"
                 value={profileForm.firstName}
-                onChange={handleProfileChange}
+                disabled
+                readOnly
               />
               <InputField
                 label="Last name"
                 name="lastName"
-                placeholder="Last name"
                 value={profileForm.lastName}
-                onChange={handleProfileChange}
+                disabled
+                readOnly
               />
             </div>
+            <p className="mt-1.5 text-xs text-gray-500">
+              Contact support if you need your legal name updated.
+            </p>
 
             <div className="mt-4">
               <InputField

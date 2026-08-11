@@ -8,10 +8,12 @@ import {
 } from "@/lib/sessionIdle";
 import { restoreSessionFromRememberMe } from "@/lib/rememberMe";
 import {
+  getAccountBlockedMessage,
   getDashboardHomeForRole,
   getSessionAccountType,
   getStoredSession,
   isAccessTokenExpired,
+  isAccountLoginBlocked,
   isLandlordAccount,
   isTenantAccount,
   syncRoleCookieFromSession,
@@ -73,6 +75,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
           deny(
             "Your session expired due to inactivity. Please sign in again.",
           );
+        }
+        return;
+      }
+
+      const blockedStatus = String(session?.user?.status || "");
+      if (isAccountLoginBlocked(blockedStatus)) {
+        if (!cancelled) {
+          deny(getAccountBlockedMessage(blockedStatus));
         }
         return;
       }

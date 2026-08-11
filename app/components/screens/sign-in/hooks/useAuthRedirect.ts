@@ -3,12 +3,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { UserData } from "../types";
 import { ROUTES } from "../constants";
 import {
+  getAccountBlockedMessage,
+  isAccountLoginBlocked,
   isLandlordAccount,
   isPathAllowedForRole,
   isTenantAccount,
   setRoleCookie,
   type NrvRole,
 } from "@/lib/authSession";
+import { clearAuthSession } from "@/lib/sessionIdle";
 
 export const useAuthRedirect = () => {
   const router = useRouter();
@@ -16,7 +19,15 @@ export const useAuthRedirect = () => {
 
   const redirectUser = useCallback((userData: UserData) => {
     const userAccountType = String(userData?.user?.accountType || "").toLowerCase();
-    const userStatus = String(userData?.user?.status || "");
+    const userStatus = String(userData?.user?.status || "").toLowerCase();
+
+    if (isAccountLoginBlocked(userStatus)) {
+      clearAuthSession();
+      const params = new URLSearchParams();
+      params.set("reason", getAccountBlockedMessage(userStatus));
+      router.replace(`/sign-in?${params.toString()}`);
+      return;
+    }
 
     const role: NrvRole | null = isTenantAccount(userAccountType)
       ? "tenant"

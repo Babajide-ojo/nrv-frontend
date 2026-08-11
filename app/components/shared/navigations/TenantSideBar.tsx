@@ -11,12 +11,14 @@ import {
   FiSettings,
   FiCheckCircle,
 } from "react-icons/fi";
-import { BsPersonFill } from "react-icons/bs";
 import { PiFileDocDuotone } from "react-icons/pi";
+import UserAvatar from "@/app/components/shared/UserAvatar";
+import { readStoredUserProfile } from "@/lib/userProfile";
 
 interface User {
   name: string;
   role: string;
+  avatarUrl?: string;
 }
 
 interface TenantSideBarProps {
@@ -79,23 +81,32 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
   };
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("nrv-user");
-      if (storedUser) {
-        const userInfo = JSON.parse(storedUser);
-        if (userInfo) {
-          setUser({
-            name:
-              `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
-            role: userInfo?.user?.accountType || "Property Owner",
-          });
-        }
+    const load = () => {
+      const profile = readStoredUserProfile();
+      if (!profile) {
+        setUser(null);
+        return;
       }
-    } catch (error) {
-      console.error("Error parsing user data from localStorage:", error);
-      localStorage.removeItem("nrv-user");
-    }
-  }, []);
+      setUser({
+        name: profile.name,
+        role: profile.role,
+        avatarUrl: profile.avatarUrl,
+      });
+    };
+    load();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "nrv-user") {
+        load();
+      }
+    };
+    const onUserUpdated = () => load();
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("nrv-user-updated", onUserUpdated);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("nrv-user-updated", onUserUpdated);
+    };
+  }, [pathname]);
 
   return (
     <div className="flex h-full min-h-0 w-full flex-1 flex-col justify-between bg-nrvPrimaryGreen text-white">
@@ -164,13 +175,18 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </div>
         {user && (
           <div className="flex items-center gap-4 justify-between pt-0 pb-0">
-            <div className="flex gap-1.5">
-              <BsPersonFill />
-              <div>
-                <p className="text-xs font-semibold text-[#FFFFFF]">
+            <div className="flex min-w-0 items-center gap-2">
+              <UserAvatar
+                src={user.avatarUrl}
+                name={user.name}
+                size="sm"
+                light
+              />
+              <div className="min-w-0">
+                <p className="truncate text-xs font-semibold text-[#FFFFFF]">
                   {user.name}
                 </p>
-                <p className="text-xs text-green-400">{user.role}</p>
+                <p className="truncate text-xs text-green-400 capitalize">{user.role}</p>
               </div>
             </div>
             <BiLogOut
@@ -179,7 +195,8 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
                 await performLogout();
                 router.push("/sign-in");
               }}
-              className="text-xl cursor-pointer"
+              className="text-xl cursor-pointer shrink-0"
+              aria-label="Log out"
             />
           </div>
         )}

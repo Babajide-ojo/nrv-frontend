@@ -91,12 +91,29 @@ export const createUser = createAsyncThunk<UserToken, SignUpFormData>(
   "user/create",
   async (formData: SignUpFormData, { rejectWithValue }) => {
     try {
+      const body = new FormData();
+      body.append("firstName", formData.firstName);
+      body.append("lastName", formData.lastName);
+      body.append("email", formData.email);
+      body.append("phoneNumber", formData.phoneNumber);
+      body.append("password", formData.password);
+      body.append("accountType", formData.accountType);
+      if (formData.nin) {
+        body.append("nin", formData.nin);
+      }
+      if (formData.homeAddress) {
+        body.append("homeAddress", formData.homeAddress);
+      }
+      if (formData.file instanceof File) {
+        body.append("file", formData.file);
+      }
+
       const response = await axios.post<ApiResponse<UserToken>>(
-        `${API_URL}/users`, 
-        formData,
+        `${API_URL}/users`,
+        body,
         {
-          headers: { "Content-Type": "application/json" }
-        }
+          headers: { "Content-Type": "multipart/form-data" },
+        },
       );
 
       localStorage.setItem("emailToVerify", JSON.stringify(response.data));
@@ -287,7 +304,17 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
 
       // Only persist a session for active users.
       // For inactive users, store the email so they can verify, but don't create a session token.
-      if (userData?.user?.status === "inactive") {
+      // Suspended / deactivated accounts must never get a local session.
+      const accountStatus = String(userData?.user?.status || "").toLowerCase();
+      if (accountStatus === "suspended" || accountStatus === "deactivated") {
+        localStorage.removeItem("nrv-user");
+        const { clearRoleCookie, getAccountBlockedMessage } = await import(
+          "@/lib/authSession"
+        );
+        clearRoleCookie();
+        return rejectWithValue(getAccountBlockedMessage(accountStatus));
+      }
+      if (accountStatus === "inactive") {
         localStorage.removeItem("nrv-user");
         const { clearRoleCookie } = await import("@/lib/authSession");
         clearRoleCookie();

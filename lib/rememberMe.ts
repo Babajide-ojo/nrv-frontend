@@ -37,7 +37,12 @@ export const restoreSessionFromRememberMe = async (): Promise<RestoredSession | 
     delete safeUser.passwordResetToken;
     delete safeUser.passwordResetExpires;
 
-    if (!response.data?.accessToken || safeUser?.status === "inactive") {
+    if (
+      !response.data?.accessToken ||
+      safeUser?.status === "inactive" ||
+      safeUser?.status === "suspended" ||
+      safeUser?.status === "deactivated"
+    ) {
       return null;
     }
 

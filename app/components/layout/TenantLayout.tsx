@@ -14,9 +14,13 @@ import {
   FiCheckCircle,
   FiMenu,
   FiX,
+  FiLogOut,
 } from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
+import { performLogout } from "@/lib/logout";
+import UserAvatar from "@/app/components/shared/UserAvatar";
+import { readStoredUserProfile } from "@/lib/userProfile";
 
 const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
   [
@@ -74,6 +78,30 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerUser, setHeaderUser] = useState<{ name: string; avatarUrl: string } | null>(null);
+
+  useEffect(() => {
+    const load = () => {
+      const profile = readStoredUserProfile();
+      if (!profile) {
+        setHeaderUser(null);
+        return;
+      }
+      setHeaderUser({ name: profile.name, avatarUrl: profile.avatarUrl });
+    };
+    load();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "nrv-user") {
+        load();
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("nrv-user-updated", load);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("nrv-user-updated", load);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -126,7 +154,7 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <FiX size={22} />
               </button>
             </div>
-            <nav className="flex-1 overflow-y-auto py-2">
+            <nav className="flex flex-1 flex-col overflow-y-auto py-2">
               <ul className="space-y-0.5 px-2">
                 {TENANT_MOBILE_LINKS.map((item) => {
                   const active = item.route === mobileNavActiveRoute;
@@ -153,6 +181,23 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                   );
                 })}
               </ul>
+              <div className="mt-auto border-t border-white/15 px-2 pt-2">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                  aria-label="Log out"
+                  onClick={async () => {
+                    setMobileMenuOpen(false);
+                    await performLogout();
+                    router.push("/sign-in");
+                  }}
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                    <FiLogOut size={20} color="white" />
+                  </span>
+                  <span>Log out</span>
+                </button>
+              </div>
             </nav>
           </div>
         </div>
@@ -221,7 +266,19 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                   )}
                 </span>
                 </nav>
-              <div className="flex shrink-0 pl-1">
+              <div className="flex shrink-0 items-center gap-2 pl-1">
+                {headerUser && (
+                  <div className="hidden min-w-0 max-w-[9rem] items-center gap-2 sm:flex">
+                    <UserAvatar
+                      src={headerUser.avatarUrl}
+                      name={headerUser.name}
+                      size="sm"
+                    />
+                    <span className="truncate text-sm text-gray-700">
+                      {headerUser.name}
+                    </span>
+                  </div>
+                )}
                 <NotificationBell />
               </div>
             </div>

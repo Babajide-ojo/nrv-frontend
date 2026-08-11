@@ -58,6 +58,8 @@ const SignUpMultiForm = () => {
   const [prefillPhone, setPrefillPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Checkbox state
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const router = useRouter();
   const handleSubmit = async (values: any) => {
     if (!isChecked) {
@@ -70,7 +72,12 @@ const SignUpMultiForm = () => {
     }
     setIsLoading(true);
     try {
-      await dispatch(createUser(payload) as any).unwrap();
+      await dispatch(
+        createUser({
+          ...payload,
+          file: profilePhoto || undefined,
+        }) as any,
+      ).unwrap();
       localStorage.setItem("stepToLoad", JSON.stringify(3));
       setCurrentStep(3);
       setIsLoading(false);
@@ -78,6 +85,23 @@ const SignUpMultiForm = () => {
       toast.error(error);
       setIsLoading(false);
     }
+  };
+
+  const handleProfilePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Profile photo must be under 5MB.");
+      return;
+    }
+    setProfilePhoto(file);
+    setProfilePreview(URL.createObjectURL(file));
   };
 
   useEffect(() => {
@@ -215,6 +239,33 @@ const SignUpMultiForm = () => {
               </h1>
               <AccountTypeBadge accountType={selectedRole} className="mb-4" />
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
+              <div className="mb-6 flex flex-col items-center gap-3">
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-dashed border-[#03442C]/40 bg-[#E9F4E7]">
+                  {profilePreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profilePreview}
+                      alt="Profile preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[#03442C]">
+                      <User className="h-8 w-8" aria-hidden />
+                    </div>
+                  )}
+                </div>
+                <label className="cursor-pointer text-sm font-medium text-[#03442C] underline-offset-2 hover:underline">
+                  Upload profile photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleProfilePhotoChange}
+                    aria-label="Upload profile photo"
+                  />
+                </label>
+                <p className="text-xs text-gray-500">Optional · JPG or PNG · max 5MB</p>
+              </div>
               <Formik
                 enableReinitialize
                 initialValues={{

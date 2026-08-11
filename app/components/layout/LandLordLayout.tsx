@@ -2,15 +2,18 @@
 
 import { useState, useEffect, useMemo } from "react";
 import LandLordSideBar from "../shared/navigations/LandLordSideBar";
-import { FaMessage, FaPerson } from "react-icons/fa6";
+import { FaMessage } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome } from "react-icons/io";
 import { IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
-import { FiUsers, FiFileText, FiCheck, FiMenu, FiX } from "react-icons/fi";
+import { FiUsers, FiFileText, FiCheck, FiMenu, FiX, FiLogOut } from "react-icons/fi";
 import { useRouter, usePathname } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
+import { performLogout } from "@/lib/logout";
+import UserAvatar from "@/app/components/shared/UserAvatar";
+import { readStoredUserProfile } from "@/lib/userProfile";
 
 function getMobileNavIcon(name: string, size: number) {
   const s = size;
@@ -49,16 +52,32 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("nrv-user");
-    if (storedUser) {
-      const userInfo = JSON.parse(storedUser);
+    const load = () => {
+      const profile = readStoredUserProfile();
+      if (!profile) {
+        setUser(null);
+        return;
+      }
       setUser({
-        name:
-          `${userInfo?.user?.firstName} ${userInfo?.user?.lastName}` || "User",
-        role: userInfo?.user?.accountType || "Property Owner",
+        name: profile.name,
+        role: profile.role,
+        avatarUrl: profile.avatarUrl,
       });
-    }
-  }, []);
+    };
+    load();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "nrv-user") {
+        load();
+      }
+    };
+    const onUserUpdated = () => load();
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("nrv-user-updated", onUserUpdated);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("nrv-user-updated", onUserUpdated);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -157,6 +176,23 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                     <span>Settings</span>
                   </button>
                 </li>
+                <li>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                    aria-label="Log out"
+                    onClick={async () => {
+                      setMobileMenuOpen(false);
+                      await performLogout();
+                      router.push("/sign-in");
+                    }}
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                      <FiLogOut size={20} color="white" />
+                    </span>
+                    <span>Log out</span>
+                  </button>
+                </li>
               </ul>
             </nav>
           </div>
@@ -228,8 +264,12 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 </nav>
 
               <div className="flex shrink-0 items-center gap-2 sm:gap-3 pl-1">
-                <div className="flex min-w-0 max-w-[38vw] sm:max-w-[11rem] items-center gap-1.5">
-                  <FaPerson className="shrink-0 text-gray-600" />
+                <div className="flex min-w-0 max-w-[38vw] sm:max-w-[11rem] items-center gap-2">
+                  <UserAvatar
+                    src={user?.avatarUrl}
+                    name={user?.name}
+                    size="sm"
+                  />
                   <span className="truncate text-sm text-gray-700">
                     {user?.name}
                   </span>

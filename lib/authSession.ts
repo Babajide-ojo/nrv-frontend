@@ -78,6 +78,29 @@ export const isTenantAccount = (accountType?: string | null): boolean =>
     .trim()
     .toLowerCase() === "tenant";
 
+/** Suspended / deactivated accounts must not sign in or keep a session. */
+export const isAccountLoginBlocked = (
+  status?: string | null,
+): status is "suspended" | "deactivated" => {
+  const s = String(status || "")
+    .trim()
+    .toLowerCase();
+  return s === "suspended" || s === "deactivated";
+};
+
+export const getAccountBlockedMessage = (status?: string | null): string => {
+  const s = String(status || "")
+    .trim()
+    .toLowerCase();
+  if (s === "suspended") {
+    return "Your account has been suspended. Please contact support.";
+  }
+  if (s === "deactivated") {
+    return "Your account has been deactivated. Please contact support.";
+  }
+  return "Your account is not allowed to sign in.";
+};
+
 export const resolveNrvRole = (
   accountType?: string | null,
 ): NrvRole | null => {

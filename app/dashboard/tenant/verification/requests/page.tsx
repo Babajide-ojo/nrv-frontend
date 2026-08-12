@@ -11,6 +11,7 @@ import {
   isVerificationIncomplete,
   verificationStepPath,
 } from "@/lib/verificationProgress";
+import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -27,6 +28,7 @@ const VerificationRequestsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [decliningId, setDecliningId] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   useEffect(() => {
     let email = null;
@@ -108,9 +110,21 @@ const VerificationRequestsPage = () => {
       router.push(`/dashboard/tenant/verification?verificationId=${req._id}`);
       return;
     }
+    if (!termsAccepted) {
+      toast.error("Please agree to the terms before continuing this verification.");
+      return;
+    }
     const nextStep = getVerificationNextStep(submissionByRequestId[req?._id]);
     router.push(verificationStepPath(req._id, nextStep));
   };
+
+  const hasIncompleteVerification = requests.some((req) => {
+    const status = String(req?.status || "").toLowerCase();
+    if (status === "declined" || status === "rejected" || status === "approved") {
+      return false;
+    }
+    return isVerificationIncomplete(submissionByRequestId[req?._id]);
+  });
 
   const canDeclineRequest = (req: any) => {
     const status = String(req?.status || "").toLowerCase();
@@ -159,6 +173,16 @@ const VerificationRequestsPage = () => {
         <h2 className="text-2xl font-bold mb-6 text-nrvPrimaryGreen flex items-center gap-2">
           <FiUserCheck className="inline-block" /> My Verifications
         </h2>
+        {hasIncompleteVerification && (
+          <div className="mb-6">
+            <TermsAgreementCheckbox
+              checked={termsAccepted}
+              onChange={setTermsAccepted}
+              id="verification-requests-terms"
+              label="I agree to the terms and conditions before continuing verification"
+            />
+          </div>
+        )}
         {loading ? (
           <div className="text-center py-8">Loading...</div>
         ) : error ? (

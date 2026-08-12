@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { API_URL } from '../../config/constant';
+import { apiClient } from "@/lib/api";
 
 
 interface MessagesState {
@@ -31,9 +30,7 @@ export const sendMessage = createAsyncThunk<FormData | any, {}>(
   "message/send",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response: any = await axios.post(`${API_URL}/messages/send`, formData
-
-      );
+      const response: any = await apiClient.post("/messages/send", formData);
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {
@@ -50,7 +47,9 @@ export const getConversation = createAsyncThunk<any, {}>(
   "messages/send",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/messages/conversation/${formData.senderId}/${formData.recipientId}`);
+      const response = await apiClient.get(
+        `/messages/conversation/${formData.senderId}/${formData.recipientId}`,
+      );
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {

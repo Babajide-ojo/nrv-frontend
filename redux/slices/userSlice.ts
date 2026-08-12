@@ -68,6 +68,8 @@ interface TenancyRequest {
   id: string;
   rentEndDate?: string;
   rentStartDate?: string;
+  reason?: string;
+  comment?: string;
 }
 
 // Initial state
@@ -364,7 +366,7 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, { id: string 
   async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
       const response = await axios.get<ApiResponse<any>>(
-        `${API_URL}/properties/tenant/landlord-onboarded?id=${id}`
+        `${API_URL}/properties/tenant/landlord-onboarded/${id}`
       );
       return response.data.data;
     } catch (error: any) {
@@ -414,11 +416,14 @@ export const resetPassword = createAsyncThunk<UserToken, ResetPasswordRequest>(
 
 export const endTenancyTenure = createAsyncThunk<UserToken, TenancyRequest>(
   "tenancy/end",
-  async ({ id }: TenancyRequest, { rejectWithValue }) => {
+  async ({ id, reason, comment }: TenancyRequest, { rejectWithValue }) => {
     try {
       const response = await axios.put<ApiResponse<UserToken>>(
         `${API_URL}/rooms/${id}/end-tenure`,
-        {},
+        {
+          reason,
+          comment,
+        },
         {
           headers: { "Content-Type": "application/json" }
         }

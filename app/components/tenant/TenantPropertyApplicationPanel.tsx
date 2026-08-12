@@ -12,6 +12,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { ArrowLeft, Building } from "lucide-react";
 import { startOfToday } from "date-fns";
 import { applyForProperty } from "@/redux/slices/propertySlice";
+import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 import type { TenantPropertyApplicationView } from "@/app/lib/mapTenantRoomForApplication";
 
 const applicationValidationSchema = yup.object({
@@ -49,6 +50,7 @@ export function TenantPropertyApplicationPanel({
   const [subStep, setSubStep] = useState<"form" | "review">("form");
   const [formData, setFormData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [selectedFiles] = useState<any>(null);
 
   const outer =
@@ -57,6 +59,10 @@ export function TenantPropertyApplicationPanel({
       : "py-1";
 
   const handleSubmit = async (value: any) => {
+    if (!termsAccepted) {
+      toast.error("Please agree to the terms and conditions before submitting.");
+      return;
+    }
     try {
       await applicationValidationSchema.validate(value, { abortEarly: false });
     } catch (e) {
@@ -644,6 +650,15 @@ export function TenantPropertyApplicationPanel({
                       </div>
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-4">
+                  <TermsAgreementCheckbox
+                    checked={termsAccepted}
+                    onChange={setTermsAccepted}
+                    id="property-application-terms"
+                    label="I agree to the platform terms before submitting this application"
+                  />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">

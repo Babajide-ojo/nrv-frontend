@@ -9,6 +9,7 @@ import {
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Form, Formik, FormikHelpers } from "formik";
 import Modal from "../shared/modals/Modal";
+import EndTenancyLeaseModal from "../shared/EndTenancyLeaseModal";
 import CustomDatePicker from "../shared/CustomDatePicker";
 import {
   assignDateTenancyTenure,
@@ -18,7 +19,6 @@ import {
 } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
-import CenterModal from "../shared/modals/CenterModal";
 import FileUploader from "../shared/upload/FileUploader";
 import Viewer from "react-viewer";
 import { getFileExtension } from "@/helpers/utils";
@@ -811,59 +811,21 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
         </div>
       </Modal>
 
-      <CenterModal
+      <EndTenancyLeaseModal
         isOpen={openEndTenancyModal}
-        onClose={() => {
-          setOpenTenancyModal(false);
+        onClose={() => setOpenTenancyModal(false)}
+        recordId={tenantDetails?.data?.finalResult?._id}
+        onSubmit={async (values) => {
+          await endTenancy(
+            values,
+            {
+              resetForm: () => {},
+              setSubmitting: () => {},
+            },
+            dispatch,
+          );
         }}
-      >
-        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
-          <h2 className="text-red-500 font-semibold text-2xl">
-            End Tenancy Tenure
-          </h2>
-          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-            Performing this action will end the tenancy tenure
-          </p>
-          <Formik
-            initialValues={{
-              id: tenantDetails?.data?.finalResult?._id,
-            }}
-            onSubmit={(values, formikHelpers) =>
-              endTenancy(values, formikHelpers, dispatch)
-            }
-          >
-            {({ isSubmitting, resetForm, values, errors }) => (
-              <Form>
-                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
-                  <Button
-                    type="button"
-                    size="large"
-                    className="block w-full"
-                    variant="lightGrey"
-                    showIcon={false}
-                    onClick={() => {
-                      resetForm();
-                      setOpenTenancyModal(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    size="large"
-                    className="block w-full"
-                    variant="lightGrey"
-                    showIcon={false}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Loading..." : "Submit"}
-                  </Button>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </CenterModal>
+      />
 
       <Modal
         isOpen={openOnboardTenantModal}

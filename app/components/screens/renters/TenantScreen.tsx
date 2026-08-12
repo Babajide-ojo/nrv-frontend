@@ -274,7 +274,7 @@ const TenantScreen = () => {
 
   type AddTenantFunction = (
     values: any,
-    formikHelpers: FormikHelpers<any>,
+    formikHelpers: Pick<FormikHelpers<any>, "resetForm" | "setSubmitting">,
     dispatch: ThunkDispatch<any, any, AnyAction>
   ) => Promise<void>;
 

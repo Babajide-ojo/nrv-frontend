@@ -65,7 +65,9 @@ export const getMaintenanceByOwnerId = createAsyncThunk<any, {}>(
   "maintenance/landlord",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/maintenance/get-landlord-maintenance/${formData.ownerId}/?page=${formData.page}`);
+      const response = await apiClient.get(
+        `/maintenance/get-landlord-maintenance/${formData.ownerId}/?page=${formData.page}`,
+      );
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {

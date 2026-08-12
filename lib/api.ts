@@ -57,7 +57,6 @@ apiClient.interceptors.request.use(
     }
     const accessToken = getSessionAccessToken();
     if (accessToken) {
-      config.headers = config.headers || {};
       applyBearerToken(config.headers, accessToken);
     }
     return config;
@@ -87,7 +86,6 @@ apiClient.interceptors.response.use(
       if (restored) {
         const accessToken = getSessionAccessToken();
         if (accessToken) {
-          originalRequest.headers = originalRequest.headers || {};
           applyBearerToken(originalRequest.headers, accessToken);
         }
         return apiClient(originalRequest);

@@ -9,6 +9,7 @@ import {
   touchSessionActivity,
 } from '@/lib/sessionIdle';
 import { restoreSessionFromRememberMe } from '@/lib/rememberMe';
+import { getSessionAccessToken } from '@/lib/authSession';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -33,24 +34,31 @@ const tryRestoreSession = async (): Promise<boolean> => {
   return restoreInFlight;
 };
 
+const applyBearerToken = (headers: any, accessToken: string) => {
+  if (!headers || !accessToken) {
+    return;
+  }
+  if (typeof headers.set === 'function') {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+    return;
+  }
+  headers.Authorization = `Bearer ${accessToken}`;
+};
+
 // Request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token from localStorage
-    const userData = localStorage.getItem('nrv-user');
-    if (userData) {
-      try {
-        if (isSessionIdleExpired()) {
-          expireIdleSession();
-          return Promise.reject(new Error('Session expired due to inactivity'));
-        }
-        const { accessToken } = JSON.parse(userData);
-        if (accessToken) {
-          config.headers.Authorization = `Bearer ${accessToken}`;
-        }
-      } catch (error) {
-        console.warn('Error parsing user data from localStorage:', error);
-      }
+    if (typeof window === 'undefined') {
+      return config;
+    }
+    if (isSessionIdleExpired()) {
+      expireIdleSession();
+      return Promise.reject(new Error('Session expired due to inactivity'));
+    }
+    const accessToken = getSessionAccessToken();
+    if (accessToken) {
+      config.headers = config.headers || {};
+      applyBearerToken(config.headers, accessToken);
     }
     return config;
   },
@@ -77,17 +85,10 @@ apiClient.interceptors.response.use(
       originalRequest._retryRememberMe = true;
       const restored = await tryRestoreSession();
       if (restored) {
-        const userData = localStorage.getItem('nrv-user');
-        if (userData) {
-          try {
-            const { accessToken } = JSON.parse(userData);
-            if (accessToken) {
-              originalRequest.headers = originalRequest.headers || {};
-              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            }
-          } catch {
-            // fall through
-          }
+        const accessToken = getSessionAccessToken();
+        if (accessToken) {
+          originalRequest.headers = originalRequest.headers || {};
+          applyBearerToken(originalRequest.headers, accessToken);
         }
         return apiClient(originalRequest);
       }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { apiService } from "@/lib/api";
 import { FiAlertCircle, FiUserCheck } from "react-icons/fi";
+import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 import {
   getVerificationNextStep,
   isVerificationIncomplete,
@@ -91,6 +92,7 @@ const PendingVerificationRequests = () => {
   const [pendingRequests, setPendingRequests] = useState<PendingVerificationRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [decliningId, setDecliningId] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const loadPending = useCallback(async () => {
     const email = getTenantEmail();
@@ -163,6 +165,10 @@ const PendingVerificationRequests = () => {
   }
 
   const handleComplete = (verificationId: string, nextStep?: PendingVerificationRequest["nextStep"]) => {
+    if (!termsAccepted) {
+      toast.error("Please agree to the terms before accepting this verification request.");
+      return;
+    }
     router.push(
       verificationStepPath(verificationId, nextStep || "personal"),
     );
@@ -227,7 +233,7 @@ const PendingVerificationRequests = () => {
           onClick={() => router.push("/dashboard/tenant/verification/requests")}
           className="text-sm font-medium text-amber-900 hover:text-amber-950 hover:underline shrink-0"
         >
-          View all verifications
+          View all
           {remainingCount > 0 ? ` (${pendingRequests.length})` : ""}
         </button>
       </div>
@@ -253,6 +259,13 @@ const PendingVerificationRequests = () => {
             {tierLabel(featuredRequest.verificationTier)}
           </p>
         </div>
+
+        <TermsAgreementCheckbox
+          checked={termsAccepted}
+          onChange={setTermsAccepted}
+          id="pending-verification-terms"
+          label="I agree to the terms before completing this verification request"
+        />
 
         <div className="flex flex-col sm:flex-row gap-2 shrink-0">
           <button

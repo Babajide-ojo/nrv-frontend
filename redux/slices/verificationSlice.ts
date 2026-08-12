@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { API_URL } from "../../config/constant";
+import { apiClient } from "@/lib/api";
 import { setUserFromPayment } from "./userSlice";
 
 // Define state type
@@ -47,7 +46,7 @@ export const requestVerification = createAsyncThunk<any, {}>(
   "verification/request",
   async (payload, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axios.post(`${API_URL}/verification/tenant`, payload);
+      const response = await apiClient.post("/verification/tenant", payload);
 
       // API shape: { status, message, data: { message, data: verification, user } }
       const inner = response.data?.data;
@@ -85,7 +84,7 @@ export const updateGuarantor = createAsyncThunk<any, { id: string; data: any }>(
   "verification/updateGuarantor",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`${API_URL}/verification/guarantor/${id}`, data);
+      const response = await apiClient.patch(`/verification/guarantor/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(extractErrorMessage(error));
@@ -97,7 +96,7 @@ export const updateEmployment = createAsyncThunk<any, { id: string; data: any }>
   "verification/updateEmployment",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`${API_URL}/verification/employment/${id}`, data);
+      const response = await apiClient.patch(`/verification/employment/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(extractErrorMessage(error));
@@ -109,7 +108,7 @@ export const updateAffordability = createAsyncThunk<any, { id: string; data: any
   "verification/updateAffordability",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`${API_URL}/verification/affordability/${id}`, data);
+      const response = await apiClient.patch(`/verification/affordability/${id}`, data);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(extractErrorMessage(error));

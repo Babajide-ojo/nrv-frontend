@@ -59,6 +59,10 @@ function hrefForNotification(n: AppNotification): string | null {
   }
 
   if (type === "message_received") {
+    const senderId = m.senderId as string | undefined;
+    if (senderId) {
+      return `/dashboard/landlord/messages/${senderId}`;
+    }
     return "/dashboard/landlord/messages";
   }
 

@@ -24,6 +24,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
 import BackIcon from "../../shared/icons/BackIcon";
 import Modal from "../../shared/modals/Modal";
+import EndTenancyLeaseModal from "../../shared/EndTenancyLeaseModal";
 import {
   Bath,
   BedDouble,
@@ -163,7 +164,13 @@ const TenantScreen = () => {
     { resetForm, setSubmitting },
   ) => {
     try {
-      await dispatch(endTenancyTenure({ id: id || values?.id }) as any).unwrap();
+      await dispatch(
+        endTenancyTenure({
+          id: id || values?.id,
+          reason: values?.reason,
+          comment: values?.comment,
+        }) as any,
+      ).unwrap();
       setApplication((prev: any) =>
         prev
           ? {
@@ -706,7 +713,7 @@ const TenantScreen = () => {
                   onClick={() => setOpenAddTenantModal(true)}
                   className="flex w-full items-center justify-between rounded-xl border border-gray-200 p-3 text-left text-sm transition hover:bg-gray-50"
                 >
-                  <span className="font-medium text-nrvGreyBlack">End Lease Tenure</span>
+                  <span className="font-medium text-nrvGreyBlack">End tenancy lease</span>
                   <span className="text-nrvPrimaryGreen">Click here</span>
                 </button>
               )}
@@ -1159,52 +1166,21 @@ const TenantScreen = () => {
         </div>
       </Modal>
 
-      <Modal
+      <EndTenancyLeaseModal
         isOpen={openAddTenantModal}
-        onClose={() => {
-          setOpenAddTenantModal(false);
+        onClose={() => setOpenAddTenantModal(false)}
+        recordId={id}
+        onSubmit={async (values) => {
+          await endTenancy(
+            values,
+            {
+              resetForm: () => {},
+              setSubmitting: () => {},
+            },
+            dispatch,
+          );
         }}
-      >
-        <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
-          <h2 className="text-red-500 font-semibold text-2xl">
-            End Tenancy Tenure
-          </h2>
-          <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-            Performing this action will end the tenancy tenure
-          </p>
-          <Formik
-            initialValues={{
-              id: id,
-            }}
-            onSubmit={(values, formikHelpers) =>
-              endTenancy(values, formikHelpers, dispatch)
-            }
-          >
-            {({ isSubmitting, resetForm, values, errors }) => (
-              <Form>
-                <div className="mt-4  mx-auto w-full mt-8 flex gap-4 justify-between">
-                  <Button
-                    type="button"
-                    className="block w-full"
-                    onClick={() => {
-                      setOpenAddTenantModal(false);
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    className="block w-full"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? "Loading..." : "Submit"}
-                  </Button>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        </div>
-      </Modal>
+      />
 
     </div>
   );

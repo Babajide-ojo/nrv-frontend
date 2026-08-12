@@ -280,7 +280,9 @@ export const getApplicationsByLandlordId = createAsyncThunk<any, {}>(
     "property/application",
     async (formData: any, { rejectWithValue }) => {
       try {
-        const response = await axios.get(`${API_URL}/properties/applications?id=${formData.id}&page=${formData.page}&status=${formData.status}`);
+        const response = await axios.get(
+          `${API_URL}/properties/applications/${formData.id}?page=${formData.page}&status=${formData.status}`,
+        );
         return response.data;
       } catch (error: any) {
         if (error.response.data.message) {

@@ -289,7 +289,7 @@ const TenantDashboardScreen = () => {
     },
     {
       title: "Maintenance",
-      number: count?.totalActiveTenants ?? 0,
+      number: count?.totalMaintenance ?? count?.totalActiveTenants ?? 0,
       icon: <Users className="w-[20px] h-[20px]" />,
       link: "/dashboard/tenant/properties/maintenance",
     },

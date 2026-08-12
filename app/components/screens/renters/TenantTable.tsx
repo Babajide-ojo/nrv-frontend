@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button";
 import { FormikHelpers } from "formik";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { assignDateTenancyTenure, createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
+import EndTenancyLeaseModal from "../../shared/EndTenancyLeaseModal";
+import { apiService } from "@/lib/api";
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -67,6 +69,14 @@ const TenantTable = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<string>("Active_lease");
   const [openEndTenancyModal, setOpenTenancyModal] = useState(false);
+  const [endTenancyRecordId, setEndTenancyRecordId] = useState<string | null>(null);
+  const [tableRefreshKey, setTableRefreshKey] = useState(0);
+  const [dashboardCounts, setDashboardCounts] = useState<{
+    totalActiveTenants?: number;
+    totalProperties?: number;
+    totalNew?: number;
+    totalAccepted?: number;
+  }>({});
   const [unsignedDocument, setUnsignedDocuments] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState<string>("");
   const [tenantDetails, setTenantDetails] = useState<any>({});
@@ -253,26 +263,27 @@ const TenantTable = () => {
     dispatch
   ) => {
     try {
-      const result = (await dispatch(endTenancyTenure(values))) as any;
-      if (result.error) {
-        if (result.error.message === "Rejected") {
-          toast.error(
-            result.payload || "Failed to end tenancy. Please try again."
-          );
-        } else {
-          toast.error("Failed to end tenancy. Please try again.");
-        }
-      } else {
-        toast.success("Tenant ended successfully");
-        resetForm();
-      }
+      await dispatch(
+        endTenancyTenure({
+          id: values.id,
+          reason: values.reason,
+          comment: values.comment,
+        }) as any,
+      ).unwrap();
+      toast.success("Tenancy lease ended successfully");
+      resetForm();
+      setTableRefreshKey((key) => key + 1);
+      setActiveTab("ended");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
+        error?.message ||
+          error?.payload ||
+          "Failed to end tenancy lease. Please try again.",
       );
     } finally {
       setSubmitting(false);
       setOpenTenancyModal(false);
+      setEndTenancyRecordId(null);
     }
   };
   const handleSubmit = async (status: any) => {
@@ -291,8 +302,9 @@ const TenantTable = () => {
   };
 
   const handleRowAction = (row: BaseRow) => {
+    const leaseId = row._id ?? row.id;
     return (
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
         <p
           className="text-xs text-[#2B892B] font-medium cursor-pointer"
           onClick={() =>
@@ -301,6 +313,18 @@ const TenantTable = () => {
         >
           view
         </p>
+        {activeTab === "Active_lease" && leaseId ? (
+          <button
+            type="button"
+            className="text-xs font-medium text-red-600 hover:text-red-700 hover:underline"
+            onClick={() => {
+              setEndTenancyRecordId(String(leaseId));
+              setOpenTenancyModal(true);
+            }}
+          >
+            End tenancy lease
+          </button>
+        ) : null}
       </div>
     );
   };
@@ -312,7 +336,17 @@ const TenantTable = () => {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("nrv-user") as any);
     setUser(user?.user);
-  }, []);
+    const landlordId = user?.user?._id;
+    if (!landlordId) {
+      return;
+    }
+    apiService
+      .get(`/properties/application-count?id=${encodeURIComponent(landlordId)}`)
+      .then((res: any) => {
+        setDashboardCounts(res?.data ?? {});
+      })
+      .catch(() => setDashboardCounts({}));
+  }, [tableRefreshKey]);
 
   return (
     <div>
@@ -335,24 +369,27 @@ const TenantTable = () => {
                 {[
                   {
                     title: "Total Active Leases",
-                    value: `${0}`,
-                    change: "0%",
+                    value: String(dashboardCounts.totalActiveTenants ?? 0),
+                    change: "—",
                     trend: "up",
-                    comparison: "compared to the last 6 months",
+                    comparison: "current active tenancy leases",
                   },
                   {
-                    title: "Total Lease Amount",
-                    value: `${0}`,
-                    change: "10%",
+                    title: "Total Leads & Applicants",
+                    value: String(
+                      (dashboardCounts.totalNew ?? 0) +
+                        (dashboardCounts.totalAccepted ?? 0),
+                    ),
+                    change: "—",
                     trend: "up",
-                    comparison: "compared to the last 6 months",
+                    comparison: "new and accepted applications",
                   },
                   {
-                    title: "Total Number of Past Tenant",
-                    value: `${0}`,
-                    change: "83%",
+                    title: "Total Properties",
+                    value: String(dashboardCounts.totalProperties ?? 0),
+                    change: "—",
                     trend: "up",
-                    comparison: "compared to the last 6 months",
+                    comparison: "properties on your account",
                   },
                 ].map((card, i) => (
                   <div key={i} className="border-r last:border-none px-4">
@@ -412,7 +449,7 @@ const TenantTable = () => {
           <DataTable
              searchTerm = {false}
             rowActions={handleRowAction}
-            key={activeTab}
+            key={`${activeTab}-${tableRefreshKey}`}
             endpoint={`${API_URL}/properties/tenant/landlord-onboarded/${
               JSON.parse(localStorage.getItem("nrv-user") as any).user._id
             }`}
@@ -654,6 +691,24 @@ const TenantTable = () => {
           </div>
         </div>
       )}
+      <EndTenancyLeaseModal
+        isOpen={openEndTenancyModal}
+        onClose={() => {
+          setOpenTenancyModal(false);
+          setEndTenancyRecordId(null);
+        }}
+        recordId={endTenancyRecordId ?? undefined}
+        onSubmit={async (values) => {
+          await endTenancy(
+            values,
+            {
+              resetForm: () => {},
+              setSubmitting: () => {},
+            },
+            dispatch,
+          );
+        }}
+      />
     </div>
   );
 };

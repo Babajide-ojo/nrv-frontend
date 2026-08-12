@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { apiClient } from "@/lib/api";
 import { setUserFromPayment } from "./userSlice";
+import {
+  getSessionAccessToken,
+  getSessionUserId,
+  getStoredSession,
+  isAccessTokenExpired,
+} from "@/lib/authSession";
+import { restoreSessionFromRememberMe } from "@/lib/rememberMe";
 
 // Define state type
 interface VerificationState {
@@ -46,7 +53,27 @@ export const requestVerification = createAsyncThunk<any, {}>(
   "verification/request",
   async (payload, { rejectWithValue, dispatch }) => {
     try {
-      const response = await apiClient.post("/verification/tenant", payload);
+      let accessToken = getSessionAccessToken();
+      if (!accessToken || isAccessTokenExpired(accessToken)) {
+        const restored = await restoreSessionFromRememberMe();
+        accessToken = restored?.accessToken || getSessionAccessToken();
+      }
+      if (!accessToken) {
+        return rejectWithValue(
+          "Your session has expired. Please sign in again to request verification.",
+        );
+      }
+
+      const session = getStoredSession();
+      const landlordId = getSessionUserId(session);
+      const body = {
+        ...(payload as Record<string, unknown>),
+        ...(landlordId ? { requestedBy: landlordId } : {}),
+      };
+
+      const response = await apiClient.post("/verification/tenant", body, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
 
       // API shape: { status, message, data: { message, data: verification, user } }
       const inner = response.data?.data;

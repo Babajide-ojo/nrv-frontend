@@ -34,6 +34,14 @@ export const getStoredSession = (): NrvSession | null => {
   }
 };
 
+export const getSessionAccessToken = (session?: NrvSession | null): string => {
+  const stored = session ?? getStoredSession();
+  const token = String(
+    stored?.accessToken || (stored as { token?: string } | null)?.token || "",
+  ).trim();
+  return token;
+};
+
 export const getSessionAccountType = (session?: NrvSession | null): string =>
   String(session?.user?.accountType || "")
     .trim()

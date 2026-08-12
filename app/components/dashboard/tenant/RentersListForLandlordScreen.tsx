@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { FaPencil } from "react-icons/fi";
+import { FiEdit2 } from "react-icons/fi";
 import { getTenantsOnboardedByLandlord } from "@/redux/slices/userSlice";
 import { getApplicationsByLandlordId } from "@/redux/slices/propertySlice";
 import { apiClient } from "@/lib/api";
@@ -198,7 +198,7 @@ const RentersListForLandlordScreen = () => {
                       </div>
                     </div>
                     <div className="w-1/5 text-end flex flex-col justify-between h-full">
-                      <FaPencil className="cursor-pointer" color="grey" />
+                      <FiEdit2 className="cursor-pointer" color="grey" />
                     </div>
                   </div>
                 );

@@ -20,6 +20,11 @@ import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import { assignDateTenancyTenure, createUserByLandlord, endTenancyTenure, extendTenancyTenure } from "@/redux/slices/userSlice";
 import EndTenancyLeaseModal from "../../shared/EndTenancyLeaseModal";
 import { apiService } from "@/lib/api";
+import {
+  getApplicationCurrentResidence,
+  getApplicationEmployer,
+  getApplicationJobTitle,
+} from "@/lib/applicationDisplay";
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -631,9 +636,12 @@ const TenantTable = () => {
               <InfoCard
                 title="Employment Details"
                 data={[
-                  ["Employer", application?.employment?.employer],
-                  ["Job Title", application?.employment?.jobTitle],
-                  ["Salary Range", application?.employment?.salaryRange],
+                  ["Employer", getApplicationEmployer(application) || "—"],
+                  ["Job Title", getApplicationJobTitle(application) || "—"],
+                  [
+                    "Current Residence",
+                    getApplicationCurrentResidence(application) || "—",
+                  ],
                 ]}
               />
 

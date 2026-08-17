@@ -187,10 +187,13 @@ const LandLordSideBar: React.FC<LandLordSideBarProps> = ({ isOpen }) => {
 
       {/* Support, Settings, and User Info */}
       <div className="px-6 py-4 border-t border-gray-600">
-        <div className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3]">
-          <FiHeadphones className="font-lighter text-[12px] text-[#98A2B3]" />{" "}
-          <span>Contact Support</span>
-        </div>
+        <Link
+          href="/contact-us/support"
+          className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3] hover:text-white/90 transition-colors"
+        >
+          <FiHeadphones className="font-lighter text-[12px]" />
+          <span>Contact us</span>
+        </Link>
         <div
           role="button"
           tabIndex={0}

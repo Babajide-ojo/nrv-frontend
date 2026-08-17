@@ -15,6 +15,7 @@ import {
   FiMenu,
   FiX,
   FiLogOut,
+  FiHeadphones,
 } from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
@@ -182,6 +183,19 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 })}
               </ul>
               <div className="mt-auto border-t border-white/15 px-2 pt-2">
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    router.push("/contact-us/support");
+                  }}
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                    <FiHeadphones size={20} color="white" />
+                  </span>
+                  <span>Contact us</span>
+                </button>
                 <button
                   type="button"
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"

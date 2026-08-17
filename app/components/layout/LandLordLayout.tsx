@@ -6,7 +6,7 @@ import { FaMessage } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome } from "react-icons/io";
 import { IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
-import { FiUsers, FiFileText, FiCheck, FiMenu, FiX, FiLogOut } from "react-icons/fi";
+import { FiUsers, FiFileText, FiCheck, FiMenu, FiX, FiLogOut, FiHeadphones } from "react-icons/fi";
 import { useRouter, usePathname } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
@@ -157,6 +157,21 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                     </li>
                   );
                 })}
+                <li>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      router.push("/contact-us/support");
+                    }}
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                      <FiHeadphones size={20} color="white" />
+                    </span>
+                    <span>Contact us</span>
+                  </button>
+                </li>
                 <li>
                   <button
                     type="button"

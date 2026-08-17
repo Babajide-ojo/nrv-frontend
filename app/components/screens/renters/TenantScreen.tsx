@@ -50,6 +50,13 @@ import {
 import VerificationRequestModal, {
   type VerificationRequestContext,
 } from "@/app/components/shared/VerificationRequestModal";
+import {
+  formatEndTenancySummary,
+  getApplicationCurrentResidence,
+  getApplicationEmployer,
+  getApplicationJobTitle,
+  getApplicationMonthlyIncome,
+} from "@/lib/applicationDisplay";
 
 const DetailItem = ({
   label,
@@ -177,6 +184,8 @@ const TenantScreen = () => {
               ...prev,
               status: ApplicationStatus.ENDED,
               rentEndDate: new Date().toISOString(),
+              endTenancyReason: values?.reason,
+              endTenancyComment: values?.comment,
             }
           : prev,
       );
@@ -494,6 +503,7 @@ const TenantScreen = () => {
   const canReviewApplication =
     !isAccepted && !isLeaseActive && !isLeaseEnded && !isRejected;
   const canRequestVerification = !isRejected;
+  const monthlyIncome = getApplicationMonthlyIncome(application);
   const statusLabel =
     status === ApplicationStatus.ACTIVE_LEASE
       ? "Active Lease"
@@ -720,10 +730,18 @@ const TenantScreen = () => {
               {isLeaseEnded && (
                 <div className="space-y-2">
                   <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
-                    This lease ended
-                    {application?.rentEndDate
-                      ? ` on ${formatDisplayDate(application.rentEndDate)}`
-                      : "."}
+                    <p>
+                      This lease ended
+                      {application?.rentEndDate
+                        ? ` on ${formatDisplayDate(application.rentEndDate)}`
+                        : "."}
+                    </p>
+                    {formatEndTenancySummary(application) && (
+                      <p className="mt-2 text-xs text-gray-600">
+                        <span className="font-semibold text-gray-800">Reason: </span>
+                        {formatEndTenancySummary(application)}
+                      </p>
+                    )}
                   </div>
                   <Button
                     type="button"
@@ -748,22 +766,25 @@ const TenantScreen = () => {
                 Employment & Income
               </h3>
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <DetailItem label="Job Title" value={application?.jobTitle || "—"} />
+                <DetailItem
+                  label="Job Title"
+                  value={getApplicationJobTitle(application) || "—"}
+                />
                 <DetailItem
                   label="Employer"
-                  value={application?.currentEmployer || "—"}
+                  value={getApplicationEmployer(application) || "—"}
                 />
                 <DetailItem
                   label="Monthly Income"
                   value={
-                    application?.monthlyIncome != null
-                      ? `₦${Number(application.monthlyIncome).toLocaleString()}`
+                    monthlyIncome != null
+                      ? `₦${Number(monthlyIncome).toLocaleString()}`
                       : "—"
                   }
                 />
                 <DetailItem
                   label="Current Residence"
-                  value={application?.currentResidence || "—"}
+                  value={getApplicationCurrentResidence(application) || "—"}
                 />
               </div>
               {application?.reasonForLiving && (
@@ -874,6 +895,16 @@ const TenantScreen = () => {
                       : "Not set"}
                   </p>
                 </div>
+                {isLeaseEnded && formatEndTenancySummary(application) && (
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 sm:col-span-2">
+                    <p className="text-xs font-medium uppercase tracking-wide text-[#667085]">
+                      Reason tenancy ended
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-gray-900">
+                      {formatEndTenancySummary(application)}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

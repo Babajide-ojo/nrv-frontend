@@ -5,7 +5,7 @@ interface Message {
   _id: string;
   content: string;
   createdAt: string;
-  sender: { _id: string };
+  sender: { _id?: string } | string;
   files?: string[];
 }
 
@@ -39,9 +39,9 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
 
   useEffect(() => {
     if (messageEndRef.current) {
-      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messageEndRef.current.scrollIntoView({ behavior: "auto" });
     }
-  }, [messages]); // Trigger scrolling whenever messages change
+  }, [messages.length, messages[messages.length - 1]?._id]);
 
   let lastDate: string | null = null;
 
@@ -57,7 +57,10 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
     <div>
       {messages &&
         messages.map((message) => {
-          const isSender = message.sender._id === user?.user?._id;
+          const senderId = String(
+            (message.sender as { _id?: string })?._id ?? message.sender ?? "",
+          );
+          const isSender = senderId === String(user?.user?._id ?? "");
           const showDateHeader = isNewDay(message.createdAt, lastDate);
           lastDate = message.createdAt;
 

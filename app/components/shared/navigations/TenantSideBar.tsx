@@ -10,8 +10,10 @@ import {
   FiMessageSquare,
   FiSettings,
   FiCheckCircle,
+  FiHeadphones,
 } from "react-icons/fi";
 import { PiFileDocDuotone } from "react-icons/pi";
+import Link from "next/link";
 import UserAvatar from "@/app/components/shared/UserAvatar";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
@@ -152,8 +154,15 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </nav>
       </div>
 
-      {/* Settings and user */}
+      {/* Contact, settings and user */}
       <div className="px-6 py-4 border-t border-gray-600">
+        <Link
+          href="/contact-us/support"
+          className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3] hover:text-white/90 transition-colors"
+        >
+          <FiHeadphones className="font-lighter text-[12px]" />
+          <span>Contact us</span>
+        </Link>
         <div
           role="button"
           tabIndex={0}

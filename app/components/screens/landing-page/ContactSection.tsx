@@ -47,13 +47,13 @@ const ContactSection: React.FC = () => {
           >
             <Mail className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
             <h3 className="mt-3 text-lg font-medium text-[#0D3520] landing-heading-2">
-              Chat to support
+              Email support
             </h3>
             <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              Email our team or use live chat — we respond as quickly as possible.
+              Send us a message and we will reply by email as quickly as possible.
             </p>
             <p className="text-sm pt-4 font-medium text-[#045D23] landing-body">
-              Open support chat →
+              Open support form →
             </p>
           </Link>
         </div>

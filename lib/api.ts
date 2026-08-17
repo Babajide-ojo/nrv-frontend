@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosProgressEvent } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosProgressEvent, InternalAxiosRequestConfig } from 'axios';
 import { API_URL } from '@/config/constant';
 // Make sure to install @tanstack/react-query: npm install @tanstack/react-query
 import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
@@ -11,15 +11,44 @@ import {
 import { restoreSessionFromRememberMe } from '@/lib/rememberMe';
 import { getSessionAccessToken } from '@/lib/authSession';
 
-// Create axios instance
-const apiClient: AxiosInstance = axios.create({
-  baseURL: API_URL,
-  timeout: 30000,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const AUTH_BYPASS_PATHS = [
+  '/auth/login',
+  '/auth/session',
+  '/auth/logout',
+  '/users/confirm-account',
+  '/users/resend-verification',
+];
+
+const shouldBypassAuth = (url?: string) => {
+  if (!url) {
+    return false;
+  }
+  return AUTH_BYPASS_PATHS.some((path) => url.includes(path));
+};
+
+const applyBearerToken = (headers: any, accessToken: string) => {
+  if (!headers || !accessToken) {
+    return;
+  }
+  const value = `Bearer ${accessToken}`;
+  if (typeof headers.set === 'function') {
+    headers.set('Authorization', value);
+  }
+  headers.Authorization = value;
+  headers.authorization = value;
+};
+
+const getRequestAuthHeader = (headers: any): string => {
+  if (!headers) {
+    return '';
+  }
+  if (typeof headers.get === 'function') {
+    return String(
+      headers.get('Authorization') || headers.get('authorization') || '',
+    );
+  }
+  return String(headers.Authorization || headers.authorization || '');
+};
 
 let restoreInFlight: Promise<boolean> | null = null;
 
@@ -34,75 +63,94 @@ const tryRestoreSession = async (): Promise<boolean> => {
   return restoreInFlight;
 };
 
-const applyBearerToken = (headers: any, accessToken: string) => {
-  if (!headers || !accessToken) {
-    return;
-  }
-  if (typeof headers.set === 'function') {
-    headers.set('Authorization', `Bearer ${accessToken}`);
-    return;
-  }
-  headers.Authorization = `Bearer ${accessToken}`;
+const attachAuthRequestInterceptor = (client: AxiosInstance) => {
+  client.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      if (typeof window === 'undefined') {
+        return config;
+      }
+      if (shouldBypassAuth(config.url)) {
+        return config;
+      }
+      if (isSessionIdleExpired()) {
+        expireIdleSession();
+        return Promise.reject(new Error('Session expired due to inactivity'));
+      }
+      const accessToken = getSessionAccessToken();
+      if (accessToken) {
+        config.headers = config.headers || ({} as InternalAxiosRequestConfig['headers']);
+        applyBearerToken(config.headers, accessToken);
+      }
+      return config;
+    },
+    (error) => Promise.reject(error),
+  );
 };
 
-// Request interceptor
-apiClient.interceptors.request.use(
-  (config) => {
-    if (typeof window === 'undefined') {
-      return config;
-    }
-    if (isSessionIdleExpired()) {
-      expireIdleSession();
-      return Promise.reject(new Error('Session expired due to inactivity'));
-    }
-    const accessToken = getSessionAccessToken();
-    if (accessToken) {
-      applyBearerToken(config.headers, accessToken);
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+const attachAuthResponseInterceptor = (client: AxiosInstance) => {
+  client.interceptors.response.use(
+    (response: AxiosResponse) => {
+      if (typeof window !== 'undefined' && localStorage.getItem('nrv-user')) {
+        touchSessionActivity();
+      }
+      return response;
+    },
+    async (error) => {
+      const originalRequest = error.config;
+      const requestUrl = String(originalRequest?.url || '');
+      if (
+        error.response?.status !== 401 ||
+        !originalRequest ||
+        originalRequest._retryRememberMe ||
+        shouldBypassAuth(requestUrl)
+      ) {
+        if (error.response?.status === 403) {
+          console.error('Access forbidden');
+        } else if (error.response?.status >= 500) {
+          console.error('Server error:', error.response.data);
+        }
+        return Promise.reject(error);
+      }
 
-// Response interceptor
-apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
-    if (localStorage.getItem('nrv-user')) {
-      touchSessionActivity();
-    }
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !originalRequest._retryRememberMe
-    ) {
+      const sentAuth = getRequestAuthHeader(originalRequest.headers);
       originalRequest._retryRememberMe = true;
       const restored = await tryRestoreSession();
       if (restored) {
         const accessToken = getSessionAccessToken();
         if (accessToken) {
+          originalRequest.headers = originalRequest.headers || {};
           applyBearerToken(originalRequest.headers, accessToken);
         }
-        return apiClient(originalRequest);
+        return client(originalRequest);
       }
-      clearAuthSession();
-      window.location.href =
-        '/sign-in?reason=' +
-        encodeURIComponent('Your session has expired. Please sign in again.');
-    } else if (error.response?.status === 403) {
-      console.error('Access forbidden');
-    } else if (error.response?.status >= 500) {
-      console.error('Server error:', error.response.data);
-    }
-    
-    return Promise.reject(error);
-  }
-);
+
+      // Only force logout when a token was actually sent and rejected.
+      if (sentAuth) {
+        clearAuthSession();
+        window.location.href =
+          '/sign-in?reason=' +
+          encodeURIComponent('Your session has expired. Please sign in again.');
+      }
+      return Promise.reject(error);
+    },
+  );
+};
+
+// Create axios instance
+const apiClient: AxiosInstance = axios.create({
+  baseURL: API_URL,
+  timeout: 30000,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+attachAuthRequestInterceptor(apiClient);
+attachAuthResponseInterceptor(apiClient);
+// Redux slices still use the default axios instance; attach the same auth headers.
+attachAuthRequestInterceptor(axios);
+attachAuthResponseInterceptor(axios);
 
 // Generic GET query hook
 export function useApiQuery<T = unknown>(

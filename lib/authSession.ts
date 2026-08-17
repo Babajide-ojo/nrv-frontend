@@ -36,10 +36,29 @@ export const getStoredSession = (): NrvSession | null => {
 
 export const getSessionAccessToken = (session?: NrvSession | null): string => {
   const stored = session ?? getStoredSession();
-  const token = String(
+  const fromSession = String(
     stored?.accessToken || (stored as { token?: string } | null)?.token || "",
   ).trim();
-  return token;
+  if (fromSession) {
+    return fromSession;
+  }
+  if (typeof window === "undefined") {
+    return "";
+  }
+  try {
+    const persistRaw = localStorage.getItem("persist:nrv-root");
+    if (!persistRaw) {
+      return "";
+    }
+    const persist = JSON.parse(persistRaw);
+    const userSlice =
+      typeof persist?.user === "string"
+        ? JSON.parse(persist.user)
+        : persist?.user;
+    return String(userSlice?.data?.accessToken || "").trim();
+  } catch {
+    return "";
+  }
 };
 
 export const getSessionAccountType = (session?: NrvSession | null): string =>

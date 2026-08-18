@@ -21,6 +21,7 @@ import { NotificationBell } from "@/app/components/notifications/NotificationBel
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 import { performLogout } from "@/lib/logout";
 import UserAvatar from "@/app/components/shared/UserAvatar";
+import DashboardBackButton from "@/app/components/shared/DashboardBackButton";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
 const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
@@ -116,6 +117,11 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
       document.body.style.overflow = prev;
     };
   }, [mobileMenuOpen]);
+
+  const showDashboardBack = useMemo(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    return segments.length > 3;
+  }, [pathname]);
 
   const mobileNavActiveRoute = useMemo(() => {
     const matches = TENANT_MOBILE_LINKS.filter(
@@ -228,6 +234,9 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           {/* Header */}
           <div className="px-3 sm:p-4 py-3 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
+                {showDashboardBack && (
+                  <DashboardBackButton fallbackHref="/dashboard/tenant" />
+                )}
                 <button
                   type="button"
                   className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"

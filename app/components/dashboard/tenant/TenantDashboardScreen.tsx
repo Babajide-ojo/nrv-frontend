@@ -12,8 +12,9 @@ import Users from "../../icons/Users";
 import { LuMapPin } from "react-icons/lu";
 import { API_URL } from "@/config/constant";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
-import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 import PendingVerificationRequests from "@/app/components/dashboard/tenant/PendingVerificationRequests";
+import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 
 function getRoomFromItem(item: any) {
   const room = item?.propertyId;
@@ -109,7 +110,7 @@ const RentedApartments = ({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {exploreProperties.slice(0, 6).map((room: any, index: number) => {
-              const imageUrl = room?.imageUrls?.[0] || room?.file || room?.propertyId?.file || null;
+              const imageUrl = getRoomCoverImage(room);
               const title = room?.name || room?.description || "Apartment";
               const property = room?.propertyId;
               const location =
@@ -182,11 +183,7 @@ const RentedApartments = ({
           {apartments.map((item: any, index: number) => {
             const room = getRoomFromItem(item);
             const property = getPropertyFromItem(item);
-            const imageUrl =
-              room?.imageUrls?.[0] ||
-              room?.file ||
-              property?.file ||
-              null;
+            const imageUrl = getRoomCoverImage({ ...room, propertyId: property });
             const title = room?.name || "Apartment";
             const address = formatAddress(
               property?.streetAddress ||

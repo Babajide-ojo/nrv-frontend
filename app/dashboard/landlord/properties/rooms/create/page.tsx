@@ -15,6 +15,10 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
 
@@ -64,7 +68,7 @@ const CreateRoom = () => {
     const cleanedValue = value.replace(/,/g, "");
 
     // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
+    if (cleanedValue === "" || /^\d*\.?\d{0,}$/.test(cleanedValue)) {
       setRoomData((prevData: any) => ({
         ...prevData,
         [name]: cleanedValue,
@@ -152,6 +156,11 @@ const CreateRoom = () => {
       !rentAmountMetrics
     ) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (!isValidPositiveRentAmount(rentAmount)) {
+      toast.error("Rent amount must be greater than zero.");
       return;
     }
 

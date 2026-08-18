@@ -6,6 +6,7 @@ import Link from "next/link";
 import Button from "../../shared/buttons/Button";
 import { API_URL } from "@/config/constant";
 import PropertyCard from "../../shared/cards/PropertyCard";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 
 const CARD_LIMIT = 4;
@@ -117,9 +118,7 @@ const FeaturedProperties = () => {
                 }}
               >
                 <PropertyCard
-                  imageUrl={
-                    room?.imageUrls?.[0] || room?.file || prop?.file || "/images/featured-img.svg"
-                  }
+                  imageUrl={getRoomCoverImage({ ...room, propertyId: prop })}
                   address={address}
                   rentAmount={room?.rentAmount}
                   property={room}

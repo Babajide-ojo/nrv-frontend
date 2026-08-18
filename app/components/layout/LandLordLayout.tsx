@@ -13,6 +13,7 @@ import { NotificationBell } from "@/app/components/notifications/NotificationBel
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 import { performLogout } from "@/lib/logout";
 import UserAvatar from "@/app/components/shared/UserAvatar";
+import DashboardBackButton from "@/app/components/shared/DashboardBackButton";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
 function getMobileNavIcon(name: string, size: number) {
@@ -91,6 +92,11 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
       document.body.style.overflow = prev;
     };
   }, [mobileMenuOpen]);
+
+  const showDashboardBack = useMemo(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    return segments.length > 3;
+  }, [pathname]);
 
   const mobileNavActiveRoute = useMemo(() => {
     const matches = LANDLORD_NAV_ITEMS.filter(
@@ -226,6 +232,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           {/* Header – responsive padding */}
           <div className="px-3 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
+                {showDashboardBack && (
+                  <DashboardBackButton fallbackHref="/dashboard/landlord" />
+                )}
                 <button
                   type="button"
                   className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"

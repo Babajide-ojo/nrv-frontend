@@ -5,6 +5,11 @@ import Button from "./buttons/Button";
 import MultiImageUploader from "./MultiImageUploader";
 import { toast } from "react-toastify";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  isValidPositiveRentAmount,
+  parsePositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 interface RoomFormData {
@@ -70,15 +75,12 @@ const RoomForm: React.FC<RoomFormProps> = ({
     const { name, value } = e.target;
 
     // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setRoomData((prevData) => ({
-        ...prevData,
-        [name]: cleanedValue,
-      }));
-    }
+    setRoomData((prevData) => ({
+      ...prevData,
+      [name]: cleanedValue,
+    }));
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
@@ -126,6 +128,11 @@ const RoomForm: React.FC<RoomFormProps> = ({
 
     if (!description || !rentAmount || !noOfRooms || !noOfBaths || !propertyId) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (!isValidPositiveRentAmount(rentAmount)) {
+      toast.error("Rent amount must be greater than zero.");
       return;
     }
 

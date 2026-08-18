@@ -14,6 +14,7 @@ import {
 } from "react-icons/fi";
 import { PiFileDocDuotone } from "react-icons/pi";
 import Link from "next/link";
+import Image from "next/image";
 import UserAvatar from "@/app/components/shared/UserAvatar";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
@@ -117,10 +118,24 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         <div
           className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
           onClick={() => router.push("/")}
+          role="button"
+          tabIndex={0}
+          aria-label="Go to home"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              router.push("/");
+            }
+          }}
         >
-          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
-            NaijaRentVerify
-          </span>
+          <Image
+            src="/images/nrvlogo.jpg"
+            alt="NaijaRentVerify"
+            width={150}
+            height={52}
+            className="h-9 w-auto max-w-full object-contain"
+            priority
+          />
         </div>
 
         {/* Navigation Links */}

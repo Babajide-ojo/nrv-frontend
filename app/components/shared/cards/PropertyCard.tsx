@@ -12,7 +12,8 @@ import {
   FaPaintRoller,
 } from "react-icons/fa";
 import { CgStyle } from "react-icons/cg";
-import WatermarkedImage from "../WatermarkedImage";
+import { getRoomCoverImage } from "@/lib/propertyImages";
+import WatermarkedImage from "@/app/components/shared/WatermarkedImage";
 import { getOccupancyLabel, isPropertyOccupied } from "@/helpers/utils";
 
 interface PropertyCardProps {
@@ -65,12 +66,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
       {/* Image section with overlay button */}
       <div className="relative h-80 rounded-xl overflow-hidden mb-4 shrink-0">
         <WatermarkedImage
-          src={
-            imageUrl ||
-            property?.imageUrls?.[0] ||
-            property?.file ||
-            property?.propertyId?.file
-          }
+          src={getRoomCoverImage(property)}
           alt="property"
           variant="compact"
           wrapperClassName="w-full h-full"

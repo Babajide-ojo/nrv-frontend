@@ -44,7 +44,7 @@ export const sendMessage = createAsyncThunk<FormData | any, {}>(
 
 
 export const getConversation = createAsyncThunk<any, {}>(
-  "messages/send",
+  "messages/conversation",
   async (formData: any, { rejectWithValue }) => {
     try {
       const response = await apiClient.get(

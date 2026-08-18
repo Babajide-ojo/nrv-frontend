@@ -6,13 +6,14 @@ import { FaMessage } from "react-icons/fa6";
 import { RxDashboard } from "react-icons/rx";
 import { IoMdHome } from "react-icons/io";
 import { IoPeopleCircleOutline, IoSettings } from "react-icons/io5";
-import { FiUsers, FiFileText, FiCheck, FiMenu, FiX, FiLogOut } from "react-icons/fi";
+import { FiUsers, FiFileText, FiCheck, FiMenu, FiX, FiLogOut, FiHeadphones } from "react-icons/fi";
 import { useRouter, usePathname } from "next/navigation";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 import { performLogout } from "@/lib/logout";
 import UserAvatar from "@/app/components/shared/UserAvatar";
+import DashboardBackButton from "@/app/components/shared/DashboardBackButton";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
 function getMobileNavIcon(name: string, size: number) {
@@ -92,6 +93,11 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
     };
   }, [mobileMenuOpen]);
 
+  const showDashboardBack = useMemo(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    return segments.length > 3;
+  }, [pathname]);
+
   const mobileNavActiveRoute = useMemo(() => {
     const matches = LANDLORD_NAV_ITEMS.filter(
       (item) =>
@@ -160,6 +166,21 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 <li>
                   <button
                     type="button"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      router.push("/contact-us/support");
+                    }}
+                  >
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                      <FiHeadphones size={20} color="white" />
+                    </span>
+                    <span>Contact us</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation ${
                       pathname.startsWith("/dashboard/landlord/settings")
                         ? "bg-white/15 text-[#BBFF37]"
@@ -211,6 +232,9 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
           {/* Header – responsive padding */}
           <div className="px-3 sm:px-6 py-3 sm:py-4 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
+                {showDashboardBack && (
+                  <DashboardBackButton fallbackHref="/dashboard/landlord" />
+                )}
                 <button
                   type="button"
                   className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"

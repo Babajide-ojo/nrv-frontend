@@ -34,6 +34,12 @@ import Status from "@/app/components/shared/Status";
 import { toast } from "react-toastify";
 import { normalizeAmenities } from "@/helpers/utils";
 import {
+  getApplicationCurrentResidence,
+  getApplicationEmployer,
+  getApplicationJobTitle,
+  getApplicationMonthlyIncome,
+} from "@/lib/applicationDisplay";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -127,16 +133,23 @@ const RentedPropertiesScreen = () => {
     "Apartment";
   const applicationDetails = isApplicationMode
     ? [
-        { label: "Job Title", value: property?.jobTitle ?? "—" },
-        { label: "Current Employer", value: property?.currentEmployer ?? "—" },
+        { label: "Job Title", value: getApplicationJobTitle(property) ?? "—" },
+        {
+          label: "Current Employer",
+          value: getApplicationEmployer(property) ?? "—",
+        },
         {
           label: "Monthly Income",
-          value: property?.monthlyIncome
-            ? `₦${Number(property.monthlyIncome).toLocaleString()}`
-            : "—",
+          value:
+            getApplicationMonthlyIncome(property) != null
+              ? `₦${Number(getApplicationMonthlyIncome(property)).toLocaleString()}`
+              : "—",
         },
         { label: "Reason for Moving", value: property?.reasonForLiving ?? "—" },
-        { label: "Current Residence", value: property?.currentResidence ?? "—" },
+        {
+          label: "Current Residence",
+          value: getApplicationCurrentResidence(property) ?? "—",
+        },
         { label: "Payment Option", value: room?.paymentOption ?? "—" },
         { label: "Lease Terms", value: room?.leaseTerms ?? "—" },
         {

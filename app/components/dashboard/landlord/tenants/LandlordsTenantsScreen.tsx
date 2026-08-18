@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { updateApplicationStatus } from "@/redux/slices/propertySlice";
 import { apiService } from "@/lib/api";
+import { formatEndTenancySummary, getApplicationCurrentResidence, getApplicationEmployer, getApplicationJobTitle } from "@/lib/applicationDisplay";
 import { Users, Wallet, TrendingUp, TrendingDown } from "lucide-react";
 
 type TenantManagementMetrics = {
@@ -399,6 +400,19 @@ const LandlordsTenantsScreen = () => {
                 label: "Lease End Date",
                 render: (val) => <span>{formatLeaseDate(val)}</span>,
               },
+              ...(activeTab === "ended"
+                ? [
+                    {
+                      key: "endTenancyReason",
+                      label: "End Reason",
+                      render: (_val: unknown, row: BaseRow) => (
+                        <span className="text-sm text-gray-700">
+                          {formatEndTenancySummary(row) || "—"}
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
             ]}
           />
         </div>
@@ -506,9 +520,12 @@ const LandlordsTenantsScreen = () => {
               <InfoCard
                 title="Employment Details"
                 data={[
-                  ["Employer", application?.employment?.employer],
-                  ["Job Title", application?.employment?.jobTitle],
-                  ["Salary Range", application?.employment?.salaryRange],
+                  ["Employer", getApplicationEmployer(application) || "—"],
+                  ["Job Title", getApplicationJobTitle(application) || "—"],
+                  [
+                    "Current Residence",
+                    getApplicationCurrentResidence(application) || "—",
+                  ],
                 ]}
               />
 

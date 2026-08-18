@@ -18,6 +18,7 @@ import { FcHome } from "react-icons/fc";
 import { LuMapPin } from "react-icons/lu";
 import { FaBed, FaBath, FaPaintRoller } from "react-icons/fa";
 import { API_URL } from "@/config/constant";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 
 /** Ensure image URL is absolute so it loads from backend/Cloudinary when relative */
 function toAbsoluteImageUrl(url: string | null | undefined): string | null {
@@ -157,11 +158,7 @@ const RentedPropertiesScreen = () => {
               {properties?.map((item: any, index: number) => {
                 const room = item?.roomId || item;
                 const property = item?.propertyId || item;
-                const imageUrl =
-                  room?.imageUrls?.[0] ||
-                  room?.file ||
-                  property?.file ||
-                  null;
+                const imageUrl = getRoomCoverImage({ ...room, propertyId: property });
                 const title = room?.name || "Apartment";
                 const address = formatAddress(
                   property?.streetAddress ||

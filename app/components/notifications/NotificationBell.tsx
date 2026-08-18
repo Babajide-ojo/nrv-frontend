@@ -44,11 +44,19 @@ function hrefForNotification(n: AppNotification): string | null {
     type === "maintenance_scheduled" ||
     type === "maintenance_status_updated"
   ) {
-    return "/dashboard/landlord/maintenance";
+    const maintenanceId = m.maintenanceId as string | undefined;
+    if (maintenanceId) {
+      return `/dashboard/landlord/properties/maintenance/${maintenanceId}`;
+    }
+    return "/dashboard/landlord/properties/maintenance";
   }
 
   if (type === "application_received") {
-    return "/dashboard/landlord/tenants";
+    const applicationId = m.applicationId as string | undefined;
+    if (applicationId) {
+      return `/dashboard/landlord/properties/renters/${applicationId}`;
+    }
+    return "/dashboard/landlord/properties/renters";
   }
 
   if (

@@ -38,6 +38,7 @@ import {
 import { API_URL } from "@/config/constant";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 import { LANDING_SCROLL_STORAGE_KEY } from "@/app/components/shared/navigations/NavLink";
 
 const FEATURES = [
@@ -774,9 +775,7 @@ const NewLanding = () => {
                     className="cursor-pointer h-full"
                   >
                     <PropertyCard
-                      imageUrl={
-                        room?.imageUrls?.[0] || room?.file || prop?.file || "/images/featured-img.svg"
-                      }
+                      imageUrl={getRoomCoverImage({ ...room, propertyId: prop })}
                       address={locationLine}
                       rentAmount={room?.rentAmount}
                       property={room}

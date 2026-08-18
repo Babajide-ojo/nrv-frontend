@@ -7,6 +7,7 @@ import PropertyCard from "@/app/components/shared/cards/PropertyCard";
 import Button from "@/app/components/shared/buttons/Button";
 import { RefreshCcw, Search, SlidersHorizontal, X } from "lucide-react";
 import { Button as Btn } from "@/components/ui/button";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 
 const INITIAL_FILTERS = {
@@ -309,9 +310,7 @@ export function AvailableListingsScreen({
                 }}
               >
                 <PropertyCard
-                  imageUrl={
-                    room?.imageUrls?.[0] || room?.file || "/images/featured-img.svg"
-                  }
+                  imageUrl={getRoomCoverImage(room)}
                   address={
                     [room?.propertyId?.city, room?.propertyId?.state].filter(Boolean).join(", ") ||
                     "—"

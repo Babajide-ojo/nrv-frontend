@@ -15,11 +15,13 @@ import {
   FiMenu,
   FiX,
   FiLogOut,
+  FiHeadphones,
 } from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
 import { performLogout } from "@/lib/logout";
 import UserAvatar from "@/app/components/shared/UserAvatar";
+import DashboardBackButton from "@/app/components/shared/DashboardBackButton";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
 const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
@@ -116,6 +118,11 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
     };
   }, [mobileMenuOpen]);
 
+  const showDashboardBack = useMemo(() => {
+    const segments = (pathname ?? "").split("/").filter(Boolean);
+    return segments.length > 3;
+  }, [pathname]);
+
   const mobileNavActiveRoute = useMemo(() => {
     const matches = TENANT_MOBILE_LINKS.filter(
       (item) =>
@@ -185,6 +192,19 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
                 <button
                   type="button"
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    router.push("/contact-us/support");
+                  }}
+                >
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+                    <FiHeadphones size={20} color="white" />
+                  </span>
+                  <span>Contact us</span>
+                </button>
+                <button
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
                   aria-label="Log out"
                   onClick={async () => {
                     setMobileMenuOpen(false);
@@ -214,6 +234,9 @@ const TenantLayout: React.FC<TenantLayoutProps> = ({ children, path, mainPath, s
           {/* Header */}
           <div className="px-3 sm:p-4 py-3 bg-white shadow-sm sticky top-0 z-30">
             <div className="flex w-full min-w-0 items-center gap-2 sm:gap-3">
+                {showDashboardBack && (
+                  <DashboardBackButton fallbackHref="/dashboard/tenant" />
+                )}
                 <button
                   type="button"
                   className="shrink-0 rounded-lg p-2.5 text-nrvPrimaryGreen hover:bg-[#E9F4E7] touch-manipulation lg:hidden"

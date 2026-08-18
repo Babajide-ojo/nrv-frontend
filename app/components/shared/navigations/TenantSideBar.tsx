@@ -10,8 +10,11 @@ import {
   FiMessageSquare,
   FiSettings,
   FiCheckCircle,
+  FiHeadphones,
 } from "react-icons/fi";
 import { PiFileDocDuotone } from "react-icons/pi";
+import Link from "next/link";
+import Image from "next/image";
 import UserAvatar from "@/app/components/shared/UserAvatar";
 import { readStoredUserProfile } from "@/lib/userProfile";
 
@@ -115,10 +118,24 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         <div
           className="text-start mt-8 lg:mt-10 px-4 w-full min-w-0 box-border flex cursor-pointer items-center"
           onClick={() => router.push("/")}
+          role="button"
+          tabIndex={0}
+          aria-label="Go to home"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              router.push("/");
+            }
+          }}
         >
-          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-tight">
-            NaijaRentVerify
-          </span>
+          <Image
+            src="/images/nrvlogo.jpg"
+            alt="NaijaRentVerify"
+            width={150}
+            height={52}
+            className="h-9 w-auto max-w-full object-contain"
+            priority
+          />
         </div>
 
         {/* Navigation Links */}
@@ -152,8 +169,15 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
         </nav>
       </div>
 
-      {/* Settings and user */}
+      {/* Contact, settings and user */}
       <div className="px-6 py-4 border-t border-gray-600">
+        <Link
+          href="/contact-us/support"
+          className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3] hover:text-white/90 transition-colors"
+        >
+          <FiHeadphones className="font-lighter text-[12px]" />
+          <span>Contact us</span>
+        </Link>
         <div
           role="button"
           tabIndex={0}

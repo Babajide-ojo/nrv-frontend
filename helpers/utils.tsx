@@ -303,12 +303,15 @@ export const formatDisplayValue = (value: string): string => {
   }
   
   try {
-    // Remove commas for parsing
-    const cleanedValue = value.toString().replace(/,/g, "");
+    // Remove commas for parsing; never allow a leading minus in amount fields
+    const cleanedValue = value.toString().replace(/,/g, "").replace(/[^\d.]/g, "");
+    if (cleanedValue === "" || cleanedValue === ".") {
+      return cleanedValue;
+    }
     const num = parseFloat(cleanedValue);
     
-    if (isNaN(num)) {
-      return value; // Return raw value if not a valid number
+    if (isNaN(num) || num < 0) {
+      return cleanedValue === "" ? "" : value.replace(/-/g, "");
     }
     
     return num.toLocaleString("en-US", {
@@ -317,7 +320,7 @@ export const formatDisplayValue = (value: string): string => {
     });
   } catch (error) {
     console.error('Error formatting display value:', error);
-    return value;
+    return String(value).replace(/-/g, "");
   }
 };
 

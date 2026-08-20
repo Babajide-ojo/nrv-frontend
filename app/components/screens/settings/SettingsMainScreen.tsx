@@ -368,7 +368,7 @@ const SettingsMainScreen = () => {
               <strong className="text-gray-900">{profileForm.email || "your email"}</strong>.
             </p>
             <Link
-              href="/verify-email"
+              href="/forgot-password"
               className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#03442C] px-4 py-3 text-sm font-semibold text-white hover:bg-[#022f21] transition-colors sm:w-auto"
             >
               Reset password

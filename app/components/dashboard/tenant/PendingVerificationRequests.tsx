@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { apiService } from "@/lib/api";
-import { FiAlertCircle, FiUserCheck } from "react-icons/fi";
+import { FiAlertCircle } from "react-icons/fi";
 import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 import {
   getVerificationNextStep,
@@ -148,14 +148,18 @@ const PendingVerificationRequests = () => {
     loadPending();
   }, [loadPending]);
 
+  useEffect(() => {
+    setTermsAccepted(false);
+  }, [pendingRequests[0]?._id]);
+
   if (loading) {
     return (
       <section
         aria-label="Loading pending verification requests"
-        className="mb-8 rounded-2xl border border-amber-200 bg-amber-50/60 p-5 animate-pulse"
+        className="mb-8 overflow-hidden rounded-2xl border border-[#E8D9B8] bg-[#FBF7EE] p-5 sm:p-6 animate-pulse"
       >
-        <div className="h-5 w-56 rounded bg-amber-100 mb-4" />
-        <div className="h-20 rounded-xl bg-white/80 border border-amber-100" />
+        <div className="mb-5 h-5 w-48 rounded bg-[#EDE4D0]" />
+        <div className="h-28 rounded-xl bg-white/70" />
       </section>
     );
   }
@@ -205,25 +209,36 @@ const PendingVerificationRequests = () => {
     .filter(Boolean)
     .join(" ")
     .trim() || "Landlord";
+  const requestDate = formatRequestDate(
+    featuredRequest.dateRequested || featuredRequest.createdAt,
+  );
+  const continueLabel =
+    featuredRequest.nextStep && featuredRequest.nextStep !== "personal"
+      ? "Continue verification"
+      : "Complete verification";
+  const isDeclining = decliningId === featuredRequest._id;
 
   return (
     <section
       aria-label="Pending verification requests"
-      className="mb-8 rounded-2xl border border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 p-5 shadow-sm"
+      className="mb-8 overflow-hidden rounded-2xl border border-[#E8D9B8] bg-[#FBF7EE]"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-200 text-amber-900">
-            <FiAlertCircle className="h-5 w-5" aria-hidden="true" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+      <div className="flex items-start justify-between gap-4 border-b border-[#E8D9B8]/80 px-5 py-4 sm:px-6">
+        <div className="flex min-w-0 items-start gap-3">
+          <span
+            className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F0E2C4] text-[#8A5A12]"
+            aria-hidden="true"
+          >
+            <FiAlertCircle className="h-4 w-4" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold tracking-tight text-[#1C1917] sm:text-lg">
               Pending verification request
             </h2>
-            <p className="mt-1 text-sm text-gray-700">
-              A landlord is waiting for you to complete your verification. Continue where you left off.
+            <p className="mt-1 text-sm leading-relaxed text-[#57534E]">
+              {landlordName} is waiting for you to finish screening.
               {remainingCount > 0
-                ? ` You have ${remainingCount} more pending ${remainingCount === 1 ? "request" : "requests"}.`
+                ? ` ${remainingCount} more pending ${remainingCount === 1 ? "request" : "requests"}.`
                 : ""}
             </p>
           </div>
@@ -231,32 +246,28 @@ const PendingVerificationRequests = () => {
         <button
           type="button"
           onClick={() => router.push("/dashboard/tenant/verification/requests")}
-          className="text-sm font-medium text-amber-900 hover:text-amber-950 hover:underline shrink-0"
+          className="shrink-0 rounded-md px-1 py-1 text-sm font-medium text-[#8A5A12] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A5A12]"
+          aria-label="View all verification requests"
         >
           View all
           {remainingCount > 0 ? ` (${pendingRequests.length})` : ""}
         </button>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-xl border border-amber-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900">
-              <FiUserCheck aria-hidden="true" />
-              Action required
-            </span>
-            <span className="text-xs text-gray-500">
-              Requested{" "}
-              {formatRequestDate(
-                featuredRequest.dateRequested || featuredRequest.createdAt,
-              )}
-            </span>
-          </div>
-          <p className="mt-2 text-sm font-semibold text-gray-900">
-            From {landlordName}
+      <div className="space-y-4 bg-white px-5 py-5 sm:px-6">
+        <div className="flex flex-col gap-1">
+          <p className="text-xs font-medium uppercase tracking-wide text-[#A8A29E]">
+            From
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-lg font-semibold tracking-tight text-[#1C1917]">
+            {landlordName}
+          </p>
+          <p className="text-sm text-[#78716C]">
             {tierLabel(featuredRequest.verificationTier)}
+            <span className="mx-1.5 text-[#D6D3D1]" aria-hidden="true">
+              ·
+            </span>
+            Requested {requestDate}
           </p>
         </div>
 
@@ -264,29 +275,27 @@ const PendingVerificationRequests = () => {
           checked={termsAccepted}
           onChange={setTermsAccepted}
           id="pending-verification-terms"
-          label="I agree to the terms before completing this verification request"
+          label="I agree to the"
         />
 
-        <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+        <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={() => handleDecline(featuredRequest._id)}
-            disabled={decliningId === featuredRequest._id}
-            className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-50 transition-colors disabled:opacity-60"
+            disabled={isDeclining}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-[#E7E5E4] bg-white px-4 py-2.5 text-sm font-medium text-[#57534E] transition-colors hover:border-[#D6D3D1] hover:bg-[#FAFAF9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#57534E] disabled:cursor-not-allowed disabled:opacity-60"
             aria-label={`Decline verification request from ${landlordName}`}
           >
-            {decliningId === featuredRequest._id ? "Declining…" : "Decline"}
+            {isDeclining ? "Declining…" : "Decline"}
           </button>
           <button
             type="button"
             onClick={() => handleComplete(featuredRequest._id, featuredRequest.nextStep)}
-            disabled={decliningId === featuredRequest._id}
-            className="inline-flex items-center justify-center rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800 transition-colors disabled:opacity-60"
-            aria-label={`Continue verification request from ${landlordName}`}
+            disabled={isDeclining || !termsAccepted}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-nrvPrimaryGreen px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#023524] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nrvPrimaryGreen disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={`${continueLabel} from ${landlordName}`}
           >
-            {featuredRequest.nextStep && featuredRequest.nextStep !== "personal"
-              ? "Continue verification"
-              : "Complete verification"}
+            {continueLabel}
           </button>
         </div>
       </div>

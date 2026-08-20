@@ -148,6 +148,23 @@ const apiClient: AxiosInstance = axios.create({
 
 attachAuthRequestInterceptor(apiClient);
 attachAuthResponseInterceptor(apiClient);
+
+// Allow multipart uploads: drop default JSON content-type when sending FormData
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    if (config.headers) {
+      if (typeof (config.headers as any).delete === 'function') {
+        (config.headers as any).delete('Content-Type');
+        (config.headers as any).delete('content-type');
+      } else {
+        delete (config.headers as any)['Content-Type'];
+        delete (config.headers as any)['content-type'];
+      }
+    }
+  }
+  return config;
+});
+
 // Redux slices still use the default axios instance; attach the same auth headers.
 attachAuthRequestInterceptor(axios);
 attachAuthResponseInterceptor(axios);

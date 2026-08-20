@@ -16,6 +16,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { formatDisplayValue } from "@/helpers/utils";
 import {
+  blockNonPositiveRentKeys,
   isValidPositiveRentAmount,
   sanitizePositiveRentInput,
 } from "@/lib/rentAmount";
@@ -64,16 +65,12 @@ const CreateRoom = () => {
   ) => {
     const { name, value } = e.target as HTMLInputElement;
 
-    // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setRoomData((prevData: any) => ({
-        ...prevData,
-        [name]: cleanedValue,
-      }));
-    }
+    setRoomData((prevData: any) => ({
+      ...prevData,
+      [name]: cleanedValue,
+    }));
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
@@ -390,6 +387,7 @@ const CreateRoom = () => {
                       placeholder="250,000"
                       value={formatDisplayValue(roomData.rentAmount)}
                       onChange={handleInputChangeWithComma}
+                      onKeyPress={blockNonPositiveRentKeys}
                       name="rentAmount"
                     />
 

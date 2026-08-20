@@ -59,6 +59,14 @@ function hrefForNotification(n: AppNotification): string | null {
     return "/dashboard/landlord/properties/renters";
   }
 
+  if (type === "lease_expired") {
+    const applicationId = m.applicationId as string | undefined;
+    if (applicationId) {
+      return `/dashboard/landlord/tenants/${applicationId}`;
+    }
+    return "/dashboard/landlord/tenants?tab=ended";
+  }
+
   if (
     type === "application_submitted" ||
     type === "application_status_updated"

@@ -188,8 +188,12 @@ const CreateRoom = () => {
 
     try {
       setLoading(true);
-      await dispatch(createRooms(formData) as any).unwrap();
-      toast.success("Room added successfully");
+      const response = await dispatch(createRooms(formData) as any).unwrap();
+      toast.success(
+        response?.message ||
+          "Unit added successfully. It still needs listing approval — open the unit and request approval before it can be listed publicly.",
+        { autoClose: 8000 },
+      );
       router.push(`/dashboard/landlord/properties/${propertyId}`);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong.");

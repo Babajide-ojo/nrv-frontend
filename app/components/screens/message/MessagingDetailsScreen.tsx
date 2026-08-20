@@ -8,8 +8,18 @@ import { FaPlusCircle, FaTimesCircle } from "react-icons/fa";
 import { IoArrowBack, IoSend } from "react-icons/io5";
 import ConversationDetailsScreen from "./ConversationDetailsScreen";
 import { apiClient } from "@/lib/api";
+import { toast } from "react-toastify";
 
 const POLL_INTERVAL_MS = 4000;
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGES = 4;
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
 
 const RandomColorCircle = ({
   firstName,
@@ -28,7 +38,9 @@ const RandomColorCircle = ({
     return `hsl(${hue}, 45%, 42%)`;
   };
 
-  const initials = `${firstName?.charAt(0) ?? ""}${lastName?.charAt(0) ?? ""}`.toUpperCase() || "?";
+  const initials =
+    `${firstName?.charAt(0) ?? ""}${lastName?.charAt(0) ?? ""}`.toUpperCase() ||
+    "?";
 
   return (
     <div
@@ -51,16 +63,18 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [conversation, setConversation] = useState<any[]>([]);
-  const [partnerProfile, setPartnerProfile] = useState<PartnerProfile | null>(null);
+  const [partnerProfile, setPartnerProfile] = useState<PartnerProfile | null>(
+    null,
+  );
   const [messageContent, setMessageContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isSending, setIsSending] = useState(false);
   const { id } = useParams();
   const partnerId = Array.isArray(id) ? id[0] : id;
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
-  const fetchConversationRef = useRef<(options?: { silent?: boolean }) => Promise<void>>(
-    async () => {},
-  );
+  const fetchConversationRef = useRef<
+    (options?: { silent?: boolean }) => Promise<void>
+  >(async () => {});
   const fileInputId = useId();
   const isLandlordView = source === "recipent" || source === "recipient";
 
@@ -137,13 +151,19 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
         setConversation((prev) => {
           const prevLastId = prev[prev.length - 1]?._id;
           const nextLastId = nextMessages[nextMessages.length - 1]?._id;
-          if (prev.length === nextMessages.length && prevLastId === nextLastId) {
+          if (
+            prev.length === nextMessages.length &&
+            prevLastId === nextLastId
+          ) {
             return prev;
           }
           return nextMessages;
         });
 
-        const partnerFromMessages = resolvePartnerFromMessages(nextMessages, userId);
+        const partnerFromMessages = resolvePartnerFromMessages(
+          nextMessages,
+          userId,
+        );
         if (partnerFromMessages) {
           setPartnerProfile(partnerFromMessages);
         }
@@ -187,7 +207,8 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   }, [conversation.length]);
 
@@ -208,6 +229,7 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
     const formData = new FormData();
     formData.append("sender", senderId);
     formData.append("recipient", partnerId);
+    // Text is optional — image-only messages are allowed
     formData.append("content", messageContent.trim());
 
     files.forEach((file) => {
@@ -216,18 +238,24 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
 
     try {
       setIsSending(true);
-      await dispatch(sendMessage(formData) as any);
+      await dispatch(sendMessage(formData) as any).unwrap();
       setMessageContent("");
       setFiles([]);
       await fetchConversation({ silent: true });
-    } catch {
-      alert("Error sending message");
+    } catch (error: any) {
+      const message =
+        typeof error === "string"
+          ? error
+          : error?.message || "Error sending message";
+      toast.error(message);
     } finally {
       setIsSending(false);
     }
   };
 
-  const handleComposerKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleComposerKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       void handleSendMessage();
@@ -235,15 +263,33 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files ? Array.from(event.target.files) : [];
-    const validFiles = selectedFiles.filter((file) => file.size <= 2 * 1024 * 1024);
+    const selectedFiles = event.target.files
+      ? Array.from(event.target.files)
+      : [];
+    const imageFiles = selectedFiles.filter((file) =>
+      ALLOWED_IMAGE_TYPES.includes(file.type),
+    );
 
-    if (validFiles.length + files.length > 4) {
-      alert("You can upload a maximum of 4 files.");
+    if (imageFiles.length !== selectedFiles.length) {
+      toast.error("Only JPG, PNG, GIF, or WEBP images are supported.");
+    }
+
+    const validFiles = imageFiles.filter(
+      (file) => file.size <= MAX_IMAGE_BYTES,
+    );
+    if (validFiles.length !== imageFiles.length) {
+      toast.error("Each image must be 5 MB or smaller.");
+    }
+
+    if (validFiles.length + files.length > MAX_IMAGES) {
+      toast.error(`You can upload a maximum of ${MAX_IMAGES} images.`);
+      event.target.value = "";
       return;
     }
 
-    setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+    if (validFiles.length > 0) {
+      setFiles((prevFiles) => [...prevFiles, ...validFiles]);
+    }
     event.target.value = "";
   };
 
@@ -256,7 +302,9 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
     resolvePartnerFromMessages(conversation, currentUserId) ??
     null;
 
-  const partnerName = [partner?.firstName, partner?.lastName].filter(Boolean).join(" ") || "Conversation";
+  const partnerName =
+    [partner?.firstName, partner?.lastName].filter(Boolean).join(" ") ||
+    "Conversation";
 
   const renderFilePreviews = () => {
     if (files.length === 0) {
@@ -266,32 +314,33 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
     return (
       <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {files.map((file, index) => {
-          const isImage = file.type.startsWith("image/");
           return (
-            <div key={`${file.name}-${index}`} className="relative flex flex-col items-center gap-1">
-              <FaTimesCircle
+            <div
+              key={`${file.name}-${index}`}
+              className="relative flex flex-col items-center gap-1"
+            >
+              <button
+                type="button"
                 onClick={() => handleRemoveFile(index)}
-                className="absolute -right-1 -top-1 cursor-pointer text-red-500"
-                size={18}
+                className="absolute -right-1 -top-1 rounded-full bg-white text-red-500"
                 aria-label={`Remove ${file.name}`}
+              >
+                <FaTimesCircle size={18} />
+              </button>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`preview-${index}`}
+                className="h-16 w-16 rounded-lg object-cover"
               />
-              {isImage ? (
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`preview-${index}`}
-                  className="h-16 w-16 rounded-lg object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-200 px-1">
-                  <p className="truncate text-[10px] text-center">{file.name}</p>
-                </div>
-              )}
             </div>
           );
         })}
       </div>
     );
   };
+
+  const canSend =
+    !isSending && (Boolean(messageContent.trim()) || files.length > 0);
 
   const renderComposer = () => (
     <div className="shrink-0 border-t border-gray-200 bg-white px-3 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-4 md:pb-3">
@@ -301,13 +350,14 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
           type="button"
           className="shrink-0 p-1 text-nrvPrimaryGreen"
           onClick={() => document.getElementById(fileInputId)?.click()}
-          aria-label="Attach files"
+          aria-label="Attach image"
         >
           <FaPlusCircle size={22} />
         </button>
         <input
           id={fileInputId}
           type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
           multiple
           onChange={handleFileChange}
           className="hidden"
@@ -315,7 +365,11 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
         <textarea
           rows={1}
           className="max-h-32 min-h-[44px] flex-1 resize-none rounded-2xl border border-gray-300 px-4 py-2.5 text-sm text-black focus:border-nrvPrimaryGreen focus:outline-none focus:ring-1 focus:ring-nrvPrimaryGreen"
-          placeholder="Type your message..."
+          placeholder={
+            files.length > 0
+              ? "Add a caption (optional)…"
+              : "Type a message or attach an image…"
+          }
           value={messageContent}
           onChange={(event) => setMessageContent(event.target.value)}
           onKeyDown={handleComposerKeyDown}
@@ -324,7 +378,7 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
           type="button"
           className="shrink-0 rounded-full bg-nrvPrimaryGreen p-2.5 text-white disabled:opacity-50"
           onClick={() => void handleSendMessage()}
-          disabled={isSending || (!messageContent.trim() && files.length === 0)}
+          disabled={!canSend}
           aria-label="Send message"
         >
           <IoSend size={18} />
@@ -376,7 +430,9 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
           lastName={partner?.lastName}
         />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-nrvDarkGrey">{partnerName}</p>
+          <p className="truncate text-sm font-semibold text-nrvDarkGrey">
+            {partnerName}
+          </p>
           <p className="text-xs text-gray-500">
             {isLandlordView ? "Tenant conversation" : "Landlord conversation"}
           </p>
@@ -394,7 +450,8 @@ const MessagingDetailsScreen = ({ source }: { source?: string }) => {
             <EmptyState />
             <p className="mt-2 text-sm text-nrvLightGrey">No messages yet</p>
             <p className="mt-1 max-w-xs text-xs text-gray-400">
-              Send a message to start the conversation. New messages appear here automatically.
+              Send a text or photo to start the conversation. New messages
+              appear here automatically.
             </p>
           </div>
         )}

@@ -1,17 +1,41 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { Clock3 } from "lucide-react";
 import { FiCamera, FiLock, FiLogOut, FiMail, FiPhone, FiUser } from "react-icons/fi";
+import { MdOutlineKey, MdOutlineMail } from "react-icons/md";
 import Button from "../../shared/buttons/Button";
 import InputField from "../../shared/input-fields/InputFields";
-import { updateUser } from "@/redux/slices/userSlice";
+import {
+  resetPassword,
+  updateUser,
+  verifyEmail,
+} from "@/redux/slices/userSlice";
 import UserAvatar from "@/app/components/shared/UserAvatar";
 
 type SettingsTab = "profile" | "security";
+type PasswordResetStep = "idle" | "codeSent" | "success";
+
+const PASSWORD_POLICY_MESSAGE =
+  "Password must be at least 8 characters and include uppercase, lowercase, a number, and a special character.";
+
+const formatRemainingTime = (expiresAt?: string) => {
+  if (!expiresAt) {
+    return null;
+  }
+  const remainingMs = new Date(expiresAt).getTime() - Date.now();
+  if (remainingMs <= 0) {
+    return "This code has expired. Request a new reset code.";
+  }
+  const totalMinutes = Math.ceil(remainingMs / 60000);
+  if (totalMinutes >= 60) {
+    return "Valid for about 1 hour.";
+  }
+  return `Valid for about ${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}.`;
+};
 
 const SettingsMainScreen = () => {
   const dispatch = useDispatch();
@@ -25,6 +49,22 @@ const SettingsMainScreen = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [passwordResetStep, setPasswordResetStep] =
+    useState<PasswordResetStep>("idle");
+  const [isSendingResetCode, setIsSendingResetCode] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [resetExpiresAt, setResetExpiresAt] = useState<string | undefined>();
+  const [resetNow, setResetNow] = useState(Date.now());
+  const [passwordResetForm, setPasswordResetForm] = useState({
+    token: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordResetErrors, setPasswordResetErrors] = useState<{
+    token?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
   const [profileForm, setProfileForm] = useState({
     firstName: "",
     lastName: "",
@@ -159,6 +199,143 @@ const SettingsMainScreen = () => {
     const { performLogout } = await import("@/lib/logout");
     await performLogout();
     router.push("/sign-in");
+  };
+
+  useEffect(() => {
+    if (passwordResetStep !== "codeSent") {
+      return;
+    }
+    const timer = window.setInterval(() => setResetNow(Date.now()), 30000);
+    return () => window.clearInterval(timer);
+  }, [passwordResetStep]);
+
+  const resetExpiryMessage = useMemo(
+    () => formatRemainingTime(resetExpiresAt),
+    [resetExpiresAt, resetNow],
+  );
+
+  const isResetCodeExpired = Boolean(
+    resetExpiresAt && new Date(resetExpiresAt).getTime() <= Date.now(),
+  );
+
+  const handlePasswordResetFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const { name, value } = e.target;
+    setPasswordResetForm((prev) => ({ ...prev, [name]: value }));
+    setPasswordResetErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSendPasswordResetCode = async () => {
+    const email = profileForm.email.trim();
+    if (!email) {
+      toast.error("No email is linked to this account.");
+      return;
+    }
+
+    setIsSendingResetCode(true);
+    try {
+      const response = await dispatch(verifyEmail({ email }) as any).unwrap();
+      setResetExpiresAt(response?.expiresAt);
+      setPasswordResetForm({
+        token: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setPasswordResetErrors({});
+      setPasswordResetStep("codeSent");
+      toast.success(
+        response?.message ||
+          `Password reset code sent to ${email}. It is valid for 1 hour.`,
+      );
+    } catch (error: any) {
+      toast.error(error || "Could not send reset code.");
+    } finally {
+      setIsSendingResetCode(false);
+    }
+  };
+
+  const validatePasswordResetForm = () => {
+    const nextErrors: {
+      token?: string;
+      newPassword?: string;
+      confirmPassword?: string;
+    } = {};
+    const token = passwordResetForm.token.trim();
+    const password = passwordResetForm.newPassword;
+    const confirmPassword = passwordResetForm.confirmPassword;
+
+    if (!token) {
+      nextErrors.token = "Confirmation code is required";
+    } else if (!/^\d{6}$/.test(token)) {
+      nextErrors.token = "Reset code must be 6 digits";
+    }
+
+    if (!password.trim()) {
+      nextErrors.newPassword = "Password is required";
+    } else if (
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/\d/.test(password) ||
+      !/[^a-zA-Z0-9]/.test(password)
+    ) {
+      nextErrors.newPassword = PASSWORD_POLICY_MESSAGE;
+    }
+
+    if (!confirmPassword.trim()) {
+      nextErrors.confirmPassword = "Confirm your new password";
+    } else if (confirmPassword !== password) {
+      nextErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setPasswordResetErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleSubmitPasswordReset = async () => {
+    if (isResetCodeExpired) {
+      toast.error("Your reset code has expired. Please request a new one.");
+      setPasswordResetStep("idle");
+      return;
+    }
+
+    if (!validatePasswordResetForm()) {
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      await dispatch(
+        resetPassword({
+          token: passwordResetForm.token.trim(),
+          newPassword: passwordResetForm.newPassword,
+        }) as any,
+      ).unwrap();
+      setPasswordResetForm({
+        token: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setResetExpiresAt(undefined);
+      setPasswordResetStep("success");
+      toast.success("Password updated. You can keep using this session.");
+    } catch (error: any) {
+      toast.error(error || "Could not reset password.");
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
+  const handleCancelPasswordReset = () => {
+    setPasswordResetStep("idle");
+    setPasswordResetForm({
+      token: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setPasswordResetErrors({});
+    setResetExpiresAt(undefined);
   };
 
   const photoSrc = avatarPreview || avatarUrl;
@@ -362,24 +539,151 @@ const SettingsMainScreen = () => {
         <div className="space-y-6">
           <section className="rounded-2xl border border-gray-200 bg-white p-6">
             <h3 className="text-base font-semibold text-gray-900">Password</h3>
-            <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-              For your security, password changes are handled through email
-              verification. We&apos;ll send a reset code to{" "}
-              <strong className="text-gray-900">{profileForm.email || "your email"}</strong>.
+            <p className="mt-2 text-sm leading-relaxed text-gray-600">
+              Change your password without leaving Settings. We&apos;ll email a
+              reset code to{" "}
+              <strong className="text-gray-900">
+                {profileForm.email || "your email"}
+              </strong>
+              .
             </p>
-            <Link
-              href="/forgot-password"
-              className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#03442C] px-4 py-3 text-sm font-semibold text-white hover:bg-[#022f21] transition-colors sm:w-auto"
-            >
-              Reset password
-            </Link>
+
+            {passwordResetStep === "idle" && (
+              <Button
+                size="large"
+                className="mt-5 w-full sm:w-auto"
+                variant="darkPrimary"
+                showIcon={false}
+                onClick={handleSendPasswordResetCode}
+                disabled={isSendingResetCode || !profileForm.email}
+                isLoading={isSendingResetCode}
+              >
+                {isSendingResetCode ? "Sending code…" : "Send reset code"}
+              </Button>
+            )}
+
+            {passwordResetStep === "success" && (
+              <div className="mt-5 space-y-4">
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                  Your password was updated successfully. You are still signed
+                  in.
+                </div>
+                <Button
+                  size="large"
+                  className="w-full sm:w-auto"
+                  variant="darkPrimary"
+                  showIcon={false}
+                  onClick={handleCancelPasswordReset}
+                >
+                  Change password again
+                </Button>
+              </div>
+            )}
+
+            {passwordResetStep === "codeSent" && (
+              <div className="mt-5 space-y-4">
+                {resetExpiryMessage && (
+                  <div
+                    className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${
+                      isResetCodeExpired
+                        ? "border-red-200 bg-red-50 text-red-700"
+                        : "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    }`}
+                  >
+                    <Clock3
+                      className="mt-0.5 h-4 w-4 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <p>{resetExpiryMessage}</p>
+                  </div>
+                )}
+
+                <InputField
+                  label="Confirmation code"
+                  placeholder="Enter the 6-digit code"
+                  inputType="text"
+                  name="token"
+                  value={passwordResetForm.token}
+                  onChange={handlePasswordResetFieldChange}
+                  error={passwordResetErrors.token}
+                  autoComplete="one-time-code"
+                  icon={<MdOutlineMail size={20} color="#999999" />}
+                />
+
+                <InputField
+                  label="New password"
+                  placeholder="Enter a new password"
+                  inputType="password"
+                  name="newPassword"
+                  value={passwordResetForm.newPassword}
+                  onChange={handlePasswordResetFieldChange}
+                  error={passwordResetErrors.newPassword}
+                  password={true}
+                  autoComplete="new-password"
+                  icon={<MdOutlineKey size={20} color="#999999" />}
+                />
+
+                <InputField
+                  label="Confirm new password"
+                  placeholder="Re-enter your new password"
+                  inputType="password"
+                  name="confirmPassword"
+                  value={passwordResetForm.confirmPassword}
+                  onChange={handlePasswordResetFieldChange}
+                  error={passwordResetErrors.confirmPassword}
+                  password={true}
+                  autoComplete="new-password"
+                  icon={<MdOutlineKey size={20} color="#999999" />}
+                />
+
+                <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    onClick={handleCancelPasswordReset}
+                    className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    disabled={isResettingPassword}
+                  >
+                    Cancel
+                  </button>
+                  {isResetCodeExpired ? (
+                    <Button
+                      size="large"
+                      className="w-full sm:w-auto"
+                      variant="darkPrimary"
+                      showIcon={false}
+                      onClick={handleSendPasswordResetCode}
+                      disabled={isSendingResetCode}
+                      isLoading={isSendingResetCode}
+                    >
+                      {isSendingResetCode
+                        ? "Sending code…"
+                        : "Request a new code"}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="large"
+                      className="w-full sm:w-auto"
+                      variant="darkPrimary"
+                      showIcon={false}
+                      onClick={handleSubmitPasswordReset}
+                      disabled={isResettingPassword}
+                      isLoading={isResettingPassword}
+                    >
+                      {isResettingPassword
+                        ? "Updating password…"
+                        : "Update password"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6">
             <h3 className="text-base font-semibold text-amber-950">
               Keep your account safe
             </h3>
-            <ul className="mt-3 space-y-2 text-sm text-amber-900/90 list-disc list-inside">
+            <ul className="mt-3 list-inside list-disc space-y-2 text-sm text-amber-900/90">
               <li>Use a strong, unique password you don&apos;t reuse elsewhere.</li>
               <li>Never share your login details with anyone.</li>
               <li>Log out on shared or public devices.</li>

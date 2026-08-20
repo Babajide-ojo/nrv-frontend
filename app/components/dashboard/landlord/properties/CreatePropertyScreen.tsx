@@ -20,6 +20,11 @@ import ImageUploader from "@/app/components/shared/ImageUploader";
 
 import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  blockNonPositiveRentKeys,
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import Link from "next/link";
 
@@ -115,6 +120,9 @@ const CreatePropertyScreen = () => {
         }
         if (!unit.rentAmount?.trim()) {
           nextErrors[`unit-${index}-rentAmount`] = "Rent amount is required";
+        } else if (!isValidPositiveRentAmount(unit.rentAmount)) {
+          nextErrors[`unit-${index}-rentAmount`] =
+            "Rent amount must be greater than zero";
         }
         if (!unit.noOfRooms?.toString().trim()) {
           nextErrors[`unit-${index}-noOfRooms`] = "Bedrooms is required";
@@ -276,28 +284,24 @@ const CreatePropertyScreen = () => {
     field: keyof UnitData,
     value: string
   ) => {
-    // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setPropertyData((prevData) => {
-        const updatedUnits = [...prevData.units];
-        updatedUnits[index] = {
-          ...updatedUnits[index],
-          [field]: cleanedValue,
-        };
-        return {
-          ...prevData,
-          units: updatedUnits,
-        };
-      });
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [`unit-${index}-${field}`]: "",
-        units: "",
-      }));
-    }
+    setPropertyData((prevData) => {
+      const updatedUnits = [...prevData.units];
+      updatedUnits[index] = {
+        ...updatedUnits[index],
+        [field]: cleanedValue,
+      };
+      return {
+        ...prevData,
+        units: updatedUnits,
+      };
+    });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`unit-${index}-${field}`]: "",
+      units: "",
+    }));
   };
 
   const addUnit = () => {
@@ -580,7 +584,7 @@ const CreatePropertyScreen = () => {
                                 value={formatDisplayValue(unit.rentAmount)}
                                 required
                                 error={errors[`unit-${index}-rentAmount`]}
-                                // onKeyPress={preventNonNumeric}
+                                inputType="text"
                                 onChange={(e) =>
                                   handleUnitChangeWithComma(
                                     index,
@@ -588,6 +592,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
+                                onKeyPress={blockNonPositiveRentKeys}
                                 name={`unit-${index}-rentAmount`}
                               />
 

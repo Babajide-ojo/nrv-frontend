@@ -28,6 +28,7 @@ const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png"];
 type MaintenanceForm = {
   title: string;
   description: string;
+  priority: string;
 };
 
 type MaintenanceFormErrors = Partial<Record<keyof MaintenanceForm, string>>;
@@ -52,6 +53,7 @@ const RequestMaintainance = () => {
   const [formData, setFormData] = useState<MaintenanceForm>({
     title: "",
     description: "",
+    priority: "Medium",
   });
   const [formErrors, setFormErrors] = useState<MaintenanceFormErrors>({});
   const [isDragging, setIsDragging] = useState(false);
@@ -59,7 +61,9 @@ const RequestMaintainance = () => {
   const [apartmentError, setApartmentError] = useState("");
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((current) => ({ ...current, [name]: value }));
@@ -141,6 +145,7 @@ const RequestMaintainance = () => {
 
     payload.append("title", formData.title.trim());
     payload.append("description", formData.description.trim());
+    payload.append("priority", formData.priority || "Medium");
     selectedFiles.forEach((file) => {
       payload.append("file", file);
     });
@@ -153,6 +158,7 @@ const RequestMaintainance = () => {
       setFormData({
         title: "",
         description: "",
+        priority: "Medium",
       });
       setSelectedFiles([]);
       toast.success("Maintenance request created successfully.");
@@ -379,6 +385,30 @@ const RequestMaintainance = () => {
                       {formData.title.length}/100
                     </span>
                   </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="maintenance-priority"
+                    className="mb-2 block text-sm font-medium text-gray-800"
+                  >
+                    Priority <span className="text-red-600">*</span>
+                  </label>
+                  <select
+                    id="maintenance-priority"
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleInputChange}
+                    aria-label="Maintenance priority level"
+                    className="h-12 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition focus:border-[#03442C] focus:ring-2 focus:ring-[#03442C]/15"
+                  >
+                    <option value="Low">Low — can wait a few days</option>
+                    <option value="Medium">Medium — needs attention soon</option>
+                    <option value="High">High — urgent but not dangerous</option>
+                    <option value="Emergency">
+                      Emergency — safety or major damage risk
+                    </option>
+                  </select>
                 </div>
 
                 <div>

@@ -18,20 +18,20 @@ const TermsAgreementCheckbox = ({
   return (
     <label
       htmlFor={id}
-      className="flex items-start gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700"
+      className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-[#57534E]"
     >
       <input
         id={id}
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-4 w-4 rounded border-gray-300 text-[#03442C] focus:ring-[#03442C]"
+        className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#D6D3D1] accent-nrvPrimaryGreen focus:ring-nrvPrimaryGreen focus:ring-offset-0"
       />
       <span>
         {label}{" "}
         <Link
           href="/legal/terms"
-          className="font-medium text-[#03442C] underline-offset-2 hover:underline"
+          className="font-medium text-nrvPrimaryGreen underline-offset-2 hover:underline"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -40,7 +40,7 @@ const TermsAgreementCheckbox = ({
         {" and "}
         <Link
           href="/legal/privacy"
-          className="font-medium text-[#03442C] underline-offset-2 hover:underline"
+          className="font-medium text-nrvPrimaryGreen underline-offset-2 hover:underline"
           target="_blank"
           rel="noopener noreferrer"
         >

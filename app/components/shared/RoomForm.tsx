@@ -6,8 +6,8 @@ import MultiImageUploader from "./MultiImageUploader";
 import { toast } from "react-toastify";
 import { formatDisplayValue } from "@/helpers/utils";
 import {
+  blockNonPositiveRentKeys,
   isValidPositiveRentAmount,
-  parsePositiveRentAmount,
   sanitizePositiveRentInput,
 } from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
@@ -234,6 +234,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 placeholder="250,000"
                 value={formatDisplayValue(roomData.rentAmount)}
                 onChange={handleInputChangeWithComma}
+                onKeyPress={blockNonPositiveRentKeys}
                 name="rentAmount"
               />
 

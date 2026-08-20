@@ -19,6 +19,23 @@ interface ConversationDetailsScreenProps {
   messages: Message[];
 }
 
+const isImageUrl = (url: string): boolean => {
+  if (!url) {
+    return false;
+  }
+  if (/\.(jpeg|jpg|png|gif|webp|bmp|heic)(\?|$)/i.test(url)) {
+    return true;
+  }
+  // Cloudinary image delivery URLs often omit a file extension
+  if (/\/image\/upload\//i.test(url) || /res\.cloudinary\.com/i.test(url)) {
+    return !/\.pdf(\?|$)/i.test(url) && !/\/raw\/upload\//i.test(url);
+  }
+  return false;
+};
+
+const isPdfUrl = (url: string): boolean =>
+  /\.pdf(\?|$)/i.test(url) || /\/raw\/upload\//i.test(url);
+
 const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
   messages,
 }) => {
@@ -63,12 +80,13 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
           const isSender = senderId === String(user?.user?._id ?? "");
           const showDateHeader = isNewDay(message.createdAt, lastDate);
           lastDate = message.createdAt;
+          const text = String(message.content || "").trim();
+          const hasFiles = Boolean(message.files?.length);
 
           return (
             <div key={message._id}>
-              {/* Date Header */}
               {showDateHeader && (
-                <div className="text-center text-sm text-gray-500 my-4">
+                <div className="my-4 text-center text-sm text-gray-500">
                   {new Date(message.createdAt).toLocaleDateString([], {
                     weekday: "long",
                     year: "numeric",
@@ -78,66 +96,78 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
                 </div>
               )}
 
-              {/* Message Bubble */}
               <div
-                className={`flex ${
+                className={`mb-3 flex ${
                   isSender ? "justify-end" : "justify-start"
-                } mb-3`}
+                }`}
               >
                 <div
-                  className={`p-3 rounded-lg w-fit max-w-xs ${
+                  className={`w-fit max-w-xs rounded-lg p-3 ${
                     isSender
                       ? "bg-nrvPrimaryGreen text-white"
                       : "bg-gray-200 text-black"
                   }`}
                   style={{
                     borderRadius: isSender
-                      ? "18px 18px 0 18px" // Rounded for sent
-                      : "18px 18px 18px 0", // Rounded for received
+                      ? "18px 18px 0 18px"
+                      : "18px 18px 18px 0",
                   }}
                 >
-                  {/* Text Content */}
-                  <p className="text-xs">{message.content}</p>
+                  {text ? (
+                    <p className="whitespace-pre-wrap text-xs">{text}</p>
+                  ) : null}
 
-                  {/* File Attachments */}
-                  {message.files && message.files.length > 0 && (
-                    <div className="mt-2 grid gap-2">
-                      {message.files.map((file, index) => {
-                        const isImage = /\.(jpeg|jpg|png|gif)$/i.test(file);
-                        const isPDF = /\.pdf$/i.test(file);
+                  {hasFiles && (
+                    <div className={`grid gap-2 ${text ? "mt-2" : ""}`}>
+                      {message.files!.map((file, index) => {
+                        const showAsImage = isImageUrl(file);
+                        const showAsPdf = isPdfUrl(file);
 
                         return (
                           <div
                             key={index}
                             className="flex flex-col items-start"
                           >
-                            {/* Render Images */}
-                            {isImage && (
+                            {showAsImage && (
                               <img
                                 src={file}
-                                alt={`file-${index}`}
-                                className="w-60 h-32 object-cover rounded-lg cursor-pointer"
-                                onClick={() => handleImageClick(file)} // Click to preview
+                                alt={`attachment-${index}`}
+                                className="h-40 w-60 cursor-pointer rounded-lg object-cover"
+                                onClick={() => handleImageClick(file)}
                               />
                             )}
 
-                            {/* Render PDF */}
-                            {isPDF && (
+                            {showAsPdf && (
                               <>
                                 <a
                                   href={file}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-500 underline text-sm"
+                                  className={`text-sm underline ${
+                                    isSender ? "text-white" : "text-blue-500"
+                                  }`}
                                 >
                                   Open PDF
                                 </a>
                                 <iframe
                                   src={file}
                                   title={`PDF-${index}`}
-                                  className="w-60 h-32 border rounded-lg mt-2"
-                                ></iframe>
+                                  className="mt-2 h-32 w-60 rounded-lg border"
+                                />
                               </>
+                            )}
+
+                            {!showAsImage && !showAsPdf && (
+                              <a
+                                href={file}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`text-sm underline ${
+                                  isSender ? "text-white" : "text-blue-500"
+                                }`}
+                              >
+                                Open attachment
+                              </a>
                             )}
                           </div>
                         );
@@ -145,8 +175,7 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
                     </div>
                   )}
 
-                  {/* Time Display */}
-                  <div className="flex items-center justify-between mt-2">
+                  <div className="mt-2 flex items-center justify-between">
                     <p
                       className={`text-[10px] ${
                         isSender ? "text-gray-300" : "text-gray-500"
@@ -158,7 +187,7 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
                       })}
                     </p>
                     {isSender && (
-                      <span className="ml-2 flex items-center text-gray-300 text-[10px]">
+                      <span className="ml-2 flex items-center text-[10px] text-gray-300">
                         <AiOutlineCheck />
                       </span>
                     )}
@@ -168,20 +197,31 @@ const ConversationDetailsScreen: React.FC<ConversationDetailsScreenProps> = ({
             </div>
           );
         })}
-      {/* Dummy div for scrolling */}
       <div ref={messageEndRef} />
 
-      {/* Image Preview Modal */}
       {previewImage && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70"
           onClick={closePreview}
+          role="button"
+          tabIndex={0}
+          aria-label="Close image preview"
+          onKeyDown={(event) => {
+            if (
+              event.key === "Enter" ||
+              event.key === "Escape" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              closePreview();
+            }
+          }}
         >
           <img
             src={previewImage}
             alt="Preview"
-            className="max-w-full max-h-full object-contain"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image
+            className="max-h-full max-w-full object-contain"
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       )}

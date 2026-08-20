@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { formatDateToWords } from "@/helpers/utils";
+import { formatLeaseCalendarDate } from "@/helpers/utils";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
@@ -24,7 +24,7 @@ const formatLeaseDate = (value: unknown) => {
   if (!value) {
     return "—";
   }
-  const formatted = formatDateToWords(String(value));
+  const formatted = formatLeaseCalendarDate(value);
   return formatted || "—";
 };
 
@@ -377,7 +377,10 @@ const LandlordsTenantsScreen = () => {
                 render: (val) => (
                   <span
                     className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      val === "Ended" || val === "ended"
+                      val === "Ended" ||
+                      val === "ended" ||
+                      val === "Expired" ||
+                      val === "expired"
                         ? "bg-red-100 text-red-700"
                         : "bg-[#E9F4E7] text-[#045D23]"
                     }`}
@@ -386,7 +389,9 @@ const LandlordsTenantsScreen = () => {
                       ? "Active Lease"
                       : val === "Ended" || val === "ended"
                         ? "Ended"
-                        : val || "—"}
+                        : val === "Expired" || val === "expired"
+                          ? "Expired"
+                          : val || "—"}
                   </span>
                 ),
               },

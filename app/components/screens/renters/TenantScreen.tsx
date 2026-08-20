@@ -18,7 +18,7 @@ import {
   endTenancyTenure,
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
-import { ApplicationStatus, getFileExtension, normalizeAmenities } from "@/helpers/utils";
+import { ApplicationStatus, formatLeaseCalendarDate, getFileExtension, normalizeAmenities, toLeaseCalendarDateIso } from "@/helpers/utils";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
@@ -116,6 +116,7 @@ const TenantScreen = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [pdf, setPdf] = useState<any>(null);
   const [openAddTenantModal, setOpenAddTenantModal] = useState(false);
+  const [openExtendLeaseModal, setOpenExtendLeaseModal] = useState(false);
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
     null | "Accepted" | "Rejected"
@@ -234,13 +235,7 @@ const TenantScreen = () => {
   };
 
   const formatDateToWords = (dateString: any) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })?.format(date);
+    return formatLeaseCalendarDate(dateString) || "Not set";
   };
 
   const extendTenancy: AddTenantFunction = async (
@@ -298,26 +293,14 @@ const TenantScreen = () => {
       return;
     }
 
-    const toIso = (value: unknown) => {
-      if (!value) {
-        return null;
-      }
-      if (value instanceof Date) {
-        return value.toISOString();
-      }
-      const parsed = new Date(value as string);
-      if (Number.isNaN(parsed.getTime())) {
-        return value;
-      }
-      return parsed.toISOString();
-    };
+    const toIso = (value: unknown) => toLeaseCalendarDateIso(value);
 
     try {
       const result = (await dispatch(
         assignDateTenancyTenure({
           id: applicationId,
-          rentStartDate: values.rentStartDate,
-          rentEndDate: values.rentEndDate,
+          rentStartDate: toIso(values.rentStartDate),
+          rentEndDate: toIso(values.rentEndDate),
         } as any) as any,
       )) as any;
 
@@ -495,9 +478,26 @@ const TenantScreen = () => {
   const isLeaseActive =
     application?.status === "Active_lease" ||
     application?.status === ApplicationStatus.ACTIVE_LEASE;
+  const isLeaseExpired =
+    application?.status === "Expired" ||
+    application?.status === ApplicationStatus.EXPIRED;
   const isLeaseEnded =
     application?.status === "Ended" ||
-    application?.status === ApplicationStatus.ENDED;
+    application?.status === ApplicationStatus.ENDED ||
+    isLeaseExpired;
+  const leaseEndReached = (() => {
+    if (!application?.rentEndDate) {
+      return false;
+    }
+    const end = new Date(application.rentEndDate);
+    if (Number.isNaN(end.getTime())) {
+      return false;
+    }
+    const today = startOfToday();
+    return end.getTime() < today.getTime();
+  })();
+  const showLeaseActionPrompt =
+    (isLeaseActive && leaseEndReached) || isLeaseExpired;
   const isAccepted = application?.status === "Accepted";
   const isRejected = application?.status === "Rejected";
   const canReviewApplication =
@@ -507,9 +507,11 @@ const TenantScreen = () => {
   const statusLabel =
     status === ApplicationStatus.ACTIVE_LEASE
       ? "Active Lease"
-      : status === ApplicationStatus.ENDED || application?.status === "Ended"
-        ? "Ended Lease"
-        : status;
+      : status === ApplicationStatus.EXPIRED || application?.status === "Expired"
+        ? "Expired Lease"
+        : status === ApplicationStatus.ENDED || application?.status === "Ended"
+          ? "Ended Lease"
+          : status;
 
   return (
     <div className="mx-4 sm:mx-5 my-4 max-w-6xl">
@@ -717,17 +719,61 @@ const TenantScreen = () => {
                     Request verification
                   </Button>
                 )}
-              {isLeaseActive && (
-                <button
-                  type="button"
-                  onClick={() => setOpenAddTenantModal(true)}
-                  className="flex w-full items-center justify-between rounded-xl border border-gray-200 p-3 text-left text-sm transition hover:bg-gray-50"
-                >
-                  <span className="font-medium text-nrvGreyBlack">End tenancy lease</span>
-                  <span className="text-nrvPrimaryGreen">Click here</span>
-                </button>
+              {showLeaseActionPrompt && (
+                <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                  <p className="text-sm font-semibold text-amber-950">
+                    This lease has reached its end date
+                  </p>
+                  <p className="text-xs leading-5 text-amber-900/90">
+                    Renew the lease with a new end date, or end tenancy and leave
+                    a comment about the tenant.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      type="button"
+                      className="w-full bg-[#03442C] text-white hover:bg-[#023522]"
+                      onClick={() => setOpenExtendLeaseModal(true)}
+                      aria-label="Renew or extend this lease"
+                    >
+                      Renew / extend lease
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full border-amber-300 text-amber-950 hover:bg-amber-100"
+                      onClick={() => setOpenAddTenantModal(true)}
+                      aria-label="End tenancy and leave a comment"
+                    >
+                      End tenancy & comment
+                    </Button>
+                  </div>
+                </div>
               )}
-              {isLeaseEnded && (
+              {isLeaseActive && !showLeaseActionPrompt && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setOpenExtendLeaseModal(true)}
+                    className="flex w-full items-center justify-between rounded-xl border border-gray-200 p-3 text-left text-sm transition hover:bg-gray-50"
+                  >
+                    <span className="font-medium text-nrvGreyBlack">
+                      Renew / extend lease
+                    </span>
+                    <span className="text-nrvPrimaryGreen">Click here</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpenAddTenantModal(true)}
+                    className="flex w-full items-center justify-between rounded-xl border border-gray-200 p-3 text-left text-sm transition hover:bg-gray-50"
+                  >
+                    <span className="font-medium text-nrvGreyBlack">
+                      End tenancy lease
+                    </span>
+                    <span className="text-nrvPrimaryGreen">Click here</span>
+                  </button>
+                </div>
+              )}
+              {isLeaseEnded && !showLeaseActionPrompt && (
                 <div className="space-y-2">
                   <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
                     <p>
@@ -881,7 +927,7 @@ const TenantScreen = () => {
                   </p>
                   <p className="mt-2 text-sm font-semibold text-gray-900">
                     {application?.rentStartDate
-                      ? formatDateToWords(application.rentStartDate.slice(0, 10))
+                      ? formatDateToWords(application.rentStartDate)
                       : "Not set"}
                   </p>
                 </div>
@@ -891,7 +937,7 @@ const TenantScreen = () => {
                   </p>
                   <p className="mt-2 text-sm font-semibold text-gray-900">
                     {application?.rentEndDate
-                      ? formatDateToWords(application.rentEndDate.slice(0, 10))
+                      ? formatDateToWords(application.rentEndDate)
                       : "Not set"}
                   </p>
                 </div>
@@ -1212,6 +1258,141 @@ const TenantScreen = () => {
           );
         }}
       />
+
+      <Modal
+        isOpen={openExtendLeaseModal}
+        onClose={() => setOpenExtendLeaseModal(false)}
+      >
+        <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
+          <h2 className="text-2xl font-semibold text-nrvPrimaryGreen">
+            Renew / extend lease
+          </h2>
+          <p className="mb-4 mt-4 text-sm text-nrvLightGrey">
+            Choose a new lease end date. The current end date is{" "}
+            {application?.rentEndDate
+              ? formatDateToWords(application.rentEndDate)
+              : "not set"}
+            .
+          </p>
+
+          <Formik
+            initialValues={{
+              id: application?._id || id,
+              rentEndDate: null as Date | null,
+            }}
+            enableReinitialize
+            validate={(values) => {
+              const errors: { rentEndDate?: string } = {};
+              if (!values.rentEndDate) {
+                errors.rentEndDate = "New lease end date is required.";
+                return errors;
+              }
+              const nextEnd = new Date(values.rentEndDate);
+              const currentEnd = application?.rentEndDate
+                ? new Date(application.rentEndDate)
+                : null;
+              if (currentEnd && !Number.isNaN(currentEnd.getTime())) {
+                if (nextEnd.getTime() <= currentEnd.getTime()) {
+                  errors.rentEndDate =
+                    "New end date must be later than the current lease end date.";
+                }
+              } else if (nextEnd.getTime() <= startOfToday().getTime()) {
+                errors.rentEndDate = "New end date must be in the future.";
+              }
+              return errors;
+            }}
+            onSubmit={async (values, formikHelpers) => {
+              try {
+                await dispatch(
+                  extendTenancyTenure({
+                    id: String(values.id || id),
+                    rentEndDate: toLeaseCalendarDateIso(values.rentEndDate),
+                  } as any) as any,
+                ).unwrap();
+                toast.success("Lease extended successfully.");
+                formikHelpers.resetForm();
+                setOpenExtendLeaseModal(false);
+                await refreshApplication();
+              } catch (err: any) {
+                toast.error(
+                  err?.message ||
+                    err ||
+                    "Failed to extend lease. Please try again.",
+                );
+              } finally {
+                formikHelpers.setSubmitting(false);
+              }
+            }}
+          >
+            {({ isSubmitting, resetForm, values, errors, setFieldValue }) => (
+              <Form>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <Label>New lease end date</Label>
+                  <div className="mt-2 h-11 w-full rounded-sm border border-[#E0E0E6] px-2">
+                    <DatePicker
+                      value={values.rentEndDate}
+                      onChange={(newValue) =>
+                        setFieldValue("rentEndDate", newValue)
+                      }
+                      minDate={
+                        application?.rentEndDate
+                          ? new Date(
+                              new Date(application.rentEndDate).getTime() +
+                                24 * 60 * 60 * 1000,
+                            )
+                          : startOfToday()
+                      }
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          size: "small",
+                          variant: "standard",
+                          InputProps: { disableUnderline: true },
+                          sx: {
+                            fontSize: "12px",
+                            backgroundColor: "white",
+                            boxShadow: "none",
+                            "& input": {
+                              color: "#807F94",
+                              padding: "8px 4px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                  {errors.rentEndDate && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {String(errors.rentEndDate)}
+                    </p>
+                  )}
+                </LocalizationProvider>
+
+                <div className="mt-8 flex flex-col gap-2 sm:flex-row">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="block w-full"
+                    onClick={() => {
+                      resetForm();
+                      setOpenExtendLeaseModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="block w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Saving…" : "Save new end date"}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </Modal>
 
     </div>
   );

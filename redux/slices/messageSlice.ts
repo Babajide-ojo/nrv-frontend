@@ -33,11 +33,11 @@ export const sendMessage = createAsyncThunk<FormData | any, {}>(
       const response: any = await apiClient.post("/messages/send", formData);
       return response.data;
     } catch (error: any) {
-      if (error.response.data.message) {
-        return rejectWithValue(error.response.data.message);
-      } else {
-        return rejectWithValue("An error occurred, please try again later");
-      }
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "An error occurred, please try again later";
+      return rejectWithValue(apiMessage);
     }
   }
 );

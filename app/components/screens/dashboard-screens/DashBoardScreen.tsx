@@ -353,7 +353,7 @@ const DashboardScreen: React.FC = () => {
     try {
       const [metricsResponse, dashboardResponse] = await Promise.all([
         dispatch(getApplicationCount({ id: currentUser._id }) as any),
-        fetch(`${API_URL}/dashboard?userId=${currentUser._id}&limit=20`),
+        fetch(`${API_URL}/dashboard?userId=${currentUser._id}&limit=5`),
         dispatch(fetchPlans() as any),
       ]);
 
@@ -364,7 +364,7 @@ const DashboardScreen: React.FC = () => {
         const { activities: apiActivities, financialData } = dashboardResult.data;
         if (apiActivities?.length) {
           setActivities(
-            apiActivities.map((a: DashboardActivity) => ({
+            apiActivities.slice(0, 5).map((a: DashboardActivity) => ({
               name: a.type,
               details: a.details,
               time: getRelativeTime(a.createdAt),

@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
 import { ToastContainer } from "react-toastify";
 import { RememberMeBootstrap } from "./components/auth/RememberMeBootstrap";
+import DataUseNotice from "./components/shared/DataUseNotice";
 
 
 
@@ -26,6 +27,7 @@ export default function RootLayout({
         <Providers>
           <RememberMeBootstrap>
             <div className="min-h-screen">{children}</div>
+            <DataUseNotice />
             <ToastContainer position="top-right" autoClose={4000} />
           </RememberMeBootstrap>
         </Providers>

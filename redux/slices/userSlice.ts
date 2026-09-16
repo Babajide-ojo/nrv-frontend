@@ -253,6 +253,10 @@ export const verifyAccount = createAsyncThunk<UserToken, VerifyData>(
       };
       localStorage.setItem("nrv-user", JSON.stringify(userData));
       localStorage.removeItem("emailToVerify");
+      const { touchSessionActivity } = await import("@/lib/sessionIdle");
+      const { syncRoleCookieFromSession } = await import("@/lib/authSession");
+      touchSessionActivity();
+      syncRoleCookieFromSession(userData);
       return userData;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
@@ -323,6 +327,12 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
         if (userData?.user?.email) {
           localStorage.setItem("emailToVerify", JSON.stringify({ data: { email: userData.user.email } }));
         }
+        // Do not keep a usable access token in Redux/Persist for unverified accounts.
+        return {
+          user: safeUser,
+          accessToken: "",
+          notificationSettings: response.data.notificationSettings,
+        };
       } else {
         localStorage.setItem("nrv-user", JSON.stringify(userData));
         localStorage.removeItem("emailToVerify");

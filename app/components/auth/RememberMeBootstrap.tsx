@@ -6,6 +6,7 @@ import { restoreSessionFromRememberMe } from "@/lib/rememberMe";
 import {
   getDashboardHomeForRole,
   getStoredSession,
+  isAccessTokenExpired,
   isPathAllowedForRole,
   resolveNrvRole,
   syncRoleCookieFromSession,
@@ -26,7 +27,10 @@ export function RememberMeBootstrap({ children }: { children: React.ReactNode })
     const run = async () => {
       try {
         let session = getStoredSession();
-        if (!session?.accessToken) {
+        if (
+          !session?.accessToken ||
+          isAccessTokenExpired(session.accessToken)
+        ) {
           session = await restoreSessionFromRememberMe();
         } else {
           syncRoleCookieFromSession(session);

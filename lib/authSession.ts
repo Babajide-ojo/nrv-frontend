@@ -37,29 +37,11 @@ export const getStoredSession = (): NrvSession | null => {
 
 export const getSessionAccessToken = (session?: NrvSession | null): string => {
   const stored = session ?? getStoredSession();
-  const fromSession = String(
+  // Only trust the explicit session store (`nrv-user`). Do not fall back to
+  // redux-persist — that revived tokens after idle/401 logout.
+  return String(
     stored?.accessToken || (stored as { token?: string } | null)?.token || "",
   ).trim();
-  if (fromSession) {
-    return fromSession;
-  }
-  if (typeof window === "undefined") {
-    return "";
-  }
-  try {
-    const persistRaw = localStorage.getItem("persist:nrv-root");
-    if (!persistRaw) {
-      return "";
-    }
-    const persist = JSON.parse(persistRaw);
-    const userSlice =
-      typeof persist?.user === "string"
-        ? JSON.parse(persist.user)
-        : persist?.user;
-    return String(userSlice?.data?.accessToken || "").trim();
-  } catch {
-    return "";
-  }
 };
 
 export const getSessionAccountType = (session?: NrvSession | null): string =>
@@ -87,8 +69,8 @@ export const isAccessTokenExpired = (token?: string | null): boolean => {
     if (!payload.exp) {
       return false;
     }
-    // 15s skew
-    return payload.exp * 1000 <= Date.now() - 15_000;
+    // Treat as expired 15s early to absorb clock skew / in-flight requests.
+    return payload.exp * 1000 <= Date.now() + 15_000;
   } catch {
     return true;
   }

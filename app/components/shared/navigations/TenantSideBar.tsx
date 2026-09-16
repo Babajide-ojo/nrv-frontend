@@ -166,8 +166,12 @@ const TenantSideBar: React.FC<TenantSideBarProps> = ({ isOpen }) => {
       {/* Contact, settings and user */}
       <div className="px-6 py-4 border-t border-gray-600">
         <Link
-          href="/contact-us/support"
-          className="flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] text-[#98A2B3] hover:text-white/90 transition-colors"
+          href="/dashboard/tenant/support"
+          className={`flex items-center gap-4 mb-4 cursor-pointer font-lighter text-[12px] transition-colors ${
+            activeLink.startsWith("/dashboard/tenant/support")
+              ? "text-[#BBFF37]"
+              : "text-[#98A2B3] hover:text-white/90"
+          }`}
         >
           <FiHeadphones className="font-lighter text-[12px]" />
           <span>Contact us</span>

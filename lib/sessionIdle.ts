@@ -50,6 +50,9 @@ export const clearAuthSession = () => {
   localStorage.removeItem(SESSION_LAST_ACTIVE_KEY);
   localStorage.removeItem(REMEMBER_ME_FLAG_KEY);
   localStorage.removeItem("rememberedEmail");
+  // Redux Persist also stores accessToken under this key; leaving it lets
+  // getSessionAccessToken() revive a "logged out" session after reload.
+  localStorage.removeItem("persist:nrv-root");
   clearRoleCookie();
 };
 

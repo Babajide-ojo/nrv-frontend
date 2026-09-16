@@ -22,7 +22,7 @@ const ContactSection: React.FC = () => {
               ✅ Free Consultation
             </span>
             <span className="flex items-center gap-2">
-              ✅ 24/7 Online Support
+              ✅ Support 8AM – 4PM
             </span>
           </div>
         </div>
@@ -34,10 +34,10 @@ const ContactSection: React.FC = () => {
               Operating Hours
             </h3>
             <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              Monday - Friday: <br></br> 8:00 AM - 6:00 PM
+              Monday - Friday: <br></br> 8:00 AM - 4:00 PM (WAT)
             </p>
             <p className="text-[13px]  pt-4 font-medium text-[#045D23]">
-              Saturday: 9:00 AM - 4:00 PM
+              Closed weekends and public holidays
             </p>
           </div>
 

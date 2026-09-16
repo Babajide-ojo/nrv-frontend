@@ -166,10 +166,14 @@ const LandLordLayout: React.FC<LandLordLayoutProps> = ({
                 <li>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation text-white/90 hover:bg-white/10"
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm touch-manipulation ${
+                      pathname.startsWith("/dashboard/landlord/support")
+                        ? "bg-white/15 text-[#BBFF37]"
+                        : "text-white/90 hover:bg-white/10"
+                    }`}
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      router.push("/contact-us/support");
+                      router.push("/dashboard/landlord/support");
                     }}
                   >
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center">

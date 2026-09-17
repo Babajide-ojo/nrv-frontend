@@ -191,7 +191,7 @@ const CreateRoom = () => {
       const response = await dispatch(createRooms(formData) as any).unwrap();
       toast.success(
         response?.message ||
-          "Unit added successfully. It still needs listing approval — open the unit and request approval before it can be listed publicly.",
+          "Unit added successfully. It is awaiting admin approval before it can be listed publicly.",
         { autoClose: 8000 },
       );
       router.push(`/dashboard/landlord/properties/${propertyId}`);

@@ -101,13 +101,13 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
             disabled={listBlocked}
             title={
               listBlocked
-                ? "Request admin approval first, then list after approval."
+                ? "Awaiting admin approval before this unit can be listed."
                 : undefined
             }
             onClick={() => {
               if (listBlocked) {
                 toast.info(
-                  'Use "Request approval for listing" on the unit page first. After an admin approves, you can list this unit.'
+                  "This unit is awaiting admin approval. You can list it once an admin approves."
                 );
                 return;
               }

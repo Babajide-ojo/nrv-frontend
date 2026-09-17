@@ -31,9 +31,6 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
   const [showAllImages, setShowAllImages] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  console.log({data})
-  
-  // Get unit images from the data
   const unitImages = data?.imageUrls || [];
   const hasImages = unitImages.length > 0;
   
@@ -54,63 +51,94 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
       <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Left Info Section */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="border-b border-gray-100 pb-4">
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Apartment Details</h3>
-            <p className="text-gray-600 text-sm">Complete information about this unit</p>
+          <div className="border-b border-gray-100 pb-3">
+            <h3 className="mb-1 text-base font-semibold text-gray-800">
+              Apartment Details
+            </h3>
+            <p className="text-xs text-gray-500">
+              Complete information about this unit
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Description</p>
-                <p className="text-gray-800 font-medium leading-relaxed">{data?.description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Description
+                </p>
+                <p className="text-sm leading-relaxed text-gray-700">
+                  {data?.description || "—"}
+                </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Number of Bedrooms</p>
-                <p className="text-gray-800 font-semibold text-lg">{data?.noOfRooms}</p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Number of Bedrooms
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  {data?.noOfRooms ?? "—"}
+                </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Number of Bathrooms</p>
-                <p className="text-gray-800 font-semibold text-lg">{data?.noOfBaths}</p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Number of Bathrooms
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  {data?.noOfBaths ?? "—"}
+                </p>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Apartment Style</p>
-                <p className="text-gray-800 font-semibold">{data?.apartmentStyle}</p>
+            <div className="space-y-3">
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Apartment Style
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  {data?.apartmentStyle || "—"}
+                </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Lease Terms</p>
-                <p className="text-gray-800 font-semibold">{data?.leaseTerms}</p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Lease Terms
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  {data?.leaseTerms || "—"}
+                </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Rental Collection Preference</p>
-                <p className="text-green-600 font-bold text-sm uppercase">{data?.rentAmountMetrics}</p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Rental Collection Preference
+                </p>
+                <p className="text-sm font-medium capitalize text-[#099137]">
+                  {data?.rentAmountMetrics || "—"}
+                </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide mb-1">Payment Option</p>
-                <p className="text-gray-800 font-semibold">{data?.paymentOption}</p>
+              <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                  Payment Option
+                </p>
+                <p className="text-sm font-medium text-gray-800">
+                  {data?.paymentOption || "—"}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Amenities */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
-            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
+          <div className="rounded-xl border border-green-100 bg-[#F3FAF4] p-4">
+            <h4 className="mb-3 text-sm font-semibold text-gray-800">
               Apartment Facilities & Amenities
             </h4>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {data?.otherAmentities?.map((item: any, index: any) => (
                 <span
                   key={index}
-                  className="bg-white text-green-700 text-sm px-4 py-2 rounded-full font-medium border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="rounded-full border border-green-200 bg-white px-3 py-1 text-xs font-medium text-green-700"
                 >
                   {item}
                 </span>
@@ -124,9 +152,9 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
           {/* Unit Images Gallery */}
           {hasImages ? (
             <div className="space-y-4">
-              <div className="border-b border-gray-100 pb-3">
-                <h4 className="text-lg font-semibold text-gray-800 mb-1">Unit Images</h4>
-                <p className="text-gray-600 text-sm">Click on images to view full size</p>
+              <div className="border-b border-gray-100 pb-2">
+                <h4 className="text-sm font-semibold text-gray-800">Unit Images</h4>
+                <p className="text-xs text-gray-500">Click on images to view full size</p>
               </div>
               
               <div className="grid grid-cols-2 gap-3">
@@ -175,9 +203,9 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
           ) : (
             /* Fallback to property image if no unit images */
             <div className="space-y-4">
-              <div className="border-b border-gray-100 pb-3">
-                <h4 className="text-lg font-semibold text-gray-800 mb-1">Property Image</h4>
-                <p className="text-gray-600 text-sm">Main property image</p>
+              <div className="border-b border-gray-100 pb-2">
+                <h4 className="text-sm font-semibold text-gray-800">Property Image</h4>
+                <p className="text-xs text-gray-500">Main property image</p>
               </div>
               <img
                 src={data?.propertyId?.file}
@@ -187,20 +215,12 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
             </div>
           )}
           
-          {/* Price and Style Info */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-xl border border-green-100">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-600 font-medium">Apartment Style</span>
-                <span className="text-gray-800 font-semibold">{data?.apartmentStyle}</span>
-              </div>
-              <div className="border-t border-green-200 pt-4">
-                <div className="text-center">
-                  <p className="text-gray-600 text-sm font-medium mb-1">Price (Per Annum)</p>
-                  <p className="text-2xl font-bold text-green-700">₦{formatNumber(data?.rentAmount?.toString())}</p>
-                </div>
-              </div>
-            </div>
+          {/* Price summary */}
+          <div className="rounded-xl border border-green-100 bg-[#F3FAF4] p-4">
+            <p className="text-xs font-medium text-gray-500">Price (Per Annum)</p>
+            <p className="mt-1 text-lg font-semibold text-[#099137]">
+              ₦{formatNumber(data?.rentAmount?.toString())}
+            </p>
           </div>
         </div>
       </div>

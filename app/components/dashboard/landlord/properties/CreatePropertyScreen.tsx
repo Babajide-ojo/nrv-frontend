@@ -842,11 +842,11 @@ const CreatePropertyScreen = () => {
                               })}
                             </div>
 
-                                                         {/* Unit Images */}
+                                                         {/* Apartment Images */}
                              <div className="mt-6">
                                <div className="w-full mt-4">
                                  <label className="text-nrvInputFiledColor text-[14px] font-medium">
-                                   {`Unit ${index + 1} Images`}
+                                   {`Apartment ${index + 1} Images`}
                                  </label>
 
                                  {/* Image Upload Section */}

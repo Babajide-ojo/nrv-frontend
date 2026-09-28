@@ -15,14 +15,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CheckCircle, ArrowRight, Info } from "lucide-react";
+import { Info, Calendar } from "lucide-react";
 
-import Button from "../../shared/buttons/Button";
 import {
   FaBullhorn,
   FaChartLine,
   FaFileSignature,
-  FaHome,
   FaUserShield,
   FaCrown,
 } from "react-icons/fa";
@@ -31,6 +29,13 @@ import { API_URL } from "@/config/constant";
 import { getVerificationCreditBalances } from "@/helpers/verificationCredits";
 import { getRelativeTime } from "@/helpers/utils";
 import Link from "next/link";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Types
 interface User {
@@ -71,17 +76,29 @@ interface ChartDataPoint {
   expenses: number;
 }
 
-interface DashboardActivity {
-  type: string;
-  details: string;
-  createdAt: string;
-}
+type FinancialRange = "last12" | "thisYear" | "lastYear";
 
-interface DashboardActivityDisplay {
-  name: string;
-  details: string;
-  time: string;
-}
+const FINANCIAL_RANGE_OPTIONS: {
+  value: FinancialRange;
+  label: string;
+  subtitle: string;
+}[] = [
+  {
+    value: "last12",
+    label: "Last 12 months",
+    subtitle: "Rent collected from assigned tenants vs expenses over the past 12 months",
+  },
+  {
+    value: "thisYear",
+    label: "This year",
+    subtitle: "Rent collected from assigned tenants vs expenses for the current calendar year",
+  },
+  {
+    value: "lastYear",
+    label: "Last year",
+    subtitle: "Rent collected from assigned tenants vs expenses for the previous calendar year",
+  },
+];
 
 // Fallback when no backend data
 const EMPTY_CHART_DATA: ChartDataPoint[] = [
@@ -98,6 +115,18 @@ const EMPTY_CHART_DATA: ChartDataPoint[] = [
   { month: "Nov", income: 0, expenses: 0 },
   { month: "Dec", income: 0, expenses: 0 },
 ];
+
+interface DashboardActivity {
+  type: string;
+  details: string;
+  createdAt: string;
+}
+
+interface DashboardActivityDisplay {
+  name: string;
+  details: string;
+  time: string;
+}
 
 const DASHBOARD_ACTIONS: ActionCard[] = [
   {
@@ -137,9 +166,30 @@ const METRIC_ICONS = {
 };
 
 // Utility functions
-const formatCurrency = (amount: number): string => {
-  if (amount === 0) return "₦0.00k";
-  return `₦${(amount / 1000000).toFixed(1)}M`;
+const formatCompactNaira = (amount: number): string => {
+  const value = Number(amount) || 0;
+  if (value === 0) return "₦0";
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) {
+    return `₦${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  }
+  if (abs >= 1_000) {
+    return `₦${(value / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
+  }
+  return `₦${Math.round(value).toLocaleString("en-NG")}`;
+};
+
+const formatAxisNaira = (value: number): string => {
+  const amount = Number(value) || 0;
+  if (amount === 0) return "₦0";
+  const abs = Math.abs(amount);
+  if (abs >= 1_000_000) {
+    return `₦${(amount / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  }
+  if (abs >= 1_000) {
+    return `₦${Math.round(amount / 1_000)}k`;
+  }
+  return `₦${Math.round(amount)}`;
 };
 
 const getPercentChange = (current: number, previous: number): string => {
@@ -213,29 +263,80 @@ const ActionCard: React.FC<ActionCard & { onClick: () => void }> = ({
   </div>
 );
 
-const FinancialChart: React.FC<{ data: ChartDataPoint[] }> = ({ data }) => {
-  const totalIncome = useMemo(() => 
-    data.reduce((sum, item) => sum + item.income, 0), 
-    [data]
+const FinancialChart: React.FC<{
+  data: ChartDataPoint[];
+  range: FinancialRange;
+  totalIncome?: number;
+  totalExpenses?: number;
+  onRangeChange: (range: FinancialRange) => void;
+  isRefreshing?: boolean;
+}> = ({
+  data,
+  range,
+  totalIncome: totalIncomeProp,
+  totalExpenses: totalExpensesProp,
+  onRangeChange,
+  isRefreshing = false,
+}) => {
+  const totalIncome = useMemo(
+    () =>
+      totalIncomeProp ??
+      data.reduce((sum, item) => sum + item.income, 0),
+    [data, totalIncomeProp],
   );
+  const totalExpenses = useMemo(
+    () =>
+      totalExpensesProp ??
+      data.reduce((sum, item) => sum + item.expenses, 0),
+    [data, totalExpensesProp],
+  );
+  const hasData = totalIncome > 0 || totalExpenses > 0;
+  const rangeMeta =
+    FINANCIAL_RANGE_OPTIONS.find((opt) => opt.value === range) ||
+    FINANCIAL_RANGE_OPTIONS[0];
 
   return (
     <div className="p-6 border rounded-lg shadow-sm bg-white mt-8">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-medium">Financial Performance</h3>
-          <Info className="w-4 h-4 text-gray-400 cursor-pointer" />
+          <Info
+            className="w-4 h-4 text-gray-400"
+            aria-label="Estimated from active and ended leases plus recorded expenses"
+          />
         </div>
-        <Button variant="primary">
-          <span className="flex items-center gap-2">
-            <span role="img" aria-label="calendar">📅</span>
-            Last Year
-          </span>
-        </Button>
+        <Select
+          value={range}
+          onValueChange={(value) => onRangeChange(value as FinancialRange)}
+          disabled={isRefreshing}
+        >
+          <SelectTrigger
+            className="mt-0 h-10 w-auto min-w-[190px] gap-2 rounded-full border border-[#03442C] bg-white px-4 py-2 text-sm font-medium text-[#03442C] shadow-none hover:bg-[#E9F4E7] focus:ring-2 focus:ring-[#099137]/20 disabled:opacity-60 [&>span]:line-clamp-none"
+          >
+            <span className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 shrink-0 text-[#03442C]" aria-hidden />
+              <SelectValue placeholder="Select period" />
+            </span>
+          </SelectTrigger>
+          <SelectContent
+            align="end"
+            className="z-[120] min-w-[200px] overflow-hidden rounded-xl border border-gray-200 bg-white p-1 text-[#101928] shadow-lg"
+          >
+            {FINANCIAL_RANGE_OPTIONS.map((opt) => (
+              <SelectItem
+                key={opt.value}
+                value={opt.value}
+                className="cursor-pointer rounded-lg py-2.5 pl-3 pr-8 text-sm text-[#101928] focus:bg-[#E9F4E7] focus:text-[#03442C] data-[state=checked]:bg-[#E9F4E7] data-[state=checked]:font-medium data-[state=checked]:text-[#03442C]"
+              >
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      
+
       <div className="my-2 text-[14px] font-light text-[#909090]">
-        Monthly income vs. expenses over the past 12 months
+        {rangeMeta.subtitle}
       </div>
 
       <div className="flex justify-end space-x-4 mt-4 text-sm text-gray-600">
@@ -249,36 +350,66 @@ const FinancialChart: React.FC<{ data: ChartDataPoint[] }> = ({ data }) => {
         </div>
       </div>
 
-      <p className="text-3xl text-[#090814] font-bold mb-4">
-        {formatCurrency(totalIncome)}
-      </p>
+      <div className="mb-4 mt-2 flex flex-wrap items-end gap-4">
+        <div>
+          <p className="text-xs text-gray-500">Income</p>
+          <p className="text-3xl text-[#090814] font-bold">
+            {formatCompactNaira(totalIncome)}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500">Expenses</p>
+          <p className="text-xl text-gray-700 font-semibold">
+            {formatCompactNaira(totalExpenses)}
+          </p>
+        </div>
+      </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={data}
-          margin={{ top: 5, right: 20, left: -20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-          <YAxis
-            tick={{ fontSize: 10 }}
-            tickFormatter={(value: number) => `₦${value / 100000}M`}
-          />
-          <Tooltip />
-          <Bar
-            dataKey="income"
-            barSize={10}
-            fill="#1E5128"
-            radius={[4, 4, 0, 0]}
-          />
-          <Bar
-            dataKey="expenses"
-            barSize={10}
-            fill="#D1D5DB"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      {!hasData ? (
+        <div className="flex h-[300px] items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 text-center">
+          <p className="max-w-sm text-sm text-gray-500">
+            No assigned-tenant rent or expense data for this period. Income is
+            rent collected from assigned tenants (annual rent in the due month,
+            monthly rent each assigned month); expenses come from recorded
+            apartment expenses.
+          </p>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart
+            data={data}
+            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+            <YAxis
+              tick={{ fontSize: 10 }}
+              width={56}
+              tickFormatter={formatAxisNaira}
+            />
+            <Tooltip
+              formatter={(value: number, name: string) => [
+                formatCompactNaira(Number(value) || 0),
+                name === "income" ? "Income" : "Expenses",
+              ]}
+            />
+            <Bar
+              dataKey="income"
+              name="income"
+              barSize={10}
+              fill="#1E5128"
+              radius={[4, 4, 0, 0]}
+            />
+            <Bar
+              dataKey="expenses"
+              name="expenses"
+              barSize={10}
+              fill="#D1D5DB"
+              radius={[4, 4, 0, 0]}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 };
@@ -290,6 +421,10 @@ const DashboardScreen: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [counts, setCounts] = useState<DashboardCounts>({});
   const [chartData, setChartData] = useState<ChartDataPoint[]>(EMPTY_CHART_DATA);
+  const [financialRange, setFinancialRange] = useState<FinancialRange>("last12");
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [chartRefreshing, setChartRefreshing] = useState(false);
   const [activities, setActivities] = useState<DashboardActivityDisplay[]>([]);
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -339,8 +474,32 @@ const DashboardScreen: React.FC = () => {
     [displayUser],
   );
 
+  const applyFinancialPayload = useCallback((data: any) => {
+    const financialData = data?.financialData;
+    if (Array.isArray(financialData) && financialData.length > 0) {
+      setChartData(
+        financialData.map((x: any) => ({
+          month: String(x?.month ?? ""),
+          income: Number(x?.income ?? 0) || 0,
+          expenses: Number(x?.expenses ?? 0) || 0,
+        })),
+      );
+    } else {
+      setChartData(EMPTY_CHART_DATA);
+    }
+    setTotalIncome(Number(data?.totalIncome ?? 0) || 0);
+    setTotalExpenses(Number(data?.totalExpenses ?? 0) || 0);
+    if (
+      data?.range === "last12" ||
+      data?.range === "thisYear" ||
+      data?.range === "lastYear"
+    ) {
+      setFinancialRange(data.range);
+    }
+  }, []);
+
   // Fetch dashboard data (metrics, activities, financial)
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = useCallback(async (range: FinancialRange = "last12") => {
     const currentUser = getStoredUser();
     if (!currentUser?._id) {
       setIsLoading(false);
@@ -353,7 +512,9 @@ const DashboardScreen: React.FC = () => {
     try {
       const [metricsResponse, dashboardResponse] = await Promise.all([
         dispatch(getApplicationCount({ id: currentUser._id }) as any),
-        fetch(`${API_URL}/dashboard?userId=${currentUser._id}&limit=5`),
+        fetch(
+          `${API_URL}/dashboard?userId=${currentUser._id}&limit=5&range=${range}`,
+        ),
         dispatch(fetchPlans() as any),
       ]);
 
@@ -361,25 +522,17 @@ const DashboardScreen: React.FC = () => {
 
       const dashboardResult = await dashboardResponse.json();
       if (dashboardResult.status === "success" && dashboardResult.data) {
-        const { activities: apiActivities, financialData } = dashboardResult.data;
+        const { activities: apiActivities } = dashboardResult.data;
         if (apiActivities?.length) {
           setActivities(
             apiActivities.slice(0, 5).map((a: DashboardActivity) => ({
               name: a.type,
               details: a.details,
               time: getRelativeTime(a.createdAt),
-            }))
+            })),
           );
         }
-        if (Array.isArray(financialData) && financialData.length > 0) {
-          setChartData(
-            financialData.map((x: any) => ({
-              month: String(x?.month ?? ""),
-              income: Number(x?.income ?? 0) || 0,
-              expenses: Number(x?.expenses ?? 0) || 0,
-            }))
-          );
-        }
+        applyFinancialPayload(dashboardResult.data);
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -387,7 +540,31 @@ const DashboardScreen: React.FC = () => {
       setIsLoading(false);
       setActivitiesLoading(false);
     }
-  }, [dispatch]);
+  }, [dispatch, applyFinancialPayload]);
+
+  const handleFinancialRangeChange = useCallback(
+    async (nextRange: FinancialRange) => {
+      if (nextRange === financialRange) return;
+      setFinancialRange(nextRange);
+      const currentUser = getStoredUser();
+      if (!currentUser?._id) return;
+      setChartRefreshing(true);
+      try {
+        const response = await fetch(
+          `${API_URL}/dashboard?userId=${currentUser._id}&limit=5&range=${nextRange}`,
+        );
+        const result = await response.json();
+        if (result.status === "success" && result.data) {
+          applyFinancialPayload(result.data);
+        }
+      } catch (error) {
+        console.error("Error refreshing financial data:", error);
+      } finally {
+        setChartRefreshing(false);
+      }
+    },
+    [financialRange, applyFinancialPayload],
+  );
 
   // Handle action card clicks
   const handleActionClick = useCallback((link: string) => {
@@ -395,7 +572,7 @@ const DashboardScreen: React.FC = () => {
   }, [router]);
 
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData("last12");
   }, [fetchDashboardData]);
 
   if (isLoading) {
@@ -486,7 +663,14 @@ const DashboardScreen: React.FC = () => {
           </div>
 
           {/* Financial Chart */}
-          <FinancialChart data={chartData} />
+          <FinancialChart
+            data={chartData}
+            range={financialRange}
+            totalIncome={totalIncome}
+            totalExpenses={totalExpenses}
+            onRangeChange={handleFinancialRangeChange}
+            isRefreshing={chartRefreshing}
+          />
         </div>
 
         <div className="w-full min-w-0 md:w-1/3">

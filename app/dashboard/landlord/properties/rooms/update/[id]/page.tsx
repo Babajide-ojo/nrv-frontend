@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRoute";
-import LandLordLayout from "../../../../../components/layout/LandLordLayout";
-import Button from "../../../../../components/shared/buttons/Button";
-import InputField from "../../../../../components/shared/input-fields/InputFields";
+import ProtectedRoute from "@/app/components/guard/LandlordProtectedRoute";
+import LandLordLayout from "@/app/components/layout/LandLordLayout";
+import Button from "@/app/components/shared/buttons/Button";
+import InputField from "@/app/components/shared/input-fields/InputFields";
 import { useDispatch } from "react-redux";
-import {
-  getPropertyByUserId,
-  createRooms,
-} from "../../../../../../redux/slices/propertySlice";
+import { getRoomById, updateRoom } from "@/redux/slices/propertySlice";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { formatDisplayValue } from "@/helpers/utils";
@@ -21,12 +18,13 @@ import {
   sanitizePositiveRentInput,
 } from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
+import MultiImageUploader from "@/app/components/shared/MultiImageUploader";
 
-const CreateRoom = () => {
+const UpdateRoomPage = () => {
   const [showDescription, setShowDescription] = useState(false);
-  const [user, setUser] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingRoom, setLoadingRoom] = useState(true);
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
   const [roomData, setRoomData] = useState<any>({
     description: "",
     rentAmountMetrics: "",
@@ -38,19 +36,66 @@ const CreateRoom = () => {
     apartmentType: "",
     leaseTerms: "",
     paymentOption: "",
-    // availableUnits: "1",
     otherAmentities: [],
     images: [],
-    propertyId:
-      typeof window !== "undefined"
-        ? JSON.parse(localStorage.getItem("property") as any)?._id
-        : "",
+    propertyId: "",
   });
-
-  console.log({roomData});
 
   const dispatch = useDispatch();
   const router = useRouter();
+  const { id } = useParams();
+  const roomId = Array.isArray(id) ? id[0] : id;
+
+  useEffect(() => {
+    const load = async () => {
+      if (!roomId) return;
+      try {
+        const response = await dispatch(getRoomById(roomId) as any).unwrap();
+        const room = response?.data;
+        if (!room) {
+          toast.error("Apartment not found");
+          router.back();
+          return;
+        }
+        const propId =
+          typeof room.propertyId === "object"
+            ? room.propertyId?._id
+            : room.propertyId;
+        setExistingImageUrls(
+          Array.isArray(room.imageUrls)
+            ? room.imageUrls
+                .map((u: any) =>
+                  typeof u === "string" ? u : u?.secure_url || u?.url || "",
+                )
+                .filter(Boolean)
+            : [],
+        );
+        setRoomData({
+          description: room.description || "",
+          rentAmountMetrics: room.rentAmountMetrics || "",
+          rentAmount: room.rentAmount != null ? String(room.rentAmount) : "",
+          noOfRooms: room.noOfRooms != null ? String(room.noOfRooms) : "",
+          noOfBaths: room.noOfBaths != null ? String(room.noOfBaths) : "",
+          noOfPools: room.noOfPools != null ? String(room.noOfPools) : "",
+          apartmentStyle: room.apartmentStyle || "",
+          apartmentType: room.apartmentType || "",
+          leaseTerms: room.leaseTerms || "",
+          paymentOption: room.paymentOption || "",
+          otherAmentities: Array.isArray(room.otherAmentities)
+            ? room.otherAmentities
+            : [],
+          images: [],
+          propertyId: String(propId || ""),
+        });
+      } catch {
+        toast.error("Failed to load apartment");
+        router.back();
+      } finally {
+        setLoadingRoom(false);
+      }
+    };
+    void load();
+  }, [roomId, dispatch, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,12 +106,10 @@ const CreateRoom = () => {
   };
 
   const handleInputChangeWithComma = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { name, value } = e.target as HTMLInputElement;
-
     const cleanedValue = sanitizePositiveRentInput(value);
-
     setRoomData((prevData: any) => ({
       ...prevData,
       [name]: cleanedValue,
@@ -78,19 +121,6 @@ const CreateRoom = () => {
       ...prev,
       [name]: selectedOption?.value || "",
     }));
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const fileExtension = file.name.split(".").pop()?.toLowerCase();
-      const allowedExtensions = ["jpg", "jpeg", "png"];
-      if (!allowedExtensions.includes(fileExtension || "")) {
-        toast.error("Invalid file type. Only JPG, JPEG, PNG allowed.");
-        return;
-      }
-      setRoomData((prev: any) => ({ ...prev, file }));
-    }
   };
 
   const handleAmenityChange = (amenity: string) => {
@@ -106,38 +136,33 @@ const CreateRoom = () => {
   };
 
   const handleImagesChange = (files: File[]) => {
-    console.log('handleImagesChange called with:', files);
-    
-    // Validate file types
-    const validFiles = files.filter(file => {
-      const fileType = file.type.toLowerCase();
-      return fileType.startsWith('image/');
-    });
-    
+    const validFiles = files.filter((file) =>
+      file.type.toLowerCase().startsWith("image/"),
+    );
     if (validFiles.length !== files.length) {
       toast.error("Some files were skipped. Only image files are allowed.");
     }
-    
     setRoomData((prevData: any) => ({
       ...prevData,
       images: validFiles,
     }));
-    console.log('roomData.images updated to:', validFiles);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { 
-      description, 
-      rentAmount, 
-      noOfRooms, 
-      noOfBaths, 
+    if (!roomId) return;
+
+    const {
+      description,
+      rentAmount,
+      noOfRooms,
+      noOfBaths,
       propertyId,
       apartmentStyle,
       leaseTerms,
       paymentOption,
       apartmentType,
-      rentAmountMetrics
+      rentAmountMetrics,
     } = roomData;
 
     if (
@@ -165,48 +190,33 @@ const CreateRoom = () => {
     Object.entries(roomData).forEach(([key, value]: any) => {
       if (key === "otherAmentities") {
         formData.append("otherAmentities", JSON.stringify(value));
-      } else if (key === "file" && value) {
-        formData.append("file", value);
       } else if (key === "images") {
-        // Skip here; images are appended as files below
+        // handled below
       } else {
         formData.append(key, value as string);
       }
     });
 
-    // Add multiple images to formData
-    console.log('Submitting with roomData.images:', roomData.images);
-    roomData.images.forEach((file) => {
+    roomData.images.forEach((file: File) => {
       formData.append("images", file);
     });
-    
-    // Debug: Log all FormData entries
-    console.log('FormData entries:');
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+    if (roomData.images.length > 0) {
+      formData.append("replaceImages", "true");
     }
 
     try {
       setLoading(true);
-      const response = await dispatch(createRooms(formData) as any).unwrap();
+      await dispatch(updateRoom({ id: roomId, formData }) as any).unwrap();
       toast.success(
-        response?.message ||
-          "Unit added successfully. It is awaiting admin approval before it can be listed publicly.",
-        { autoClose: 8000 },
+        "Apartment updated. It is unlisted and awaiting admin approval before it appears publicly again."
       );
-      router.push(`/dashboard/landlord/properties/${propertyId}`);
+      router.push(`/dashboard/landlord/properties/rooms/${roomId}`);
     } catch (error: any) {
-      toast.error(error?.message || "Something went wrong.");
+      toast.error(error?.message || error || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-  }, []);
 
   const amenityOptions = [
     "Parking Space",
@@ -226,23 +236,28 @@ const CreateRoom = () => {
 
   return (
     <div>
-        <ProtectedRoute>
-          <LandLordLayout
-            path="Apartment"
-            mainPath="Manage Apartment"
-            subMainPath="Add New Apartment"
-          >
+      <ProtectedRoute>
+        <LandLordLayout
+          path="Apartment"
+          mainPath="Manage Apartment"
+          subMainPath="Edit Apartment"
+        >
+          {loadingRoom ? (
+            <div className="p-6 text-sm text-gray-500">Loading apartment…</div>
+          ) : (
             <form onSubmit={handleSubmit}>
               <div className="mx-auto w-full max-w-6xl p-3 sm:p-6 md:p-8">
                 <div className="text-2xl flex gap-3 mb-4">
                   <span
                     onClick={() =>
-                      router.push("/dashboard/landlord/properties")
+                      router.push(
+                        `/dashboard/landlord/properties/rooms/${roomId}`,
+                      )
                     }
                   >
                     <FaArrowLeft size={20} className="mt-1 cursor-pointer" />
                   </span>
-                  Add New Apartment
+                  Edit Apartment
                 </div>
                 <p className="text-sm text-nrvLightGrey mb-6">
                   These details are used to help you identify the rental. It is
@@ -255,7 +270,7 @@ const CreateRoom = () => {
                         Apartment Information
                       </h2>
                       <p className="text-sm text-gray-500 mb-6">
-                        Add the correct property information to keep it accurate
+                        Update the apartment information to keep it accurate
                         and up-to-date.
                       </p>
                     </div>
@@ -274,7 +289,7 @@ const CreateRoom = () => {
                         disabled={loading}
                         type="submit"
                       >
-                        {loading ? "Submitting" : "Submit"}
+                        {loading ? "Saving" : "Save changes"}
                       </Button>
                     </div>
                   </div>
@@ -480,34 +495,6 @@ const CreateRoom = () => {
                       ]}
                       name=""
                     />
-                    {/* <SelectField
-                      label="Available Units"
-                      required
-                      // placeholder=""
-                      value={
-                        roomData.availableUnits
-                          ? {
-                              label: roomData.availableUnits,
-                              value: roomData.availableUnits,
-                            }
-                          : null
-                      }
-                      onChange={(val) =>
-                        handleSelectChange(val, "availableUnits")
-                      }
-                      options={[
-                        { label: "1", value: "1" },
-                        { label: "2", value: "2" },
-                        { label: "3", value: "3" },
-                        { label: "4", value: "4" },
-                        { label: "5", value: "5" },
-                        { label: "6", value: "6" },
-                        { label: "7", value: "7" },
-                        { label: "8", value: "8" },
-                        { label: "9", value: "9" },
-                      ]}
-                      name=""
-                    /> */}
                   </div>
 
                   <div className="mt-6 max-w-4xl mx-auto">
@@ -550,34 +537,45 @@ const CreateRoom = () => {
                   </div>
 
                   <div className="mt-6 max-w-4xl mx-auto">
-                    <MultiImageUploader 
-                      label="Apartment Images" 
-                      onChange={handleImagesChange} 
+                    {existingImageUrls.length > 0 &&
+                      roomData.images.length === 0 && (
+                        <div className="mb-4">
+                          <p className="mb-2 text-sm font-medium text-[#344054]">
+                            Current apartment images
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {existingImageUrls.map((url) => (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                key={url}
+                                src={url}
+                                alt="Apartment"
+                                className="h-20 w-20 rounded-md object-cover border"
+                              />
+                            ))}
+                          </div>
+                          <p className="mt-2 text-xs text-gray-500">
+                            Upload new images below only if you want to replace
+                            these.
+                          </p>
+                        </div>
+                      )}
+                    <MultiImageUploader
+                      label="Apartment Images"
+                      onChange={handleImagesChange}
                       value={roomData.images}
                       maxFiles={10}
                       acceptedTypes=".png, .jpg, .jpeg, .gif"
                     />
                   </div>
                 </div>
-
-                {/* <div className="flex justify-center mt-8">
-                  <Button
-                    type="submit"
-                    size="minLarge"
-                    className="w-full mb-8"
-                    disabled={loading}
-                    variant="darkPrimary"
-                    isLoading={loading}
-                  >
-                    {loading ? "Submitting..." : "Submit"}
-                  </Button>
-                </div> */}
               </div>
             </form>
-          </LandLordLayout>
-        </ProtectedRoute>
+          )}
+        </LandLordLayout>
+      </ProtectedRoute>
     </div>
   );
 };
 
-export default CreateRoom;
+export default UpdateRoomPage;

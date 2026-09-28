@@ -33,13 +33,19 @@ interface RoomFormProps {
   loading?: boolean;
   initialData?: Partial<RoomFormData>;
   propertyId?: string;
+  isEdit?: boolean;
+  existingImageUrls?: string[];
+  submitLabel?: string;
 }
 
 const RoomForm: React.FC<RoomFormProps> = ({ 
   onSubmit, 
   loading = false, 
   initialData = {},
-  propertyId = ""
+  propertyId = "",
+  isEdit = false,
+  existingImageUrls = [],
+  submitLabel,
 }) => {
   const [showDescription, setShowDescription] = useState(false);
   const [roomData, setRoomData] = useState<RoomFormData>({
@@ -136,9 +142,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
       return;
     }
 
-    // Optional: Validate that at least one image is uploaded
-    if (roomData.images.length === 0) {
-      toast.error("Please upload at least one image for the room.");
+    // Optional: Validate that at least one image is uploaded (required on create only)
+    if (!isEdit && roomData.images.length === 0) {
+      toast.error("Please upload at least one image for the apartment.");
       return;
     }
 
@@ -159,7 +165,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
     });
 
     // When editing unit images, replace rather than append
-    if (roomData.images.length > 0 && Object.keys(initialData).length > 0) {
+    if (isEdit && roomData.images.length > 0) {
       formData.append("replaceImages", "true");
     }
 
@@ -400,8 +406,29 @@ const RoomForm: React.FC<RoomFormProps> = ({
             </div>
 
             <div className="mt-6 max-w-4xl mx-auto">
+              {isEdit && existingImageUrls.length > 0 && roomData.images.length === 0 && (
+                <div className="mb-4">
+                  <p className="mb-2 text-sm font-medium text-[#344054]">
+                    Current apartment images
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {existingImageUrls.map((url) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Apartment"
+                        className="h-20 w-20 rounded-md object-cover border"
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Upload new images below only if you want to replace these.
+                  </p>
+                </div>
+              )}
               <MultiImageUploader 
-                label="Room Images" 
+                label="Apartment Images" 
                 onChange={handleImagesChange} 
                 value={roomData.images}
                 maxFiles={10}
@@ -426,7 +453,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           variant="darkPrimary"
           isLoading={loading}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? "Submitting..." : submitLabel || (isEdit ? "Save changes" : "Submit")}
         </Button>
       </div>
     </form>

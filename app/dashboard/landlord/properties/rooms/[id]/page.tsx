@@ -66,9 +66,11 @@ const SingleRoom = () => {
   }, []);
 
   const canListForTenants = singleRoom?.approved === true;
+  const isPubliclyListed =
+    singleRoom?.listRoom === true && singleRoom?.approved === true;
 
   const updateRoom = async () => {
-    const nextListed = singleRoom.listRoom !== true;
+    const nextListed = !isPubliclyListed;
     if (nextListed && !canListForTenants) {
       toast.error(
         "This unit must be approved by an admin before it can be listed."
@@ -141,11 +143,20 @@ const SingleRoom = () => {
                         </h1>
                         {singleRoom?.approved ? (
                           <span className="inline-flex items-center rounded-md border border-[#099137]/30 bg-[#E7F6EC] px-2 py-0.5 text-[11px] font-medium text-[#099137]">
-                            Approved for listing
+                            Admin approved
                           </span>
                         ) : (
                           <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
                             Awaiting admin approval
+                          </span>
+                        )}
+                        {isPubliclyListed ? (
+                          <span className="inline-flex items-center rounded-md border border-[#099137]/30 bg-[#E7F6EC] px-2 py-0.5 text-[11px] font-medium text-[#099137]">
+                            Listed publicly
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+                            Not listed
                           </span>
                         )}
                       </div>
@@ -172,6 +183,17 @@ const SingleRoom = () => {
                         </p>
                       </div>
                       <div className="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
+                        <button
+                          type="button"
+                          className={`${actionPillClass} border border-[#03442C] bg-white text-[#03442C] hover:bg-[#E9F4E7]`}
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/landlord/properties/rooms/update/${id}`,
+                            )
+                          }
+                        >
+                          Edit Apartment
+                        </button>
                         <span
                           className={`${statusPillClass} ${
                             singleRoom?.assignedToTenant
@@ -183,34 +205,17 @@ const SingleRoom = () => {
                             ? "Occupied By Tenant"
                             : "Currently Vacant"}
                         </span>
-                        <button
-                          type="button"
-                          disabled={
-                            singleRoom.listRoom === false && !canListForTenants
-                          }
-                          title={
-                            singleRoom.listRoom === false && !canListForTenants
-                              ? "Awaiting admin approval before this unit can be listed."
-                              : undefined
-                          }
-                          className={`${actionPillClass} bg-[#099137] text-white hover:bg-[#078A30]`}
-                          onClick={() => {
-                            if (
-                              singleRoom.listRoom === false &&
-                              !canListForTenants
-                            ) {
-                              toast.info(
-                                "This unit is awaiting admin approval. You can list it once an admin approves."
-                              );
-                              return;
-                            }
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          {singleRoom.listRoom === false
-                            ? "List Apartment"
-                            : "Unlist Apartment"}
-                        </button>
+                        {(isPubliclyListed || canListForTenants) && (
+                          <button
+                            type="button"
+                            className={`${actionPillClass} bg-[#099137] text-white hover:bg-[#078A30]`}
+                            onClick={() => setIsModalOpen(true)}
+                          >
+                            {isPubliclyListed
+                              ? "Unlist Apartment"
+                              : "List Apartment"}
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -237,8 +242,8 @@ const SingleRoom = () => {
                       </TabsList>
 
                       <TabsContent value="details">
-                        <PropertyUnitDetails data={singleRoom} />
                         <CurrentTenantDashboard data={singleRoom} />
+                        <PropertyUnitDetails data={singleRoom} />
                       </TabsContent>
                       <TabsContent value="maintenance">
                         <DataTable
@@ -318,8 +323,9 @@ const SingleRoom = () => {
         >
           <div className="mx-auto text-center p-4">
             <p className="text-nrvLightGrey text-md">
-              Listing this property will make it visible to tenant for
-              applications.
+              {isPubliclyListed
+                ? "Unlisting this apartment will hide it from the public marketplace. Tenants will no longer see it when browsing available listings."
+                : "Listing this apartment will make it visible to tenants for applications on the marketplace."}
             </p>
             <p className="text-red-500 text-lg font-medium">
               Are you sure you want to continue?
@@ -343,7 +349,7 @@ const SingleRoom = () => {
                 variant="darkPrimary"
                 showIcon={false}
                 isLoading={listingRoom}
-                loadingText="Listing…"
+                loadingText={isPubliclyListed ? "Unlisting…" : "Listing…"}
                 onClick={updateRoom}
               >
                 Continue

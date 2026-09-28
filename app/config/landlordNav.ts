@@ -10,5 +10,6 @@ export const LANDLORD_NAV_ITEMS = [
   { name: "Tenant Verification", route: "/dashboard/landlord/properties/verification" },
   { name: "Maintenance", route: "/dashboard/landlord/properties/maintenance" },
   { name: "Messages", route: "/dashboard/landlord/messages" },
+  { name: "How it works", route: "/dashboard/landlord/guide" },
   { name: "Buy verification credit", route: "/dashboard/landlord/settings/plans" },
 ] as const;

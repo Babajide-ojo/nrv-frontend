@@ -40,7 +40,7 @@ interface LandlordUserData {
   firstName: string;
   lastName: string;
   email: string;
-  nin: string;
+  nin?: string;
   propertyId: string;
   ownerId: string;
   rentEndDate?: string;
@@ -353,18 +353,23 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
   }
 );
 
-export const createUserByLandlord = createAsyncThunk<UserToken, LandlordUserData>(
+export const createUserByLandlord = createAsyncThunk<
+  { data: any; message?: string; existingAccount?: boolean },
+  LandlordUserData
+>(
   "user/create/landlord",
   async (formData: LandlordUserData, { rejectWithValue }) => {
     try {
-      const response = await axios.post<ApiResponse<UserToken>>(
-        `${API_URL}/users/landlord`, 
-        formData,
-        {
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-      return response.data.data;
+      const response = await axios.post<
+        ApiResponse<any> & { existingAccount?: boolean; message?: string }
+      >(`${API_URL}/users/landlord`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return {
+        data: response.data.data,
+        message: response.data.message,
+        existingAccount: (response.data as any).existingAccount === true,
+      };
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
     }
@@ -670,7 +675,7 @@ const userSlice = createSlice({
       })
       .addCase(createUserByLandlord.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        state.data = action.payload;
+        state.data = action.payload?.data ?? action.payload;
       })
       .addCase(createUserByLandlord.rejected, (state, action) => {
         state.loading = "failed";

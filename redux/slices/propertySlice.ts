@@ -228,6 +228,27 @@ export const createRooms = createAsyncThunk< FormData, {}>(
     }
 );
 
+export const updateRoom = createAsyncThunk<
+    any,
+    { id: string; formData: globalThis.FormData }
+>(
+    "room/update",
+    async ({ id, formData }, { rejectWithValue }) => {
+        try {
+            const response: any = await axios.patch(
+                `${API_URL}/rooms/${id}`,
+                formData,
+            );
+            return response.data;
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                return rejectWithValue(error.response.data.message);
+            }
+            return rejectWithValue("An error occurred, please try again later");
+        }
+    }
+);
+
 export const deleteDocumentById = createAsyncThunk<UserId, {}>(
     "properties/delete-document",
     async (body: any, { rejectWithValue }) => {

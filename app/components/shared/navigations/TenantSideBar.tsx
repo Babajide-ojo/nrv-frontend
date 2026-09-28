@@ -11,6 +11,7 @@ import {
   FiSettings,
   FiCheckCircle,
   FiHeadphones,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { PiFileDocDuotone } from "react-icons/pi";
 import Link from "next/link";
@@ -58,6 +59,11 @@ const links = [
     name: "Messages",
     route: "/dashboard/tenant/messages",
     icon: <FiMessageSquare />,
+  },
+  {
+    name: "How it works",
+    route: "/dashboard/tenant/guide",
+    icon: <FiHelpCircle />,
   },
 ];
 

@@ -5,7 +5,7 @@ import HowItWorksGuide from "@/app/components/shared/HowItWorksGuide";
 
 const LandlordGuidePage = () => {
   return (
-    <LandLordLayout path="How it works" mainPath="Guide">
+    <LandLordLayout path="How it works">
       <div className="p-4 sm:p-6 lg:p-8">
         <HowItWorksGuide
           title="How Naija Rent Verify works for landlords"
@@ -29,15 +29,28 @@ const LandlordGuidePage = () => {
               ],
             },
             {
+              heading: "Onboard a tenant",
+              steps: [
+                {
+                  title: "Open the apartment",
+                  body: "Go to Properties, open the building, then open the apartment that does not have a tenant yet.",
+                },
+                {
+                  title: "Click Add Tenant",
+                  body: "On Current Tenant, click Add Tenant. This button shows only when the apartment has no active tenancy.",
+                },
+                {
+                  title: "Enter the tenant details",
+                  body: "Add first name, last name, email, and the rent start and end dates, then submit. The tenant gets an email with a temporary login code and must set a password on first sign-in.",
+                },
+              ],
+            },
+            {
               heading: "Manage applications and tenants",
               steps: [
                 {
                   title: "Review leads and applications",
                   body: "Use Leads & Applications to see who applied. Accept, reject, or request verification as needed.",
-                },
-                {
-                  title: "Onboard a tenant",
-                  body: "From an occupied unit or Tenants, onboard a tenant with their name, email, and lease dates. They will receive login details to set a password.",
                 },
                 {
                   title: "Buy verification credits",

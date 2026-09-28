@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+// Site access-code gate (disabled). Uncomment to re-enable invite-code lock.
+// import {
+//   SITE_ACCESS_COOKIE,
+//   SITE_ACCESS_COOKIE_VALUE,
+// } from "@/lib/landing-access-codes";
 
 const ROLE_COOKIE = "nrv_role";
 
@@ -18,6 +23,20 @@ export function middleware(request: NextRequest) {
   ) {
     return new NextResponse(null, { status: 204 });
   }
+
+  // Soft site gate: block direct URL entry until access code unlocks a cookie.
+  // Disabled — re-enable with the import above when needed.
+  // const hasSiteAccess =
+  //   request.cookies.get(SITE_ACCESS_COOKIE)?.value === SITE_ACCESS_COOKIE_VALUE;
+  // if (!hasSiteAccess && pathname !== "/") {
+  //   const url = request.nextUrl.clone();
+  //   url.pathname = "/";
+  //   url.search = "";
+  //   if (pathname !== "/") {
+  //     url.searchParams.set("next", pathname);
+  //   }
+  //   return NextResponse.redirect(url);
+  // }
 
   const role = request.cookies.get(ROLE_COOKIE)?.value;
   const isLandlordPath =

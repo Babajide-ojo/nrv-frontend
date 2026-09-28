@@ -1,3 +1,8 @@
+/**
+ * Site invite-code helpers (phlip2025 / nrvguest2026).
+ * Gate is currently disabled in app/page.tsx and middleware.ts —
+ * uncomment those call sites to re-enable.
+ */
 const VALID_LANDING_ACCESS_CODES = ["phlip2025", "nrvguest2026"];
 
 /** Cookie middleware checks before allowing any non-root route. */

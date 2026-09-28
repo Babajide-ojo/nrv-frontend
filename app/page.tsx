@@ -1,22 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+// Site access-code gate (disabled). Uncomment the block below to re-enable.
+// import { useEffect, useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Button } from "@/components/ui/button";
+// import {
+//   hasSiteAccessCookie,
+//   isValidLandingAccessCode,
+//   setSiteAccessCookie,
+// } from "@/lib/landing-access-codes";
 
 import HomePageLayout from "./components/layout/HomePageLayout";
 // Previous marketing page kept for reference:
 // import LandingPage from "./components/screens/landing-page/LandingPage";
 import NewLanding from "./components/screens/landing-page/NewLanding";
-import {
-  hasSiteAccessCookie,
-  isValidLandingAccessCode,
-  setSiteAccessCookie,
-} from "@/lib/landing-access-codes";
 
 export default function Index() {
+  // Access-code gate disabled — landing is open.
+  // To re-enable: restore the imports above and replace this return with the
+  // gated implementation below.
+  return (
+    <HomePageLayout showFooter={false}>
+      <NewLanding />
+    </HomePageLayout>
+  );
+
+  /*
   const router = useRouter();
   const [code, setCode] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
@@ -78,4 +89,5 @@ export default function Index() {
       )}
     </div>
   );
+  */
 }

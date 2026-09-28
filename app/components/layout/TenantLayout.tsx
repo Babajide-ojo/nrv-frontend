@@ -16,6 +16,7 @@ import {
   FiX,
   FiLogOut,
   FiHeadphones,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { NotificationBell } from "@/app/components/notifications/NotificationBell";
 import { useSessionIdleTimeout } from "@/lib/hooks/useSessionIdleTimeout";
@@ -60,6 +61,11 @@ const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
       name: "Messages",
       route: "/dashboard/tenant/messages",
       icon: <FaMessage size={20} color="white" />,
+    },
+    {
+      name: "How it works",
+      route: "/dashboard/tenant/guide",
+      icon: <FiHelpCircle size={20} color="white" />,
     },
     {
       name: "Settings",

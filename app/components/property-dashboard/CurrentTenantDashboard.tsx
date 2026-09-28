@@ -74,7 +74,6 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       .string()
       .email("Invalid email address")
       .required("Email is required"),
-    nin: yup.string().required("NIN is required").min(11).max(11),
     rentEndDate: yup.string().required("Rent start date is required"),
     rentStartDate: yup.string().required("Rent end date is required"),
   });
@@ -183,7 +182,13 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           toast.error("Failed to add tenant. Please try again.");
         }
       } else {
-        toast.success("Tenant onboarded successfully");
+        const payload = result.payload;
+        toast.success(
+          payload?.message ||
+            (payload?.existingAccount
+              ? "Existing tenant assigned successfully"
+              : "Tenant onboarded successfully")
+        );
         fetchData();
         resetForm();
         setOpenOnboardTenantModal(false);
@@ -369,9 +374,38 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
   };
 
   return (
-    <div className="pb-4 md:pb-0">
+    <div className="pb-4 md:pb-0 font-jakarta">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 pb-3">
+        <div>
+          <h3 className="text-base font-semibold text-gray-800">
+            Current Tenant
+          </h3>
+          <p className="mt-0.5 text-xs text-gray-500">
+            {tenantDetails.data != null
+              ? "Active tenancy details for this apartment"
+              : "No tenant assigned to this apartment yet"}
+          </p>
+        </div>
+        {tenantDetails.data == null && !isLoading && (
+          <Button
+            type="button"
+            size="large"
+            className=""
+            variant="lightGrey"
+            showIcon={false}
+            onClick={() => setOpenOnboardTenantModal(true)}
+          >
+            Add Tenant
+          </Button>
+        )}
+      </div>
+
       <div>
-        {tenantDetails.data != null ? (
+        {isLoading ? (
+          <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500">
+            Loading tenancy…
+          </div>
+        ) : tenantDetails.data != null ? (
           <div>
             <div className="w-full">
               <div className="md:gap-8">
@@ -503,22 +537,14 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
             </div>
           </div>
         ) : (
-          <div className="mt-8">
-            <div className="flex justify-center">No Active Tenancy</div>
-            <div className="flex justify-center mt-4">
-              <Button
-                type="submit"
-                size="large"
-                className=""
-                variant="lightGrey"
-                showIcon={false}
-                onClick={() => {
-                  setOpenOnboardTenantModal(true);
-                }}
-              >
-                Add Tenant
-              </Button>
-            </div>
+          <div className="mt-4 rounded-xl border border-dashed border-[#D7E6D8] bg-[#F7FBF7] px-4 py-10 text-center">
+            <p className="text-sm font-medium text-[#03442C]">
+              No active tenancy
+            </p>
+            <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-gray-500">
+              Use Add Tenant above to onboard someone to this apartment and set
+              their rent period.
+            </p>
           </div>
         )}
       </div>
@@ -846,20 +872,19 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           setOpenOnboardTenantModal(false);
         }}
       >
-        <div className="mx-auto w-full h-full p-3 sm:p-8 md:p-16">
+        <div className="mx-auto h-full w-full p-3 sm:p-8 md:p-16">
           <h2 className="text-nrvPrimaryGreen font-semibold text-2xl">
-            Onboard A New Tenant
+            Add Tenant
           </h2>
           <p className="text-nrvLightGrey text-sm mb-4 mt-4">
-            Performing this action will make this applicant the current occupant
-            of this property for the designated time
+            This will onboard a new tenant and assign them to this apartment for
+            the selected rent period.
           </p>
           <Formik
             initialValues={{
               firstName: "",
               lastName: "",
               email: "",
-              nin: "",
               rentStartDate: new Date(),
               rentEndDate: new Date(),
               propertyId: data?._id,
@@ -873,47 +898,37 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
           >
             {({ isSubmitting, resetForm, values, setFieldValue }) => (
               <Form>
-                <div style={{ display: "flex", flexDirection: "column" }}>
+                <div className="space-y-4">
                   <div className="w-full md:flex flex-row gap-3">
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                    <div className="md:w-1/2 w-full">
                       <FormikInputField
                         name="firstName"
-                        placeholder="Enter First Name"
+                        placeholder="Enter first name"
                         label="First Name"
                         value={values.firstName}
                       />
                     </div>
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
+                    <div className="md:w-1/2 w-full mt-4 md:mt-0">
                       <FormikInputField
                         name="lastName"
-                        placeholder="Last Name"
-                        label="Enter Last Name"
+                        placeholder="Enter last name"
+                        label="Last Name"
                         value={values.lastName}
                       />
                     </div>
                   </div>
-                  <div className="w-full md:flex flex-row gap-3">
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
-                      <FormikInputField
-                        name="email"
-                        placeholder="Tenant Email"
-                        label="Email"
-                        value={values.email}
-                      />
-                    </div>
-                    <div className="md:w-1/2 w-full mt-8 md:mt-0">
-                      <FormikInputField
-                        name="nin"
-                        placeholder="Tenant NIN"
-                        label="National Identification Number"
-                        value={values.nin}
-                      />
-                    </div>
+
+                  <div className="w-full">
+                    <FormikInputField
+                      name="email"
+                      placeholder="Tenant email"
+                      label="Email"
+                      value={values.email}
+                    />
                   </div>
 
-                  {/* Replace CustomDatePicker with SelectDate for Rent Start Date */}
                   <div className="w-full md:flex flex-row gap-3">
-                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
+                    <div className="md:w-1/2 w-full">
                       <div
                         onClick={() => setOpenStartDate(true)}
                         className="cursor-pointer"
@@ -948,7 +963,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       />
                     </div>
 
-                    <div className="md:w-1/2 w-full mt-0 md:mt-0">
+                    <div className="md:w-1/2 w-full mt-4 md:mt-0">
                       <div
                         onClick={() => setOpenEndDate(true)}
                         className="cursor-pointer"
@@ -972,20 +987,20 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                           isDisabled={false}
                         />
                       </div>
+                      <SelectDate
+                        isOpen={openEndDate}
+                        onClose={() => setOpenEndDate(false)}
+                        value={values.rentEndDate}
+                        onChange={(selectedDate: any) => {
+                          setFieldValue("rentEndDate", selectedDate);
+                          setOpenEndDate(false);
+                        }}
+                      />
                     </div>
-
-                    <SelectDate
-                      isOpen={openEndDate}
-                      onClose={() => setOpenEndDate(false)}
-                      value={values.rentEndDate}
-                      onChange={(selectedDate: any) => {
-                        setFieldValue("rentEndDate", selectedDate);
-                        setOpenEndDate(false);
-                      }}
-                    />
                   </div>
                 </div>
-                <div className="mt-4 mx-auto w-full mt-8 flex gap-4 justify-between">
+
+                <div className="mt-8 flex gap-4 justify-between w-full">
                   <Button
                     type="button"
                     size="large"
@@ -994,8 +1009,9 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     showIcon={false}
                     onClick={() => {
                       resetForm();
-                      setOpenAddTenantModal(false);
+                      setOpenOnboardTenantModal(false);
                     }}
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
@@ -1007,7 +1023,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                     showIcon={false}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Loading..." : "Submit"}
+                    {isSubmitting ? "Adding tenant…" : "Add Tenant"}
                   </Button>
                 </div>
               </Form>

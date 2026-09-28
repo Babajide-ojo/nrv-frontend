@@ -17,6 +17,7 @@ import {
   FiMessageSquare,
   FiHeadphones,
   FiSettings,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { LANDLORD_NAV_ITEMS } from "@/app/config/landlordNav";
 import UserAvatar from "@/app/components/shared/UserAvatar";
@@ -40,6 +41,7 @@ const ICONS: Record<string, React.ReactNode> = {
   "Tenant Verification": <FiDollarSign />,
   "Maintenance": <FiTool />,
   "Messages": <FiMessageSquare />,
+  "How it works": <FiHelpCircle />,
   "Buy verification credit": <FiSettings />,
 };
 

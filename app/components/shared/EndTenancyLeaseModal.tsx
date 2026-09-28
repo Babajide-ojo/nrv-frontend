@@ -133,7 +133,10 @@ const EndTenancyLeaseModal = ({
               <div className="mt-8 flex gap-4 justify-between w-full">
                 <Button
                   type="button"
+                  size="large"
                   className="block w-full"
+                  variant="lightGrey"
+                  showIcon={false}
                   onClick={onClose}
                   disabled={isSubmitting}
                 >
@@ -141,7 +144,10 @@ const EndTenancyLeaseModal = ({
                 </Button>
                 <Button
                   type="submit"
+                  size="large"
                   className="block w-full"
+                  variant="lightGrey"
+                  showIcon={false}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? "Ending lease…" : "End tenancy lease"}

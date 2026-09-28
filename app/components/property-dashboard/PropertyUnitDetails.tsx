@@ -149,11 +149,11 @@ const PropertyUnitDetails: React.FC<Props> = ({ data }) => {
 
         {/* Right Preview Section */}
         <div className="w-full space-y-6">
-          {/* Unit Images Gallery */}
+          {/* Apartment Images Gallery */}
           {hasImages ? (
             <div className="space-y-4">
               <div className="border-b border-gray-100 pb-2">
-                <h4 className="text-sm font-semibold text-gray-800">Unit Images</h4>
+                <h4 className="text-sm font-semibold text-gray-800">Apartment Images</h4>
                 <p className="text-xs text-gray-500">Click on images to view full size</p>
               </div>
               

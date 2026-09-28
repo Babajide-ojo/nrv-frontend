@@ -698,10 +698,10 @@ const MultiStepForm = () => {
                   })}
                 </div>
 
-                {/* Unit Images */}
+                {/* Apartment Images */}
                 <div className="mt-6">
                   <MultiImageUploader 
-                    label={`Unit ${index + 1} Images`}
+                    label={`Apartment ${index + 1} Images`}
                     onChange={(files) => handleUnitImagesChange(index, files)}
                     value={unit.images || []}
                     maxFiles={5}

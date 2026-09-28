@@ -5,7 +5,7 @@ import HowItWorksGuide from "@/app/components/shared/HowItWorksGuide";
 
 const TenantGuidePage = () => {
   return (
-    <TenantLayout path="How it works" mainPath="Guide">
+    <TenantLayout path="How it works">
       <div className="p-4 sm:p-6 lg:p-8">
         <HowItWorksGuide
           title="How Naija Rent Verify works for tenants"

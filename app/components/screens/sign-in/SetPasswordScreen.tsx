@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -111,18 +110,11 @@ const SetPasswordScreen = () => {
       <div className="flex w-full flex-1 flex-col justify-center overflow-y-auto p-4 sm:p-6 lg:w-1/2 lg:p-8">
         <div className="mx-auto w-full min-w-0 max-w-md">
           <div className="mb-8 flex justify-center lg:justify-start">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <Image
-                src="/images/nrvlogo.jpg"
-                alt=""
-                width={160}
-                height={48}
-                className="h-10 w-auto max-w-[120px] object-contain"
-                priority
-              />
-              <span className="text-base font-semibold tracking-tight text-[#03442C] sm:text-lg">
-                NaijaRentVerify
-              </span>
+            <Link
+              href="/"
+              className="text-3xl font-semibold tracking-tight text-[#03442C] sm:text-4xl"
+            >
+              NaijaRentVerify
             </Link>
           </div>
           <h1 className="text-2xl font-semibold text-[#101828]">

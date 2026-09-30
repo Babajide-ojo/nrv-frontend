@@ -141,7 +141,7 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
               <div className="max-w-md mx-auto">
-                <h1 className="text-2xl font-bold text-green-600 my-10">
+                <h1 className="text-4xl font-bold text-green-600 my-10">
                   NaijaRentVerify
                 </h1>
                 <AccountTypeBadge

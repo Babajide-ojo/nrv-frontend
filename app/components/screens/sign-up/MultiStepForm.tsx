@@ -344,7 +344,7 @@ const MultiStepForm = () => {
       <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
         {step === 1 && (
           <div className="space-y-5">
-            <h1 className="mb-6 text-2xl font-bold text-green-600 lg:hidden">
+            <h1 className="mb-6 text-4xl font-bold text-green-600 lg:hidden">
               NaijaRentVerify
             </h1>
             <div className="flex justify-end">

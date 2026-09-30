@@ -134,7 +134,7 @@ const ProfileSetup: React.FC<ProfileSetupProps> = ({
   return (
     <div className="flex flex-col w-full justify-center h-screen">
       <div className="bg-white p-6 rounded-2xl w-full">
-        <h1 className="text-2xl font-bold text-green-600 md:hidden mb-10">
+        <h1 className="text-4xl font-bold text-green-600 md:hidden mb-10">
           NaijaRentVerify
         </h1>
         <h2 className="text-2xl font-semibold text-center mb-2">

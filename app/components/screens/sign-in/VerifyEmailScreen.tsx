@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
+import Link from "next/link";
 import Button from "@/app/components/shared/buttons/Button";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { verifyEmail, PASSWORD_RESET_CONTEXT_KEY } from "@/redux/slices/userSlice";
 import { useRouter } from "next/navigation";
@@ -92,21 +91,14 @@ const VerifyEmailScreen: React.FC = () => {
 
       <div className="w-full lg:w-1/2 flex flex-col justify-center flex-1 min-h-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
         <div className="max-w-md mx-auto w-full min-w-0">
-          <div className="lg:hidden flex justify-center mb-6">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <Image
-                src="/images/nrvlogo.jpg"
-                alt=""
-                width={200}
-                height={50}
-                className="h-9 sm:h-10 w-auto max-w-[min(120px,40vw)] object-contain"
-              />
-              <span className="text-base font-semibold tracking-tight text-[#03442C] sm:text-lg">
-                NaijaRentVerify
-              </span>
+          <div className="mb-6 flex justify-center lg:hidden">
+            <Link
+              href="/"
+              className="text-3xl font-semibold tracking-tight text-[#03442C] sm:text-4xl"
+            >
+              NaijaRentVerify
             </Link>
           </div>
-
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
             Forgot your password?
           </h1>

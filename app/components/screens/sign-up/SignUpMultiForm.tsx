@@ -15,7 +15,6 @@ import { toast } from "react-toastify";
 import AccountSideBar from "./AccountSideBar";
 import AccountTypeBadge from "./AccountTypeBadge";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 const Carousel = dynamic(() => import("../sign-in/Carousel"), {
@@ -138,21 +137,12 @@ const SignUpMultiForm = () => {
           </div>
           <div className="w-full md:w-1/2 flex flex-col items-center justify-center flex-1 min-h-0 bg-gray-50 p-4 sm:p-6 overflow-y-auto">
             <div className="max-w-md w-full min-w-0">
-              <div className="md:hidden flex justify-center w-full mb-6 min-w-0">
+              <div className="mb-6 flex justify-center md:hidden">
                 <Link
                   href="/"
-                  className="inline-flex max-w-full items-center gap-2"
+                  className="text-3xl font-semibold tracking-tight text-[#03442C] sm:text-4xl"
                 >
-                  <Image
-                    src="/images/nrvlogo.jpg"
-                    alt=""
-                    width={200}
-                    height={50}
-                    className="h-9 sm:h-10 w-auto max-w-[min(120px,40vw)] object-contain"
-                  />
-                  <span className="text-base font-semibold tracking-tight text-[#03442C] sm:text-lg">
-                    NaijaRentVerify
-                  </span>
+                  NaijaRentVerify
                 </Link>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-black">
@@ -240,7 +230,7 @@ const SignUpMultiForm = () => {
           </div>
           <div className="w-full lg:w-1/2 bg-white p-12 pb-20 overflow-y-auto">
             <div className="max-w-md mx-auto ">
-              <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
+              <h1 className="text-4xl font-bold text-green-600 lg:hidden my-10">
                 NaijaRentVerify
               </h1>
               <AccountTypeBadge accountType={selectedRole} className="mb-4" />

@@ -1100,12 +1100,12 @@ const NewLanding = () => {
               <h3 className="text-sm font-semibold text-white/90">Legal</h3>
               <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
                 <li>
-                  <Link href="/legal" className="hover:text-white transition-colors">
+                  <Link href="/legal/terms" className="hover:text-white transition-colors">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="hover:text-white transition-colors">
+                  <Link href="/legal/privacy" className="hover:text-white transition-colors">
                     Privacy Policy
                   </Link>
                 </li>

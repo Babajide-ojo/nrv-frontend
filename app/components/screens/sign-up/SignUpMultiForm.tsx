@@ -325,7 +325,7 @@ const SignUpMultiForm = () => {
                         <>
                           I agree to the{" "}
                           <Link
-                            href="/legal"
+                            href="/legal/terms"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-green-800 underline hover:text-green-900"
@@ -335,7 +335,7 @@ const SignUpMultiForm = () => {
                           </Link>{" "}
                           and{" "}
                           <Link
-                            href="/privacy"
+                            href="/legal/privacy"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-green-800 underline hover:text-green-900"

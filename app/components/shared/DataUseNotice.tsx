@@ -89,7 +89,7 @@ const DataUseNotice = () => {
         <p className="mt-4 text-xs leading-relaxed text-gray-500">
           You can read the full{" "}
           <Link
-            href="/privacy"
+            href="/legal/privacy"
             className="font-medium text-[#03442C] underline underline-offset-2"
           >
             Privacy Notice

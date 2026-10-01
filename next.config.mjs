@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async redirects() {
+      return [
+        { source: "/legal", destination: "/legal/terms", permanent: true },
+        { source: "/privacy", destination: "/legal/privacy", permanent: true },
+      ];
+    },
     images: {
         remotePatterns: [
           { protocol: 'https', hostname: 'res.cloudinary.com', pathname: '/**' },

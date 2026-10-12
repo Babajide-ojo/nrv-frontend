@@ -153,7 +153,8 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
                 </h2>
                 <p className="mt-2 text-gray-600">
                   We&apos;ve sent a 6-digit verification code to{" "}
-                  <strong className="text-gray-900">{emailDisplay}</strong>.
+                  <strong className="text-gray-900">{emailDisplay}</strong> and
+                  by SMS to the phone number you used to sign up.
                 </p>
                 <p className="mt-1 text-gray-600">
                   Enter the code below to activate your account.
@@ -163,6 +164,9 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
                   <p className="font-semibold">Instructions:</p>
                   <ul className="list-disc list-inside text-sm">
                     <li className="mt-4">Open your email inbox (and spam folder).</li>
+                    <li className="mt-4">
+                      Check the SMS sent to your phone number.
+                    </li>
                     <li className="mt-4">
                       Look for an email from NaijaRentVerify.
                     </li>

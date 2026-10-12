@@ -684,7 +684,7 @@ const NewLanding = () => {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { value: "1,000+", label: "Tenants Processed" },
               { value: "1,500+", label: "Homes Listed" },
@@ -698,7 +698,7 @@ const NewLanding = () => {
                 <p className="text-xs font-medium text-gray-700 mt-0.5">{stat.label}</p>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </section>
 

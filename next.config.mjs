@@ -4,6 +4,11 @@ const nextConfig = {
       return [
         { source: "/legal", destination: "/legal/terms", permanent: true },
         { source: "/privacy", destination: "/legal/privacy", permanent: true },
+        {
+          source: "/r/:id",
+          destination: "/dashboard/tenant/verification?verificationId=:id",
+          permanent: false,
+        },
       ];
     },
     images: {

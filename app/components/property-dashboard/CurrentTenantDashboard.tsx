@@ -74,6 +74,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
       .string()
       .email("Invalid email address")
       .required("Email is required"),
+    phoneNumber: yup.string().required("Phone number is required"),
     rentEndDate: yup.string().required("Rent start date is required"),
     rentStartDate: yup.string().required("Rent end date is required"),
   });
@@ -885,6 +886,7 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
               firstName: "",
               lastName: "",
               email: "",
+              phoneNumber: "",
               rentStartDate: new Date(),
               rentEndDate: new Date(),
               propertyId: data?._id,
@@ -924,6 +926,17 @@ const CurrentTenantDashboard: React.FC<Data> = ({ data }) => {
                       placeholder="Tenant email"
                       label="Email"
                       value={values.email}
+                    />
+                  </div>
+
+                  <div className="w-full">
+                    <FormikInputField
+                      name="phoneNumber"
+                      placeholder="Tenant phone number"
+                      label="Phone number"
+                      inputType="phone"
+                      value={values.phoneNumber}
+                      wrapperClassName="mt-0"
                     />
                   </div>
 

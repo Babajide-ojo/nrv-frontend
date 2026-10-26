@@ -40,6 +40,7 @@ interface LandlordUserData {
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber: string;
   nin?: string;
   propertyId: string;
   ownerId: string;

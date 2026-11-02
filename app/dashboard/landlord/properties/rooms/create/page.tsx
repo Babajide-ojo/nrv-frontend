@@ -22,6 +22,7 @@ import {
 } from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
+import { LONG_LET_LEASE_OPTIONS } from "@/lib/shortStay";
 
 const CreateRoom = () => {
   const [showDescription, setShowDescription] = useState(false);
@@ -38,6 +39,8 @@ const CreateRoom = () => {
     apartmentType: "",
     leaseTerms: "",
     paymentOption: "",
+    minimumNights: "2",
+    houseRules: "",
     // availableUnits: "1",
     otherAmentities: [],
     images: [],
@@ -74,9 +77,10 @@ const CreateRoom = () => {
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
+    const value = selectedOption?.value || "";
     setRoomData((prev: any) => ({
       ...prev,
-      [name]: selectedOption?.value || "",
+      [name]: value,
     }));
   };
 
@@ -426,13 +430,7 @@ const CreateRoom = () => {
                           : null
                       }
                       onChange={(val) => handleSelectChange(val, "leaseTerms")}
-                      options={[
-                        {
-                          label: "1-Year Lease, Renewable",
-                          value: "1-Year Lease, Renewable",
-                        },
-                        { label: "6 Months Lease", value: "6 Months Lease" },
-                      ]}
+                      options={LONG_LET_LEASE_OPTIONS}
                       name=""
                     />
 

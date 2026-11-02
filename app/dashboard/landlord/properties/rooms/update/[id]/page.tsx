@@ -19,6 +19,7 @@ import {
 } from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import MultiImageUploader from "@/app/components/shared/MultiImageUploader";
+import { isShortStay, LEASE_TERM_OPTIONS } from "@/lib/shortStay";
 
 const UpdateRoomPage = () => {
   const [showDescription, setShowDescription] = useState(false);
@@ -36,6 +37,8 @@ const UpdateRoomPage = () => {
     apartmentType: "",
     leaseTerms: "",
     paymentOption: "",
+    minimumNights: "2",
+    houseRules: "",
     otherAmentities: [],
     images: [],
     propertyId: "",
@@ -81,6 +84,9 @@ const UpdateRoomPage = () => {
           apartmentType: room.apartmentType || "",
           leaseTerms: room.leaseTerms || "",
           paymentOption: room.paymentOption || "",
+          minimumNights:
+            room.minimumNights != null ? String(room.minimumNights) : "2",
+          houseRules: room.houseRules || "",
           otherAmentities: Array.isArray(room.otherAmentities)
             ? room.otherAmentities
             : [],
@@ -117,9 +123,13 @@ const UpdateRoomPage = () => {
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
+    const value = selectedOption?.value || "";
     setRoomData((prev: any) => ({
       ...prev,
-      [name]: selectedOption?.value || "",
+      [name]: value,
+      ...(name === "leaseTerms" && isShortStay(value)
+        ? { rentAmountMetrics: "Night", paymentOption: "Pay per stay" }
+        : {}),
     }));
   };
 
@@ -401,7 +411,11 @@ const UpdateRoomPage = () => {
                     />
 
                     <InputField
-                      label="Rent Amount"
+                      label={
+                        isShortStay(roomData.leaseTerms)
+                          ? "Price per night"
+                          : "Rent Amount"
+                      }
                       required
                       placeholder="250,000"
                       value={formatDisplayValue(roomData.rentAmount)}
@@ -441,15 +455,28 @@ const UpdateRoomPage = () => {
                           : null
                       }
                       onChange={(val) => handleSelectChange(val, "leaseTerms")}
-                      options={[
-                        {
-                          label: "1-Year Lease, Renewable",
-                          value: "1-Year Lease, Renewable",
-                        },
-                        { label: "6 Months Lease", value: "6 Months Lease" },
-                      ]}
+                      options={LEASE_TERM_OPTIONS}
                       name=""
                     />
+                    {isShortStay(roomData.leaseTerms) && (
+                      <>
+                        <InputField
+                          label="Minimum nights"
+                          required
+                          placeholder="2"
+                          value={roomData.minimumNights}
+                          onChange={handleInputChange}
+                          name="minimumNights"
+                        />
+                        <InputField
+                          label="House rules"
+                          placeholder="No parties"
+                          value={roomData.houseRules}
+                          onChange={handleInputChange}
+                          name="houseRules"
+                        />
+                      </>
+                    )}
 
                     <SelectField
                       label="Rent Collection Preference"

@@ -4,6 +4,7 @@ import { SITE_URL } from "@/lib/seo";
 const PUBLIC_PATHS = [
   "/",
   "/listings",
+  "/short-stays",
   "/about-us",
   "/careers",
   "/contact-us",

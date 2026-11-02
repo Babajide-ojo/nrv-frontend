@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Menu, X, ArrowRight, Home } from "lucide-react";
 import NavLink from "./NavLink";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { text: "How It Works", targetId: "how-it-works" },
   { text: "Features", targetId: "features" },
   { text: "Explore Homes", targetId: "explore" },
+  { text: "Short stays", route: "/short-stays" },
   { text: "Testimonials", targetId: "testimonials" },
 ];
 
@@ -24,6 +25,7 @@ const MobileNavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<{ accountType?: string } | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -99,7 +101,12 @@ const MobileNavBar: React.FC = () => {
                     <Link
                       href={item.route}
                       onClick={close}
-                      className="flex items-center py-4 px-3 text-base font-medium text-gray-700 hover:text-[#03442C] hover:bg-[#03442C]/5 rounded-xl transition-all duration-200"
+                      className={`flex items-center py-4 px-3 text-base font-medium rounded-xl transition-all duration-200 ${
+                        pathname === item.route ||
+                        pathname.startsWith(`${item.route}/`)
+                          ? "text-[#03442C] bg-[#03442C]/5"
+                          : "text-gray-700 hover:text-[#03442C] hover:bg-[#03442C]/5"
+                      }`}
                     >
                       {item.text}
                     </Link>

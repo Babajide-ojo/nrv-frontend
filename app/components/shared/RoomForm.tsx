@@ -10,6 +10,7 @@ import {
   isValidPositiveRentAmount,
   sanitizePositiveRentInput,
 } from "@/lib/rentAmount";
+import { isShortStay, LEASE_TERM_OPTIONS } from "@/lib/shortStay";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 interface RoomFormData {
@@ -26,6 +27,8 @@ interface RoomFormData {
   otherAmentities: string[];
   images: File[];
   propertyId: string;
+  minimumNights?: string;
+  houseRules?: string;
 }
 
 interface RoomFormProps {
@@ -62,6 +65,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
     otherAmentities: [],
     images: [],
     propertyId: propertyId,
+    minimumNights: "2",
+    houseRules: "",
     ...initialData
   });
 
@@ -90,9 +95,16 @@ const RoomForm: React.FC<RoomFormProps> = ({
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
+    const value = selectedOption?.value || "";
     setRoomData((prev) => ({
       ...prev,
-      [name]: selectedOption?.value || "",
+      [name]: value,
+      ...(name === "leaseTerms" && isShortStay(value)
+        ? {
+            rentAmountMetrics: "Night",
+            paymentOption: "Pay per stay",
+          }
+        : {}),
     }));
   };
 
@@ -235,7 +247,11 @@ const RoomForm: React.FC<RoomFormProps> = ({
               />
 
               <InputField
-                label="Rent Amount"
+                label={
+                  isShortStay(roomData.leaseTerms)
+                    ? "Price per night"
+                    : "Rent Amount"
+                }
                 required
                 placeholder="250,000"
                 value={formatDisplayValue(roomData.rentAmount)}
@@ -319,15 +335,29 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 onChange={(val: any) =>
                   handleSelectChange(val, "leaseTerms")
                 }
-                options={[
-                  { label: "1-Year Lease, Renewable", value: "1-Year Lease, Renewable" },
-                  { label: "2-Year Lease, Renewable", value: "2-Year Lease, Renewable" },
-                  { label: "3-Year Lease, Renewable", value: "3-Year Lease, Renewable" },
-                  { label: "6-Month Lease", value: "6-Month Lease" },
-                  { label: "Month-to-Month", value: "Month-to-Month" },
-                ]}
+                options={LEASE_TERM_OPTIONS}
                 name="leaseTerms"
               />
+
+              {isShortStay(roomData.leaseTerms) && (
+                <>
+                  <InputField
+                    label="Minimum nights"
+                    required
+                    placeholder="2"
+                    value={roomData.minimumNights || ""}
+                    onChange={handleInputChange}
+                    name="minimumNights"
+                  />
+                  <InputField
+                    label="House rules"
+                    placeholder="No parties"
+                    value={roomData.houseRules || ""}
+                    onChange={handleInputChange}
+                    name="houseRules"
+                  />
+                </>
+              )}
 
               <SelectField
                 label="Rent Amount Metrics"

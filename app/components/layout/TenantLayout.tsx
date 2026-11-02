@@ -38,6 +38,11 @@ const TENANT_MOBILE_LINKS: { name: string; route: string; icon: ReactNode }[] =
       icon: <FaBuilding size={20} color="white" />,
     },
     {
+      name: "Short stays",
+      route: "/dashboard/tenant/short-stays",
+      icon: <FaBuilding size={20} color="white" />,
+    },
+    {
       name: "Applications",
       route: "/dashboard/tenant/properties/applications",
       icon: <PiFileDocDuotone size={20} color="white" />,

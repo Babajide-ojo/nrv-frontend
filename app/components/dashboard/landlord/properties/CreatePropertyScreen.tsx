@@ -27,6 +27,7 @@ import {
 } from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import Link from "next/link";
+import { LONG_LET_LEASE_OPTIONS } from "@/lib/shortStay";
 
 
 
@@ -42,6 +43,9 @@ interface UnitData {
   // availableUnits: string;
   otherAmentities: string[];
   images?: File[];
+  minimumNights?: string;
+  houseRules?: string;
+  stayType?: string;
 }
 
 interface PropertyData {
@@ -88,6 +92,8 @@ const CreatePropertyScreen = () => {
         paymentOption: "",
         otherAmentities: [],
         images: [],
+        minimumNights: "2",
+        houseRules: "",
       },
     ],
   });
@@ -222,6 +228,8 @@ const CreatePropertyScreen = () => {
             rentAmountMetrics: "",
             paymentOption: "",
             otherAmentities: [],
+            minimumNights: "2",
+            houseRules: "",
           },
         ],
       });
@@ -321,6 +329,8 @@ const CreatePropertyScreen = () => {
           paymentOption: "",
           otherAmentities: [],
           images: [],
+          minimumNights: "2",
+          houseRules: "",
         },
       ],
     }));
@@ -674,16 +684,7 @@ const CreatePropertyScreen = () => {
                                     val?.value
                                   )
                                 }
-                                options={[
-                                  {
-                                    label: "1-Year Lease, Renewable",
-                                    value: "1-Year Lease, Renewable",
-                                  },
-                                  {
-                                    label: "6 Months Lease",
-                                    value: "6 Months Lease",
-                                  },
-                                ]}
+                                options={LONG_LET_LEASE_OPTIONS}
                                 name={`unit-${index}-leaseTerms`}
                               />
 

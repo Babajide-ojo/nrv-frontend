@@ -156,7 +156,7 @@ const RecentActivitiesSection: React.FC<{
       ) : activities.length === 0 ? (
         <li className="text-sm text-gray-500">No recent activities yet</li>
       ) : (
-        activities.map((activity, index) => (
+        activities.slice(0, 5).map((activity, index) => (
           <ActivityItem key={index} {...activity} />
         ))
       )}
@@ -198,7 +198,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           return;
         }
         const response = await fetch(
-          `${API_URL}/activities?userId=${userId}&limit=20`
+          `${API_URL}/activities?userId=${userId}&limit=5`
         );
         const result = await response.json();
         if (result.status === "success" && result.data) {

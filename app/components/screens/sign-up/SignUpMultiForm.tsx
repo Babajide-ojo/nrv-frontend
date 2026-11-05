@@ -10,12 +10,11 @@ import SignUppVerifyAccountScreen from "./SignUpVerifyAccountScreen";
 import Button from "@/app/components/shared/buttons/Button";
 import CheckBox from "@/app/components/shared/input-fields/CheckBox";
 import InputField from "@/app/components/shared/input-fields/InputFields";
-import { CheckCircle, Smile, User } from "lucide-react";
+import { CheckCircle, Home, Smile, User } from "lucide-react";
 import { toast } from "react-toastify";
 import AccountSideBar from "./AccountSideBar";
 import AccountTypeBadge from "./AccountTypeBadge";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 const Carousel = dynamic(() => import("../sign-in/Carousel"), {
@@ -58,6 +57,8 @@ const SignUpMultiForm = () => {
   const [prefillPhone, setPrefillPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Checkbox state
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const router = useRouter();
   const handleSubmit = async (values: any) => {
     if (!isChecked) {
@@ -70,7 +71,12 @@ const SignUpMultiForm = () => {
     }
     setIsLoading(true);
     try {
-      await dispatch(createUser(payload) as any).unwrap();
+      await dispatch(
+        createUser({
+          ...payload,
+          file: profilePhoto || undefined,
+        }) as any,
+      ).unwrap();
       localStorage.setItem("stepToLoad", JSON.stringify(3));
       setCurrentStep(3);
       setIsLoading(false);
@@ -80,11 +86,32 @@ const SignUpMultiForm = () => {
     }
   };
 
+  const handleProfilePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Profile photo must be under 5MB.");
+      return;
+    }
+    setProfilePhoto(file);
+    setProfilePreview(URL.createObjectURL(file));
+  };
+
   useEffect(() => {
     const roleParam = searchParams.get("role");
     const phoneParam = searchParams.get("phone");
 
-    if (roleParam === "landlord" || roleParam === "tenant") {
+    if (
+      roleParam === "landlord" ||
+      roleParam === "tenant" ||
+      roleParam === "shortlet_manager"
+    ) {
       setSelectedRole(roleParam);
       if (phoneParam) setPrefillPhone(phoneParam);
       setCurrentStep(2);
@@ -114,15 +141,12 @@ const SignUpMultiForm = () => {
           </div>
           <div className="w-full md:w-1/2 flex flex-col items-center justify-center flex-1 min-h-0 bg-gray-50 p-4 sm:p-6 overflow-y-auto">
             <div className="max-w-md w-full min-w-0">
-              <div className="md:hidden flex justify-center w-full mb-6 min-w-0">
-                <Link href="/" className="inline-block max-w-full">
-                  <Image
-                    src="/images/nrvlogo.jpg"
-                    alt="NaijaRentVerify"
-                    width={200}
-                    height={50}
-                    className="h-9 sm:h-10 w-auto max-w-[min(240px,88vw)] object-contain"
-                  />
+              <div className="mb-6 flex justify-center md:hidden">
+                <Link
+                  href="/"
+                  className="text-3xl font-semibold tracking-tight text-[#03442C] sm:text-4xl"
+                >
+                  NaijaRentVerify
                 </Link>
               </div>
               <h1 className="text-xl sm:text-2xl font-bold text-black">
@@ -151,6 +175,13 @@ const SignUpMultiForm = () => {
                     text: "Sign Up as a Tenant",
                     description:
                       "Find and secure your dream home with genuine listings.",
+                  },
+                  {
+                    role: "shortlet_manager",
+                    icon: <Home className="text-green-700" />,
+                    text: "Sign Up as a Shortlet Manager",
+                    description:
+                      "List short stays, run guest identity checks, and collect payment after a check passes.",
                   },
                 ].map(({ role, icon, text, description }) => (
                   <div
@@ -210,11 +241,38 @@ const SignUpMultiForm = () => {
           </div>
           <div className="w-full lg:w-1/2 bg-white p-12 pb-20 overflow-y-auto">
             <div className="max-w-md mx-auto ">
-              <h1 className="text-2xl font-bold text-green-600 lg:hidden my-10">
+              <h1 className="text-4xl font-bold text-green-600 lg:hidden my-10">
                 NaijaRentVerify
               </h1>
               <AccountTypeBadge accountType={selectedRole} className="mb-4" />
               <h2 className="text-3xl font-bold mb-2">Create Your Account</h2>
+              <div className="mb-6 flex flex-col items-center gap-3">
+                <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-dashed border-[#03442C]/40 bg-[#E9F4E7]">
+                  {profilePreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profilePreview}
+                      alt="Profile preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[#03442C]">
+                      <User className="h-8 w-8" aria-hidden />
+                    </div>
+                  )}
+                </div>
+                <label className="cursor-pointer text-sm font-medium text-[#03442C] underline-offset-2 hover:underline">
+                  Upload profile photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleProfilePhotoChange}
+                    aria-label="Upload profile photo"
+                  />
+                </label>
+                <p className="text-xs text-gray-500">Optional · JPG or PNG · max 5MB</p>
+              </div>
               <Formik
                 enableReinitialize
                 initialValues={{
@@ -236,7 +294,10 @@ const SignUpMultiForm = () => {
                     "lastName",
                     "email",
                     "phoneNumber",
-                    ...(selectedRole === "landlord" ? (["nin"] as const) : []),
+                    ...(selectedRole === "landlord" ||
+                    selectedRole === "shortlet_manager"
+                      ? (["nin"] as const)
+                      : []),
                     "password",
                     "confirmPassword",
                   ] as const;
@@ -278,7 +339,7 @@ const SignUpMultiForm = () => {
                         <>
                           I agree to the{" "}
                           <Link
-                            href="/legal"
+                            href="/legal/terms"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-green-800 underline hover:text-green-900"
@@ -288,7 +349,7 @@ const SignUpMultiForm = () => {
                           </Link>{" "}
                           and{" "}
                           <Link
-                            href="/privacy"
+                            href="/legal/privacy"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-green-800 underline hover:text-green-900"

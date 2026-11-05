@@ -1,183 +1,321 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import EmptyState from "../../../components/screens/empty-state/EmptyState";
-import Button from "../../../components/shared/buttons/Button";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { FaPencil } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
 import { getTenantsOnboardedByLandlord } from "@/redux/slices/userSlice";
-import { getAllLandlordApartment, getApplicationsByLandlordId } from "@/redux/slices/propertySlice";
+import { getApplicationsByLandlordId } from "@/redux/slices/propertySlice";
+import { apiClient } from "@/lib/api";
+import UserAvatar from "@/app/components/shared/UserAvatar";
+import ImageLightbox from "@/app/components/shared/ImageLightbox";
+import { Search } from "lucide-react";
 
-const RandomColorCircle = ({ firstName, lastName }: any) => {
-  // Function to generate random color
-  const getRandomColor = () => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
+type ChatRow = {
+  tenantId: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  file?: string | null;
+  lastMessage?: string;
+  lastMessageAt?: string | Date | null;
+};
 
-  // Get initials
-  const initials = `${firstName?.charAt(0)}${lastName?.charAt(0)}`;
+const getTenantId = (item: any): string | null => {
+  const applicant = item?.applicant;
+  if (!applicant) {
+    return null;
+  }
+  if (typeof applicant === "string") {
+    return applicant;
+  }
+  return applicant?._id ? String(applicant._id) : null;
+};
 
-  // Styles for the circle with random background color
-  const circleStyle = {
-    backgroundColor: getRandomColor(),
-    width: "50px", // adjust size as needed
-    height: "50px", // adjust size as needed
-    borderRadius: "50%",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    color: "#fff", // Text color (white)
-    fontWeight: "bold",
-    fontSize: "18px", // Adjust font size as needed
-  };
+const getDisplayName = (row: ChatRow) => {
+  const name = `${row.firstName || ""} ${row.lastName || ""}`.trim();
+  return name || row.email || "Tenant";
+};
 
-  return (
-    <div className="w-1/7">
-      <div style={circleStyle}>{initials}</div>
-    </div>
-  );
+const formatChatTime = (value?: string | Date | null) => {
+  if (!value) {
+    return "";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const now = new Date();
+  const isToday =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+
+  if (isToday) {
+    return new Intl.DateTimeFormat("en-NG", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getFullYear() === yesterday.getFullYear() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getDate() === yesterday.getDate();
+
+  if (isYesterday) {
+    return "Yesterday";
+  }
+
+  return new Intl.DateTimeFormat("en-NG", {
+    day: "numeric",
+    month: "short",
+  }).format(date);
 };
 
 const RentersListForLandlordScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>({});
-  const [page, setPage] = useState(1); // Current page
-  const [totalPages, setTotalPages] = useState(0); // Total pages
-  const [isPageLoading, setIsPageLoading] = useState(false); // New state for page loading
-  const [tenants, setTenants] = useState<any[]>([]);
-  const [landlordProperties, setLandlordProperties] = useState<any>([]);
+  const [page] = useState(1);
+  const [chats, setChats] = useState<ChatRow[]>([]);
+  const [search, setSearch] = useState("");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const dispatch = useDispatch();
   const router = useRouter();
 
   const fetchCombinedData = async () => {
-    const user = JSON.parse(localStorage.getItem("nrv-user") as any);
-    setUser(user?.user);
-  
+    const stored = JSON.parse(localStorage.getItem("nrv-user") as any);
+    const landlordId = stored?.user?._id;
+    if (!landlordId) {
+      setChats([]);
+      setIsLoading(false);
+      return;
+    }
+
     const formData = {
-      page: page,
-      id: user?.user?._id,
-      status: "activeTenant",
+      page,
+      id: landlordId,
+      status: "active",
     };
-  
+
     try {
+      const [applicationsResponse, tenantsResponse, partnersResponse] =
+        await Promise.all([
+          dispatch(getApplicationsByLandlordId(formData) as any),
+          dispatch(getTenantsOnboardedByLandlord({ id: landlordId }) as any),
+          apiClient.get(`/messages/partners/${landlordId}`).catch(() => null),
+        ]);
 
-      const [applicationsResponse, tenantsResponse] = await Promise.all([
-        dispatch(getApplicationsByLandlordId(formData) as any),
-        dispatch(getTenantsOnboardedByLandlord(formData) as any),
-      ]);
-  
+      const applicationRows = applicationsResponse?.payload?.data || [];
+      const onboardedRows = Array.isArray(tenantsResponse?.payload)
+        ? tenantsResponse.payload
+        : tenantsResponse?.payload?.data || [];
+      const partnerRows = partnersResponse?.data?.data || [];
 
-      const combinedData = [
-        ...(applicationsResponse?.payload?.data || []),
-        ...(tenantsResponse?.payload?.data || []),
-      ];
-  
-      const uniqueOwners: any = new Map();
-      combinedData.forEach((item: any) => {
-        if (!uniqueOwners.has(item.ownerId._id)) {
-          uniqueOwners.set(item.ownerId._id, item);
+      const uniqueChats = new Map<string, ChatRow>();
+
+      const upsertFromApplicant = (item: any) => {
+        const tenantId = getTenantId(item);
+        if (!tenantId) {
+          return;
         }
+        const applicant = item?.applicant || {};
+        const existing = uniqueChats.get(tenantId);
+        uniqueChats.set(tenantId, {
+          tenantId,
+          firstName: applicant?.firstName || existing?.firstName,
+          lastName: applicant?.lastName || existing?.lastName,
+          email: applicant?.email || existing?.email,
+          file: applicant?.file || existing?.file || null,
+          lastMessage: existing?.lastMessage,
+          lastMessageAt: existing?.lastMessageAt,
+        });
+      };
+
+      [...applicationRows, ...onboardedRows].forEach(upsertFromApplicant);
+
+      partnerRows.forEach((partner: any) => {
+        const tenantId = String(partner?.partnerId || "");
+        if (!tenantId) {
+          return;
+        }
+        const user = partner?.partner || {};
+        const existing = uniqueChats.get(tenantId);
+        uniqueChats.set(tenantId, {
+          tenantId,
+          firstName: user?.firstName || existing?.firstName,
+          lastName: user?.lastName || existing?.lastName,
+          email: user?.email || existing?.email,
+          file: user?.file || existing?.file || null,
+          lastMessage: partner?.lastMessage || existing?.lastMessage,
+          lastMessageAt: partner?.lastMessageAt || existing?.lastMessageAt,
+        });
       });
-  
-      const uniqueOwnerArray = Array.from(uniqueOwners.values());
-      const formattedOptions: any = uniqueOwnerArray.map((item: any) => ({
-        value: item._id,
-        label: item.propertyId.streetAddress,
-      }));
-  
-      setLandlordProperties(formattedOptions);
-      setTenants(uniqueOwnerArray);
-      setTotalPages(tenantsResponse?.totalPages);
+
+      const sorted = Array.from(uniqueChats.values()).sort((a, b) => {
+        const aTime = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+        const bTime = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+        return bTime - aTime;
+      });
+
+      setChats(sorted);
     } catch (error) {
       console.error("Error fetching combined data:", error);
+      setChats([]);
     } finally {
       setIsLoading(false);
-      setIsPageLoading(false);
     }
   };
-  
-  useEffect(() => {
-    fetchCombinedData();
-  }, [page]); // Reload properties when page changes
-  
 
- 
+  useEffect(() => {
+    void fetchCombinedData();
+  }, [page]);
+
+  const filteredChats = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) {
+      return chats;
+    }
+    return chats.filter((chat) => {
+      const name = getDisplayName(chat).toLowerCase();
+      const email = String(chat.email || "").toLowerCase();
+      return name.includes(query) || email.includes(query);
+    });
+  }, [chats, search]);
 
   return (
-    <div className="p-4 w-full">
-      <div className="text-xl">Messages 🏘️...</div>
+    <div className="-mx-2 -mt-3 mb-0 flex h-[calc(100dvh-3.75rem)] max-h-[calc(100dvh-3.75rem)] w-auto flex-col overflow-hidden bg-[#F0F2F5] sm:-mx-4 md:mx-auto md:mt-0 md:h-[calc(100dvh-6.5rem)] md:max-h-[calc(100dvh-6.5rem)] md:max-w-3xl md:rounded-2xl md:border md:border-gray-200 md:shadow-sm lg:h-[calc(100dvh-5.5rem)] lg:max-h-[calc(100dvh-5.5rem)]">
+      <div className="shrink-0 border-b border-[#E9EDEF] bg-[#03442C] px-4 py-3 text-white">
+        <h1 className="text-lg font-semibold tracking-tight">Messages</h1>
+        <p className="mt-0.5 text-xs text-white/80">
+          Chat with your tenants
+        </p>
+      </div>
 
-      {isLoading ? (
-        <div className="w-full mx-auto">
-          {[...Array(2)].map((_, index) => (
-            <div key={index} className="flex mt-4 rounded-2xl p-4">
-              <div className="w-1/5">
-                <div className="h-20 rounded"></div>{" "}
-                {/* Placeholder for image */}
-              </div>
-              <div className="w-4/5">
-                <div className="flex justify-between w-full">
-                  <div className="h-6 rounded w-1/2"></div>{" "}
-                  {/* Placeholder for name */}
-                  <div className="h-6 rounded w-1/2 text-right"></div>{" "}
-                  {/* Placeholder for apartment ID */}
-                </div>
-                <div className="h-4 rounded mt-4"></div>{" "}
-                {/* Placeholder for address */}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div>
-          {tenants?.length < 1 ? (
-            <div className="">
-              <div className="flex justify-center items-center">
-                <div className="">
-                  <EmptyState />
-                  <p className="text-nrvLightGrey m-2">No Tenant Yet</p>
+      <div className="shrink-0 border-b border-[#E9EDEF] bg-white px-3 py-2.5">
+        <label className="relative block" htmlFor="messages-search">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#54656F]"
+            aria-hidden
+          />
+          <input
+            id="messages-search"
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search name or email"
+            className="h-10 w-full rounded-lg bg-[#F0F2F5] py-2 pl-10 pr-3 text-sm text-[#111B21] outline-none placeholder:text-[#667781] focus:ring-2 focus:ring-[#03442C]/25"
+            aria-label="Search conversations"
+          />
+        </label>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto bg-white">
+        {isLoading ? (
+          <div className="divide-y divide-[#F0F2F5]">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="flex items-center gap-3 px-4 py-3">
+                <div className="h-12 w-12 animate-pulse rounded-full bg-gray-200" />
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="h-3.5 w-1/2 animate-pulse rounded bg-gray-200" />
+                  <div className="h-3 w-3/4 animate-pulse rounded bg-gray-100" />
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="md:mx-auto mt-8 mx-4 ">
-              {tenants?.map((property: any) => (
-                <div
-                  key={property.id}
-                  className="p-2 rounded rounded-lg w-full mt-8 flex justify-between"
-                  onClick={() => {
-                    router.push(
-                      `/dashboard/landlord/messages/${property.applicant._id}`
-                    );
-                  }}
-                >
-                  <div className="w-full">
-                    <div className="flex gap-2 items-center">
-                      <p className="w-full text-sm text-nrvDarkGrey font-medium mt-1">
-                        {property.applicant?.firstName}{" "}
-                        {property.applicant?.lastName}
+            ))}
+          </div>
+        ) : filteredChats.length < 1 ? (
+          <div className="flex h-full flex-col items-center justify-center px-6 py-12 text-center">
+            <EmptyState />
+            <p className="mt-2 text-sm font-medium text-[#111B21]">
+              {search.trim() ? "No matching conversations" : "No conversations yet"}
+            </p>
+            <p className="mt-1 max-w-xs text-xs text-[#667781]">
+              {search.trim()
+                ? "Try another name or email."
+                : "Tenants you message will appear here."}
+            </p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-[#F0F2F5]" role="list">
+            {filteredChats.map((chat) => {
+              const displayName = getDisplayName(chat);
+              const preview = chat.lastMessage?.trim() || "Tap to start chatting";
+              const timeLabel = formatChatTime(chat.lastMessageAt);
+
+              return (
+                <li key={chat.tenantId}>
+                  <div className="flex w-full items-center gap-3 px-3 py-3 transition hover:bg-[#F5F6F6]">
+                    <button
+                      type="button"
+                      className="shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-[#03442C]/40"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (chat.file) {
+                          setPreviewImage(String(chat.file));
+                        } else {
+                          router.push(
+                            `/dashboard/landlord/messages/${chat.tenantId}`,
+                          );
+                        }
+                      }}
+                      aria-label={
+                        chat.file
+                          ? `View ${displayName}'s profile photo`
+                          : `Open chat with ${displayName}`
+                      }
+                    >
+                      <UserAvatar
+                        src={chat.file}
+                        name={displayName}
+                        size="md"
+                        className={`!h-12 !w-12 !text-sm ${chat.file ? "cursor-zoom-in" : ""}`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      className="min-w-0 flex-1 text-left focus:outline-none"
+                      onClick={() =>
+                        router.push(
+                          `/dashboard/landlord/messages/${chat.tenantId}`,
+                        )
+                      }
+                      aria-label={`Open chat with ${displayName}`}
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="truncate text-[15px] font-semibold text-[#111B21]">
+                          {displayName}
+                        </p>
+                        {timeLabel ? (
+                          <span className="shrink-0 text-[11px] text-[#667781]">
+                            {timeLabel}
+                          </span>
+                        ) : null}
+                      </div>
+                      {chat.email ? (
+                        <p className="mt-0.5 truncate text-xs text-[#03442C]">
+                          {chat.email}
+                        </p>
+                      ) : null}
+                      <p className="mt-0.5 truncate text-[13px] text-[#667781]">
+                        {preview}
                       </p>
-                    </div>
+                    </button>
                   </div>
-                  <div className="w-1/5 text-end flex flex-col justify-between h-full">
-          
-                    <FaPencil
-                      className="cursor-pointer"
-                      color="grey"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+
+      <ImageLightbox
+        src={previewImage}
+        alt="Profile photo"
+        onClose={() => setPreviewImage(null)}
+      />
     </div>
   );
 };

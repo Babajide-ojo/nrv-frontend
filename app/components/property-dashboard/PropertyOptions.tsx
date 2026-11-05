@@ -23,8 +23,8 @@ interface Data {
 
 const PropertyOptions: React.FC<Data> = ({ data }) => {
   const canListForTenants = data?.approved === true;
-  const listBlocked =
-    data?.listRoom === false && !canListForTenants;
+  const isPubliclyListed =
+    data?.listRoom === true && data?.approved === true;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenInvite, setIsOpenInvite] = useState(false);
@@ -34,7 +34,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
   const dispatch = useDispatch();
 
   const updateRoom = async () => {
-    const nextListed = data?.listRoom !== true;
+    const nextListed = !isPubliclyListed;
     if (nextListed && !canListForTenants) {
       toast.error(
         "This unit must be approved by an admin before it can be listed."
@@ -92,33 +92,21 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
           Objectives
         </div>
 
-        <div className="w-full mt-6">
-          <Button
-            size="normal"
-            className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
-            variant="mediumGrey"
-            showIcon={false}
-            disabled={listBlocked}
-            title={
-              listBlocked
-                ? "Request admin approval first, then list after approval."
-                : undefined
-            }
-            onClick={() => {
-              if (listBlocked) {
-                toast.info(
-                  'Use "Request approval for listing" on the unit page first. After an admin approves, you can list this unit.'
-                );
-                return;
-              }
-              setIsOpen(true);
-            }}
-          >
-            <div className="flex gap-3 p-1.5 text-swBlue">
-              {data.listRoom === false ? "List Apartment" : "Unlist Apartment"}
-            </div>
-          </Button>
-        </div>
+        {(isPubliclyListed || canListForTenants) && (
+          <div className="w-full mt-6">
+            <Button
+              size="normal"
+              className="bg-nrvLightGreyBg w-full block border border-nrvGreyMediumBg pt-3 pb-3 text-md rounded-md  hover:text-white hover:bg-nrvPrimaryGreen text-bg-nrvPrimaryGreen"
+              variant="mediumGrey"
+              showIcon={false}
+              onClick={() => setIsOpen(true)}
+            >
+              <div className="flex gap-3 p-1.5 text-swBlue">
+                {isPubliclyListed ? "Unlist Apartment" : "List Apartment"}
+              </div>
+            </Button>
+          </div>
+        )}
 
         <div className="w-full mt-6">
           <Button
@@ -185,8 +173,9 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
       >
         <div className="mx-auto text-center p-4">
           <p className="text-nrvLightGrey text-md">
-            Listing this property will make it visible to tenant for
-            applications.
+            {isPubliclyListed
+              ? "Unlisting this apartment will hide it from the public marketplace. Tenants will no longer see it when browsing available listings."
+              : "Listing this apartment will make it visible to tenants for applications on the marketplace."}
           </p>
           <p className="text-red-500 text-lg font-medium">
             Are you sure you want to continue?
@@ -210,7 +199,7 @@ const PropertyOptions: React.FC<Data> = ({ data }) => {
               variant="darkPrimary"
               showIcon={false}
               isLoading={listingRoom}
-              loadingText="Listing…"
+              loadingText={isPubliclyListed ? "Unlisting…" : "Listing…"}
               onClick={updateRoom}
             >
               Continue

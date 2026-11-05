@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { API_URL } from '../../config/constant';
+import { apiClient } from "@/lib/api";
 
 
 interface MessagesState {
@@ -31,26 +30,26 @@ export const sendMessage = createAsyncThunk<FormData | any, {}>(
   "message/send",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response: any = await axios.post(`${API_URL}/messages/send`, formData
-
-      );
+      const response: any = await apiClient.post("/messages/send", formData);
       return response.data;
     } catch (error: any) {
-      if (error.response.data.message) {
-        return rejectWithValue(error.response.data.message);
-      } else {
-        return rejectWithValue("An error occurred, please try again later");
-      }
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "An error occurred, please try again later";
+      return rejectWithValue(apiMessage);
     }
   }
 );
 
 
 export const getConversation = createAsyncThunk<any, {}>(
-  "messages/send",
+  "messages/conversation",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/messages/conversation/${formData.senderId}/${formData.recipientId}`);
+      const response = await apiClient.get(
+        `/messages/conversation/${formData.senderId}/${formData.recipientId}`,
+      );
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {
@@ -66,7 +65,9 @@ export const getMaintenanceByOwnerId = createAsyncThunk<any, {}>(
   "maintenance/landlord",
   async (formData: any, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${API_URL}/maintenance/get-landlord-maintenance/${formData.ownerId}/?page=${formData.page}`);
+      const response = await apiClient.get(
+        `/maintenance/get-landlord-maintenance/${formData.ownerId}/?page=${formData.page}`,
+      );
       return response.data;
     } catch (error: any) {
       if (error.response.data.message) {

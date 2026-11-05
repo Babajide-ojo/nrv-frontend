@@ -122,6 +122,52 @@ export const formatDateToWords = (dateString: string): string => {
 };
 
 /**
+ * Formats a lease calendar day consistently (no time, no UTC date-slice off-by-one).
+ * Uses the local calendar day of the stored instant.
+ */
+export const formatLeaseCalendarDate = (value: unknown): string => {
+  if (value == null || value === "") {
+    return "";
+  }
+
+  try {
+    const date = value instanceof Date ? value : new Date(String(value));
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return new Intl.DateTimeFormat("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  } catch {
+    return String(value);
+  }
+};
+
+/**
+ * Persist a date-picker value as noon UTC on the selected local calendar day
+ * so list/detail views agree across timezones.
+ */
+export const toLeaseCalendarDateIso = (value: unknown): string | null => {
+  if (value == null || value === "") {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(String(value));
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}T12:00:00.000Z`;
+};
+
+/**
  * Calculates the difference between two dates
  */
 export const calculateDateDifference = (
@@ -303,12 +349,15 @@ export const formatDisplayValue = (value: string): string => {
   }
   
   try {
-    // Remove commas for parsing
-    const cleanedValue = value.toString().replace(/,/g, "");
+    // Remove commas for parsing; never allow a leading minus in amount fields
+    const cleanedValue = value.toString().replace(/,/g, "").replace(/[^\d.]/g, "");
+    if (cleanedValue === "" || cleanedValue === ".") {
+      return cleanedValue;
+    }
     const num = parseFloat(cleanedValue);
     
-    if (isNaN(num)) {
-      return value; // Return raw value if not a valid number
+    if (isNaN(num) || num < 0) {
+      return cleanedValue === "" ? "" : value.replace(/-/g, "");
     }
     
     return num.toLocaleString("en-US", {
@@ -317,7 +366,7 @@ export const formatDisplayValue = (value: string): string => {
     });
   } catch (error) {
     console.error('Error formatting display value:', error);
-    return value;
+    return String(value).replace(/-/g, "");
   }
 };
 

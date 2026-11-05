@@ -343,26 +343,36 @@ const SingleMaintainance = () => {
     }
   };
 
-  const handleAsResolved = async () => {
+  const handleUpdateStatus = async (status: string, successMessage: string) => {
     try {
       setIsLoading(true);
       const response = await dispatch(
         updateMaintenance({
           id: JSON.stringify(id),
           formData: {
-            status: "Resolved",
+            status,
           },
-        }) as any
+        }) as any,
       );
       setMaintenance(response?.payload?.data);
-      setIsLoading(false);
       setIsResolvedModalOpen(false);
-      toast.success("Maintenanace As Resolved Successfully");
+      toast.success(successMessage);
     } catch (error) {
-      toast.error("Failed to fetch maintenance data.");
+      toast.error("Failed to update maintenance status.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAsResolved = async () => {
+    await handleUpdateStatus("Resolved", "Maintenance marked as resolved.");
+  };
+
+  const handleMarkInProgress = async () => {
+    await handleUpdateStatus(
+      "In Progress",
+      "Maintenance marked as in progress.",
+    );
   };
 
   useEffect(() => {
@@ -530,18 +540,31 @@ const SingleMaintainance = () => {
                   </div>
                 </div>
   
-                <div className="flex gap-3 mt-4">
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {maintenance.status !== "Resolved" &&
+                    maintenance.status !== "Declined" &&
+                    maintenance.status !== "In Progress" && (
+                      <Button
+                        className="rounded-md bg-[#03442C] text-[12px] font-medium text-white hover:bg-[#023522] hover:text-white"
+                        disabled={isLoading}
+                        onClick={() => {
+                          void handleMarkInProgress();
+                        }}
+                      >
+                        Mark As In Progress
+                      </Button>
+                    )}
                   {maintenance.status !== "Resolved" &&
                     maintenance.status !== "Declined" && (
-                    <Button
-                      className="bg-[#2B892B] text-white hover:text-white rounded-md text-[12px] font-medium"
-                      onClick={() => {
-                        setIsResolvedModalOpen(true);
-                      }}
-                    >
-                      Mark As Resolved
-                    </Button>
-                  )}
+                      <Button
+                        className="rounded-md bg-[#2B892B] text-[12px] font-medium text-white hover:text-white"
+                        onClick={() => {
+                          setIsResolvedModalOpen(true);
+                        }}
+                      >
+                        Mark As Resolved
+                      </Button>
+                    )}
                 </div>
               </div>
               {/* Right: Assignment + Timeline */}

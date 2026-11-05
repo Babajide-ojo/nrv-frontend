@@ -145,6 +145,7 @@ export interface SignUpFormData {
   accountType: 'landlord' | 'tenant';
   nin?: string;
   homeAddress?: string;
+  file?: File | null;
 }
 
 export interface PropertyFormData {

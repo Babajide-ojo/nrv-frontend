@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import NavLink from "./NavLink";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Home } from "lucide-react";
@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { text: "How It Works", targetId: "how-it-works" },
   { text: "Features", targetId: "features" },
   { text: "Explore", targetId: "explore" },
+  { text: "Short stays", route: "/short-stays" },
   { text: "Testimonials", targetId: "testimonials" },
 ];
 
@@ -23,6 +24,7 @@ const DesktopNavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<{ accountType?: string } | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -76,7 +78,12 @@ const DesktopNavBar: React.FC = () => {
                   ) : (
                     <Link
                       href={item.route}
-                      className="text-sm font-medium text-gray-600 hover:text-[#03442C] transition-colors duration-200"
+                      className={`text-sm font-medium transition-colors duration-200 ${
+                        pathname === item.route ||
+                        pathname.startsWith(`${item.route}/`)
+                          ? "text-[#03442C]"
+                          : "text-gray-600 hover:text-[#03442C]"
+                      }`}
                     >
                       {item.text}
                     </Link>
@@ -102,6 +109,7 @@ const DesktopNavBar: React.FC = () => {
                 onClick={() => {
                   if (currentUser?.accountType === "landlord") router.push("/dashboard/landlord");
                   else if (currentUser?.accountType === "tenant") router.push("/dashboard/tenant");
+                  else if (currentUser?.accountType === "shortlet_manager") router.push("/dashboard/manager");
                 }}
                 className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#03442C] text-white text-sm font-semibold hover:bg-[#022f21] shadow-sm hover:shadow-md transition-all duration-200"
               >

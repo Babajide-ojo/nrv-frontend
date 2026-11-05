@@ -20,8 +20,14 @@ import ImageUploader from "@/app/components/shared/ImageUploader";
 
 import ConfirmationModal from "@/app/components/shared/modals/ConfirmationModal";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  blockNonPositiveRentKeys,
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import Link from "next/link";
+import { LONG_LET_LEASE_OPTIONS } from "@/lib/shortStay";
 
 
 
@@ -37,6 +43,9 @@ interface UnitData {
   // availableUnits: string;
   otherAmentities: string[];
   images?: File[];
+  minimumNights?: string;
+  houseRules?: string;
+  stayType?: string;
 }
 
 interface PropertyData {
@@ -83,6 +92,8 @@ const CreatePropertyScreen = () => {
         paymentOption: "",
         otherAmentities: [],
         images: [],
+        minimumNights: "2",
+        houseRules: "",
       },
     ],
   });
@@ -115,6 +126,9 @@ const CreatePropertyScreen = () => {
         }
         if (!unit.rentAmount?.trim()) {
           nextErrors[`unit-${index}-rentAmount`] = "Rent amount is required";
+        } else if (!isValidPositiveRentAmount(unit.rentAmount)) {
+          nextErrors[`unit-${index}-rentAmount`] =
+            "Rent amount must be greater than zero";
         }
         if (!unit.noOfRooms?.toString().trim()) {
           nextErrors[`unit-${index}-noOfRooms`] = "Bedrooms is required";
@@ -214,6 +228,8 @@ const CreatePropertyScreen = () => {
             rentAmountMetrics: "",
             paymentOption: "",
             otherAmentities: [],
+            minimumNights: "2",
+            houseRules: "",
           },
         ],
       });
@@ -276,28 +292,24 @@ const CreatePropertyScreen = () => {
     field: keyof UnitData,
     value: string
   ) => {
-    // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setPropertyData((prevData) => {
-        const updatedUnits = [...prevData.units];
-        updatedUnits[index] = {
-          ...updatedUnits[index],
-          [field]: cleanedValue,
-        };
-        return {
-          ...prevData,
-          units: updatedUnits,
-        };
-      });
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [`unit-${index}-${field}`]: "",
-        units: "",
-      }));
-    }
+    setPropertyData((prevData) => {
+      const updatedUnits = [...prevData.units];
+      updatedUnits[index] = {
+        ...updatedUnits[index],
+        [field]: cleanedValue,
+      };
+      return {
+        ...prevData,
+        units: updatedUnits,
+      };
+    });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [`unit-${index}-${field}`]: "",
+      units: "",
+    }));
   };
 
   const addUnit = () => {
@@ -317,6 +329,8 @@ const CreatePropertyScreen = () => {
           paymentOption: "",
           otherAmentities: [],
           images: [],
+          minimumNights: "2",
+          houseRules: "",
         },
       ],
     }));
@@ -580,7 +594,7 @@ const CreatePropertyScreen = () => {
                                 value={formatDisplayValue(unit.rentAmount)}
                                 required
                                 error={errors[`unit-${index}-rentAmount`]}
-                                // onKeyPress={preventNonNumeric}
+                                inputType="text"
                                 onChange={(e) =>
                                   handleUnitChangeWithComma(
                                     index,
@@ -588,6 +602,7 @@ const CreatePropertyScreen = () => {
                                     e.target.value
                                   )
                                 }
+                                onKeyPress={blockNonPositiveRentKeys}
                                 name={`unit-${index}-rentAmount`}
                               />
 
@@ -669,16 +684,7 @@ const CreatePropertyScreen = () => {
                                     val?.value
                                   )
                                 }
-                                options={[
-                                  {
-                                    label: "1-Year Lease, Renewable",
-                                    value: "1-Year Lease, Renewable",
-                                  },
-                                  {
-                                    label: "6 Months Lease",
-                                    value: "6 Months Lease",
-                                  },
-                                ]}
+                                options={LONG_LET_LEASE_OPTIONS}
                                 name={`unit-${index}-leaseTerms`}
                               />
 
@@ -837,11 +843,11 @@ const CreatePropertyScreen = () => {
                               })}
                             </div>
 
-                                                         {/* Unit Images */}
+                                                         {/* Apartment Images */}
                              <div className="mt-6">
                                <div className="w-full mt-4">
                                  <label className="text-nrvInputFiledColor text-[14px] font-medium">
-                                   {`Unit ${index + 1} Images`}
+                                   {`Apartment ${index + 1} Images`}
                                  </label>
 
                                  {/* Image Upload Section */}

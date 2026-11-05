@@ -86,6 +86,8 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
           router.push("/dashboard/tenant");
         } else if (accountType === "landlord") {
           router.push("/dashboard/landlord");
+        } else if (accountType === "shortlet_manager") {
+          router.push("/dashboard/manager");
         } else {
           router.push("/");
         }
@@ -96,6 +98,11 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
       if (accountType === "tenant") {
         toast.success("Account verified. Welcome to NaijaRentVerify!");
         router.push("/dashboard/tenant");
+        return;
+      }
+      if (accountType === "shortlet_manager") {
+        toast.success("Account verified. Welcome to NaijaRentVerify!");
+        router.push("/dashboard/manager");
         return;
       }
 
@@ -141,7 +148,7 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
             </div>
             <div className="w-full lg:w-1/2 flex flex-col justify-center p-5">
               <div className="max-w-md mx-auto">
-                <h1 className="text-2xl font-bold text-green-600 my-10">
+                <h1 className="text-4xl font-bold text-green-600 my-10">
                   NaijaRentVerify
                 </h1>
                 <AccountTypeBadge
@@ -153,7 +160,8 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
                 </h2>
                 <p className="mt-2 text-gray-600">
                   We&apos;ve sent a 6-digit verification code to{" "}
-                  <strong className="text-gray-900">{emailDisplay}</strong>.
+                  <strong className="text-gray-900">{emailDisplay}</strong> and
+                  by SMS to the phone number you used to sign up.
                 </p>
                 <p className="mt-1 text-gray-600">
                   Enter the code below to activate your account.
@@ -163,6 +171,9 @@ const SignUpVerifyAccount: React.FC<SignUpVerifyAccountProps> = ({
                   <p className="font-semibold">Instructions:</p>
                   <ul className="list-disc list-inside text-sm">
                     <li className="mt-4">Open your email inbox (and spam folder).</li>
+                    <li className="mt-4">
+                      Check the SMS sent to your phone number.
+                    </li>
                     <li className="mt-4">
                       Look for an email from NaijaRentVerify.
                     </li>

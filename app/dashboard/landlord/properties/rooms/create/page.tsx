@@ -15,8 +15,14 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 import SelectField from "@/app/components/shared/input-fields/SelectField";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  blockNonPositiveRentKeys,
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import MultiImageUploader from "../../../../../components/shared/MultiImageUploader";
+import { LONG_LET_LEASE_OPTIONS } from "@/lib/shortStay";
 
 const CreateRoom = () => {
   const [showDescription, setShowDescription] = useState(false);
@@ -33,6 +39,8 @@ const CreateRoom = () => {
     apartmentType: "",
     leaseTerms: "",
     paymentOption: "",
+    minimumNights: "2",
+    houseRules: "",
     // availableUnits: "1",
     otherAmentities: [],
     images: [],
@@ -60,22 +68,19 @@ const CreateRoom = () => {
   ) => {
     const { name, value } = e.target as HTMLInputElement;
 
-    // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setRoomData((prevData: any) => ({
-        ...prevData,
-        [name]: cleanedValue,
-      }));
-    }
+    setRoomData((prevData: any) => ({
+      ...prevData,
+      [name]: cleanedValue,
+    }));
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
+    const value = selectedOption?.value || "";
     setRoomData((prev: any) => ({
       ...prev,
-      [name]: selectedOption?.value || "",
+      [name]: value,
     }));
   };
 
@@ -155,6 +160,11 @@ const CreateRoom = () => {
       return;
     }
 
+    if (!isValidPositiveRentAmount(rentAmount)) {
+      toast.error("Rent amount must be greater than zero.");
+      return;
+    }
+
     const formData = new FormData();
     Object.entries(roomData).forEach(([key, value]: any) => {
       if (key === "otherAmentities") {
@@ -182,8 +192,12 @@ const CreateRoom = () => {
 
     try {
       setLoading(true);
-      await dispatch(createRooms(formData) as any).unwrap();
-      toast.success("Room added successfully");
+      const response = await dispatch(createRooms(formData) as any).unwrap();
+      toast.success(
+        response?.message ||
+          "Unit added successfully. It is awaiting admin approval before it can be listed publicly.",
+        { autoClose: 8000 },
+      );
       router.push(`/dashboard/landlord/properties/${propertyId}`);
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong.");
@@ -381,6 +395,7 @@ const CreateRoom = () => {
                       placeholder="250,000"
                       value={formatDisplayValue(roomData.rentAmount)}
                       onChange={handleInputChangeWithComma}
+                      onKeyPress={blockNonPositiveRentKeys}
                       name="rentAmount"
                     />
 
@@ -415,13 +430,7 @@ const CreateRoom = () => {
                           : null
                       }
                       onChange={(val) => handleSelectChange(val, "leaseTerms")}
-                      options={[
-                        {
-                          label: "1-Year Lease, Renewable",
-                          value: "1-Year Lease, Renewable",
-                        },
-                        { label: "6 Months Lease", value: "6 Months Lease" },
-                      ]}
+                      options={LONG_LET_LEASE_OPTIONS}
                       name=""
                     />
 
@@ -540,7 +549,7 @@ const CreateRoom = () => {
 
                   <div className="mt-6 max-w-4xl mx-auto">
                     <MultiImageUploader 
-                      label="Room Images" 
+                      label="Apartment Images" 
                       onChange={handleImagesChange} 
                       value={roomData.images}
                       maxFiles={10}

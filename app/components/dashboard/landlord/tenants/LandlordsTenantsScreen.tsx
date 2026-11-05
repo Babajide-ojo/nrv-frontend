@@ -4,12 +4,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { formatDateToWords } from "@/helpers/utils";
+import { formatLeaseCalendarDate } from "@/helpers/utils";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
 import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { updateApplicationStatus } from "@/redux/slices/propertySlice";
 import { apiService } from "@/lib/api";
+import { formatEndTenancySummary, getApplicationCurrentResidence, getApplicationEmployer, getApplicationJobTitle } from "@/lib/applicationDisplay";
 import { Users, Wallet, TrendingUp, TrendingDown } from "lucide-react";
 
 type TenantManagementMetrics = {
@@ -23,7 +24,7 @@ const formatLeaseDate = (value: unknown) => {
   if (!value) {
     return "—";
   }
-  const formatted = formatDateToWords(String(value));
+  const formatted = formatLeaseCalendarDate(value);
   return formatted || "—";
 };
 
@@ -376,7 +377,10 @@ const LandlordsTenantsScreen = () => {
                 render: (val) => (
                   <span
                     className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      val === "Ended" || val === "ended"
+                      val === "Ended" ||
+                      val === "ended" ||
+                      val === "Expired" ||
+                      val === "expired"
                         ? "bg-red-100 text-red-700"
                         : "bg-[#E9F4E7] text-[#045D23]"
                     }`}
@@ -385,7 +389,9 @@ const LandlordsTenantsScreen = () => {
                       ? "Active Lease"
                       : val === "Ended" || val === "ended"
                         ? "Ended"
-                        : val || "—"}
+                        : val === "Expired" || val === "expired"
+                          ? "Expired"
+                          : val || "—"}
                   </span>
                 ),
               },
@@ -399,6 +405,31 @@ const LandlordsTenantsScreen = () => {
                 label: "Lease End Date",
                 render: (val) => <span>{formatLeaseDate(val)}</span>,
               },
+              ...(activeTab === "ended"
+                ? [
+                    {
+                      key: "endTenancyReason",
+                      label: "End Reason",
+                      render: (_val: unknown, row: BaseRow) => (
+                        <span className="text-sm text-gray-700">
+                          {formatEndTenancySummary(row) || "—"}
+                        </span>
+                      ),
+                    },
+                    {
+                      key: "tenancyComments",
+                      label: "Comments",
+                      render: (val: unknown) => {
+                        const count = Array.isArray(val) ? val.length : 0;
+                        return (
+                          <span className="text-sm text-gray-700">
+                            {count}
+                          </span>
+                        );
+                      },
+                    },
+                  ]
+                : []),
             ]}
           />
         </div>
@@ -506,9 +537,12 @@ const LandlordsTenantsScreen = () => {
               <InfoCard
                 title="Employment Details"
                 data={[
-                  ["Employer", application?.employment?.employer],
-                  ["Job Title", application?.employment?.jobTitle],
-                  ["Salary Range", application?.employment?.salaryRange],
+                  ["Employer", getApplicationEmployer(application) || "—"],
+                  ["Job Title", getApplicationJobTitle(application) || "—"],
+                  [
+                    "Current Residence",
+                    getApplicationCurrentResidence(application) || "—",
+                  ],
                 ]}
               />
 

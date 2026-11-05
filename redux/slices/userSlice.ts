@@ -40,7 +40,8 @@ interface LandlordUserData {
   firstName: string;
   lastName: string;
   email: string;
-  nin: string;
+  phoneNumber: string;
+  nin?: string;
   propertyId: string;
   ownerId: string;
   rentEndDate?: string;
@@ -68,6 +69,8 @@ interface TenancyRequest {
   id: string;
   rentEndDate?: string;
   rentStartDate?: string;
+  reason?: string;
+  comment?: string;
 }
 
 // Initial state
@@ -91,12 +94,29 @@ export const createUser = createAsyncThunk<UserToken, SignUpFormData>(
   "user/create",
   async (formData: SignUpFormData, { rejectWithValue }) => {
     try {
+      const body = new FormData();
+      body.append("firstName", formData.firstName);
+      body.append("lastName", formData.lastName);
+      body.append("email", formData.email);
+      body.append("phoneNumber", formData.phoneNumber);
+      body.append("password", formData.password);
+      body.append("accountType", formData.accountType);
+      if (formData.nin) {
+        body.append("nin", formData.nin);
+      }
+      if (formData.homeAddress) {
+        body.append("homeAddress", formData.homeAddress);
+      }
+      if (formData.file instanceof File) {
+        body.append("file", formData.file);
+      }
+
       const response = await axios.post<ApiResponse<UserToken>>(
-        `${API_URL}/users`, 
-        formData,
+        `${API_URL}/users`,
+        body,
         {
-          headers: { "Content-Type": "application/json" }
-        }
+          headers: { "Content-Type": "multipart/form-data" },
+        },
       );
 
       localStorage.setItem("emailToVerify", JSON.stringify(response.data));
@@ -234,6 +254,10 @@ export const verifyAccount = createAsyncThunk<UserToken, VerifyData>(
       };
       localStorage.setItem("nrv-user", JSON.stringify(userData));
       localStorage.removeItem("emailToVerify");
+      const { touchSessionActivity } = await import("@/lib/sessionIdle");
+      const { syncRoleCookieFromSession } = await import("@/lib/authSession");
+      touchSessionActivity();
+      syncRoleCookieFromSession(userData);
       return userData;
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
@@ -287,11 +311,29 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
 
       // Only persist a session for active users.
       // For inactive users, store the email so they can verify, but don't create a session token.
-      if (userData?.user?.status === "inactive") {
+      // Suspended / deactivated accounts must never get a local session.
+      const accountStatus = String(userData?.user?.status || "").toLowerCase();
+      if (accountStatus === "suspended" || accountStatus === "deactivated") {
         localStorage.removeItem("nrv-user");
+        const { clearRoleCookie, getAccountBlockedMessage } = await import(
+          "@/lib/authSession"
+        );
+        clearRoleCookie();
+        return rejectWithValue(getAccountBlockedMessage(accountStatus));
+      }
+      if (accountStatus === "inactive") {
+        localStorage.removeItem("nrv-user");
+        const { clearRoleCookie } = await import("@/lib/authSession");
+        clearRoleCookie();
         if (userData?.user?.email) {
           localStorage.setItem("emailToVerify", JSON.stringify({ data: { email: userData.user.email } }));
         }
+        // Do not keep a usable access token in Redux/Persist for unverified accounts.
+        return {
+          user: safeUser,
+          accessToken: "",
+          notificationSettings: response.data.notificationSettings,
+        };
       } else {
         localStorage.setItem("nrv-user", JSON.stringify(userData));
         localStorage.removeItem("emailToVerify");
@@ -301,7 +343,9 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
           localStorage.removeItem("rememberMe");
         }
         const { touchSessionActivity } = await import("@/lib/sessionIdle");
+        const { syncRoleCookieFromSession } = await import("@/lib/authSession");
         touchSessionActivity();
+        syncRoleCookieFromSession(userData);
       }
       return userData;
     } catch (error: any) {
@@ -310,18 +354,23 @@ export const loginUser = createAsyncThunk<UserToken, LoginFormData>(
   }
 );
 
-export const createUserByLandlord = createAsyncThunk<UserToken, LandlordUserData>(
+export const createUserByLandlord = createAsyncThunk<
+  { data: any; message?: string; existingAccount?: boolean },
+  LandlordUserData
+>(
   "user/create/landlord",
   async (formData: LandlordUserData, { rejectWithValue }) => {
     try {
-      const response = await axios.post<ApiResponse<UserToken>>(
-        `${API_URL}/users/landlord`, 
-        formData,
-        {
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-      return response.data.data;
+      const response = await axios.post<
+        ApiResponse<any> & { existingAccount?: boolean; message?: string }
+      >(`${API_URL}/users/landlord`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return {
+        data: response.data.data,
+        message: response.data.message,
+        existingAccount: (response.data as any).existingAccount === true,
+      };
     } catch (error: any) {
       return rejectWithValue(handleApiError(error));
     }
@@ -333,7 +382,7 @@ export const getTenantsOnboardedByLandlord = createAsyncThunk<any, { id: string 
   async ({ id }: { id: string }, { rejectWithValue }) => {
     try {
       const response = await axios.get<ApiResponse<any>>(
-        `${API_URL}/properties/tenant/landlord-onboarded?id=${id}`
+        `${API_URL}/properties/tenant/landlord-onboarded/${id}`
       );
       return response.data.data;
     } catch (error: any) {
@@ -381,13 +430,60 @@ export const resetPassword = createAsyncThunk<UserToken, ResetPasswordRequest>(
   }
 );
 
+export const setPasswordAfterInvite = createAsyncThunk<
+  UserToken,
+  { newPassword: string; confirmPassword: string }
+>(
+  "user/set-password-after-invite",
+  async (payload, { rejectWithValue, getState }) => {
+    try {
+      const stored = localStorage.getItem("nrv-user");
+      const token = stored ? JSON.parse(stored)?.accessToken : undefined;
+      if (!token) {
+        return rejectWithValue("Please sign in again to set your password.");
+      }
+      const response = await axios.post<{
+        status: string;
+        message: string;
+        data: any;
+      }>(`${API_URL}/users/set-password`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const updatedUser = response.data.data;
+      const current =
+        (getState() as any).user?.data ||
+        (stored ? JSON.parse(stored) : null) ||
+        {};
+      const userData = {
+        ...current,
+        user: {
+          ...(current?.user || {}),
+          ...updatedUser,
+          mustChangePassword: false,
+        },
+        accessToken: current?.accessToken || token,
+      };
+      localStorage.setItem("nrv-user", JSON.stringify(userData));
+      return userData as UserToken;
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
 export const endTenancyTenure = createAsyncThunk<UserToken, TenancyRequest>(
   "tenancy/end",
-  async ({ id }: TenancyRequest, { rejectWithValue }) => {
+  async ({ id, reason, comment }: TenancyRequest, { rejectWithValue }) => {
     try {
       const response = await axios.put<ApiResponse<UserToken>>(
         `${API_URL}/rooms/${id}/end-tenure`,
-        {},
+        {
+          reason,
+          comment,
+        },
         {
           headers: { "Content-Type": "application/json" }
         }
@@ -397,6 +493,30 @@ export const endTenancyTenure = createAsyncThunk<UserToken, TenancyRequest>(
       return rejectWithValue(handleApiError(error));
     }
   }
+);
+
+export const addTenancyComment = createAsyncThunk<
+  any,
+  { id: string; comment: string; authorId?: string }
+>(
+  "tenancy/comment",
+  async ({ id, comment, authorId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post<ApiResponse<any>>(
+        `${API_URL}/rooms/${id}/tenancy-comments`,
+        {
+          comment,
+          authorId,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+      return response.data.data;
+    } catch (error: any) {
+      return rejectWithValue(handleApiError(error));
+    }
+  },
 );
 
 export const extendTenancyTenure = createAsyncThunk<UserToken, TenancyRequest>(
@@ -556,7 +676,7 @@ const userSlice = createSlice({
       })
       .addCase(createUserByLandlord.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        state.data = action.payload;
+        state.data = action.payload?.data ?? action.payload;
       })
       .addCase(createUserByLandlord.rejected, (state, action) => {
         state.loading = "failed";
@@ -597,6 +717,18 @@ const userSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload as string;
+      })
+      .addCase(setPasswordAfterInvite.pending, (state) => {
+        state.loading = "pending";
+        state.error = null;
+      })
+      .addCase(setPasswordAfterInvite.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(setPasswordAfterInvite.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload as string;
       })

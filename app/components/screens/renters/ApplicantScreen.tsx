@@ -10,6 +10,11 @@ import { RefreshCcw } from "lucide-react";
 import DataTable, { BaseRow } from "../../shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { Button } from "@/components/ui/button";
+import {
+  getApplicationCurrentResidence,
+  getApplicationEmployer,
+  getApplicationJobTitle,
+} from "@/lib/applicationDisplay";
 
 const InfoCard = ({ title, data = [], files = [], fileUrl }: any) => (
   <div className="bg-white p-4 rounded-md">
@@ -378,9 +383,12 @@ const ApplicantScreen = ({ metricsFromProps }: { metricsFromProps?: any }) => {
               <InfoCard
                 title="Employment Details"
                 data={[
-                  ["Employer", application?.employment?.employer],
-                  ["Job Title", application?.employment?.jobTitle],
-                  ["Salary Range", application?.employment?.salaryRange],
+                  ["Employer", getApplicationEmployer(application) || "—"],
+                  ["Job Title", getApplicationJobTitle(application) || "—"],
+                  [
+                    "Current Residence",
+                    getApplicationCurrentResidence(application) || "—",
+                  ],
                 ]}
               />
 

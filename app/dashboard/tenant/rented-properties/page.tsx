@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../components/guard/LandlordProtectedRoute";
 import LandLordLayout from "../../../components/layout/LandLordLayout";
 import Button from "../../../components/shared/buttons/Button";
 import { Button as UiButton } from "@/components/ui/button";
@@ -86,7 +85,6 @@ const RentedPropertiesScreen = () => {
 
   return (
     <div>
-      <ProtectedRoute>
         <TenantLayout>
           {isLoading ? (
             <div className="mx-auto max-w-7xl px-2 py-3 sm:px-4 sm:py-5 md:px-6 lg:p-8">
@@ -240,7 +238,6 @@ const RentedPropertiesScreen = () => {
             </>
           )}
         </TenantLayout>
-      </ProtectedRoute>
     </div>
   );
 };

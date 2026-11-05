@@ -16,6 +16,11 @@ import MultiImageUploader from "../../shared/MultiImageUploader";
 import { toast } from "react-toastify";
 import { nigerianStates } from "@/helpers/data";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  blockNonPositiveRentKeys,
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 // const propertyTypes = [
@@ -168,6 +173,10 @@ const MultiStepForm = () => {
           errors[`unit-${index}`] = `Room ${
             index + 1
           }: Name and rent are required`;
+        } else if (!isValidPositiveRentAmount(unit.rentAmount)) {
+          errors[`unit-${index}`] = `Room ${
+            index + 1
+          }: Rent amount must be greater than zero`;
         }
       });
     }
@@ -264,23 +273,19 @@ const MultiStepForm = () => {
     field: keyof UnitData,
     value: string
   ) => {
-    // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setPropertyData((prevData) => {
-        const updatedUnits = [...prevData.units];
-        updatedUnits[index] = {
-          ...updatedUnits[index],
-          [field]: cleanedValue,
-        };
-        return {
-          ...prevData,
-          units: updatedUnits,
-        };
-      });
-    }
+    setPropertyData((prevData) => {
+      const updatedUnits = [...prevData.units];
+      updatedUnits[index] = {
+        ...updatedUnits[index],
+        [field]: cleanedValue,
+      };
+      return {
+        ...prevData,
+        units: updatedUnits,
+      };
+    });
   };
 
   const addUnit = () => {
@@ -339,7 +344,7 @@ const MultiStepForm = () => {
       <form onSubmit={handleNextAndVerify} encType="multipart/form-data">
         {step === 1 && (
           <div className="space-y-5">
-            <h1 className="mb-6 text-2xl font-bold text-green-600 lg:hidden">
+            <h1 className="mb-6 text-4xl font-bold text-green-600 lg:hidden">
               NaijaRentVerify
             </h1>
             <div className="flex justify-end">
@@ -496,6 +501,7 @@ const MultiStepForm = () => {
                         e.target.value
                       )
                     }
+                    onKeyPress={blockNonPositiveRentKeys}
                     name={`rentAmount-${index}`}
                   />
 
@@ -692,10 +698,10 @@ const MultiStepForm = () => {
                   })}
                 </div>
 
-                {/* Unit Images */}
+                {/* Apartment Images */}
                 <div className="mt-6">
                   <MultiImageUploader 
-                    label={`Unit ${index + 1} Images`}
+                    label={`Apartment ${index + 1} Images`}
                     onChange={(files) => handleUnitImagesChange(index, files)}
                     value={unit.images || []}
                     maxFiles={5}

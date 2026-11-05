@@ -44,11 +44,27 @@ function hrefForNotification(n: AppNotification): string | null {
     type === "maintenance_scheduled" ||
     type === "maintenance_status_updated"
   ) {
-    return "/dashboard/landlord/maintenance";
+    const maintenanceId = m.maintenanceId as string | undefined;
+    if (maintenanceId) {
+      return `/dashboard/landlord/properties/maintenance/${maintenanceId}`;
+    }
+    return "/dashboard/landlord/properties/maintenance";
   }
 
   if (type === "application_received") {
-    return "/dashboard/landlord/tenants";
+    const applicationId = m.applicationId as string | undefined;
+    if (applicationId) {
+      return `/dashboard/landlord/properties/renters/${applicationId}`;
+    }
+    return "/dashboard/landlord/properties/renters";
+  }
+
+  if (type === "lease_expired") {
+    const applicationId = m.applicationId as string | undefined;
+    if (applicationId) {
+      return `/dashboard/landlord/tenants/${applicationId}`;
+    }
+    return "/dashboard/landlord/tenants?tab=ended";
   }
 
   if (
@@ -59,10 +75,17 @@ function hrefForNotification(n: AppNotification): string | null {
   }
 
   if (type === "message_received") {
+    const senderId = m.senderId as string | undefined;
+    if (senderId) {
+      return `/dashboard/landlord/messages/${senderId}`;
+    }
     return "/dashboard/landlord/messages";
   }
 
   if (type === "payment_success" || type === "payment_failed") {
+    if (n.targetRole === "shortlet_manager") {
+      return "/dashboard/manager/credits";
+    }
     return "/dashboard/landlord/settings/plans";
   }
 

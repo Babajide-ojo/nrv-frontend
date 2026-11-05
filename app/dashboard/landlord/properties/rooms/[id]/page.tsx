@@ -8,7 +8,6 @@ import PropertyMarketing from "../../../../../components/property-dashboard/Prop
 import { toast } from "react-toastify";
 import {
   getRoomById,
-  requestRoomApproval,
   updateRoomStatus,
 } from "../../../../../../redux/slices/propertySlice";
 import { useDispatch } from "react-redux";
@@ -24,7 +23,11 @@ import DataTable, { BaseRow } from "@/app/components/shared/tables/DataTable";
 import { API_URL } from "@/config/constant";
 import { formatDateToWords } from "@/helpers/utils";
 import ApartmentDocuments from "@/app/components/screens/renters/ApartmentDocuments";
-import BackIcon from "@/app/components/shared/icons/BackIcon";
+
+const statusPillClass =
+  "inline-flex items-center justify-center px-4 py-1.5 text-[12px] font-semibold rounded-full border w-full md:w-auto";
+const actionPillClass =
+  "inline-flex items-center justify-center px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed";
 
 const SingleRoom = () => {
   const dispatch = useDispatch();
@@ -32,8 +35,6 @@ const SingleRoom = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRequestApprovalModalOpen, setIsRequestApprovalModalOpen] = useState(false);
-  const [requestingApproval, setRequestingApproval] = useState(false);
   const [listingRoom, setListingRoom] = useState(false);
   const [currentState, setCurrentState] = useState<number>(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,9 +66,11 @@ const SingleRoom = () => {
   }, []);
 
   const canListForTenants = singleRoom?.approved === true;
+  const isPubliclyListed =
+    singleRoom?.listRoom === true && singleRoom?.approved === true;
 
   const updateRoom = async () => {
-    const nextListed = singleRoom.listRoom !== true;
+    const nextListed = !isPubliclyListed;
     if (nextListed && !canListForTenants) {
       toast.error(
         "This unit must be approved by an admin before it can be listed."
@@ -93,20 +96,6 @@ const SingleRoom = () => {
     } finally {
       setListingRoom(false);
       setIsModalOpen(false);
-    }
-  };
-
-  const handleRequestApproval = async () => {
-    try {
-      setRequestingApproval(true);
-      await dispatch(requestRoomApproval(id as string) as any).unwrap();
-      toast.success("Approval request sent. Admin will review for public listing.");
-      fetchData();
-      setIsRequestApprovalModalOpen(false);
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to request approval");
-    } finally {
-      setRequestingApproval(false);
     }
   };
 
@@ -148,112 +137,104 @@ const SingleRoom = () => {
                 {currentState === 1 && (
                   <div>
                     <div className="mb-4">
-                      <div className="text-lg font-medium text-gray-900 flex gap-4">
-                        <BackIcon />
-                        View Apartment Details
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h1 className="text-base font-semibold text-gray-900 sm:text-lg">
+                          View Apartment Details
+                        </h1>
+                        {singleRoom?.approved ? (
+                          <span className="inline-flex items-center rounded-md border border-[#099137]/30 bg-[#E7F6EC] px-2 py-0.5 text-[11px] font-medium text-[#099137]">
+                            Admin approved
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                            Awaiting admin approval
+                          </span>
+                        )}
+                        {isPubliclyListed ? (
+                          <span className="inline-flex items-center rounded-md border border-[#099137]/30 bg-[#E7F6EC] px-2 py-0.5 text-[11px] font-medium text-[#099137]">
+                            Listed publicly
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+                            Not listed
+                          </span>
+                        )}
                       </div>
-                      <div className="text-xs text-gray-500 mt-2">
-                        {singleRoom?.propertyId?.streetAddress},{" "}
-                        {singleRoom?.propertyId?.city},{" "}
-                        {singleRoom?.propertyId?.state}
-                      </div>
+                      <p className="mt-1 text-xs text-gray-500">
+                        {[
+                          singleRoom?.propertyId?.streetAddress,
+                          singleRoom?.propertyId?.city,
+                          singleRoom?.propertyId?.state,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
                     </div>
-                    <div className="bg-[#E9F4E7] border-t border-l border-r border-[#E9F4E7] rounded-l rounded-r p-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
-                      <div className="flex gap-2">
-                        <div></div>
-
-                        <div className="pt-1">
-                          <p className="font-medium text-sm text-[#101928]">
-                            Property Type : {singleRoom.propertyType}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Apartment ID: {singleRoom.roomId}
-                          </p>
-                        </div>
+                    <div className="flex flex-col items-start justify-between gap-4 rounded-t-lg border border-[#D7E6D8] bg-[#E9F4E7] p-3 md:flex-row md:items-center">
+                      <div>
+                        <p className="text-xs font-medium text-[#101928] sm:text-sm">
+                          Apartment type:{" "}
+                          {singleRoom?.apartmentType ||
+                            singleRoom?.propertyId?.propertyType ||
+                            "—"}
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          Apartment ID: {singleRoom?.roomId || "—"}
+                        </p>
                       </div>
-                      <div className="flex gap-4 flex-wrap w-full md:w-auto">
+                      <div className="flex w-full flex-wrap gap-2 md:w-auto md:justify-end">
                         <button
-                          className={`px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto ${
+                          type="button"
+                          className={`${actionPillClass} border border-[#03442C] bg-white text-[#03442C] hover:bg-[#E9F4E7]`}
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/landlord/properties/rooms/update/${id}`,
+                            )
+                          }
+                        >
+                          Edit Apartment
+                        </button>
+                        <span
+                          className={`${statusPillClass} ${
                             singleRoom?.assignedToTenant
-                              ? "bg-[#FFF1DA] text-[#F3A218]"
-                              : "text-[#E7F6EC] bg-[#099137]"
+                              ? "border-[#F3A218] bg-[#FFF1DA] text-[#F3A218]"
+                              : "border-[#099137] bg-[#E7F6EC] text-[#099137]"
                           }`}
                         >
                           {singleRoom?.assignedToTenant
                             ? "Occupied By Tenant"
                             : "Currently Vacant"}
-                        </button>
-                        <button
-                          type="button"
-                          disabled={
-                            singleRoom.listRoom === false && !canListForTenants
-                          }
-                          title={
-                            singleRoom.listRoom === false && !canListForTenants
-                              ? "Request admin approval first, then list after approval."
-                              : undefined
-                          }
-                          className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                          onClick={() => {
-                            if (
-                              singleRoom.listRoom === false &&
-                              !canListForTenants
-                            ) {
-                              toast.info(
-                                'Use "Request approval for listing" first. After an admin approves, you can list this unit.'
-                              );
-                              return;
-                            }
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <div className="flex gap-3 p-1.5 text-swBlue justify-center">
-                            {singleRoom.listRoom === false
-                              ? "List Apartment"
-                              : "Unlist Apartment"}
-                          </div>
-                        </button>
-                        {singleRoom?.approved ? (
-                          <span className="px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto bg-[#E7F6EC] text-[#099137] border border-[#099137]">
-                            Approved for listing
-                          </span>
-                        ) : singleRoom?.approvalRequested ? (
-                          <span className="px-4 py-1.5 text-[12px] font-semibold rounded-full w-full md:w-auto bg-[#F7F6F2] text-[#344054] border border-muted">
-                            Approval requested – pending admin
-                          </span>
-                        ) : (
+                        </span>
+                        {(isPubliclyListed || canListForTenants) && (
                           <button
                             type="button"
-                            onClick={() =>
-                              setIsRequestApprovalModalOpen(true)
-                            }
-                            disabled={requestingApproval}
-                            className="px-4 py-1.5 text-[12px] font-semibold rounded-full text-[#E7F6EC] bg-[#099137] w-full md:w-auto disabled:opacity-60"
+                            className={`${actionPillClass} bg-[#099137] text-white hover:bg-[#078A30]`}
+                            onClick={() => setIsModalOpen(true)}
                           >
-                            {requestingApproval
-                              ? "Requesting..."
-                              : "Request approval for listing"}
+                            {isPubliclyListed
+                              ? "Unlist Apartment"
+                              : "List Apartment"}
                           </button>
                         )}
                       </div>
                     </div>
 
                     <Tabs defaultValue="details" className="w-full mt-4">
-                      <TabsList className="w-full bg-gray-50 border-b border-gray-200 overflow-x-auto flex whitespace-nowrap hide-scrollbar">
+                      <TabsList className="flex w-full overflow-x-auto whitespace-nowrap border-b border-gray-200 bg-gray-50 hide-scrollbar">
                         <TabsTrigger
-                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
+                          className="flex-shrink-0 border-b-2 border-transparent px-3 py-3 text-xs font-medium text-[#344054] data-[state=active]:border-[#2B892B] data-[state=active]:text-[#2B892B] sm:px-4 sm:text-sm"
                           value="details"
                         >
                           Apartment Details
                         </TabsTrigger>
                         <TabsTrigger
-                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
+                          className="flex-shrink-0 border-b-2 border-transparent px-3 py-3 text-xs font-medium text-[#344054] data-[state=active]:border-[#2B892B] data-[state=active]:text-[#2B892B] sm:px-4 sm:text-sm"
                           value="maintenance"
                         >
                           Ongoing Maintenance
                         </TabsTrigger>
                         <TabsTrigger
-                          className="text-[14px] font-medium p-4 md:p-6 text-[#344054] border-b-2 border-transparent data-[state=active]:text-[#2B892B] data-[state=active]:border-[#2B892B] flex-shrink-0"
+                          className="flex-shrink-0 border-b-2 border-transparent px-3 py-3 text-xs font-medium text-[#344054] data-[state=active]:border-[#2B892B] data-[state=active]:text-[#2B892B] sm:px-4 sm:text-sm"
                           value="document"
                         >
                           Apartment Documents
@@ -261,8 +242,8 @@ const SingleRoom = () => {
                       </TabsList>
 
                       <TabsContent value="details">
-                        <PropertyUnitDetails data={singleRoom} />
                         <CurrentTenantDashboard data={singleRoom} />
+                        <PropertyUnitDetails data={singleRoom} />
                       </TabsContent>
                       <TabsContent value="maintenance">
                         <DataTable
@@ -342,8 +323,9 @@ const SingleRoom = () => {
         >
           <div className="mx-auto text-center p-4">
             <p className="text-nrvLightGrey text-md">
-              Listing this property will make it visible to tenant for
-              applications.
+              {isPubliclyListed
+                ? "Unlisting this apartment will hide it from the public marketplace. Tenants will no longer see it when browsing available listings."
+                : "Listing this apartment will make it visible to tenants for applications on the marketplace."}
             </p>
             <p className="text-red-500 text-lg font-medium">
               Are you sure you want to continue?
@@ -367,46 +349,10 @@ const SingleRoom = () => {
                 variant="darkPrimary"
                 showIcon={false}
                 isLoading={listingRoom}
-                loadingText="Listing…"
+                loadingText={isPubliclyListed ? "Unlisting…" : "Listing…"}
                 onClick={updateRoom}
               >
                 Continue
-              </Button>
-            </div>
-          </div>
-        </CenterModal>
-        <CenterModal
-          isOpen={isRequestApprovalModalOpen}
-          onClose={() => {
-            setIsRequestApprovalModalOpen(false);
-          }}
-        >
-          <div className="mx-auto text-center p-4">
-            <p className="text-nrvLightGrey text-md">
-              Request admin approval for this unit to be visible on the public listing site.
-              Tenants will be able to view and apply after approval.
-            </p>
-
-            <div className="mt-8 flex gap-3 justify-center text-center items-center">
-              <Button
-                size="large"
-                className="text-red-500 border border-red-500 mt-2 rounded-md"
-                variant="ordinary"
-                showIcon={false}
-                onClick={() => setIsRequestApprovalModalOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="large"
-                className="mt-2 rounded-md"
-                variant="darkPrimary"
-                showIcon={false}
-                isLoading={requestingApproval}
-                loadingText="Sending…"
-                onClick={handleRequestApproval}
-              >
-                Confirm
               </Button>
             </div>
           </div>

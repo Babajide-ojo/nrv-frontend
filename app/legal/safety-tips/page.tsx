@@ -201,10 +201,10 @@ export default function SafetyTipsPage() {
           </section>
 
           <div className="pt-6 border-t border-gray-200 text-sm text-gray-600 flex flex-wrap gap-x-4 gap-y-2">
-            <Link href="/legal" className="hover:text-gray-900 transition-colors">
+            <Link href="/legal/terms" className="hover:text-gray-900 transition-colors">
               Terms of Service
             </Link>
-            <Link href="/privacy" className="hover:text-gray-900 transition-colors">
+            <Link href="/legal/privacy" className="hover:text-gray-900 transition-colors">
               Privacy Policy
             </Link>
             <Link href="/privacy?tab=data-processing" className="hover:text-gray-900 transition-colors">

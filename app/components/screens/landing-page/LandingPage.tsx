@@ -324,9 +324,9 @@ const WhyChooseUs: React.FC = () => {
     {
       imageUrl:
         "/icons/Support.svg",
-      title: "24/7 Support",
+      title: "Dedicated Support",
       description:
-        "Dedicated support team to assist with your rental journey From viewing to moving in, we got you covered.",
+        "Our support team is available Monday – Friday, 8:00 AM – 4:00 PM WAT to assist with your rental journey.",
     },
   ];
 

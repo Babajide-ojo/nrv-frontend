@@ -1,3 +1,5 @@
+import { clearRoleCookie } from "@/lib/authSession";
+
 export const SESSION_IDLE_MS = 30 * 60 * 1000;
 export const SESSION_LAST_ACTIVE_KEY = "nrv-last-active";
 export const REMEMBER_ME_FLAG_KEY = "rememberMe";
@@ -48,6 +50,10 @@ export const clearAuthSession = () => {
   localStorage.removeItem(SESSION_LAST_ACTIVE_KEY);
   localStorage.removeItem(REMEMBER_ME_FLAG_KEY);
   localStorage.removeItem("rememberedEmail");
+  // Redux Persist also stores accessToken under this key; leaving it lets
+  // getSessionAccessToken() revive a "logged out" session after reload.
+  localStorage.removeItem("persist:nrv-root");
+  clearRoleCookie();
 };
 
 export const expireIdleSession = (message?: string) => {

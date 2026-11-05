@@ -1,13 +1,45 @@
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "../globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Providers } from "./providers";
 import { ToastContainer } from "react-toastify";
 import { RememberMeBootstrap } from "./components/auth/RememberMeBootstrap";
+import DataUseNotice from "./components/shared/DataUseNotice";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | Tenant verification and rental listings in Nigeria`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "Verify tenants and manage rentals in Nigeria. Browse listings, screen applicants, and rent with more confidence.",
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_NG",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary",
+  },
+};
 
-const inter = Inter({ subsets: ["latin"] });
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  interactiveWidget: "overlays-content",
+};
 
 export default function RootLayout({
   children,
@@ -16,13 +48,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-      </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body className={jakarta.className} suppressHydrationWarning>
         <Providers>
           <RememberMeBootstrap>
             <div className="min-h-screen">{children}</div>
+            <DataUseNotice />
             <ToastContainer position="top-right" autoClose={4000} />
           </RememberMeBootstrap>
         </Providers>

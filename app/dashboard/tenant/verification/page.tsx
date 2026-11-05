@@ -13,6 +13,7 @@ import {
   isVerificationIncomplete,
   verificationStepPath,
 } from "@/lib/verificationProgress";
+import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 
 function formatValue(value: any) {
   if (value === undefined || value === null || value === "") return "—";
@@ -93,6 +94,7 @@ const TenantVerificationSummaryPage = () => {
   const [submittedRequests, setSubmittedRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [declining, setDeclining] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleDeclineRequest = async (verificationId: string) => {
     const confirmed = window.confirm(
@@ -251,6 +253,14 @@ const TenantVerificationSummaryPage = () => {
                 ? "You haven't submitted this verification request yet. Please complete the form to proceed."
                 : "This verification request hasn't been submitted yet."}
             </p>
+            <div className="max-w-md mx-auto mb-6">
+              <TermsAgreementCheckbox
+                checked={termsAccepted}
+                onChange={setTermsAccepted}
+                id="tenant-verification-start-terms"
+                label="I agree to the terms before accepting this verification request"
+              />
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 variant="outline"
@@ -269,7 +279,13 @@ const TenantVerificationSummaryPage = () => {
               </Button>
               <Button
                 className="bg-green-700 hover:bg-green-800 text-white"
-                onClick={() => router.push(startUrl)}
+                onClick={() => {
+                  if (!termsAccepted) {
+                    toast.error("Please agree to the terms before starting verification.");
+                    return;
+                  }
+                  router.push(startUrl);
+                }}
                 disabled={declining}
               >
                 Start Verification
@@ -500,7 +516,7 @@ const TenantVerificationSummaryPage = () => {
             className="bg-green-700 hover:bg-green-800 text-white"
             onClick={() => router.push("/dashboard/tenant/verification/requests")}
           >
-            View Pending Requests
+            View all
           </Button>
         </div>
       </TenantLayout>
@@ -521,7 +537,7 @@ const TenantVerificationSummaryPage = () => {
             variant="outline"
             onClick={() => router.push("/dashboard/tenant/verification/requests")}
           >
-            View Pending
+            View all
           </Button>
         </div>
 

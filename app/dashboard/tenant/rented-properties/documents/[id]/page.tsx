@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../../../../components/loaders/LoadingPage";
-import ProtectedRoute from "../../../../../components/guard/LandlordProtectedRoute";
 import { useRouter, useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { getPropertyByIdForTenant } from "../../../../../../redux/slices/propertySlice";
@@ -47,7 +46,6 @@ const RentedPropertiesScreen = () => {
 
   return (
     <div>
-      <ProtectedRoute>
         <TenantLayout>
           {isLoading ? (
             <div className="space-y-4 p-3 animate-pulse sm:space-y-6 sm:p-6 md:p-8">
@@ -87,7 +85,6 @@ const RentedPropertiesScreen = () => {
             </>
           )}
         </TenantLayout>
-      </ProtectedRoute>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import InputField from "@/app/components/shared/input-fields/InputFields";
 import { ArrowLeft, Building } from "lucide-react";
 import { startOfToday } from "date-fns";
 import { applyForProperty } from "@/redux/slices/propertySlice";
+import TermsAgreementCheckbox from "@/app/components/shared/TermsAgreementCheckbox";
 import type { TenantPropertyApplicationView } from "@/app/lib/mapTenantRoomForApplication";
 
 const applicationValidationSchema = yup.object({
@@ -49,6 +50,7 @@ export function TenantPropertyApplicationPanel({
   const [subStep, setSubStep] = useState<"form" | "review">("form");
   const [formData, setFormData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [selectedFiles] = useState<any>(null);
 
   const outer =
@@ -57,6 +59,10 @@ export function TenantPropertyApplicationPanel({
       : "py-1";
 
   const handleSubmit = async (value: any) => {
+    if (!termsAccepted) {
+      toast.error("Please agree to the terms and conditions before submitting.");
+      return;
+    }
     try {
       await applicationValidationSchema.validate(value, { abortEarly: false });
     } catch (e) {
@@ -72,9 +78,12 @@ export function TenantPropertyApplicationPanel({
     fd.append("applicant", user?._id ?? "");
     fd.append("status", "New");
     fd.append("ownerId", property?.owner?.id ?? "");
+    fd.append("jobTitle", value.jobTitle);
     fd.append("currentEmployer", value.currentEmployer);
     fd.append("monthlyIncome", value.monthlyIncome);
-    fd.append("currentAddress", value.currentResidence);
+    fd.append("currentResidence", value.currentResidence);
+    // Backend field is reasonForLiving; keep alias for older API clients
+    fd.append("reasonForLiving", value.reasonForLeaving);
     fd.append("reasonForLeaving", value.reasonForLeaving);
     fd.append("file", selectedFiles);
     try {
@@ -94,7 +103,13 @@ export function TenantPropertyApplicationPanel({
 
   if (!property) {
     return (
-      <div className="rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-600">
+      <div
+        className={
+          variant === "modal"
+            ? "py-6 text-center text-gray-600"
+            : "rounded-xl border border-gray-200 bg-white p-6 text-center text-gray-600"
+        }
+      >
         Loading application…
       </div>
     );
@@ -106,10 +121,16 @@ export function TenantPropertyApplicationPanel({
         className={
           variant === "page"
             ? "min-h-screen bg-gradient-to-br from-[#F4FAF3] via-white to-[#E9F4E7] py-10 px-4 flex items-center justify-center"
-            : "py-8 px-4 text-center"
+            : "py-4 text-center"
         }
       >
-        <div className="max-w-md rounded-xl border border-[#2B892B]/20 bg-white p-4 shadow-sm sm:p-6">
+        <div
+          className={
+            variant === "page"
+              ? "max-w-md rounded-xl border border-[#2B892B]/20 bg-white p-4 shadow-sm sm:p-6"
+              : "max-w-md mx-auto"
+          }
+        >
           <p className="text-lg font-semibold text-nrvPrimaryGreen">
             You have already applied to this unit
           </p>
@@ -211,7 +232,7 @@ export function TenantPropertyApplicationPanel({
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div className={variant === "modal" ? "" : "bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden"}>
               <div className="bg-nrvPrimaryGreen px-4 py-3 text-white">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <button
@@ -531,7 +552,7 @@ export function TenantPropertyApplicationPanel({
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div className={variant === "modal" ? "" : "bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden"}>
               <div className="bg-nrvPrimaryGreen px-4 py-3 text-white">
                 <div className="flex items-center gap-2 sm:gap-3">
                   <button
@@ -641,6 +662,15 @@ export function TenantPropertyApplicationPanel({
                       </div>
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-4">
+                  <TermsAgreementCheckbox
+                    checked={termsAccepted}
+                    onChange={setTermsAccepted}
+                    id="property-application-terms"
+                    label="I agree to the platform terms before submitting this application"
+                  />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-6 mt-6 border-t border-gray-200">

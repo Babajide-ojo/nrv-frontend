@@ -5,6 +5,12 @@ import Button from "./buttons/Button";
 import MultiImageUploader from "./MultiImageUploader";
 import { toast } from "react-toastify";
 import { formatDisplayValue } from "@/helpers/utils";
+import {
+  blockNonPositiveRentKeys,
+  isValidPositiveRentAmount,
+  sanitizePositiveRentInput,
+} from "@/lib/rentAmount";
+import { isShortStay, LEASE_TERM_OPTIONS } from "@/lib/shortStay";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 interface RoomFormData {
@@ -21,6 +27,8 @@ interface RoomFormData {
   otherAmentities: string[];
   images: File[];
   propertyId: string;
+  minimumNights?: string;
+  houseRules?: string;
 }
 
 interface RoomFormProps {
@@ -28,13 +36,19 @@ interface RoomFormProps {
   loading?: boolean;
   initialData?: Partial<RoomFormData>;
   propertyId?: string;
+  isEdit?: boolean;
+  existingImageUrls?: string[];
+  submitLabel?: string;
 }
 
 const RoomForm: React.FC<RoomFormProps> = ({ 
   onSubmit, 
   loading = false, 
   initialData = {},
-  propertyId = ""
+  propertyId = "",
+  isEdit = false,
+  existingImageUrls = [],
+  submitLabel,
 }) => {
   const [showDescription, setShowDescription] = useState(false);
   const [roomData, setRoomData] = useState<RoomFormData>({
@@ -51,6 +65,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
     otherAmentities: [],
     images: [],
     propertyId: propertyId,
+    minimumNights: "2",
+    houseRules: "",
     ...initialData
   });
 
@@ -70,21 +86,25 @@ const RoomForm: React.FC<RoomFormProps> = ({
     const { name, value } = e.target;
 
     // Remove commas for thousands separators
-    const cleanedValue = value.replace(/,/g, "");
+    const cleanedValue = sanitizePositiveRentInput(value);
 
-    // Allow empty input, decimal point, or valid decimal numbers
-    if (cleanedValue === "" || /^-?\d*\.?\d{0,}$/.test(cleanedValue)) {
-      setRoomData((prevData) => ({
-        ...prevData,
-        [name]: cleanedValue,
-      }));
-    }
+    setRoomData((prevData) => ({
+      ...prevData,
+      [name]: cleanedValue,
+    }));
   };
 
   const handleSelectChange = (selectedOption: any, name: string) => {
+    const value = selectedOption?.value || "";
     setRoomData((prev) => ({
       ...prev,
-      [name]: selectedOption?.value || "",
+      [name]: value,
+      ...(name === "leaseTerms" && isShortStay(value)
+        ? {
+            rentAmountMetrics: "Night",
+            paymentOption: "Pay per stay",
+          }
+        : {}),
     }));
   };
 
@@ -129,9 +149,14 @@ const RoomForm: React.FC<RoomFormProps> = ({
       return;
     }
 
-    // Optional: Validate that at least one image is uploaded
-    if (roomData.images.length === 0) {
-      toast.error("Please upload at least one image for the room.");
+    if (!isValidPositiveRentAmount(rentAmount)) {
+      toast.error("Rent amount must be greater than zero.");
+      return;
+    }
+
+    // Optional: Validate that at least one image is uploaded (required on create only)
+    if (!isEdit && roomData.images.length === 0) {
+      toast.error("Please upload at least one image for the apartment.");
       return;
     }
 
@@ -152,7 +177,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
     });
 
     // When editing unit images, replace rather than append
-    if (roomData.images.length > 0 && Object.keys(initialData).length > 0) {
+    if (isEdit && roomData.images.length > 0) {
       formData.append("replaceImages", "true");
     }
 
@@ -222,11 +247,16 @@ const RoomForm: React.FC<RoomFormProps> = ({
               />
 
               <InputField
-                label="Rent Amount"
+                label={
+                  isShortStay(roomData.leaseTerms)
+                    ? "Price per night"
+                    : "Rent Amount"
+                }
                 required
                 placeholder="250,000"
                 value={formatDisplayValue(roomData.rentAmount)}
                 onChange={handleInputChangeWithComma}
+                onKeyPress={blockNonPositiveRentKeys}
                 name="rentAmount"
               />
 
@@ -305,15 +335,29 @@ const RoomForm: React.FC<RoomFormProps> = ({
                 onChange={(val: any) =>
                   handleSelectChange(val, "leaseTerms")
                 }
-                options={[
-                  { label: "1-Year Lease, Renewable", value: "1-Year Lease, Renewable" },
-                  { label: "2-Year Lease, Renewable", value: "2-Year Lease, Renewable" },
-                  { label: "3-Year Lease, Renewable", value: "3-Year Lease, Renewable" },
-                  { label: "6-Month Lease", value: "6-Month Lease" },
-                  { label: "Month-to-Month", value: "Month-to-Month" },
-                ]}
+                options={LEASE_TERM_OPTIONS}
                 name="leaseTerms"
               />
+
+              {isShortStay(roomData.leaseTerms) && (
+                <>
+                  <InputField
+                    label="Minimum nights"
+                    required
+                    placeholder="2"
+                    value={roomData.minimumNights || ""}
+                    onChange={handleInputChange}
+                    name="minimumNights"
+                  />
+                  <InputField
+                    label="House rules"
+                    placeholder="No parties"
+                    value={roomData.houseRules || ""}
+                    onChange={handleInputChange}
+                    name="houseRules"
+                  />
+                </>
+              )}
 
               <SelectField
                 label="Rent Amount Metrics"
@@ -392,8 +436,29 @@ const RoomForm: React.FC<RoomFormProps> = ({
             </div>
 
             <div className="mt-6 max-w-4xl mx-auto">
+              {isEdit && existingImageUrls.length > 0 && roomData.images.length === 0 && (
+                <div className="mb-4">
+                  <p className="mb-2 text-sm font-medium text-[#344054]">
+                    Current apartment images
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {existingImageUrls.map((url) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Apartment"
+                        className="h-20 w-20 rounded-md object-cover border"
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Upload new images below only if you want to replace these.
+                  </p>
+                </div>
+              )}
               <MultiImageUploader 
-                label="Room Images" 
+                label="Apartment Images" 
                 onChange={handleImagesChange} 
                 value={roomData.images}
                 maxFiles={10}
@@ -418,7 +483,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           variant="darkPrimary"
           isLoading={loading}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? "Submitting..." : submitLabel || (isEdit ? "Save changes" : "Submit")}
         </Button>
       </div>
     </form>

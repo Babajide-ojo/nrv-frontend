@@ -38,6 +38,7 @@ import {
 import { API_URL } from "@/config/constant";
 import { PublicPropertyDetailsModal } from "@/app/components/property/PublicPropertyDetailsModal";
 import PropertyCard from "@/app/components/shared/cards/PropertyCard";
+import { getRoomCoverImage } from "@/lib/propertyImages";
 import { LANDING_SCROLL_STORAGE_KEY } from "@/app/components/shared/navigations/NavLink";
 
 const FEATURES = [
@@ -683,7 +684,7 @@ const NewLanding = () => {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { value: "1,000+", label: "Tenants Processed" },
               { value: "1,500+", label: "Homes Listed" },
@@ -697,7 +698,7 @@ const NewLanding = () => {
                 <p className="text-xs font-medium text-gray-700 mt-0.5">{stat.label}</p>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -774,9 +775,7 @@ const NewLanding = () => {
                     className="cursor-pointer h-full"
                   >
                     <PropertyCard
-                      imageUrl={
-                        room?.imageUrls?.[0] || room?.file || prop?.file || "/images/featured-img.svg"
-                      }
+                      imageUrl={getRoomCoverImage({ ...room, propertyId: prop })}
                       address={locationLine}
                       rentAmount={room?.rentAmount}
                       property={room}
@@ -1101,12 +1100,12 @@ const NewLanding = () => {
               <h3 className="text-sm font-semibold text-white/90">Legal</h3>
               <ul className="mt-4 flex flex-col gap-3 text-sm text-white/65">
                 <li>
-                  <Link href="/legal" className="hover:text-white transition-colors">
+                  <Link href="/legal/terms" className="hover:text-white transition-colors">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/privacy" className="hover:text-white transition-colors">
+                  <Link href="/legal/privacy" className="hover:text-white transition-colors">
                     Privacy Policy
                   </Link>
                 </li>

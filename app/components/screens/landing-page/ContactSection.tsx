@@ -1,8 +1,8 @@
 import React from "react";
-import { Mail, Clock, MapPin, Phone } from "lucide-react";
+import { Mail, Clock } from "lucide-react";
+import Link from "next/link";
 
 const ContactSection: React.FC = () => {
-  //
   return (
     <section className="sticky bg-white overflow-x-hidden">
       <div className="absolute top-0 left-0 w-full h-full bg-cover bg-[url('/images/contact-us.jpeg')] bg-cover bg-center z-0"></div>
@@ -22,51 +22,40 @@ const ContactSection: React.FC = () => {
               ✅ Free Consultation
             </span>
             <span className="flex items-center gap-2">
-              ✅ 24/7 Online Support
+              ✅ Support 8AM – 4PM
             </span>
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Operating Hours */}
+        <div className="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left">
             <Clock className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
             <h3 className="mt-3 text-lg font-medium text-[#0D3520] landing-heading-2">
               Operating Hours
             </h3>
             <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              Monday - Friday: <br></br> 8:00 AM - 6:00 PM
+              Monday - Friday: <br></br> 8:00 AM - 4:00 PM (WAT)
             </p>
             <p className="text-[13px]  pt-4 font-medium text-[#045D23]">
-              Saturday: 9:00 AM - 4:00 PM
+              Closed weekends and public holidays
             </p>
           </div>
 
-          {/* Chat to Support */}
-          <div className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left">
+          <Link
+            href="/contact-us/support"
+            className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left hover:bg-[#dff0dc] transition-colors"
+          >
             <Mail className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
             <h3 className="mt-3 text-lg font-medium text-[#0D3520] landing-heading-2">
-              Chat to support
+              Email support
             </h3>
             <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              We’re here to help.
+              Send us a message and we will reply by email as quickly as possible.
             </p>
             <p className="text-sm pt-4 font-medium text-[#045D23] landing-body">
-              info@naijarentverify.com
+              Open support form →
             </p>
-          </div>
-
-          {/* Phone */}
-          <div className="p-6 bg-[#E9F4E7] text-black flex flex-col text-left">
-            <Phone className="bg-[#045D23] text-white w-8 h-8 p-2 rounded rounded-md" />
-            <h3 className="mt-3 text-lg font-medium text-[#0D3520] landing-heading-2">Phone</h3>
-            <p className="text-sm mt-1 font-light text-[#045D23] landing-body">
-              Mon-Fri from 8am to 5pm.
-            </p>
-            <p className="text-sm pt-4 font-medium text-[#045D23] landing-body">
-              +234 800 123 4567
-            </p>
-          </div>
+          </Link>
         </div>
       </div>
     </section>

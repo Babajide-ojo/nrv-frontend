@@ -15,6 +15,7 @@ import { format, startOfToday } from "date-fns";
 import { Form, Formik, FormikHelpers } from "formik";
 import CustomDatePicker from "../../shared/CustomDatePicker";
 import Modal from "../../shared/modals/Modal";
+import EndTenancyLeaseModal from "../../shared/EndTenancyLeaseModal";
 import { AnyAction, ThunkDispatch } from "@reduxjs/toolkit";
 import {
   assignDateTenancyTenure,
@@ -22,6 +23,7 @@ import {
   extendTenancyTenure,
 } from "@/redux/slices/userSlice";
 import { getFileExtension } from "@/helpers/utils";
+import { formatEndTenancySummary } from "@/lib/applicationDisplay";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Label } from "@/components/ui/label";
@@ -172,7 +174,7 @@ const ApplicationDetails = () => {
 
   type AddTenantFunction = (
     values: any,
-    formikHelpers: FormikHelpers<any>,
+    formikHelpers: Pick<FormikHelpers<any>, "resetForm" | "setSubmitting">,
     dispatch: ThunkDispatch<any, any, AnyAction>
   ) => Promise<void>;
 
@@ -296,22 +298,22 @@ const ApplicationDetails = () => {
     dispatch
   ) => {
     try {
-      const result = (await dispatch(endTenancyTenure(values))) as any;
-      if (result.error) {
-        if (result.error.message === "Rejected") {
-          toast.error(
-            result.payload || "Failed to end tenancy. Please try again."
-          );
-        } else {
-          toast.error("Failed to end tenancy. Please try again.");
-        }
-      } else {
-        toast.success("Tenant ended successfully");
-        resetForm();
-      }
+      await dispatch(
+        endTenancyTenure({
+          id: values.id,
+          reason: values.reason,
+          comment: values.comment,
+        }) as any,
+      ).unwrap();
+      toast.success("Tenancy lease ended successfully");
+      resetForm();
+      router.push("/dashboard/landlord/tenants?tab=ended");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "An unexpected error occurred."
+        error?.message ||
+          error?.payload ||
+          error?.response?.data?.message ||
+          "Failed to end tenancy lease. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -533,6 +535,35 @@ const ApplicationDetails = () => {
               </div>
             </div>
           </div>
+          {(application?.status === "Ended" ||
+            application?.status === "ended" ||
+            application?.status === "Expired" ||
+            application?.status === "expired") &&
+            formatEndTenancySummary(application) && (
+              <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-[#667085]">
+                  Reason tenancy ended
+                </p>
+                <p className="mt-1 text-sm font-semibold text-gray-900">
+                  {formatEndTenancySummary(application)}
+                </p>
+              </div>
+            )}
+          {(application?.status === "Active_lease" ||
+            application?.status === "active" ||
+            application?.status === "Expired" ||
+            application?.status === "expired" ||
+            String(application?.status || "").toLowerCase() === "active_lease") && (
+            <div className="mt-4">
+              <Button
+                type="button"
+                className="w-full border border-red-200 bg-white text-red-700 hover:bg-red-50"
+                onClick={() => setOpenTenancyModal(true)}
+              >
+                End tenancy lease
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="w-full md:w-full grid grid-cols-1 md:grid-cols-1 gap-4 h-fit"></div>
@@ -693,6 +724,22 @@ const ApplicationDetails = () => {
           </Formik>
         </div>
       </Modal>
+
+      <EndTenancyLeaseModal
+        isOpen={openEndTenancyModal}
+        onClose={() => setOpenTenancyModal(false)}
+        recordId={application?._id}
+        onSubmit={async (values) => {
+          await endTenancy(
+            values,
+            {
+              resetForm: () => {},
+              setSubmitting: () => {},
+            },
+            dispatch,
+          );
+        }}
+      />
     </div>
   );
 };

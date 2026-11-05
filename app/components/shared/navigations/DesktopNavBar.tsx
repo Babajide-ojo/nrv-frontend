@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import NavLink from "./NavLink";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Home } from "lucide-react";
+import {
+  getDashboardHrefForAccount,
+  getStoredSession,
+} from "@/lib/authSession";
 
 type NavItem =
   | { text: string; targetId: string }
@@ -22,23 +26,33 @@ const navItems: NavItem[] = [
 
 const DesktopNavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<{ accountType?: string } | null>(null);
-  const router = useRouter();
+  const [dashboardHref, setDashboardHref] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    try {
-      const userData = localStorage.getItem("nrv-user");
-      if (userData) {
-        const parsed = JSON.parse(userData);
-        if (parsed?.user) {
+    const load = () => {
+      try {
+        const session = getStoredSession();
+        if (session?.user) {
           setIsLoggedIn(true);
-          setCurrentUser(parsed.user);
+          setDashboardHref(
+            getDashboardHrefForAccount(session.user.accountType) ?? "/sign-in",
+          );
+          return;
         }
+      } catch {
+        localStorage.removeItem("nrv-user");
       }
-    } catch {
-      localStorage.removeItem("nrv-user");
-    }
+      setIsLoggedIn(false);
+      setDashboardHref(null);
+    };
+    load();
+    window.addEventListener("nrv-user-updated", load);
+    window.addEventListener("storage", load);
+    return () => {
+      window.removeEventListener("nrv-user-updated", load);
+      window.removeEventListener("storage", load);
+    };
   }, []);
 
   return (
@@ -103,19 +117,14 @@ const DesktopNavBar: React.FC = () => {
 
           {/* Right: Auth / Dashboard */}
           <div className="flex items-center gap-2 shrink-0">
-            {isLoggedIn ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (currentUser?.accountType === "landlord") router.push("/dashboard/landlord");
-                  else if (currentUser?.accountType === "tenant") router.push("/dashboard/tenant");
-                  else if (currentUser?.accountType === "shortlet_manager") router.push("/dashboard/manager");
-                }}
+            {isLoggedIn && dashboardHref ? (
+              <Link
+                href={dashboardHref}
                 className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#03442C] text-white text-sm font-semibold hover:bg-[#022f21] shadow-sm hover:shadow-md transition-all duration-200"
               >
                 Dashboard
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-              </button>
+              </Link>
             ) : (
               <>
                 <Link

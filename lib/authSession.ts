@@ -182,6 +182,14 @@ export const getDashboardHomeForRole = (role: NrvRole): string => {
   return "/dashboard/landlord";
 };
 
+/** Public-nav Dashboard destination, including landlord aliases like "Property Owner". */
+export const getDashboardHrefForAccount = (
+  accountType?: string | null,
+): string | null => {
+  const role = resolveNrvRole(accountType);
+  return role ? getDashboardHomeForRole(role) : null;
+};
+
 export const isPathAllowedForRole = (
   pathname: string,
   role: NrvRole,

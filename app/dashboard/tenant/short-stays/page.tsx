@@ -80,6 +80,9 @@ const ShortStayBookingsPage = () => {
                   </p>
                   <p className="mt-1 text-sm capitalize">
                     {String(booking.status || "").replace("_", " ")}
+                    {booking.identityStatus
+                      ? ` · identity ${booking.identityStatus}`
+                      : ""}
                   </p>
                   {booking.status === "pending_payment" ? (
                     <button

@@ -134,6 +134,7 @@ const MobileNavBar: React.FC = () => {
                     close();
                     if (currentUser?.accountType === "landlord") router.push("/dashboard/landlord");
                     else if (currentUser?.accountType === "tenant") router.push("/dashboard/tenant");
+                    else if (currentUser?.accountType === "shortlet_manager") router.push("/dashboard/manager");
                   }}
                   className="w-full py-4 rounded-xl bg-[#03442C] text-white font-semibold hover:bg-[#022f21] transition-all duration-200 flex items-center justify-center gap-2"
                 >

@@ -109,6 +109,7 @@ const DesktopNavBar: React.FC = () => {
                 onClick={() => {
                   if (currentUser?.accountType === "landlord") router.push("/dashboard/landlord");
                   else if (currentUser?.accountType === "tenant") router.push("/dashboard/tenant");
+                  else if (currentUser?.accountType === "shortlet_manager") router.push("/dashboard/manager");
                 }}
                 className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#03442C] text-white text-sm font-semibold hover:bg-[#022f21] shadow-sm hover:shadow-md transition-all duration-200"
               >

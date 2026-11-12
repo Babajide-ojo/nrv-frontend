@@ -20,7 +20,7 @@ const navItems: NavItem[] = [
   { text: "How It Works", targetId: "how-it-works" },
   { text: "Features", targetId: "features" },
   { text: "Explore Homes", targetId: "explore" },
-  { text: "Short stays", route: "/short-stays" },
+  { text: "Verify guests", route: "/short-stays" },
   { text: "Testimonials", targetId: "testimonials" },
 ];
 

@@ -89,8 +89,9 @@ export default function ManagerCreditsPage() {
           Shortlet identity credits
         </h1>
         <p className="text-gray-600">
-          Each credit runs one guest NIN and phone check. Tenant screening packs
-          are not available on this account.
+          Each credit runs one guest identity check (NIN and live selfie). Tenant
+          screening packs are not available on this account. Unused invites do
+          not consume a credit.
         </p>
         <div className="mt-4 rounded-xl border border-[#03442C]/20 bg-[#03442C]/[0.06] px-4 py-3 text-sm text-gray-800">
           Remaining credits:{" "}

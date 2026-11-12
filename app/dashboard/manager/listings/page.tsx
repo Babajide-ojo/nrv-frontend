@@ -1,16 +1,12 @@
 "use client";
 
-import ManagerLayout from "@/app/components/layout/ManagerLayout";
-import HostShortStaysBoard from "@/app/components/short-stays/HostShortStaysBoard";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function ManagerListingsPage() {
-  return (
-    <ManagerLayout mainPath="Listings">
-      <HostShortStaysBoard
-        createHref="/dashboard/manager/listings/create"
-        canRunCheck
-        mode="listings"
-      />
-    </ManagerLayout>
-  );
+export default function RetiredManagerListingsPage() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/dashboard/manager");
+  }, [router]);
+  return null;
 }

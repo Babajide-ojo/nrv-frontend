@@ -11,11 +11,9 @@ import {
   FiHome,
   FiClipboard,
   FiDollarSign,
-  FiMessageSquare,
   FiHeadphones,
-  FiSettings,
   FiHelpCircle,
-  FiUsers,
+  FiSettings,
 } from "react-icons/fi";
 import { MANAGER_NAV_ITEMS } from "@/app/config/managerNav";
 import UserAvatar from "@/app/components/shared/UserAvatar";
@@ -29,11 +27,9 @@ interface User {
 
 const ICONS: Record<string, React.ReactNode> = {
   Dashboard: <FiHome />,
-  Listings: <FiClipboard />,
-  Bookings: <FiUsers />,
-  "Guest checks": <FiDollarSign />,
-  "Buy shortlet credits": <FiSettings />,
-  Messages: <FiMessageSquare />,
+  "Guest verifications": <FiClipboard />,
+  "Buy shortlet credits": <FiDollarSign />,
+  Settings: <FiSettings />,
   "How it works": <FiHelpCircle />,
 };
 
@@ -157,7 +153,11 @@ const ManagerSideBar: React.FC<{ isOpen: boolean }> = () => {
                 key={index}
                 onClick={() => router.push(route)}
                 className={`flex items-center gap-4 px-6 py-3 mx-4 rounded-lg cursor-pointer font-lighter text-[12px]  ${
-                  activeLink === route ? "text-[#BBFF37]" : "text-[#98A2B3]"
+                  activeLink === route ||
+                  (route !== "/dashboard/manager" &&
+                    activeLink.startsWith(`${route}/`))
+                    ? "text-[#BBFF37]"
+                    : "text-[#98A2B3]"
                 }`}
               >
                 {icon} {name}

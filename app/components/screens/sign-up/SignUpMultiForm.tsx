@@ -181,7 +181,7 @@ const SignUpMultiForm = () => {
                     icon: <Home className="text-green-700" />,
                     text: "Sign Up as a Shortlet Manager",
                     description:
-                      "List short stays, run guest identity checks, and collect payment after a check passes.",
+                      "Confirm guest identity before check-in.",
                   },
                 ].map(({ role, icon, text, description }) => (
                   <div

@@ -1,12 +1,12 @@
 "use client";
 
-import ManagerLayout from "@/app/components/layout/ManagerLayout";
-import RentersListForLandlordScreen from "@/app/components/dashboard/tenant/RentersListForLandlordScreen";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function ManagerMessagesPage() {
-  return (
-    <ManagerLayout mainPath="Messages">
-      <RentersListForLandlordScreen />
-    </ManagerLayout>
-  );
+export default function RetiredManagerMessagesPage() {
+  const router = useRouter();
+  useEffect(() => {
+    router.replace("/dashboard/manager");
+  }, [router]);
+  return null;
 }

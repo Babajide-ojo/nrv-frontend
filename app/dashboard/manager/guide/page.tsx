@@ -8,32 +8,32 @@ export default function ManagerGuidePage() {
     <ManagerLayout path="How it works">
       <div className="p-4 sm:p-6 lg:p-8">
         <HowItWorksGuide
-          title="How shortlet bookings work"
-          intro="List a stay, wait for a guest request, run a NIN and phone check, then collect payment only if the check passes."
+          title="Know your guest before check-in"
+          intro="NRV confirms guest identity for stays you booked on WhatsApp, Airbnb, or Instagram. You still collect payment and handle check-in outside NRV."
           sections={[
             {
-              heading: "List a short stay",
+              heading: "Send a check",
               steps: [
                 {
-                  title: "Add the stay",
-                  body: "Go to Listings and add the address, nightly rate, photos, and house rules. Admin approval is required before it appears publicly.",
+                  title: "Buy shortlet identity credits",
+                  body: "Each completed guest check uses one shortlet credit. Tenant screening packs are not used here. Unused invites do not consume a credit.",
+                },
+                {
+                  title: "Create a request",
+                  body: "Enter the guest name, email or phone, and expected check-in date. Email the link or copy it into WhatsApp.",
                 },
               ],
             },
             {
-              heading: "Guest check, then pay",
+              heading: "Guest confirms identity",
               steps: [
                 {
-                  title: "Buy shortlet identity credits",
-                  body: "Each guest check uses one shortlet credit. Tenant screening packs are not used here.",
+                  title: "No NRV account needed",
+                  body: "The guest opens the link, consents, enters NIN, and takes a live selfie.",
                 },
                 {
-                  title: "Run check",
-                  body: "When a guest requests dates, run the NIN and phone check. A failed check stops payment. A passed check opens a 30-minute pay window.",
-                },
-                {
-                  title: "Confirm the stay",
-                  body: "The stay is confirmed only after Paystack payment succeeds.",
+                  title: "Review the result",
+                  body: "You see Verified, Review required, or Unsuccessful — not the guest’s NIN, selfie, or biometrics. You decide whether to host.",
                 },
               ],
             },
